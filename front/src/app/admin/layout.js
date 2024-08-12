@@ -7,7 +7,6 @@ import "/public/css/admin/ref5.css";
 import "/public/css/admin/ref6.css";
 import Sidebar from "@/component/admin/layout/Sidebar";
 
-
 export const metadata = {
   title: "Admin - Create Next App",
   description: "Admin section of the app",
@@ -15,17 +14,15 @@ export const metadata = {
 
 export default function AdminLayout({ children }) {
   return (
-<>
-<div id="wrap" className=" beta">
-  <hr className="layout" />
-  <div id="container">
-    <Sidebar/>
-    <hr className="layout" />
-        <div id="content">
-        {children}
-    </div>
-  </div>
-</div>
-</>
+    <>
+      <div id="wrap" className=" beta">
+        <hr className="layout" />
+        <div id="container">
+          <Sidebar />
+          <hr className="layout" />
+          <div id="content">{children}</div>
+        </div>
+      </div>
+    </>
   );
 }
