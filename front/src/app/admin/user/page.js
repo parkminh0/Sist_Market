@@ -13,7 +13,7 @@ export default function Page() {
     <>
       <div className="headingArea gSubmain">
         <div className="mTitle">
-          <h1>고객관리</h1>
+          <h1>고객관리제발</h1>
         </div>
       </div>
       <div className="dashMain">
