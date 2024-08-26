@@ -13,4 +13,109 @@
            SET login_dtm = now()
          WHERE userkey = #{userkey}
     </update>
+
+    <!-- 관리자 유저정보 뿌리기-->
+    <select id="countForAdmin" resultType="com.sist.back.vo.UserCountVO">
+      SELECT COUNT(*) cntAll, 
+          COUNT(CASE WHEN isdeleted = 0 THEN 1 END) cntNotDel,
+            COUNT(CASE WHEN isdeleted = 1 THEN 1 END) cntDel
+        FROM user
+	  </select> 
+
+    <select id="searchForAdminPaging" parameterType="map" resultType="int">
+      SELECT COUNT(*)
+      FROM user
+      <if test="type != null and type != ''">
+        <choose>
+          <when test="search_type == 'name'">AND name LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'id'">AND id LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'email'">AND email LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'phone'">AND phone LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'nickname'">AND nickname LIKE CONCAT('%', #{type}, '%')</when>
+        </choose>
+      </if>
+
+      <if test="regist_start_date != null and regist_start_date != '' and regist_end_date != null and regist_end_date != ''">
+        AND create_dtm BETWEEN #{regist_start_date} AND #{regist_end_date}
+      </if>
+      <if test="regist_start_date != null and regist_start_date != '' and (regist_end_date == null or regist_end_date == '')">
+        AND create_dtm <![CDATA[>=]]> #{regist_start_date}
+      </if>
+      <if test="(regist_start_date == null or regist_start_date == '') and regist_end_date != null and regist_end_date != ''">
+        AND create_dtm <![CDATA[<=]]> #{regist_end_date}
+      </if>
+
+      <if test="recent_login_start_date != null and recent_login_start_date != '' and recent_login_end_date != null and recent_login_end_date != ''">
+        AND login_dtm BETWEEN #{recent_login_start_date} AND #{recent_login_end_date}
+      </if>
+      <if test="recent_login_start_date != null and recent_login_start_date != '' and (recent_login_end_date == null or recent_login_end_date == '')">
+        AND login_dtm <![CDATA[>=]]> #{recent_login_start_date}
+      </if>
+      <if test="(recent_login_start_date == null or recent_login_start_date == '') and recent_login_end_date != null and recent_login_end_date != ''">
+        AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
+      </if>
+
+      <if test="del != null and del != '2'">
+        AND isdeleted = #{del}
+      </if>
+
+      <if test="isauthorized != null and isauthorized != '2'">
+        AND isauthorized = #{isauthorized}
+      </if>
+    </select>
+
+    <select id="searchForAdmin" parameterType="map" resultType="com.sist.back.vo.userVO">
+      SELECT x.*
+      FROM ( SELECT *, row_number() over (order by userkey DESC) rnum FROM user
+
+      <if test="type != null and type != ''">
+        <choose>
+          <when test="search_type == 'name'">AND name LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'id'">AND id LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'email'">AND email LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'phone'">AND phone LIKE CONCAT('%', #{type}, '%')</when>
+          <when test="search_type == 'nickname'">AND nickname LIKE CONCAT('%', #{type}, '%')</when>
+        </choose>
+      </if>
+
+      <if test="regist_start_date != null and regist_start_date != '' and regist_end_date != null and regist_end_date != ''">
+        AND create_dtm BETWEEN #{regist_start_date} AND #{regist_end_date}
+      </if>
+      <if test="regist_start_date != null and regist_start_date != '' and (regist_end_date == null or regist_end_date == '')">
+        AND create_dtm <![CDATA[>=]]> #{regist_start_date}
+      </if>
+      <if test="(regist_start_date == null or regist_start_date == '') and regist_end_date != null and regist_end_date != ''">
+        AND create_dtm <![CDATA[<=]]> #{regist_end_date}
+      </if>
+
+      <if test="recent_login_start_date != null and recent_login_start_date != '' and recent_login_end_date != null and recent_login_end_date != ''">
+        AND login_dtm BETWEEN #{recent_login_start_date} AND #{recent_login_end_date}
+      </if>
+      <if test="recent_login_start_date != null and recent_login_start_date != '' and (recent_login_end_date == null or recent_login_end_date == '')">
+        AND login_dtm <![CDATA[>=]]> #{recent_login_start_date}
+      </if>
+      <if test="(recent_login_start_date == null or recent_login_start_date == '') and recent_login_end_date != null and recent_login_end_date != ''">
+        AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
+      </if>
+
+      <if test="del != null and del != '2'">
+        AND isdeleted = #{del}
+      </if>
+
+      <if test="isauthorized != null and isauthorized != '2'">
+        AND isauthorized = #{isauthorized}
+      </if>
+      
+      ) x
+      WHERE x.rnum BETWEEN #{begin} and #{end}
+    </select>
+
+    <!-- 관리자 유저 정보 가져오기 -->
+    <select id="getUserForAdmin" parameterType="String" resultType="com.sist.back.vo.userVO">
+      select * from user
+      where userkey = #{userkey}
+    </select>
+
+
+
 </mapper>
