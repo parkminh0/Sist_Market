@@ -1,10 +1,44 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "/public/css/admin/user.css";
 import Link from "next/link";
+import axios from "axios";
 
 export default function Page() {
-  function doSrchFrm(idx) {}
+  //유저 카운트
+  const API_URL = "/usercount";
+  const [count, setCount] = useState({});
+  const [del, setDel] = useState(0);
+  const [act, setAct] = useState(0);
+
+  //유저 검색
+  const API_URL_2 = "/search_user_admin";
+  const [userlist, setUserlist] = useState([]);
+
+  // 페이지 로드 시 Count
+  useEffect(() => {
+    getCount();
+  }, []);
+
+  function getCount() {
+    axios.get(API_URL).then((response) => {
+      setCount(response.data.ucvo);
+      setDel(response.data.ucvo.cntNotDel);
+      setAct(response.data.ucvo.cntDel);
+    });
+  }
+
+  function doSrchFrm(cPage) {
+    let now = cPage;
+    axios
+      .post(
+        //API_URL_2
+        `${API_URL_2}?cPage=${cPage}`
+      )
+      .then((response) => {
+        setUserlist(response.data.ar);
+      });
+  }
 
   function delete_choice() {}
 
@@ -13,7 +47,7 @@ export default function Page() {
     <>
       <div className="headingArea gSubmain">
         <div className="mTitle">
-          <h1>고객관리제발</h1>
+          <h1>고객관리</h1>
         </div>
       </div>
       <div className="dashMain">
@@ -62,19 +96,26 @@ export default function Page() {
                     <strong className="underline txtEm">
                       <Link href="#">
                         {/* ${requestScope.ucvo.cntNotDel} */}
+                        {del}
                       </Link>
                     </strong>
                     명
                   </td>
                   <td>
                     <strong className="underline txtEm">
-                      <Link href="#">{/* ${requestScope.ucvo.cntDel} */}</Link>
+                      <Link href="#">
+                        {/* ${requestScope.ucvo.cntDel} */}
+                        {act}
+                      </Link>
                     </strong>
                     명
                   </td>
                   <td>
                     <strong className="underline txtEm">
-                      <Link href="#">{/* ${requestScope.ucvo.cntAll} */}</Link>
+                      <Link href="#">
+                        {/* ${requestScope.ucvo.cntAll} */}
+                        {count.cntAll}
+                      </Link>
                     </strong>
                     명
                   </td>
@@ -84,7 +125,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <form name="mform" method="post" action="">
+      <form name="mform" method="post" action="/search_user_admin">
         <div className="headingArea">
           <div className="mTitle">
             <h1>회원정보 조회</h1>
@@ -110,7 +151,7 @@ export default function Page() {
                         <option value="id">아이디</option>
                         <option value="email">이메일</option>
                         <option value="phone">전화번호</option>
-                        <option value="addr">주소</option>
+                        <option value="nickname">닉네임</option>
                       </select>
                       <input
                         type="text"
@@ -120,17 +161,7 @@ export default function Page() {
                       />
                     </td>
                   </tr>
-                  <tr>
-                    <th scope="row">회원등급</th>
-                    <td colSpan="3">
-                      <select name="grade" className="fSelect">
-                        <option value="0">전체</option>
-                        {/* <c:forEach var="rank" items="${requestScope.ugvo_list}" varStatus="idx">
-	                                                <option value="${idx.index+1}">${rank.grade}</option>
-                                                </c:forEach> */}
-                      </select>
-                    </td>
-                  </tr>
+
                   <tr>
                     <th scope="row">가입일</th>
                     <td>
@@ -157,6 +188,7 @@ export default function Page() {
                         </span>
                       </div>
                     </td>
+
                     <th scope="row">탈퇴여부</th>
                     <td>
                       <label className="gLabel">
@@ -189,33 +221,37 @@ export default function Page() {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">나이</th>
+                    <th scope="row">최근접속일</th>
                     <td>
-                      <input
-                        type="number"
-                        name="age1"
-                        className="numberic fText right"
-                        style={{ width: "40px" }}
-                        maxLength="2"
-                        min="1"
-                      />{" "}
-                      세<span className="ec-mode-common-period-area">~</span>
-                      <input
-                        type="number"
-                        name="age2"
-                        className="numberic fText right"
-                        style={{ width: "40px" }}
-                        maxLength="2"
-                        max="99"
-                      />{" "}
-                      세
+                      <div style={{ float: "left" }}>
+                        <span
+                          className="gLabel"
+                          style={{ float: "left", marginLeft: "5px" }}
+                        >
+                          <input
+                            type="date"
+                            id="recent_login_start_date"
+                            name="regist_start_date"
+                            className="fText gDate"
+                            style={{ width: "100px" }}
+                          />
+                          <span className="ec-mode-common-period-area">~</span>
+                          <input
+                            type="date"
+                            id="recent_login_end_date"
+                            name="regist_end_date"
+                            className="fText gDate"
+                            style={{ width: "100px" }}
+                          />
+                        </span>
+                      </div>
                     </td>
-                    <th scope="row">성별</th>
+                    <th scope="row">본인인증여부</th>
                     <td>
                       <label className="gLabel">
                         <input
                           type="radio"
-                          name="gender"
+                          name="isauthorized"
                           value="2"
                           className="fChk"
                         />{" "}
@@ -224,84 +260,35 @@ export default function Page() {
                       <label className="gLabel">
                         <input
                           type="radio"
-                          name="gender"
+                          name="isauthorized"
                           value="0"
                           className="fChk"
                         />{" "}
-                        남
+                        인증 X
                       </label>
                       <label className="gLabel">
                         <input
                           type="radio"
-                          name="gender"
+                          name="isauthorized"
                           value="1"
                           className="fChk"
                         />{" "}
-                        여
+                        인증 O
                       </label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">구매금액/건수</th>
-                    <td colSpan="3">
-                      <div style={{ float: "left" }}>
-                        <select name="sales_type" className="fSelect">
-                          <option value="">전체</option>
-                          <option value="1">총 주문금액</option>
-                          <option value="2">총 주문건수</option>
-                        </select>
-                      </div>
-                      <div
-                        id="sales_type_length"
-                        style={{
-                          float: "left",
-                          marginLeft: "5px",
-                          display: "none",
-                        }}
-                      >
-                        <input
-                          type="text"
-                          name="min_sales_amount"
-                          size="8"
-                          className="fText right"
-                          style={{ width: "65px" }}
-                        />
-                        <span
-                          className="sales_unit_key"
-                          style={{ display: "none" }}
-                        >
-                          건
-                        </span>
-                        <span className="sales_unit_price">원</span>
-                        <span className="ec-mode-common-period-area">~</span>
-                        <input
-                          type="text"
-                          name="max_sales_amount"
-                          size="8"
-                          className="fText right"
-                          style={{ width: "65px" }}
-                        />
-                        <span
-                          className="sales_unit_key"
-                          style={{ display: "none" }}
-                        >
-                          건
-                        </span>
-                        <span className="sales_unit_price">원</span>
-                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div className="mButton gCenter">
-              <Link href="" onClick={doSrchFrm(0)} className="btnSearch">
+              <Link href="" onClick={() => doSrchFrm(0)} className="btnSearch">
                 <span>검색</span>
               </Link>
             </div>
           </div>
         </div>
       </form>
+
       <div className="section" id="QA_profile2">
         <div className="mTitle">
           <h2>회원 목록</h2>
@@ -331,13 +318,13 @@ export default function Page() {
                 <col className="chk" />
                 <col className="date" />
                 <col style={{ width: "70px" }} />
+                <col style={{ width: "70px" }} />
+                <col style={{ width: "70px" }} />
                 <col style={{ width: "100px" }} />
                 <col style={{ width: "100px" }} />
-                <col style={{ width: "120px" }} />
-                <col style={{ width: "60px" }} />
                 <col style={{ width: "60px" }} />
                 <col style={{ width: "70px" }} />
-                <col style={{ width: "235px" }} />
+                <col style={{ width: "180px" }} />
               </colgroup>
               <thead>
                 <tr>
@@ -347,15 +334,44 @@ export default function Page() {
                   <th scope="col">등록일</th>
                   <th scope="col">이름</th>
                   <th scope="col">아이디</th>
-                  <th scope="col">등급</th>
+                  <th scope="col">닉네임</th>
                   <th scope="col">전화번호</th>
-                  <th scope="col">성별</th>
-                  <th scope="col">나이</th>
-                  <th scope="col">지역</th>
-                  <th scope="col">관련 내역 보기</th>
+                  <th scope="col">이메일</th>
+                  <th scope="col">탈퇴여부</th>
+                  <th scope="col">인증여부</th>
+                  <th scope="col">최근 접속일</th>
                 </tr>
               </thead>
-              <tbody className="center"></tbody>
+              <tbody className="center">
+                {userlist.map((item, i) => (
+                  <tr key={i}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        name="use_check[]"
+                        className="rowChk"
+                      />
+                    </td>
+                    <td scope="row">{item.create_dtm}</td>
+                    <td scope="row">
+                      <Link href={`/admin/userEdit/${item.userkey}`}>
+                        {item.name}
+                      </Link>
+                    </td>
+                    <td scope="row">
+                      <Link href={`/admin/userEdit/${item.userkey}`}>
+                        {item.id}
+                      </Link>
+                    </td>
+                    <td scope="row">{item.nickname}</td>
+                    <td scope="row">{item.phone}</td>
+                    <td scope="row">{item.email}</td>
+                    <td scope="row">{item.isdeleted}</td>
+                    <td scope="row">{item.isauthorized}</td>
+                    <td scope="row">{item.login_dtm}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
             <p className="empty" style={{ display: "block" }}>
               검색된 회원 내역이 없습니다.
@@ -376,37 +392,6 @@ export default function Page() {
                 <strong title="현재페이지">1</strong>
               </li>
             </ol>
-          </div>
-          {/* <!-- 선택칸 --> */}
-          <div className="section" id="QA_level3">
-            <div className="mTile">
-              <h2>추가설정</h2>
-            </div>
-
-            <div className="mBoard gSmall">
-              <table border="1" summary="">
-                <caption>추가 설정</caption>
-                <tbody>
-                  <tr>
-                    <th scope="row">회원등급변경</th>
-                    <td>
-                      선택된 회원을
-                      <select id="ugvo_select">
-                        <option value="0">임시</option>
-                        {/* <c:forEach var="ugvo" items="${requestScope.ugvo_list}">
-												<option value="${ugvo.ug_idx }" >${ugvo.grade }</option>
-												</c:forEach> */}
-                      </select>
-                      으로
-                      <Link href="#" onClick={cg()} className="btnNormal">
-                        <span>등급변경</span>
-                      </Link>
-                      합니다.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
       </div>
