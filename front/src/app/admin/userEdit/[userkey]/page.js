@@ -7,25 +7,85 @@ import { useRouter } from "next/navigation";
 export default function Page(props) {
   const router = useRouter();
 
-  const API_URL = `/api/admin/userEdit?userkey=${props.userkey}`;
-  //const API_URL = `/user/api/admin/userEdit?userkey=2`;
+  const API_URL = `/api/admin/userEdit?userkey=${props.params.userkey}`;
+  const DEL_URL = `/api/admin/userDel?userkey=${props.params.userkey}`;
+  const EDIT_URL = `/api/admin/userEditReal?userkey=${props.params.userkey}`;
+  
   const [ar, setAR] = useState({});
+  const [pw,setPW] = useState("");
+  const [name,setNAME] = useState("");
+  const [email,setEMAIL] = useState("");
+  const [phone,setPHONE] = useState("");
 
-  function getData() {
-    axios.get(API_URL).then((res) => {
-      setAR(res.data.ar);
+  function deleteUser() {
+    axios.get(DEL_URL).then((res) => {
+    
+      if(res.data.str === "success"){ 
+      alert("회원 탈퇴가 완료되었습니다.");
+      setTimeout(() => {
+        router.push('/admin/user');
+      }, 0); // 0ms 지연시간을 두고 바로 실행
+      }else{
+        alert("탈퇴가 불가능한 회원입니다.");
+      }
     });
   }
 
-  function deleteUser() {}
-  function editUser() {}
+  function getData() {
+    axios.get(API_URL).then((res) => {
+      const data = res.data.ar;
+      setAR(data);
+      setPW(data.pw || "");
+      setNAME(data.name || "");
+      setEMAIL(data.email || "");
+      setPHONE(data.phone || "");
+    });
+  }
+
+  function editUser() {
+    axios({
+      url : `${EDIT_URL}`,
+      method : "post",
+      params: {
+          pw : pw,
+          name : name,
+          email: email,
+          phone : phone,
+      }
+
+  }).then((res)=>{
+      if(res.data.str==="success"){
+      alert("회원정보가 수정되었습니다.");
+      const userConfirmed = window.confirm("회원 수정이 완료되었습니다. 페이지를 이동하시겠습니까?");
+      if (userConfirmed) {
+        router.push('/admin/user');
+      }
+      }else{
+        alert("수정이 불가능 합니다.");
+      }
+      
+
+  });
+
+  }
 
   useEffect(() => {
     getData();
   }, []);
-  
+
   return (
     <div>
+      <style jsx>{`
+        #wrap {
+          margin: 0 auto; 
+          max-width: 1200px; 
+        }
+
+        #container {
+          margin: 0 auto; 
+          padding-left: 20px; 
+        }
+      `}</style>
       <div id="wrap" className="beta">
         <hr className="layout" />
         <div id="container">
@@ -191,7 +251,7 @@ export default function Page(props) {
                                   readOnly
                                   className="fText eMarketChecker eHasModifyProductAuth"
                                   style={{ width: "400px" }}
-                                  value="${ar.userkey}"
+                                  value= {ar.userkey}
                                 />
                               </div>
                             </div>
@@ -204,9 +264,10 @@ export default function Page(props) {
                               <input
                                 type="text"
                                 name="id"
+                                readOnly
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.id}"
+                                value={ar.id}
                               />
                             </div>
                           </td>
@@ -220,7 +281,11 @@ export default function Page(props) {
                                 name="pw"
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.pw}"
+                                value={pw}
+                                onChange={(e)=>{
+                                  setPW(e.target.value);
+                                }
+                              }
                               />
                             </div>
                           </td>
@@ -234,7 +299,11 @@ export default function Page(props) {
                                 name="name"
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.name}"
+                                value={name}
+                                onChange={(e)=>{
+                                  setNAME(e.target.value);
+                                }
+                                }
                               />
                             </div>
                           </td>
@@ -248,7 +317,18 @@ export default function Page(props) {
                                 name="email"
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.email}"
+                                value={email}
+                                onChange={(e)=>{
+                                  setEMAIL(e.target.value);
+                                }}
+                                onBlur={() => {
+                                  // 이메일 형식 검사
+                                  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                  if (!emailPattern.test(email)) {
+                                    alert("올바른 이메일 주소를 입력하세요.");
+                                    setEMAIL("");  // 잘못된 형식이라면 필드를 비웁니다.
+                                  }
+                                }}
                               />
                             </div>
                           </td>
@@ -258,11 +338,22 @@ export default function Page(props) {
                           <td>
                             <div className="gIcoShop">
                               <input
-                                type="text"
+                                type="tel"
                                 name="phone"
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.phone}"
+                                value={phone}
+                                onChange={(e)=>{
+                                  setPHONE(e.target.value);
+                                }}
+                                onKeyPress={(e) => {
+                                  // 숫자만 입력 가능하게 제한
+                                  const charCode = e.which ? e.which : e.keyCode;
+                                  if (charCode < 48 || charCode > 57) {
+                                    e.preventDefault();
+                                    alert("숫자만 입력할 수 있습니다.");
+                                  }
+                                }}
                               />
                             </div>
                           </td>
@@ -277,7 +368,7 @@ export default function Page(props) {
                                 readOnly
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.create_dtm}"
+                                value={ar.create_dtm}
                               />
                             </div>
                           </td>
@@ -291,7 +382,8 @@ export default function Page(props) {
                                 name="del_dtm"
                                 className="fText eMarketChecker"
                                 style={{ width: "400px" }}
-                                value="${ar.del_dtm}"
+                                value={ar.del_dtm||''}
+                                readOnly
                               />
                             </div>
                           </td>
