@@ -6,18 +6,65 @@ import axios from "axios";
 
 export default function Page() {
   //유저 카운트
-  const API_URL = "/usercount";
+  const API_URL = "/api/usercount";
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
 
+  const [search_type,setSearch_type] = useState("name");
+  const [type,setType] = useState("");
+  const [regist_start_date,setRegist_start_date] = useState("");
+  const [regist_end_date,setRegist_end_date] = useState("");
+  const [isdeleted,setIsdeleted] = useState("");
+  const [isauthorized,setIsauthorized] = useState("");
+  const [recent_login_start_date,setRecent_login_start_date] = useState("");
+  const [recent_login_end_date,setRecent_login_end_date] = useState("");
+
   //유저 검색
-  const API_URL_2 = "/search_user_admin";
+  const API_URL_2 = "/api/search_user_admin";
   const [userlist, setUserlist] = useState([]);
+  //페이징
+  const [totalPage,setTotalPage] = useState(0);
+
+  //체크한 유저 삭제 
+  const DEL_URL = "/api/admin/checkUserDel";
+  const [allChecked, setAllChecked] = useState(false); // 전체 선택 체크박스 
+  const [checkedItems, setCheckedItems] = useState([]); // 개별 체크박스 
+
+  // 전체 선택 체크박스 
+  const handleAllCheck = (e) => {
+    const checked = e.target.checked;
+    setAllChecked(checked); // 전체 선택 상태 업데이트
+    if (checked) {
+      // 전체 선택 시, 모든 유저의 키를 checkedItems에 추가
+      const allCheckedItems = userlist.map((item) => item.userkey);
+      setCheckedItems(allCheckedItems);
+    } else {
+      // 전체 선택 해제
+      setCheckedItems([]); 
+    }
+  };
+
+  // 개별 체크박스 핸들러
+  const handleRowCheck = (e, userkey) => {
+    const checked = e.target.checked;
+    let updatedCheckedItems = [...checkedItems];
+    if (checked) {
+      // 체크 시 해당 유저의 키를 checkedItems에 추가
+      updatedCheckedItems.push(userkey);
+    } else {
+      // 체크 해제 시 유저의 키 checkedItems에서 제거
+      updatedCheckedItems = updatedCheckedItems.filter((key) => key !== userkey);
+    }
+    setCheckedItems(updatedCheckedItems);
+    // 모든 유저가 선택되었는지 확인> 전체 선택 상태 업데이트
+    setAllChecked(updatedCheckedItems.length === userlist.length);
+  };
 
   // 페이지 로드 시 Count
   useEffect(() => {
     getCount();
+    //doSrchFrm(0);
   }, []);
 
   function getCount() {
@@ -30,19 +77,46 @@ export default function Page() {
 
   function doSrchFrm(cPage) {
     let now = cPage;
-    axios
-      .post(
-        //API_URL_2
-        `${API_URL_2}?cPage=${cPage}`
-      )
-      .then((response) => {
+    
+    axios({
+      url: `${API_URL_2}?cPage=${cPage}`,
+      method: 'post',
+      params: {
+          search_type: search_type,
+          type: type,
+          regist_start_date: regist_start_date,
+          regist_end_date: regist_end_date,
+          isdeleted: isdeleted,
+          recent_login_start_date: recent_login_start_date,
+          recent_login_end_date: recent_login_end_date,
+          isauthorized: isauthorized,
+      }
+  }).then((response) => {
         setUserlist(response.data.ar);
-      });
+        setTotalPage(response.data.totalPage);
+      }).catch(error => {
+        console.error("Error during search:", error);
+    });
   }
 
-  function delete_choice() {}
+  function delete_choice() {
+    console.log("delete_choice 함수 호출됨");
+    console.log("DEL_URL:", DEL_URL);
+    axios.post(DEL_URL, checkedItems)
+        .then(response => {
+            alert("회원 탈퇴가 완료되었습니다.");
+            // 체크박스 선택 해제
+            setCheckedItems([]); // 개별 체크박스 해제
+            setAllChecked(false); // 전체 선택 체크박스 해제
+            doSrchFrm(0);
+        }) .catch(error => {
+      console.error("Error deleting users:", error);
+      alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
+  });
 
-  function cg() {}
+
+  }
+
   return (
     <>
       <div className="headingArea gSubmain">
@@ -146,7 +220,7 @@ export default function Page() {
                   <tr>
                     <th scope="row">개인정보</th>
                     <td colSpan="3">
-                      <select name="search_type" className="fSelect">
+                      <select name="search_type" className="fSelect" onChange={(e) => setSearch_type(e.target.value)}>
                         <option value="name">이름</option>
                         <option value="id">아이디</option>
                         <option value="email">이메일</option>
@@ -158,6 +232,9 @@ export default function Page() {
                         name="type"
                         className="fText"
                         style={{ width: "130px" }}
+                        onChange={(e)=>{
+                          setType(e.target.value);
+                      }}
                       />
                     </td>
                   </tr>
@@ -176,6 +253,7 @@ export default function Page() {
                             name="regist_start_date"
                             className="fText gDate"
                             style={{ width: "100px" }}
+                            onChange={(e) => setRegist_start_date(e.target.value)}
                           />
                           <span className="ec-mode-common-period-area">~</span>
                           <input
@@ -184,6 +262,7 @@ export default function Page() {
                             name="regist_end_date"
                             className="fText gDate"
                             style={{ width: "100px" }}
+                            onChange={(e) => setRegist_end_date(e.target.value)}
                           />
                         </span>
                       </div>
@@ -197,6 +276,7 @@ export default function Page() {
                           name="del"
                           value="2"
                           className="fChk"
+                          onChange={(e) => setIsdeleted(e.target.value)}
                         />{" "}
                         전체
                       </label>
@@ -206,6 +286,7 @@ export default function Page() {
                           name="del"
                           value="0"
                           className="fChk"
+                          onChange={(e) => setIsdeleted(e.target.value)}
                         />{" "}
                         탈퇴 X
                       </label>
@@ -215,6 +296,7 @@ export default function Page() {
                           name="del"
                           value="1"
                           className="fChk"
+                          onChange={(e) => setIsdeleted(e.target.value)}
                         />{" "}
                         탈퇴 O
                       </label>
@@ -234,6 +316,7 @@ export default function Page() {
                             name="regist_start_date"
                             className="fText gDate"
                             style={{ width: "100px" }}
+                            onChange={(e) => setRecent_login_start_date(e.target.value)}
                           />
                           <span className="ec-mode-common-period-area">~</span>
                           <input
@@ -242,6 +325,7 @@ export default function Page() {
                             name="regist_end_date"
                             className="fText gDate"
                             style={{ width: "100px" }}
+                            onChange={(e) => setRecent_login_end_date(e.target.value)}
                           />
                         </span>
                       </div>
@@ -254,6 +338,7 @@ export default function Page() {
                           name="isauthorized"
                           value="2"
                           className="fChk"
+                          onChange={(e) => setIsauthorized(e.target.value)}
                         />{" "}
                         전체
                       </label>
@@ -263,6 +348,7 @@ export default function Page() {
                           name="isauthorized"
                           value="0"
                           className="fChk"
+                          onChange={(e) => setIsauthorized(e.target.value)}
                         />{" "}
                         인증 X
                       </label>
@@ -272,6 +358,7 @@ export default function Page() {
                           name="isauthorized"
                           value="1"
                           className="fChk"
+                          onChange={(e) => setIsauthorized(e.target.value)}
                         />{" "}
                         인증 O
                       </label>
@@ -302,11 +389,11 @@ export default function Page() {
         </div>
         <div className="mCtrl typeHeader">
           <div className="gLeft">
-            <Link href="" onClick={delete_choice()} className="btnNormal">
+      
               <span>
-                <em className="icoDel"></em> 탈퇴
+                <em className="icoDel" onClick={() => delete_choice()}></em> 탈퇴
               </span>
-            </Link>
+           
           </div>
         </div>
         <div id="searchResult" className="searchResult">
@@ -329,7 +416,9 @@ export default function Page() {
               <thead>
                 <tr>
                   <th scope="col">
-                    <input id="allChk" type="checkbox" className="allChk" />
+                    <input id="allChk" type="checkbox" className="allChk" checked={allChecked}
+                    onChange={handleAllCheck} // 전체 선택 체크박스 핸들러 연결 
+                  />
                   </th>
                   <th scope="col">등록일</th>
                   <th scope="col">이름</th>
@@ -343,13 +432,15 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody className="center">
-                {userlist.map((item, i) => (
+                {(userlist || []).map((item, i) => (
                   <tr key={i}>
                     <td>
                       <input
                         type="checkbox"
                         name="use_check[]"
                         className="rowChk"
+                        checked={checkedItems.includes(item.userkey)} // 개별 체크박스 상태 관리
+                        onChange={(e) => handleRowCheck(e, item.userkey)} // 개별 체크박스 핸들러 연결
                       />
                     </td>
                     <td scope="row">{item.create_dtm}</td>
@@ -371,30 +462,41 @@ export default function Page() {
                     <td scope="row">{item.login_dtm}</td>
                   </tr>
                 ))}
+
+                {(userlist && userlist.length === 0) && (
+                  <tr>
+                    <td colSpan="10" className="empty">
+                      검색된 회원 내역이 없습니다.
+                    </td>
+                  </tr>
+                )}
               </tbody>
-            </table>
-            <p className="empty" style={{ display: "block" }}>
-              검색된 회원 내역이 없습니다.
-            </p>
-          </div>
-          <div className="mCtrl typeFooter">
-            <div className="gLeft">
-              <Link href="" onClick={delete_choice()} className="btnNormal">
-                <span>
-                  <em className="icoDel"></em> 탈퇴
-                </span>
-              </Link>
-            </div>
-          </div>
-          <div className="mPaginate">
-            <ol>
-              <li>
-                <strong title="현재페이지">1</strong>
-              </li>
-            </ol>
-          </div>
+
+
+        </table>
+      </div>
+      <div className="mCtrl typeFooter">
+        <div className="gLeft">
+          <button onClick={delete_choice} className="btnNormal">
+            <span>
+              <em className="icoDel"></em> 탈퇴
+            </span>
+          </button>
         </div>
       </div>
-    </>
+      <div className="mPaginate">
+        <ol>
+        {Array.from({ length: totalPage }, (_, index) => (
+            <li key={index + 1}>
+                <a href="#" onClick={() => doSrchFrm(index + 1)}>
+                    {index + 1}
+                </a>
+            </li>
+        ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+</>
   );
 }

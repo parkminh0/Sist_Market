@@ -55,6 +55,7 @@ export default function SidebarItem(parentItem) {
           title: "회원 조회",
           path: "/admin/user",
         },
+      
       ],
     },
     {

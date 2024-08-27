@@ -49,4 +49,12 @@ public class UserService {
 
     }
 
+    public int userDelForAdmin(String userkey){
+        return mapper.userDelForAdmin(userkey);
+    }
+
+    public int userEditForAdmin(userVO vo){
+        return mapper.userEditForAdmin(vo);
+    }
+
 }

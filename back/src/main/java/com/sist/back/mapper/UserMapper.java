@@ -23,4 +23,8 @@ public interface UserMapper {
 
     userVO getUserForAdmin(String userkey);
 
+    int userDelForAdmin(String userkey);
+
+    int userEditForAdmin(userVO vo);
+
 }
