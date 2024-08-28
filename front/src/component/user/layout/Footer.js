@@ -125,16 +125,16 @@ export default function Footer() {
               </div>
               <div className="dmu53n2">
                 <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
-                  <font>탐구하다</font>
+                  <font>쌍용 소식</font>
                 </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9vs">
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="/buy-sell/categories/?in=manhattan-7426"
+                    href="/category"
                     target="_self"
                   >
-                    <font>카테고리</font>
+                    <font>진행 중인 이벤트</font>
                   </Link>
                   <Link
                     data-gtm="footer_navigation"
@@ -143,151 +143,14 @@ export default function Footer() {
                     target="_blank"
                     rel="noreferrer noopener"
                   >
-                    <font>당근 CA</font>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        width: "14px",
-                        height: "14px",
-                      }}
-                      className="_1h4pbgy85k"
-                      data-seed-icon="icon_arrow_fill"
-                      data-seed-icon-version="0.2.1"
-                    >
-                      <svg
-                        id="icon_arrow_fill"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
-                      >
-                        <g>
-                          <path
-                            d="M19.2072 5.18033C19.1631 5.10123 19.1075 5.02684 19.0403 4.95964C18.8399 4.7593 18.5757 4.66174 18.3132 4.66695L7 4.66691C6.44772 4.66691 6 5.11462 6 5.66691C5.99999 6.21919 6.44771 6.66691 6.99999 6.66691L15.9188 6.66694L4.9594 17.6263C4.56887 18.0168 4.56887 18.65 4.9594 19.0405C5.34992 19.431 5.98309 19.431 6.37361 19.0405L17.3334 8.08076V17.0002C17.3334 17.5525 17.7811 18.0002 18.3334 18.0002C18.8856 18.0002 19.3334 17.5525 19.3334 17.0002V5.66695C19.3334 5.4903 19.2876 5.32435 19.2072 5.18033Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
-                  </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://karrotmarket.com/uk"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <font>당근 UK</font>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        width: "14px",
-                        height: "14px",
-                      }}
-                      className="_1h4pbgy85k"
-                      data-seed-icon="icon_arrow_fill"
-                      data-seed-icon-version="0.2.1"
-                    >
-                      <svg
-                        id="icon_arrow_fill"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
-                      >
-                        <g>
-                          <path
-                            d="M19.2072 5.18033C19.1631 5.10123 19.1075 5.02684 19.0403 4.95964C18.8399 4.7593 18.5757 4.66174 18.3132 4.66695L7 4.66691C6.44772 4.66691 6 5.11462 6 5.66691C5.99999 6.21919 6.44771 6.66691 6.99999 6.66691L15.9188 6.66694L4.9594 17.6263C4.56887 18.0168 4.56887 18.65 4.9594 19.0405C5.34992 19.431 5.98309 19.431 6.37361 19.0405L17.3334 8.08076V17.0002C17.3334 17.5525 17.7811 18.0002 18.3334 18.0002C18.8856 18.0002 19.3334 17.5525 19.3334 17.0002V5.66695C19.3334 5.4903 19.2876 5.32435 19.2072 5.18033Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
-                  </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://karrotmarket.com/jp"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <font>
-                      <font>당근 JP</font>
-                    </font>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        width: "14px",
-                        height: "14px",
-                      }}
-                      className="_1h4pbgy85k"
-                      data-seed-icon="icon_arrow_fill"
-                      data-seed-icon-version="0.2.1"
-                    >
-                      <svg
-                        id="icon_arrow_fill"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
-                      >
-                        <g>
-                          <path
-                            d="M19.2072 5.18033C19.1631 5.10123 19.1075 5.02684 19.0403 4.95964C18.8399 4.7593 18.5757 4.66174 18.3132 4.66695L7 4.66691C6.44772 4.66691 6 5.11462 6 5.66691C5.99999 6.21919 6.44771 6.66691 6.99999 6.66691L15.9188 6.66694L4.9594 17.6263C4.56887 18.0168 4.56887 18.65 4.9594 19.0405C5.34992 19.431 5.98309 19.431 6.37361 19.0405L17.3334 8.08076V17.0002C17.3334 17.5525 17.7811 18.0002 18.3334 18.0002C18.8856 18.0002 19.3334 17.5525 19.3334 17.0002V5.66695C19.3334 5.4903 19.2876 5.32435 19.2072 5.18033Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
-                  </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://daangn.com"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <font>당근KR</font>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        width: "14px",
-                        height: "14px",
-                      }}
-                      className="_1h4pbgy85k"
-                      data-seed-icon="icon_arrow_fill"
-                      data-seed-icon-version="0.2.1"
-                    >
-                      <svg
-                        id="icon_arrow_fill"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
-                      >
-                        <g>
-                          <path
-                            d="M19.2072 5.18033C19.1631 5.10123 19.1075 5.02684 19.0403 4.95964C18.8399 4.7593 18.5757 4.66174 18.3132 4.66695L7 4.66691C6.44772 4.66691 6 5.11462 6 5.66691C5.99999 6.21919 6.44771 6.66691 6.99999 6.66691L15.9188 6.66694L4.9594 17.6263C4.56887 18.0168 4.56887 18.65 4.9594 19.0405C5.34992 19.431 5.98309 19.431 6.37361 19.0405L17.3334 8.08076V17.0002C17.3334 17.5525 17.7811 18.0002 18.3334 18.0002C18.8856 18.0002 19.3334 17.5525 19.3334 17.0002V5.66695C19.3334 5.4903 19.2876 5.32435 19.2072 5.18033Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
+                    <font>공지사항</font>
                   </Link>
                 </div>
               </div>
               <div className="dmu53n2">
                 <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
                   <font>
-                    <font>정보</font>
+                    <font>고객센터</font>
                   </font>
                 </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9vs">
@@ -299,7 +162,7 @@ export default function Footer() {
                     rel="noreferrer noopener"
                   >
                     <font>
-                      <font>구매자 가이드</font>
+                      <font>자주 묻는 질문</font>
                     </font>
                   </Link>
                   <Link
@@ -310,18 +173,7 @@ export default function Footer() {
                     rel="noreferrer noopener"
                   >
                     <font>
-                      <font>판매자 가이드</font>
-                    </font>
-                  </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/wv/faqs/14?"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <font>
-                      <font>커뮤니티 가이드라인</font>
+                      <font>문의하기</font>
                     </font>
                   </Link>
                 </div>
@@ -329,7 +181,7 @@ export default function Footer() {
               <div className="dmu53n2">
                 <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
                   <font>
-                    <font>지원하다</font>
+                    <font>약관 및 정책</font>
                   </font>
                 </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9vs">
@@ -341,7 +193,7 @@ export default function Footer() {
                     rel="noreferrer noopener"
                   >
                     <font>
-                      <font>지원 센터</font>
+                      <font>서비스 이용약관</font>
                     </font>
                   </Link>
                   <Link
@@ -352,7 +204,7 @@ export default function Footer() {
                     rel="noreferrer noopener"
                   >
                     <font>
-                      <font>문의하기</font>
+                      <font>개인정보 처리방침</font>
                     </font>
                   </Link>
                   <Link
@@ -363,18 +215,7 @@ export default function Footer() {
                     rel="noreferrer noopener"
                   >
                     <font>
-                      <font>이용 약관</font>
-                    </font>
-                  </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/policy/privacy"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <font>
-                      <font>개인 정보 정책</font>
+                      <font>위치기반서비스 이용약관</font>
                     </font>
                   </Link>
                 </div>

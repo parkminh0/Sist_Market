@@ -7,14 +7,20 @@ import React, { useEffect, useState } from "react";
 export default function Home() {
   const [category_list, setCategory_list] = useState([]);
 
-  function getData() {
-    axios.get("/category/all").then((res) => {
+  function getCategory() {
+    axios({
+      url: "http://localhost:8080/category/all",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
       setCategory_list(res.data.category_list);
     });
   }
 
   useEffect(() => {
-    getData();
+    getCategory();
   }, []);
 
   // #region 메인 배너 슬라이드 이벤트

@@ -1,5 +1,9 @@
 import Link from "next/link";
 import React from "react";
+import { IconButton } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import "/public/css/post_detail.css";
 
 export default function Page() {
   return (
@@ -10,8 +14,8 @@ export default function Page() {
             <nav aria-label="Buy sell page navigation" className="xzyefz0">
               <ol className="xzyefz1">
                 <li className="xzyefz2">
-                  <Link href="/?in=manhattan-7426" className="xzyefz5">
-                    Home
+                  <Link href="/" className="xzyefz5">
+                    홈
                   </Link>
                   <span className="xzyefz4" role="presentation">
                     <svg
@@ -25,8 +29,8 @@ export default function Page() {
                     >
                       <g>
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
                           d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
                           fill="currentColor"
                         ></path>
@@ -35,11 +39,8 @@ export default function Page() {
                   </span>
                 </li>
                 <li className="xzyefz2">
-                  <Link
-                    href="/buy-sell/all/?in=manhattan-7426"
-                    className="xzyefz5"
-                  >
-                    Buy and sell
+                  <Link href="/post" className="xzyefz5">
+                    중고거래
                   </Link>
                   <span className="xzyefz4" role="presentation">
                     <svg
@@ -53,8 +54,8 @@ export default function Page() {
                     >
                       <g>
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
                           d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
                           fill="currentColor"
                         ></path>
@@ -62,9 +63,7 @@ export default function Page() {
                     </svg>
                   </span>
                 </li>
-                <li className="xzyefz2 xzyefz3">
-                  Marble cheese board w/cheese knives
-                </li>
+                <li className="xzyefz2 xzyefz3">상품명 넣기</li>
               </ol>
             </nav>
           </div>
@@ -73,8 +72,9 @@ export default function Page() {
               <div className="_588sy41b _588sy462 _588sy49e" id="relative">
                 <div
                   className="_588sy41z _588sy421 _588sy42q _588sy462"
-                  style="transform: translate3d(0px, 0px, 0px);"
+                  style={{ transform: "translate3d(0px, 0px, 0px)" }}
                 >
+                  {/* 이미지 리스트 */}
                   <img
                     className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
                     src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/7c887c3fcb70e6b745aca2a761805c18a3b16cd0e6557203b281db46ae714d9d.jpg?f=webp&amp;q=95&amp;s=1440x1440&amp;t=inside"
@@ -92,56 +92,24 @@ export default function Page() {
                   />
                 </div>
                 <div className="_588sy41z _588sy421 _588sy422 _588sy42b">
-                  <button
-                    aria-label="Previous item"
-                    className="_1io8bol5 _1io8bol4 _1io8bol3 _588sy49k _588sy41q _588sy4cw _1io8bol6"
+                  {/* 안보이게 할거면 _1io8bol6 클래스 추가 */}
+                  <IconButton
+                    size="small"
+                    className="_1io8bol5 _1io8bol4 _1io8bol3 _588sy49k _588sy41q _588sy4cw"
                   >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-seed-icon="true"
-                      data-seed-icon-version="0.4.0-beta.2"
-                      width="32"
-                      height="32"
-                      className="_1io8bolb"
-                    >
-                      <g>
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M16.6225 3.17006C16.8525 3.40006 16.8525 3.78006 16.6225 4.01006L8.63245 12.0001L16.6225 19.9901C16.8525 20.2201 16.8525 20.6001 16.6225 20.8301C16.3925 21.0601 16.0125 21.0601 15.7825 20.8301L7.37245 12.4201C7.14245 12.1901 7.14245 11.8101 7.37245 11.5801L15.7825 3.17006C16.0125 2.94006 16.3925 2.94006 16.6225 3.17006Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </button>
-                  <button
-                    aria-label="Next item"
+                    <ArrowBackIosNewIcon />
+                    {/* <DeleteIcon fontSize="inherit" /> */}
+                  </IconButton>
+                  <IconButton
+                    size="small"
                     className="_1io8bol8 _1io8bol4 _1io8bol3 _588sy49k _588sy41q _588sy4cw _1io8bola"
                   >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-seed-icon="true"
-                      data-seed-icon-version="0.4.0-beta.2"
-                      width="32"
-                      height="32"
-                      className="_1io8bolb"
-                    >
-                      <g>
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M8.22246 3.17006L16.6325 11.5801C16.8625 11.8101 16.8625 12.1901 16.6325 12.4201L8.22246 20.8301C7.99246 21.0601 7.61246 21.0601 7.38246 20.8301C7.15246 20.6001 7.15246 20.2201 7.38246 19.9901L15.3725 12.0001L7.38246 4.01006C7.15246 3.78006 7.15246 3.40006 7.38246 3.17006C7.61246 2.94006 7.99246 2.94006 8.22246 3.17006Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </button>
+                    <ArrowForwardIosIcon />
+                    {/* <DeleteIcon fontSize="inherit" /> */}
+                  </IconButton>
                 </div>
                 <div>
+                  {/* 이미지 개수만큼 */}
                   <ol className="_1io8bold _1io8bolc _588sy4e2 _588sy4h8 _588sy42q _588sy417k _588sy4168 _588sy415q _588sy49k _588sy41r _588sy41s _588sy41u _588sy412q">
                     <li className="_1io8bolf _1io8bole _588sy42q _588sy4168">
                       <button
@@ -168,6 +136,7 @@ export default function Page() {
                 <div className="_588sy4dq _588sy4gw _588sy41z _588sy421 _588sy42q _588sy4172">
                   <div className="_588sy41z _588sy421 _588sy42q _588sy416k _588sy415q">
                     <div className="_1ry6htk0 _1ry6htk1 _1ry6htk6 _1ry6htkb _1ry6htkf">
+                      {/* 프로필 이미지 */}
                       <Link
                         data-gtm="buy_sell_profile_image"
                         href="/users/brit-xwmmep6mj7j4/?in=manhattan-7426"
@@ -192,7 +161,7 @@ export default function Page() {
                           className="_1gb2dg21"
                         >
                           <span className="_1ry6htkk _1ry6htkl _1ry6htkq _1ry6htkv _1ry6htkz">
-                            Brit
+                            사용자 nickname 넣기
                           </span>
                         </Link>
                         <Link
@@ -200,7 +169,7 @@ export default function Page() {
                           href="/buy-sell/all/?in=lenox-hill-7437"
                           className="_1ry6htk13 _1ry6htk14 _1ry6htk19 _1ry6htk1e _1ry6htk1i _1gb2dg21"
                         >
-                          Lenox Hill
+                          위치 넣기
                         </Link>
                       </div>
                     </div>
@@ -217,7 +186,10 @@ export default function Page() {
                         </noscript>
                         <span
                           className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                          style="color:transparent;display:inline-block"
+                          style={{
+                            color: "transparent",
+                            display: "inline-block",
+                          }}
                         >
                           <img
                             className="_1gb2dg20 _1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy8go _1h4pbgy8gy _1h4pbgy8gr _1h4pbgy8h1"
@@ -226,11 +198,11 @@ export default function Page() {
                           />
                         </span>
                         <span className="_1h4pbgy780 _1h4pbgy78q _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ag _1h4pbgy7c8">
-                          24
+                          매너온도 넣기
                         </span>
                       </div>
                       <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
-                        1 review
+                        매너온도
                       </span>
                     </div>
                   </div>
@@ -241,43 +213,61 @@ export default function Page() {
             <section className="vqbuc93 _1h4pbgya0o _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy914 _1h4pbgy7eo _1h4pbgy7f6 _1h4pbgy7cr _1h4pbgy7jc _1h4pbgy7ju _1h4pbgy7hf _1h4pbgy808 _1h4pbgy82r _1h4pbgy83x _1h4pbgy84w _1h4pbgy883">
               <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1h4pbgy90q">
                 <div className="_1h4pbgy7ag _1h4pbgy78o _1h4pbgy796 _1h4pbgy79h _1h4pbgy7c8">
-                  <h1 className="_1h4pbgy9uo">
-                    Marble cheese board w/cheese knives
-                  </h1>
+                  <h1 className="_1h4pbgy9uo">상품명 넣기</h1>
                 </div>
                 <h2 className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s _1h4pbgy77u _1h4pbgy785 _1h4pbgy7c0">
                   <Link
                     className="vqbuc97"
                     href="/buy-sell/all/?category_id=12&amp;in=manhattan-7426"
                   >
-                    Other
+                    카테고리명 넣기
                   </Link>{" "}
                   ·{" "}
-                  <time datetime="2024-08-11T23:32:15.393-04:00">
-                    boosted 1 hour ago
+                  <time dateTime="2024-08-11T23:32:15.393-04:00">
+                    끌올 2시간 전 or 2시간 전
                   </time>
                 </h2>
                 <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
-                  $34
+                  38,000원
                 </h3>
+                <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
+                  가격 제안 불가
+                </span>
+                <Link
+                  href="#"
+                  className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
+                  style={{
+                    color: "var(--seed-semantic-color-primary)",
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  <b>가격 제안하기</b>
+                </Link>
               </div>
               <p className="vqbuc98 _1h4pbgy7ao _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy8g _1h4pbgy7bs _1h4pbgya4g _1h4pbgy9y8">
-                Beautiful but was never used. Originally over $100. Has been
-                sitting in storage.
+                상품 상세 설명 넣기
               </p>
               <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
                 <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
-                  <span className="_1h4pbgy8g _1h4pbgy7ag">Condition</span>
-                  <span>New</span>
+                  <span className="_1h4pbgy8g _1h4pbgy7ag">거래 희망 장소</span>
+                  <span>거래장소명 넣기, 아래엔 map 띄우기</span>
                 </li>
               </ul>
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
-                <span>0 chats</span> · <span>1 favorite</span> ·{" "}
-                <span>17 views</span>
+                <span>채팅 0</span> · <span>관심 1</span> · <span>조회 17</span>
               </div>
+              <Link
+                href="#"
+                className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
+                style={{
+                  textDecorationLine: "underline",
+                }}
+              >
+                이 게시글 신고하기
+              </Link>
               <div className="nfm9bo0 _1h4pbgy7e8 _1h4pbgy7cj _1h4pbgy7iw _1h4pbgy7h7 _1h4pbgy7nk _1h4pbgy7lv _1h4pbgy7s8 _1h4pbgy7qj _1h4pbgy9u8 _1h4pbgya14 _1h4pbgya0r _1h4pbgy9e0 _1h4pbgy9jc _1h4pbgy9oo _1h4pbgy1u0">
                 <button className="nfm9bo3 _1h4pbgy8jc _1h4pbgy9yw _1h4pbgy768 _1h4pbgya28 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy94w _1h4pbgy1uw _1h4pbgy1va _1h4pbgyqo _1h4pbgyqu _1h4pbgy78g _1h4pbgy76r _1h4pbgy7c8 _1h4pbgy7ag">
-                  Get the Karrot app to chat
+                  채팅하기
                 </button>
               </div>
             </section>
@@ -287,7 +277,8 @@ export default function Page() {
         <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
-              Other listings by Brit
+              [등록자명]님의 판매 물품 (6개까지만, 넘어가면 더보기, 안넘어가면
+              더보기 가림)
             </div>
             <Link
               className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
@@ -297,11 +288,15 @@ export default function Page() {
                 data-gtm="buy_sell_detail_user_article_see_all"
                 className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
               >
-                Show all
+                더보기
               </span>
               <span className="_1h4pbgy9ug _1h4pbgy9wo">
                 <span
-                  style="display:inline-flex;width:16px;height:16px"
+                  style={{
+                    display: "inline-flex",
+                    width: "16px",
+                    height: "16px",
+                  }}
                   className="_1h4pbgyu0"
                   data-seed-icon="icon_chevron_right_fill"
                   data-seed-icon-version="0.2.1"
@@ -317,8 +312,8 @@ export default function Page() {
                   >
                     <g>
                       <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
                         d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
                         fill="currentColor"
                       ></path>
@@ -338,18 +333,9 @@ export default function Page() {
             >
               <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
                 <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/7c887c3fcb70e6b745aca2a761805c18a3b16cd0e6557203b281db46ae714d9d.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -381,18 +367,9 @@ export default function Page() {
             >
               <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
                 <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/1cd799bbc2076ce063a0eeac44177715d26f70d6f9ce3e5357b1d52ddb45c023.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -424,18 +401,9 @@ export default function Page() {
             >
               <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
                 <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/6d2b1185212472284f3949e379a6967b95bdbd06fae4d4fe9e0ffc763a5727f7.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -478,7 +446,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -521,7 +489,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -564,7 +532,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -595,46 +563,8 @@ export default function Page() {
         <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
-              Popular on Karrot
+              관련상품(6 x 3개?)
             </div>
-            <Link
-              className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-              href="/buy-sell/all/?in=manhattan-7426"
-            >
-              <span
-                data-gtm="buy_sell_detail_recommended_see_all"
-                className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
-              >
-                Show all
-              </span>
-              <span className="_1h4pbgy9ug _1h4pbgy9wo">
-                <span
-                  style="display:inline-flex;width:16px;height:16px"
-                  className="_1h4pbgyu0"
-                  data-seed-icon="icon_chevron_right_fill"
-                  data-seed-icon-version="0.2.1"
-                >
-                  <svg
-                    id="icon_chevron_right_fill"
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    data-karrot-ui-icon="true"
-                  >
-                    <g>
-                      <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                        fill="currentColor"
-                      ></path>
-                    </g>
-                  </svg>
-                </span>
-              </span>
-            </Link>
           </header>
           <div
             data-gtm="buy_sell_detail_recommended_article"
@@ -657,7 +587,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -700,7 +630,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -743,7 +673,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -786,7 +716,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -829,7 +759,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -872,7 +802,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -915,7 +845,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -958,7 +888,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1001,7 +931,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1044,7 +974,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1087,7 +1017,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1130,7 +1060,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1173,7 +1103,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1216,7 +1146,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1259,7 +1189,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1302,7 +1232,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1345,7 +1275,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1388,7 +1318,7 @@ export default function Page() {
                   </noscript>
                   <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style="color:transparent;display:inline-block"
+                    style={{ color: "transparent", display: "inline-block" }}
                   >
                     <img
                       className="_1b153uwe _1h4pbgya3k"
@@ -1417,6 +1347,107 @@ export default function Page() {
           </div>
         </section>
       </article>
+      <div className="_588sy4rk _588sy4rr _588sy4ry _588sy4s5">
+        <div className="_1h4pbgy14w _1h4pbgy9ug _1h4pbgy9xc _1h4pbgya2w">
+          <div className="a1nvr40 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy14w _1h4pbgy8jc">
+            <div className="a1nvr41">
+              <div className="a1nvr42 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9wi _1h4pbgy9vs _1h4pbgya0o">
+                <div
+                  className="a1nvr43 _1h4pbgy78g _1h4pbgy78p _1h4pbgy796 _1h4pbgy79n _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy48 _1h4pbgya54 _1h4pbgya4i _19xafot0 _19xafot4 _19xafot5"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "500ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                >
+                  <font style={{ verticalAlign: "inherit" }}>
+                    오늘 대단한 발견을 해보세요!
+                  </font>
+                </div>
+                <div
+                  className="a1nvr44 _1h4pbgy79c _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy8g _1h4pbgy81k _19xafot0 _19xafot4 _19xafot5"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "500ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                >
+                  <font style={{ verticalAlign: "inherit" }}>
+                    앱을 받으세요
+                  </font>
+                </div>
+                <div className="a1nvr45 _1h4pbgy9vc _1h4pbgy90g _1h4pbgy90r">
+                  <a
+                    className="_19xafot0 _19xafot4 _19xafot5"
+                    style={{
+                      _19xafot2: "0ms",
+                      _19xafot1: "500ms",
+                      _19xafot3: "translateY(1rem)",
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
+                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/49380c1c7e70e49f0f93baf0f790925eefc69082-120x40.svg"
+                      alt="앱스토어에서 다운로드"
+                    />
+                  </a>
+                  <a
+                    className="_19xafot0 _19xafot4 _19xafot5"
+                    style={{
+                      _19xafot2: "0ms",
+                      _19xafot1: "500ms",
+                      _19xafot3: "translateY(1rem)",
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
+                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/0d8f72b8e4cdb98af115a7c1f04c4abf19f5c419-180x53.svg"
+                      alt="Google Play에서 받으세요"
+                    />
+                  </a>
+                </div>
+              </div>
+              <div className="a1nvr46">
+                <img
+                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/bff14eb869318da13eeb329ac060450dfe1ecadf-750x1624.png"
+                  className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
+                  alt="홈 피드 화면의 스크린샷"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "1000ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                />
+                <img
+                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/5cfdb708e8491051b4765819e796ca373e58fc44-753x1637.png"
+                  className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
+                  alt="상세 페이지의 스크린샷"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "1000ms",
+                    _19xafot3: "translateY(-1rem)",
+                  }}
+                />
+                <img
+                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/1da74f52dfcb54be6b1ec40af8d8480ed6abc4c0-900x339.png"
+                  className="a1nvr4b _19xafot0 _19xafot4 _19xafot5"
+                  alt="홈 피드 항목의 스크린샷"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "1000ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                />
+                <div className="a1nvr47"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

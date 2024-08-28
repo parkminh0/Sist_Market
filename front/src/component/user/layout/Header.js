@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import HeaderItem from "./HeaderItem";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const pathname = usePathname();
@@ -10,39 +10,176 @@ export default function Header() {
   useEffect(() => {
     const currentPath = pathname || "/";
     const activeLink = document.querySelector(`a[data-href="${currentPath}"]`);
+
+    // 모든 링크에서 'active' 클래스를 제거한 후 현재 링크에 추가
+    document
+      .querySelectorAll("a[data-href]")
+      .forEach((link) => link.classList.remove("_1nvz3xsp"));
     if (activeLink) {
-      // 모든 링크에서 'active' 클래스를 제거한 후 현재 링크에 추가
-      document
-        .querySelectorAll("a[data-href]")
-        .forEach((link) => link.classList.remove("_1nvz3xsp"));
       activeLink.classList.add("_1nvz3xsp");
     }
   }, [pathname]);
 
-  function show_login_dialog() {}
+  let lastScrollTop = 0;
+  window.addEventListener(
+    "scroll",
+    function () {
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+      if (st > lastScrollTop) {
+        if (
+          !document
+            .querySelector("div._1a7kymoh")
+            .classList.contains("_1a7kymoi")
+        )
+          document.querySelector("div._1a7kymoh").classList.add("_1a7kymoi");
+      } else {
+        if (
+          document
+            .querySelector("div._1a7kymoh")
+            .classList.contains("_1a7kymoi")
+        )
+          document.querySelector("div._1a7kymoh").classList.remove("_1a7kymoi");
+      }
+      lastScrollTop = st <= 0 ? 0 : st;
+    },
+    false
+  );
 
-  function getLocation() {}
+  // #region 로그인 모달 오픈
+  function show_login_dialog() {
+    document.querySelector("div.modal-overlay").style.display = "block";
+    document.querySelector("#login_dialog").style.display = "block";
+    document.querySelector("body").classList.add("modal-open");
+  }
+  // #endregion
 
-  function login(f) {}
+  // #region 로그인 모달 닫기
+  function close_login_dialog() {
+    document.querySelector("div.modal-overlay").style.display = "none";
+    document.querySelector("#login_dialog").style.display = "none";
+    document.querySelector("body").classList.remove("modal-open"); // 스크롤 해제
+  }
+  // #endregion
 
-  //     <%
-  //     // 현재 페이지 URI 가져오기
-  //     String currentUri = request.getRequestURI();
-  // 	// 필요한 부분(파일 이름)만 추출합니다.
-  // 	String pageName = currentUri.substring(currentUri.lastIndexOf('/') + 1, currentUri.lastIndexOf('.'));
-  // %>
+  // #region 위치 모달 오픈
+  function show_location_dialog() {
+    document.querySelector("div.modal-overlay").style.display = "block";
+    document.querySelector("#location_dialog").style.display = "block";
+    document.querySelector("body").classList.add("modal-open");
+  }
+  // #endregion
 
-  //     $(function(){
-  // 		// 해당 href 값을 가진 a 태그를 선택합니다.
-  // 	    var activeLink = $('a[data-href="' + "<%= pageName %>" + '"]');
-  // 	    // 해당 링크에 스타일 적용
-  // 	    if (activeLink.length) {
-  // 	    	activeLink.addClass('active');
-  // 	    }
-  // 	})
+  // #region 위치 모달 닫기
+  function close_location_dialog() {
+    document.querySelector("div.modal-overlay").style.display = "none";
+    document.querySelector("#location_dialog").style.display = "none";
+    document.getElementById("location_modal_input").value = "";
+    document.querySelector("body").classList.remove("modal-open"); // 스크롤 해제
+  }
+  // #endregion
+
+  const [location, setLocation] = useState("");
+
+  useEffect(() => {
+    const kakaoMapScript = document.createElement("script");
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.async = false;
+    document.head.appendChild(kakaoMapScript);
+
+    kakaoMapScript.onload = () => {
+      // Kakao Maps API가 완전히 초기화된 후에 실행
+      window.kakao.maps.load(() => {
+        if (!window.kakao.maps.services) {
+          return;
+        }
+
+        getLocation(); // API 로드 후에 함수 호출
+      });
+    };
+  }, []);
+
+  function getLocation(e) {
+    // Geolocation API 지원 여부 확인
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+        // 주소-좌표 변환 객체를 생성합니다
+        const geocoder = new window.kakao.maps.services.Geocoder();
+        const coord = new kakao.maps.LatLng(latitude, longitude);
+
+        const callback = (result, status) => {
+          if (status === window.kakao.maps.services.Status.OK) {
+            console.log("결과", result);
+
+            setLocation(result[0].address.region_3depth_name);
+          }
+        };
+
+        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+      });
+    } else {
+      alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+      return;
+    }
+
+    if (e == null) return;
+    let ul_tag = document.getElementById("location_list");
+    while (ul_tag.firstChild) {
+      ul_tag.removeChild(ul_tag.firstChild);
+    }
+
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+    // 'in' 파라미터를 제거
+    params.delete("in");
+    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    if (e.dataset.selected !== "true") {
+      newUrl += "&in=" + location;
+    }
+
+    // 3. 새로운 li 요소 추가 (innerHTML 사용)
+    ul_tag.innerHTML = `
+                        <li class="_1h4pbgy3q8">
+                          <a class="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc" href="${newUrl}">
+                            ${location}
+                          </a>
+                        </li>
+                      `;
+  }
+
+  const [user, setUser] = useState({});
+  const router = useRouter();
+
+  function login() {
+    // axios({
+    //   url: "http://localhost:8080/user/login",
+    //   method: "post",
+    //   params: "",
+    //   withCredentials: true,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // }).then((res) => {
+    //   if (res.status == 200) {
+    //     alert("로그인 성공");
+    //     router.push(pathname);
+    //   } else {
+    //     alert("로그인 실패");
+    //   }
+    // });
+  }
 
   return (
     <>
+      {/* <script
+        type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services"
+        async
+      ></script> */}
       <div className="_1a7kymo0"></div>
       <div className="_1a7kymo3 _1h4pbgya14 _1h4pbgy98o _1h4pbgy8jc _1h4pbgy9ug _1h4pbgy9xc _1h4pbgy1u0 _1h4pbgya2w">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -78,7 +215,7 @@ export default function Header() {
               <nav className="_1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9wo">
                 <HeaderItem />
                 <button
-                  onClick={show_login_dialog("account")}
+                  onClick={show_login_dialog}
                   id="show_login"
                   style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
                   className="seed-box-button"
@@ -108,7 +245,7 @@ export default function Header() {
           >
             <div className="_1h4pbgy9u0 _1h4pbgy9ub _1h4pbgy8bk">
               <button
-                onClick={getLocation}
+                onClick={show_location_dialog}
                 className="lrcwe20 _1h4pbgy8g _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy17c _1h4pbgy7ag _1h4pbgy9yw lrcwe22 _1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy780"
                 data-gtm="gnb_location"
               >
@@ -138,7 +275,7 @@ export default function Header() {
                   </svg>
                 </span>
                 <font>
-                  <font>맨해튼</font>
+                  <font>{location}</font>
                 </font>
                 <span
                   style={{ display: "inline-flex" }}
@@ -408,7 +545,7 @@ export default function Header() {
             <h2 className="_588sy419q _588sy41y _588sy41ak" level="2">
               로그인
             </h2>
-            <form id="login_form" onSubmit={login(this)}>
+            <form id="login_form" onSubmit={login}>
               <input type="text" id="id" name="id" placeholder="ID" required />
               <input
                 type="password"
@@ -434,7 +571,11 @@ export default function Header() {
               <Link href="#">회원가입</Link>
             </div>
           </div>
-          <button type="button" className="sboh91h">
+          <button
+            type="button"
+            className="sboh91h"
+            onClick={close_login_dialog}
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -456,6 +597,227 @@ export default function Header() {
             </svg>
             <span className="ar0rax0">Close</span>
           </button>
+        </div>
+      </div>
+      {/* 위치설정 */}
+      <div
+        style={{ pointerEvents: "auto", display: "none" }}
+        id="location_dialog"
+        role="dialog"
+        aria-describedby="radix-:R24pH2:"
+        aria-labelledby="radix-:R24pH1:"
+        data-state="open"
+        className="sboh910 sboh912 sboh915"
+        tabIndex="-1"
+      >
+        <header className="_1sapi5fb _1h4pbgy7ns _1h4pbgy7sg _1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xs _1h4pbgy8jc _1h4pbgy78o _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy3rc">
+          <div className="_1sapi5fc _1h4pbgy8jc">
+            <h3 className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy78o _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy8jc">
+              동네설정
+            </h3>
+          </div>
+          <span
+            className="_1sapi5fd _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
+            onClick={close_location_dialog}
+          >
+            <span
+              className="_1h4pbgy8gw _1h4pbgy8r4"
+              data-seed-icon="icon_close_regular"
+              data-seed-icon-version="0.2.1"
+              style={{ display: "inline-flex" }}
+            >
+              <svg
+                id="icon_close_regular"
+                width="100%"
+                height="100%"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                data-karrot-ui-icon="true"
+              >
+                <g>
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                    fill="currentColor"
+                  ></path>
+                </g>
+              </svg>
+            </span>
+          </span>
+        </header>
+        <div className="_1sapi5fe _1h4pbgya00 _1h4pbgy9w0 _1h4pbgy8jc _1h4pbgy8tk _1h4pbgya0o">
+          <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8yo">
+            <div className="_1h4pbgy7e8 _1h4pbgy7iw _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90w">
+              <div className="_1h4pbgy7nk _1h4pbgy7s8">
+                <div className="_1h4pbgya0o">
+                  <form action=".">
+                    <div className="_1h4pbgya0o">
+                      <input
+                        id="location_modal_input"
+                        className="_1wcdkwr0 _1wcdkwr1"
+                        type="search"
+                        aria-label="Search input"
+                        placeholder="동명(읍, 면)으로 검색 (ex. 서초동)"
+                      />
+                      <button
+                        type="submit"
+                        aria-label="Search"
+                        className="_1wcdkwr5 _1h4pbgy7cg _1h4pbgy7h4 _1h4pbgy7ls _1h4pbgy7qg _1h4pbgya0w _1h4pbgy9dc _1h4pbgy9ps _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy1qe _1h4pbgy94o _1h4pbgy9yw"
+                      >
+                        <span
+                          className="_1h4pbgy8g _1h4pbgy8gg _1h4pbgy8qo"
+                          data-seed-icon="icon_search_fill"
+                          data-seed-icon-version="0.2.1"
+                          style={{ display: "inline-flex" }}
+                        >
+                          <svg
+                            id="icon_search_fill"
+                            width="100%"
+                            height="100%"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            data-karrot-ui-icon="true"
+                          >
+                            <g>
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M10.5 2C5.80558 2 2 5.80558 2 10.5C2 15.1944 5.80558 19 10.5 19C12.4869 19 14.3145 18.3183 15.7618 17.176L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L17.176 15.7618C18.3183 14.3145 19 12.4869 19 10.5C19 5.80558 15.1944 2 10.5 2ZM4 10.5C4 6.91015 6.91015 4 10.5 4C14.0899 4 17 6.91015 17 10.5C17 14.0899 14.0899 17 10.5 17C6.91015 17 4 14.0899 4 10.5Z"
+                                fill="currentColor"
+                              ></path>
+                            </g>
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div className="_1h4pbgy7nk _1h4pbgy7s8">
+                <button
+                  className="seed-box-button"
+                  data-scope="button"
+                  data-part="root"
+                  id="button::r0:"
+                  type="button"
+                  data-size="small"
+                  data-variant="primaryLow"
+                  style={{ width: "100%" }}
+                  data-focus-visible=""
+                  onClick={(e) => getLocation(e.currentTarget)}
+                >
+                  <span data-part="prefix">
+                    <span
+                      data-seed-icon="icon_certification_regular"
+                      data-seed-icon-version="0.2.1"
+                      style={{ display: "inline-flex" }}
+                    >
+                      <svg
+                        id="icon_certification_regular"
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-karrot-ui-icon="true"
+                      >
+                        <g>
+                          <path
+                            fillRule="evenodd"
+                            clipule="evenodd"
+                            d="M12 0.75C12.4212 0.75 12.7627 1.09148 12.7627 1.51271V2.68746C17.3145 3.05521 20.9448 6.68546 21.3125 11.2373H22.4873C22.9085 11.2373 23.25 11.5788 23.25 12C23.25 12.4212 22.9085 12.7627 22.4873 12.7627H21.3125C20.9448 17.3145 17.3145 20.9448 12.7627 21.3125V22.4873C12.7627 22.9085 12.4212 23.25 12 23.25C11.5788 23.25 11.2373 22.9085 11.2373 22.4873V21.3125C6.68546 20.9448 3.05521 17.3145 2.68746 12.7627H1.51271C1.09148 12.7627 0.75 12.4212 0.75 12C0.75 11.5788 1.09148 11.2373 1.51271 11.2373H2.68746C3.05521 6.68546 6.68546 3.05521 11.2373 2.68746V1.51271C11.2373 1.09148 11.5788 0.75 12 0.75ZM19.7811 11.2373H18.6737C18.2525 11.2373 17.911 11.5788 17.911 12C17.911 12.4212 18.2525 12.7627 18.6737 12.7627H19.7811C19.422 16.4715 16.4715 19.422 12.7627 19.7811V18.6737C12.7627 18.2525 12.4212 17.911 12 17.911C11.5788 17.911 11.2373 18.2525 11.2373 18.6737V19.7811C7.52852 19.422 4.57803 16.4715 4.21893 12.7627H5.32627C5.74751 12.7627 6.08898 12.4212 6.08898 12C6.08898 11.5788 5.74751 11.2373 5.32627 11.2373H4.21893C4.57802 7.52852 7.52852 4.57802 11.2373 4.21893V5.32627C11.2373 5.74751 11.5788 6.08898 12 6.08898C12.4212 6.08898 12.7627 5.74751 12.7627 5.32627V4.21893C16.4715 4.57802 19.422 7.52852 19.7811 11.2373Z"
+                            fill="currentColor"
+                          ></path>
+                        </g>
+                      </svg>
+                    </span>
+                  </span>
+                  <span className="seed-semantic-typography-label3-bold">
+                    현재위치로 찾기
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgya00">
+              <div className="_1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy7ds _1h4pbgy7ig">
+                <span className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
+                  근처 동네
+                </span>
+              </div>
+              <ul
+                id="location_list"
+                className="_1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy7ko _1h4pbgy8og"
+              >
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=manhattan-7426"
+                  >
+                    Manhattan
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=bronx-7488"
+                  >
+                    Bronx
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=queens-7490"
+                  >
+                    Queens
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=brooklyn-7498"
+                  >
+                    Brooklyn
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=hudson-county-7722"
+                  >
+                    Hudson County
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=essex-county-14529"
+                  >
+                    Essex County
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=bergen-county-14538"
+                  >
+                    Bergen County
+                  </a>
+                </li>
+                <li className="_1h4pbgy3q8">
+                  <a
+                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
+                    href="/about/?in=cook-county-15668"
+                  >
+                    Cook County
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </>
