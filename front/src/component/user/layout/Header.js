@@ -78,7 +78,9 @@ export default function Header() {
   }
   // #endregion
 
-  const [location, setLocation] = useState("");
+  const [location1, setLocation1] = useState("");
+  const [location2, setLocation2] = useState("");
+  const [location3, setLocation3] = useState("");
 
   useEffect(() => {
     const kakaoMapScript = document.createElement("script");
@@ -104,7 +106,6 @@ export default function Header() {
       navigator.geolocation.getCurrentPosition((position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
 
         // 주소-좌표 변환 객체를 생성합니다
         const geocoder = new window.kakao.maps.services.Geocoder();
@@ -114,7 +115,9 @@ export default function Header() {
           if (status === window.kakao.maps.services.Status.OK) {
             console.log("결과", result);
 
-            setLocation(result[0].address.region_3depth_name);
+            setLocation1(result[0].address.region_1depth_name);
+            setLocation2(result[0].address.region_2depth_name);
+            setLocation3(result[0].address.region_3depth_name);
           }
         };
 
@@ -133,19 +136,23 @@ export default function Header() {
 
     let url = new URL(window.location.href);
     let params = new URLSearchParams(url.search);
-    // 'in' 파라미터를 제거
-    params.delete("in");
+    // 위치 파라미터 제거
+    params.delete("loc1");
+    params.delete("loc2");
+    params.delete("loc3");
     // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
     let newUrl = url.pathname + "?" + params.toString() + url.hash;
     if (e.dataset.selected !== "true") {
-      newUrl += "&in=" + location;
+      newUrl += "&loc1=" + location1;
+      newUrl += "&loc2=" + location2;
+      newUrl += "&loc3=" + location3;
     }
 
     // 3. 새로운 li 요소 추가 (innerHTML 사용)
     ul_tag.innerHTML = `
                         <li class="_1h4pbgy3q8">
                           <a class="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc" href="${newUrl}">
-                            ${location}
+                            ${location3}
                           </a>
                         </li>
                       `;
@@ -275,7 +282,7 @@ export default function Header() {
                   </svg>
                 </span>
                 <font>
-                  <font>{location}</font>
+                  <font>{location3}</font>
                 </font>
                 <span
                   style={{ display: "inline-flex" }}
