@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export default function HeaderItem() {
   const link_item = [
-    { title: "중고거래", path: "/post", data_href: "/post" },
+    { title: "중고거래", path: "/post?sort=recent", data_href: "/post" },
     { title: "카테고리", path: "/category", data_href: "/category" },
     { title: "동네생활", path: "/#", data_href: "/#" },
     { title: "채팅하기", path: "/chat", data_href: "/chat" },
@@ -28,7 +28,6 @@ export default function HeaderItem() {
     if (activeLink) {
       activeLink.classList.add("active");
     }
-    console.log("경로" + currentPath);
   }, [router.isReady, router.pathname]);
 
   return (
