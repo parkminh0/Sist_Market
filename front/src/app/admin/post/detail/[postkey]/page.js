@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
@@ -13,12 +13,9 @@ import TownInfo from "@/component/admin/post/detail/TownInfo";
 import OfferInfo from "@/component/admin/post/detail/OfferInfo";
 import { Grid } from "@mui/material";
 import ImageModal from "@/component/admin/post/detail/ImageModal";
-import { useSearchParams } from "next/navigation";
 
 export default function Page(props) {
-  const params = useSearchParams();
-
-  const [postkey, setPostkey] = useState("");
+  const [postkey, setPostkey] = useState('');
   const [pvo, setPvo] = useState({});
   const [tvo, setTvo] = useState({});
   const [o_list, setO_list] = useState([]);
@@ -27,14 +24,15 @@ export default function Page(props) {
   const [loaded, setLoaded] = useState(false);
 
   const [open, setOpen] = useState(false);
-  const [imgurl, setImgurl] = useState("");
-  function handleOpen(imgurl) {
+  const [imgurl, setImgurl] = useState('');
+  function handleOpen(imgurl){
     setImgurl(imgurl);
     setOpen(true);
-  }
+  };
   const handleClose = () => setOpen(false);
-  const API_URL = "/adpost/detail";
 
+  const API_URL = "/adpost/detail";
+  
   function getPostDetail(p_key) {
     axios({
       url: API_URL,
@@ -52,14 +50,15 @@ export default function Page(props) {
       setUr_list(response.data.ur_list);
       setLoaded(true);
     });
+ 
   }
 
   useEffect(() => {
-    console.log(params.get("postkey"));
-    setPostkey(params.get("postkey"));
-    getPostDetail(params.get("postkey"));
+    setPostkey(props.params.postkey);
+    getPostDetail(props.params.postkey);
   }, []);
 
+  
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -75,36 +74,38 @@ export default function Page(props) {
           </div>
         </div>
       </div>
-      {loaded ? (
-        <>
-          <Grid container sx={{ width: "70vw" }} spacing={2}>
-            <Grid item xs={12}>
-              <PostInfo pvo={pvo} handleOpen={handleOpen} />
+        {
+          loaded
+          ?
+          <>
+            <Grid container sx={{width: "70vw"}} spacing={2}>
+              <Grid item xs={12}>
+                <PostInfo pvo={pvo} handleOpen={handleOpen}/>
+              </Grid>
+              <Grid item xs={12}>
+                <CategoryInfo cvo={pvo.cvo}/>
+              </Grid>
+              <Grid item xs={8}>
+                <UserInfo uvo={pvo.uvo} handleOpen={handleOpen}/>
+              </Grid>
+              <Grid item xs={4}>
+                <TownInfo tvo={tvo}/>
+              </Grid>
+              <Grid item xs={6}>
+                <OfferInfo o_list={o_list}/>
+              </Grid>
+              <Grid item xs={6}>
+                <UserreviewInfo ur_list={ur_list}/>
+              </Grid>
+              <Grid item xs={12}>
+                <ChatroomInfo cr_list={cr_list}/>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <CategoryInfo cvo={pvo.cvo} />
-            </Grid>
-            <Grid item xs={8}>
-              <UserInfo uvo={pvo.uvo} handleOpen={handleOpen} />
-            </Grid>
-            <Grid item xs={4}>
-              <TownInfo tvo={tvo} />
-            </Grid>
-            <Grid item xs={6}>
-              <OfferInfo o_list={o_list} />
-            </Grid>
-            <Grid item xs={6}>
-              <UserreviewInfo ur_list={ur_list} />
-            </Grid>
-            <Grid item xs={12}>
-              <ChatroomInfo cr_list={cr_list} />
-            </Grid>
-          </Grid>
-          <ImageModal open={open} handleClose={handleClose} imgurl={imgurl} />
-        </>
-      ) : (
-        <p>로딩 중입니다...</p>
-      )}
-    </>
+            <ImageModal open={open} handleClose={handleClose} imgurl={imgurl} />
+          </>
+          :
+          <p>로딩 중입니다...</p>
+        }
+    </>  
   );
 }
