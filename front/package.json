@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^43.0.0",
-    "@ckeditor/ckeditor5-react": "^9.0.0",
+
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+
+    "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-    "axios": "^1.7.4",
+
+    "axios": "^1.7.5",
     "front": "file:",
     "js-cookie": "^3.0.5",
     "next": "14.2.5",

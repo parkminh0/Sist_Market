@@ -1,7 +1,300 @@
+"use client";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+} from "@mui/material";
+import axios from "axios";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import { useRouter } from "next/navigation";
+
+import "/public/css/myPage.css";
+import "/public/css/profile.css";
 
 export default function page() {
+  const [category_list, setCategory_list] = useState([]);
+
+  const router = useRouter();
+
+  // 카테고리 파라미터 값
+  const [categoryParam, setCategoryParam] = useState(null);
+
+  // 정렬 파라미터 값
+  const [sortParam, setSortParam] = useState(null);
+
+  // 가격 파라미터 값
+  const [minPriceParam, setMinPriceParam] = useState(null);
+  const [maxPriceParam, setMaxPriceParam] = useState(null);
+
+  // #region 비동기-카테고리 리스트
+  function getCategory() {
+    axios({
+      url: "http://localhost:8080/category/all",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setCategory_list(res.data.category_list);
+    });
+  }
+  // #endregion
+
+  // #region useEffect-카테고리, 파라미터 초기화
+  useEffect(() => {
+    getCategory();
+    let currentUrl = window.location.href;
+    let currentUrlObj = new URL(currentUrl);
+    let params = new URLSearchParams(currentUrlObj.search);
+    // 'category' 파라미터의 모든 값 가져오기
+    let cateParam = params.get("category");
+    let srtParam = params.get("sort");
+    let minParam = params.get("minPrice");
+    let maxParam = params.get("maxPrice");
+
+    setCategoryParam(cateParam);
+    setSortParam(srtParam);
+    setMinPriceParam(minParam);
+    setMaxPriceParam(maxParam);
+  }, [router.query]);
+  // #endregion
+
+  // #region 내 물건 팔기 버튼
+  useEffect(() => {
+    const container = document.querySelector(
+      "div._1h4pbgy8jc._1h4pbgy9ug._1h4pbgy9vs"
+    );
+    const button = document.querySelector(".write-button");
+
+    const handleScroll = () => {
+      const containerRect = container.getBoundingClientRect();
+      const buttonHeight = button.offsetHeight;
+
+      if (containerRect.bottom < window.innerHeight + buttonHeight) {
+        button.style.position = "absolute";
+        button.style.bottom = "20px";
+        button.style.right = "20px";
+      } else if (containerRect.top < window.innerHeight) {
+        button.style.position = "fixed";
+        button.style.bottom = "20px";
+        button.style.right = `${
+          window.innerWidth - containerRect.right + 20
+        }px`;
+      } else {
+        button.style.position = "absolute";
+        button.style.bottom = "20px";
+        button.style.right = "20px";
+      }
+    };
+
+    handleScroll();
+
+    document.addEventListener("scroll", handleScroll);
+
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+  // #endregion
+
+  // #region 카테고리 선택
+  function goPage(e, key) {
+    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
+    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+    // 'category' 파라미터를 제거
+    params.delete("category");
+    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    if (e.dataset.selected !== "true") {
+      newUrl += "&category=" + key;
+    }
+
+    // 페이지 이동
+    router.push(newUrl);
+
+    // 페이지가 새로 로드되지 않으면 강제로 리로드
+    window.location.href = newUrl;
+  }
+  // #endregion
+
+  // #region 정렬 선택
+  function goSortPage(e, key) {
+    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
+    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    let tmp = params.get("sort");
+    if (tmp == key) {
+      return;
+    } else {
+      // 'sort' 파라미터를 제거
+      params.delete("sort");
+    }
+    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    newUrl += "&sort=" + key;
+
+    // 페이지 이동
+    router.push(newUrl);
+
+    // 페이지가 새로 로드되지 않으면 강제로 리로드
+    window.location.href = newUrl;
+  }
+  // #endregion
+
+  // #region 가격 선택
+  function goPricePage(e, minp, maxp) {
+    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
+    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    let min = params.get("minPrice");
+    let max = params.get("maxPrice");
+    if (min == minp && max == maxp) return;
+
+    // 가격 파라미터 제거
+    params.delete("minPrice");
+    params.delete("maxPrice");
+
+    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    newUrl += "&minPrice=" + minp;
+    newUrl += "&maxPrice=" + maxp;
+
+    // 페이지 이동
+    router.push(newUrl);
+
+    // 페이지가 새로 로드되지 않으면 강제로 리로드
+    window.location.href = newUrl;
+  }
+  // #endregion
+
+  // #region 가격 입력
+  function goPricePageBtn(e) {
+    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
+    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    let min = params.get("minPrice");
+    let max = params.get("maxPrice");
+
+    let minp = parseInt(document.getElementById("price-from").value, 10);
+    let maxp = parseInt(document.getElementById("price-to").value, 10);
+
+    if (min == minp && max == maxp) return;
+
+    if (isNaN(minp) || minp === null || minp === "") minp = 0;
+    if (isNaN(maxp) || maxp === null || maxp === "") maxp = 0;
+    if (minp > maxp) {
+      alert("최소가격이 최대가격보다 큽니다.");
+      return;
+    }
+
+    // 가격 파라미터 제거
+    params.delete("minPrice");
+    params.delete("maxPrice");
+
+    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    newUrl += "&minPrice=" + minp;
+    newUrl += "&maxPrice=" + maxp;
+    // 페이지 이동
+    router.push(newUrl);
+    // 페이지가 새로 로드되지 않으면 강제로 리로드
+    window.location.href = newUrl;
+  }
+  // #endregion
+
+  // #region 필터 삭제
+  function deleteSearch(e) {
+    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
+    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+    let tmp = e.dataset.deltype;
+    switch (tmp) {
+      case "category":
+        params.delete("category");
+        break;
+      case "price":
+        params.delete("minPrice");
+        params.delete("maxPrice");
+        break;
+      case "all":
+        params.delete("category");
+        params.delete("minPrice");
+        params.delete("maxPrice");
+        break;
+    }
+    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+
+    // 페이지 이동
+    router.push(newUrl);
+
+    // 페이지가 새로 로드되지 않으면 강제로 리로드
+    window.location.href = newUrl;
+  }
+  // #endregion
+
+  // # region 글쓰기
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [method, setMethod] = useState("0");
+  const [isFree, setIsFree] = useState(false);
+  const [price, setPrice] = useState(isFree ? 0 : "");
+  const [canBargain, setCanBargain] = useState(false);
+  const [content, setContent] = useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setTitle("");
+    setCategory("");
+    setMethod("0");
+    setPrice("");
+    setCanBargain(false);
+    setContent("");
+    setIsFree(false);
+    setOpen(false);
+  };
+
+  const method_enable = (e) => {
+    if (e.currentTarget.value == 0) setIsFree(false);
+    else setIsFree(true);
+  };
+
+  const handlePriceChange = (event) => {
+    setPrice(event.target.value);
+  };
+  // # endregion
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -41,11 +334,8 @@ export default function page() {
           <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
             <aside className="_1d991sp0 _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9vs">
               <header className="_1h4pbgy9ug _1h4pbgy9xs _1h4pbgy9wo">
-                <h2 className="_1h4pbgy76o _1h4pbgy7ag _1h4pbgy7c8">
+                <h2 className="_588sy419e _588sy41y _588sy41a8">
                   <font style={{ verticalAlign: "inherit" }}>분류</font>
-                  <font style={{ verticalAlign: "inherit" }}>( </font>
-                  <font style={{ verticalAlign: "inherit" }}>2 </font>
-                  <font style={{ verticalAlign: "inherit" }}>)</font>
                 </h2>
                 <button
                   className="seed-text-button seed-semantic-typography-label3-regular"
@@ -56,6 +346,8 @@ export default function page() {
                   data-size="small"
                   data-variant="secondaryLow"
                   data-style="underlined"
+                  data-deltype="all"
+                  onClick={(e) => deleteSearch(e.currentTarget)}
                 >
                   <span>
                     <font style={{ verticalAlign: "inherit" }}>
@@ -67,7 +359,7 @@ export default function page() {
               <section>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
                   <div className="_1h4pbgy9ug _1h4pbgy9xs _1h4pbgy9wo">
-                    <h3 className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
+                    <h3 className="_588sy4198 _588sy41y _588sy41a2">
                       <font style={{ verticalAlign: "inherit" }}>동네</font>
                     </h3>
                   </div>
@@ -93,9 +385,8 @@ export default function page() {
                             type="radio"
                             data-part="radio-input"
                             aria-hidden="true"
-                            tabindex="-1"
+                            tabIndex="-1"
                             className="_1vqth4d3"
-                            checked=""
                             value="7426"
                           />
                           <div
@@ -121,7 +412,7 @@ export default function page() {
                             type="radio"
                             data-part="radio-input"
                             aria-hidden="true"
-                            tabindex="-1"
+                            tabIndex="-1"
                             className="_1vqth4d3"
                             value="7438"
                           />
@@ -148,7 +439,7 @@ export default function page() {
                             type="radio"
                             data-part="radio-input"
                             aria-hidden="true"
-                            tabindex="-1"
+                            tabIndex="-1"
                             className="_1vqth4d3"
                             value="15306"
                           />
@@ -178,7 +469,7 @@ export default function page() {
                   </div>
                 </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
-                  <h3 className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
+                  <h3 className="_588sy4198 _588sy41y _588sy41a2">
                     <font style={{ verticalAlign: "inherit" }}>카테고리</font>
                   </h3>
                   <div className="_1h4pbgy7w8">
@@ -188,27 +479,50 @@ export default function page() {
                       className="_1vqth4d0 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9w8"
                     >
                       {/* <!-- forEACH 쓰는곳 --> */}
-                      {/* <c:forEach var="category" items="${applicationScope.category_list}">
-								<c:if test="${category.categorykey eq categoryForPage}">
-								<Link data-category_key="${category.categorykey}" className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1" data-part="radio" data-selected="true" onclick="goPage(this, ${category.categorykey})">
-									<input type="radio" data-part="radio-input" aria-hidden="true" tabindex="-1" className="_1vqth4d3" value="1">
-									<div data-part="radio-control" data-selected="true" className="_1vqth4d4"></div>
-								</c:if>
-								<c:if test="${category.categorykey ne categoryForPage}">
-								<Link data-category_key="${category.categorykey}" className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1" data-part="radio" data-selected="false" onclick="goPage(this, ${category.categorykey})">
-									<input type="radio" data-part="radio-input" aria-hidden="true" tabindex="-1" className="_1vqth4d3" value="1">
-									<div data-part="radio-control" data-selected="false" className="_1vqth4d4"></div>
-								</c:if>
-									<span className="_1vqth4d5" data-part="radio-label">
-										<font style={{verticalAlign: "inherit"}}>${category.categoryname }</font>
-									</span>
-								</Link>
-								</c:forEach> */}
+                      {category_list.map((item, i) => (
+                        <Link
+                          href="#"
+                          data-category_key={item.categorykey}
+                          key={i}
+                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
+                          data-part="radio"
+                          data-selected={
+                            categoryParam == item.categorykey ? "true" : "false"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            goPage(e.currentTarget, `${item.categorykey}`);
+                          }}
+                        >
+                          <input
+                            type="radio"
+                            data-part="radio-input"
+                            aria-hidden="true"
+                            tabIndex="-1"
+                            className="_1vqth4d3"
+                            value="1"
+                          />
+                          <div
+                            data-part="radio-control"
+                            data-selected={
+                              categoryParam == item.categorykey
+                                ? "true"
+                                : "false"
+                            }
+                            className="_1vqth4d4"
+                          ></div>
+                          <span className="_1vqth4d5" data-part="radio-label">
+                            <font style={{ verticalAlign: "inherit" }}>
+                              {item.categoryname}
+                            </font>
+                          </span>
+                        </Link>
+                      ))}
                     </div>
                   </div>
                 </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
-                  <h3 className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
+                  <h3 className="_588sy4198 _588sy41y _588sy41a2">
                     <font style={{ verticalAlign: "inherit" }}>정렬</font>
                   </h3>
                   <div className="_1h4pbgy7w8">
@@ -217,159 +531,161 @@ export default function page() {
                       data-size="medium"
                       className="_1vqth4d0 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9w8"
                     >
-                      {/* <c:if test="${sortForPage ne 'popular'}">
-                        <Link
-                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
-                          data-part="radio"
-                          data-selected="true"
-                          onclick="goPageSort(this, 'recent')"
-                        >
-                          <input
-                            type="radio"
-                            data-part="radio-input"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            className="_1vqth4d3"
-                            value="recent"
-                          />
-                          <div
-                            data-part="radio-control"
-                            data-selected="true"
-                            className="_1vqth4d4"
-                          ></div>
-                          <span className="_1vqth4d5" data-part="radio-label">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              최신순
-                            </font>
-                          </span>
-                        </Link>
-                        <Link
-                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
-                          data-part="radio"
-                          data-selected="false"
-                          onclick="goPageSort(this, 'popular')"
-                        >
-                          <input
-                            type="radio"
-                            data-part="radio-input"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            className="_1vqth4d3"
-                            value="hottest"
-                          />
-                          <div
-                            data-part="radio-control"
-                            data-selected="false"
-                            className="_1vqth4d4"
-                          ></div>
-                          <span className="_1vqth4d5" data-part="radio-label">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              인기순
-                            </font>
-                          </span>
-                        </Link>
-                      </c:if> */}
-                      {/* <c:if test="${sortForPage eq 'popular'}">
-                        <Link
-                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
-                          data-part="radio"
-                          data-selected="false"
-                          onclick="goPageSort(this, 'recent')"
-                        >
-                          <input
-                            type="radio"
-                            data-part="radio-input"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            className="_1vqth4d3"
-                            value="recent"
-                          />
-                          <div
-                            data-part="radio-control"
-                            data-selected="false"
-                            className="_1vqth4d4"
-                          ></div>
-                          <span className="_1vqth4d5" data-part="radio-label">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              최신순
-                            </font>
-                          </span>
-                        </Link>
-                        <Link
-                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
-                          data-part="radio"
-                          data-selected="true"
-                          onclick="goPageSort(this, 'popular')"
-                        >
-                          <input
-                            type="radio"
-                            data-part="radio-input"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            className="_1vqth4d3"
-                            value="hottest"
-                          />
-                          <div
-                            data-part="radio-control"
-                            data-selected="true"
-                            className="_1vqth4d4"
-                          ></div>
-                          <span className="_1vqth4d5" data-part="radio-label">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              인기순
-                            </font>
-                          </span>
-                        </Link>
-                      </c:if> */}
+                      <Link
+                        href="#"
+                        className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
+                        data-part="radio"
+                        data-selected={sortParam == "recent" ? "true" : "false"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goSortPage(e.currentTarget, "recent");
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          data-part="radio-input"
+                          aria-hidden="true"
+                          tabIndex="-1"
+                          className="_1vqth4d3"
+                          value="recent"
+                        />
+                        <div
+                          data-part="radio-control"
+                          data-selected={
+                            sortParam == "recent" ? "true" : "false"
+                          }
+                          className="_1vqth4d4"
+                        ></div>
+                        <span className="_1vqth4d5" data-part="radio-label">
+                          <font style={{ verticalAlign: "inherit" }}>
+                            최신순
+                          </font>
+                        </span>
+                      </Link>
+                      <Link
+                        href="#"
+                        className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
+                        data-part="radio"
+                        data-selected={
+                          !(sortParam == "recent") ? "true" : "false"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goSortPage(e.currentTarget, "popular");
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          data-part="radio-input"
+                          aria-hidden="true"
+                          tabIndex="-1"
+                          className="_1vqth4d3"
+                          value="hottest"
+                        />
+                        <div
+                          data-part="radio-control"
+                          data-selected={
+                            !(sortParam == "recent") ? "true" : "false"
+                          }
+                          className="_1vqth4d4"
+                        ></div>
+                        <span className="_1vqth4d5" data-part="radio-label">
+                          <font style={{ verticalAlign: "inherit" }}>
+                            인기순
+                          </font>
+                        </span>
+                      </Link>
                     </div>
                   </div>
                 </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs">
-                  <h3 className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
+                  <h3 className="_588sy4198 _588sy41y _588sy41a2">
                     <font style={{ verticalAlign: "inherit" }}>가격</font>
                   </h3>
                   <div className="_1h4pbgy7w8">
                     <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90o">
-                      {/* <c:if test="${param.minprice eq '0' and param.maxprice eq '0' }">
-								<Link href="" data-selected="true" onclick="goPagePrice(event, this, 0, 0)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5">
-									<font style={{verticalAlign: "inherit"}}>나눔</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice ne '0' or param.maxprice ne '0' }">
-								<Link href="" data-selected="false" onclick="goPagePrice(event, this, 0, 0)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6">
-									<font style={{verticalAlign: "inherit"}}>나눔</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice eq '0' and param.maxprice eq '10000' }">
-								<Link href="" data-selected="true" onclick="goPagePrice(event, this, 0, 10000)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5">
-									<font style={{verticalAlign: "inherit"}}>1만원 이하</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice ne '0' or param.maxprice ne '10000' }">
-								<Link href="" data-selected="false" onclick="goPagePrice(event, this, 0, 10000)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6">
-									<font style={{verticalAlign: "inherit"}}>1만원 이하</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice eq '0' and param.maxprice eq '50000' }">
-								<Link href="" data-selected="true" onclick="goPagePrice(event, this, 0, 50000)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5">
-									<font style={{verticalAlign: "inherit"}}>5만원 이하</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice ne '0' or param.maxprice ne '50000' }">
-								<Link href="" data-selected="false" onclick="goPagePrice(event, this, 0, 50000)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6">
-									<font style={{verticalAlign: "inherit"}}>5만원 이하</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice eq '0' and param.maxprice eq '100000' }">
-								<Link href="" data-selected="true" onclick="goPagePrice(event, this, 0, 100000)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5">
-									<font style={{verticalAlign: "inherit"}}>10만원 이하</font>
-								</Link>
-							</c:if>
-							<c:if test="${param.minprice ne '0' or param.maxprice ne '100000' }">
-								<Link href="" data-selected="false" onclick="goPagePrice(event, this, 0, 100000)" className="_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6">
-									<font style={{verticalAlign: "inherit"}}>10만원 이하</font>
-								</Link>
-							</c:if> */}
+                      <Link
+                        href="#"
+                        data-selected={
+                          minPriceParam == 0 && maxPriceParam == 0
+                            ? "true"
+                            : "false"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goPricePage(e.currentTarget, 0, 0);
+                        }}
+                        className={
+                          minPriceParam == 0 && maxPriceParam == 0
+                            ? "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5"
+                            : "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6"
+                        }
+                      >
+                        <font style={{ verticalAlign: "inherit" }}>나눔</font>
+                      </Link>
+                      <Link
+                        href=""
+                        data-selected={
+                          minPriceParam == 0 && maxPriceParam == 10000
+                            ? "true"
+                            : "false"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goPricePage(e.currentTarget, 0, 10000);
+                        }}
+                        className={
+                          minPriceParam == 0 && maxPriceParam == 10000
+                            ? "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5"
+                            : "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6"
+                        }
+                      >
+                        <font style={{ verticalAlign: "inherit" }}>
+                          1만원 이하
+                        </font>
+                      </Link>
+                      <Link
+                        href="#"
+                        data-selected={
+                          minPriceParam == 0 && maxPriceParam == 50000
+                            ? "true"
+                            : "false"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goPricePage(e.currentTarget, 0, 50000);
+                        }}
+                        className={
+                          minPriceParam == 0 && maxPriceParam == 50000
+                            ? "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5"
+                            : "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6"
+                        }
+                      >
+                        <font style={{ verticalAlign: "inherit" }}>
+                          5만원 이하
+                        </font>
+                      </Link>
+                      <Link
+                        href=""
+                        data-selected={
+                          minPriceParam == 0 && maxPriceParam == 100000
+                            ? "true"
+                            : "false"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goPricePage(e.currentTarget, 0, 100000);
+                        }}
+                        className={
+                          minPriceParam == 0 && maxPriceParam == 100000
+                            ? "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp5"
+                            : "_1d991sp4 _1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1d991sp6"
+                        }
+                      >
+                        <font style={{ verticalAlign: "inherit" }}>
+                          10만원 이하
+                        </font>
+                      </Link>
                     </div>
                   </div>
                   <div className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy908 _1h4pbgy7wo _1h4pbgy7x5">
@@ -377,10 +693,10 @@ export default function page() {
                       id="price-from"
                       className="_1d991sp3 _1h4pbgy7n4 _1h4pbgy7rs _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy8jc _1h4pbgy94w _1h4pbgy65k _1h4pbgy1u0 _1h4pbgy76o _1h4pbgy7ao _1h4pbgy7bs _1h4pbgy7aw"
                       type="text"
-                      inputmode="numeric"
+                      inputMode="numeric"
                       pattern="[0-9]*"
                       placeholder="최소가격"
-                      value="${param.minprice }"
+                      defaultValue={minPriceParam}
                     />
                     <span className="_1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c0">
                       <font style={{ verticalAlign: "inherit" }}>-</font>
@@ -389,15 +705,18 @@ export default function page() {
                       id="price-to"
                       className="_1d991sp3 _1h4pbgy7n4 _1h4pbgy7rs _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy8jc _1h4pbgy94w _1h4pbgy65k _1h4pbgy1u0 _1h4pbgy76o _1h4pbgy7ao _1h4pbgy7bs _1h4pbgy7aw"
                       type="text"
-                      inputmode="numeric"
+                      inputMode="numeric"
                       pattern="[0-9]*"
                       placeholder="최대가격"
-                      value="${param.maxprice }"
+                      defaultValue={maxPriceParam}
                     />
                   </div>
                   <div className="_1h4pbgy7w0">
                     <button
-                      onclick="goPagePriceBtn()"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        goPricePageBtn();
+                      }}
                       className="seed-text-button seed-semantic-typography-label3-regular"
                       data-scope="button"
                       data-part="root"
@@ -417,75 +736,30 @@ export default function page() {
             </aside>
             <div className="_1h4pbgy8jc _1h4pbgy9ug _1h4pbgy9vs">
               <div className="_1kbqy810 _1h4pbgy8jc _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9x4 _1h4pbgy90g _1h4pbgya54 _1h4pbgy9zk _1h4pbgy7vc _1h4pbgy7x5 _1h4pbgy7vf">
-                <div className="_1h4pbgy9ug _1h4pbgy9u3 _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy90g _1h4pbgy9yw">
-                  <button className="_12yppyy1 _12yppyy0 _588sy4fw _588sy4j2 _588sy4n2 _588sy4jw _588sy415 _588sy421 _588sy420 _588sy42w _588sy415q _588sy4168 _588sy412k _588sy4cw _588sy47k _588sy4y _588sy41n">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-seed-icon="true"
-                      data-seed-icon-version="0.4.0-beta.2"
-                      width="16"
-                      height="16"
-                    >
-                      <g>
-                        <g>
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M12.5946 7.9998C12.3132 9.50815 10.9899 10.6499 9.3999 10.6499C7.80993 10.6499 6.48663 9.50815 6.20516 7.9998H2.79995C2.46858 7.9998 2.19995 7.73118 2.19995 7.3998C2.19995 7.06843 2.46858 6.7998 2.79995 6.7998H6.20519C6.48674 5.29156 7.81 4.1499 9.3999 4.1499C10.9898 4.1499 12.3131 5.29156 12.5946 6.7998H21.2C21.5313 6.7998 21.7999 7.06843 21.7999 7.3998C21.7999 7.73118 21.5313 7.9998 21.2 7.9998H12.5946ZM11.4246 7.95996C11.1795 8.84794 10.366 9.50005 9.40005 9.50005C8.43415 9.50005 7.62055 8.84794 7.37552 7.95996C7.3723 7.9483 7.36918 7.93661 7.36616 7.92487C7.323 7.75712 7.30005 7.58127 7.30005 7.40005C7.30005 7.20609 7.32634 7.01827 7.37557 6.83996C7.62067 5.95207 8.43421 5.30005 9.40005 5.30005C10.3659 5.30005 11.1794 5.95207 11.4245 6.83996C11.4278 6.85167 11.4309 6.86343 11.4339 6.87523C11.4771 7.04297 11.5 7.21883 11.5 7.40005C11.5 7.59394 11.4738 7.78171 11.4246 7.95996Z"
-                            fill="currentColor"
-                          ></path>
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M19.1947 17.2C18.9133 18.7083 17.59 19.8501 16 19.8501C14.41 19.8501 13.0867 18.7083 12.8053 17.2H2.79995C2.46858 17.2 2.19995 16.9314 2.19995 16.6C2.19995 16.2686 2.46858 16 2.79995 16H12.8053C13.0868 14.4918 14.4101 13.3501 16 13.3501C17.5899 13.3501 18.9132 14.4918 19.1947 16H21.2C21.5313 16 21.7999 16.2686 21.7999 16.6C21.7999 16.9314 21.5313 17.2 21.2 17.2H19.1947ZM18.0244 17.16C17.7794 18.0479 16.9658 18.7 15.9999 18.7C15.034 18.7 14.2204 18.0479 13.9754 17.16C13.9722 17.1483 13.969 17.1366 13.966 17.1249C13.9229 16.9571 13.8999 16.7813 13.8999 16.6C13.8999 16.4061 13.9262 16.2183 13.9754 16.04C14.2205 15.1521 15.0341 14.5 15.9999 14.5C16.9657 14.5 17.7793 15.1521 18.0244 16.04C18.0276 16.0517 18.0308 16.0634 18.0338 16.0752C18.0769 16.243 18.0999 16.4188 18.0999 16.6C18.0999 16.7939 18.0736 16.9817 18.0244 17.16Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </g>
-                    </svg>
-                    <span className="_588sy4192 _588sy41w _588sy41b2 _588sy41">
-                      <font style={{ verticalAlign: "inherit" }}>
-                        <font style={{ verticalAlign: "inherit" }}>
-                          필터 (0)
-                        </font>
-                      </font>
-                    </span>
-                  </button>
-                  <div className="_1h4pbgy8f4 _1h4pbgy8r4 _1h4pbgy3pk"></div>
-                </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy90g">
                   <ul className="_1h4pbgy9ug _1h4pbgy9x4 _1h4pbgy9wo _1h4pbgy90g">
-                    {/* <c:if test="${param.sort ne null}">
+                    <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
+                      <font style={{ verticalAlign: "inherit" }}>
+                        {sortParam == "recent" ? "최신순" : "인기순"}
+                      </font>
+                    </li>
+                    {categoryParam != null && (
                       <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
-                        <c:if test="${param.sort eq 'recent'}">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            최신순
-                          </font>
-                        </c:if>
-                        <c:if test="${param.sort eq 'popular'}">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            인기순
-                          </font>
-                        </c:if>
-                      </li>
-                    </c:if> */}
-                    {/* <c:if test="${param.category ne null}">
-                      <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
-                        <c:forEach
-                          var="cate"
-                          items="${applicationScope.category_list}"
-                        >
-                          <c:if test="${cate.categorykey eq param.category}">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              ${cate.categoryname}
+                        {category_list.map((category) =>
+                          category.categorykey == categoryParam ? (
+                            <font
+                              key={category.categorykey}
+                              style={{ verticalAlign: "inherit" }}
+                            >
+                              {category.categoryname}
                             </font>
-                          </c:if>
-                        </c:forEach>
+                          ) : (
+                            ""
+                          )
+                        )}
                         <span
                           data-deltype="category"
-                          onclick="deleteSearch(this)"
+                          onClick={(e) => deleteSearch(e.currentTarget)}
                           className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
                         >
                           <span
@@ -508,8 +782,8 @@ export default function page() {
                             >
                               <g>
                                 <path
-                                  fill-rule="evenodd"
-                                  clip-rule="evenodd"
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
                                   d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
                                   fill="currentColor"
                                 ></path>
@@ -518,35 +792,27 @@ export default function page() {
                           </span>
                         </span>
                       </li>
-                    </c:if> */}
-                    {/* <c:if test="${param.minprice ne null or param.maxprice ne null}">
+                    )}
+                    {minPriceParam != null && maxPriceParam != null && (
                       <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
-                        <c:if test="${param.minprice eq 0 and param.maxprice eq 0}">
-                          <font style={{ verticalAlign: "inherit" }}>나눔</font>
-                        </c:if>
-                        <c:if test="${param.minprice eq 0 and param.maxprice eq 10000}">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            1만원 이하
-                          </font>
-                        </c:if>
-                        <c:if test="${param.minprice eq 0 and param.maxprice eq 50000}">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            5만원 이하
-                          </font>
-                        </c:if>
-                        <c:if test="${param.minprice eq 0 and param.maxprice eq 100000}">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            10만원 이하
-                          </font>
-                        </c:if>
-                        <c:if test="${param.minprice eq null or param.minprice ne 0 or param.maxprice eq null}">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            ${param.minprice} - ${param.maxprice}
-                          </font>
-                        </c:if>
+                        <font style={{ verticalAlign: "inherit" }}>
+                          {minPriceParam == 0 && maxPriceParam == 0
+                            ? "나눔"
+                            : minPriceParam == 0 && maxPriceParam == 10000
+                            ? "1만원 이하"
+                            : minPriceParam == 0 && maxPriceParam == 50000
+                            ? "5만원 이하"
+                            : minPriceParam == 0 && maxPriceParam == 100000
+                            ? "10만원 이하"
+                            : minPriceParam == null ||
+                              minPriceParam !== 0 ||
+                              maxPriceParam == null
+                            ? `${minPriceParam} - ${maxPriceParam}`
+                            : ""}
+                        </font>
                         <span
                           data-deltype="price"
-                          onclick="deleteSearch(this)"
+                          onClick={(e) => deleteSearch(e.currentTarget)}
                           className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
                         >
                           <span
@@ -569,8 +835,8 @@ export default function page() {
                             >
                               <g>
                                 <path
-                                  fill-rule="evenodd"
-                                  clip-rule="evenodd"
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
                                   d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
                                   fill="currentColor"
                                 ></path>
@@ -579,7 +845,7 @@ export default function page() {
                           </span>
                         </span>
                       </li>
-                    </c:if> */}
+                    )}
                   </ul>
                 </div>
               </div>
@@ -3964,10 +4230,26 @@ export default function page() {
                   </span>
                 </button>
               </div>
+              <Button
+                className="write-button"
+                style={{
+                  position: "fixed",
+                  bottom: "20px",
+                  zIndex: "1000",
+                  color: "white",
+                  backgroundColor: "#ff6f0f",
+                }}
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={setOpen}
+              >
+                내 물건 팔기
+              </Button>
             </div>
           </section>
         </div>
       </article>
+
       {/* <!-- 광고배너 --> */}
       <div className="_588sy4rk _588sy4rr _588sy4ry _588sy4s5">
         <div className="_1h4pbgy14w _1h4pbgy9ug _1h4pbgy9xc _1h4pbgya2w">
@@ -4074,93 +4356,139 @@ export default function page() {
           </div>
         </div>
       </div>
-      {/* //현재 페이지의 URL
-	var currentUrl = window.location.href;
-	// URL 객체 생성
-	var currentUrlObj = new URL(currentUrl);
-	// URLSearchParams 객체를 생성
-	var currentParams = new URLSearchParams(currentUrlObj.search);
 
-	function goPage(element, key){
-		// 'category' 파라미터를 제거
-		currentParams.delete('category');
-		// 수정된 쿼리 문자열을 얻음
-		let newCurrentSearch = currentParams.toString();
-		// 새로운 URL 조합
-		let newCurrentUrl = currentUrlObj.pathname + (newCurrentSearch ? '?' + newCurrentSearch : '') + currentUrlObj.hash;
-		// /market/을 제거
-		let path = newCurrentUrl.replace('/market/', '');
-		
-		let chk = $(element).data('selected');
-		if (chk !== true){
-			path += "&category="+key;
-		}
-		location.href = path;
-	}
-	
-	function goPageSort(element, key){
-		currentParams.delete('sort');
-		let newCurrentSearch = currentParams.toString();
-		let newCurrentUrl = currentUrlObj.pathname + (newCurrentSearch ? '?' + newCurrentSearch : '') + currentUrlObj.hash;
-		let path = newCurrentUrl.replace('/market/', '');
-		
-		path += "&sort="+key;
-		location.href = path;
-	}
-	
-	function goPagePrice(event, element, min, max){
-		event.preventDefault(); // 기본 동작을 막음
-		 
-		currentParams.delete('minprice');
-		currentParams.delete('maxprice');
-		let newCurrentSearch = currentParams.toString();
-		let newCurrentUrl = currentUrlObj.pathname + (newCurrentSearch ? '?' + newCurrentSearch : '') + currentUrlObj.hash;
-		let path = newCurrentUrl.replace('/market/', '');
-		
-		let chk = $(element).data('selected');
-		if (chk !== true){
-			path += "&minprice="+min+"&maxprice="+max;
-		}
-		
-		location.href = path;
-	}
-	
-	function goPagePriceBtn(){
-		currentParams.delete('minprice');
-		currentParams.delete('maxprice');
-		let newCurrentSearch = currentParams.toString();
-		let newCurrentUrl = currentUrlObj.pathname + (newCurrentSearch ? '?' + newCurrentSearch : '') + currentUrlObj.hash;
-		let path = newCurrentUrl.replace('/market/', '');
-		
-		var from = $("#price-from").val();
-		if (from != null && from.length != 0)
-			path += "&minprice=" + from;
-		
-		var to = $("#price-to").val();
-		if (to != null && to.length != 0)
-			path += "&maxprice=" + to;
-		
-		location.href = path;
-	}
-	
-	function deleteSearch(element){
-		let tmp = $(element).data('deltype');
-		
-		switch (tmp){
-		case "category":
-			currentParams.delete('category');
-			break;
-		case "price":
-			currentParams.delete('minprice');
-			currentParams.delete('maxprice');
-			break;
-		}
-		
-		let newCurrentSearch = currentParams.toString();
-		let newCurrentUrl = currentUrlObj.pathname + (newCurrentSearch ? '?' + newCurrentSearch : '') + currentUrlObj.hash;
-		let path = newCurrentUrl.replace('/market/', '');
-		location.href = path;
-	} */}
+      {/* 내 물건 팔기 모달 */}
+      <React.Fragment>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries(formData.entries());
+              console.log(formJson);
+
+              handleClose();
+            },
+          }}
+        >
+          <DialogTitle>내 물건 팔기</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <TextField
+                autoFocus
+                required
+                margin="dense"
+                id="title"
+                name="title"
+                label="제목"
+                type="text"
+                fullWidth
+                size="small"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <TextField
+                autoFocus
+                required
+                margin="dense"
+                id="category"
+                name="category"
+                label="카테고리"
+                select
+                fullWidth
+                size="small"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {category_list.map((item) => (
+                  <MenuItem key={item.categorykey} value={item.categorykey}>
+                    {item.categoryname}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <FormLabel
+                required
+                id="demo-simple-row-radio-buttons-group-label"
+              >
+                거래 방식
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="method"
+                value={method}
+                onChange={(e) => {
+                  setMethod(e.target.value);
+                  setIsFree(e.target.value == 0 ? false : true);
+                }}
+              >
+                <FormControlLabel
+                  value="0"
+                  control={<Radio />}
+                  label="판매하기"
+                />
+                <FormControlLabel
+                  value="1"
+                  control={<Radio />}
+                  label="나눔하기"
+                />
+              </RadioGroup>
+              <OutlinedInput
+                size="small"
+                id="price"
+                name="price"
+                placeholder="가격을 입력해주세요."
+                disabled={isFree}
+                value={isFree ? 0 : price}
+                onChange={(e) => setPrice(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">원</InputAdornment>
+                }
+                aria-describedby="outlined-weight-helper-text"
+                inputProps={{
+                  "aria-label": "weight",
+                }}
+              />
+              <FormControlLabel
+                id="canbargain"
+                name="canbargain"
+                style={{ display: isFree ? "none" : "block" }}
+                control={
+                  <Checkbox
+                    checked={canBargain}
+                    onChange={(e) => setCanBargain(e.target.checked)}
+                  />
+                }
+                label="가격 제안 받기"
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <TextField
+                required
+                id="content"
+                name="content"
+                label="자세한 설명"
+                multiline
+                rows={7}
+                placeholder={`OO동에 올릴 게시글 내용을 작성해 주세요. (판매 금지 물품은 게시가 제한될 수 있어요.)\n\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.`}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button type="submit">작성완료</Button>
+            <Button onClick={handleClose}>취소</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
     </>
   );
 }

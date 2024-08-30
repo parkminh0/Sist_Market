@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+        
 const nextConfig = {
 
     async rewrites(){
@@ -10,7 +11,15 @@ const nextConfig = {
             {
                 source: "/api/:path*",
                 destination: "http://localhost:8080/api/:path*"
-            }
+            },
+            {
+              source: "/adpost/:path*",
+              destination: "http://localhost:8080/adpost/:path*",
+            },
+          {
+            source: "/user/:path*",
+            destination: "http://localhost:8080/user/:path*",
+          },
         ]
     }
 };
