@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back2.mapper.PostMapper">
+
+    <resultMap id="postMap" type="com.sist.back2.vo.PostVO">
+		<id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="dealuserkey" property="dealuserkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back2.vo.categoryVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back2.vo.userVO"/>
+        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back2.vo.userVO"/>
+	    <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back2.vo.PostImgVO" />
+	    <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back2.vo.PostInfoVO" />
+	</resultMap>
+
+    <resultMap id="offerMap" type="com.sist.back2.vo.OfferVO">
+        <result column="offeruserkey" property="offeruserkey" />
+        <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back2.vo.userVO"/>
+	</resultMap>
+
+    <resultMap id="chatroomMap" type="com.sist.back2.vo.ChatroomVO">
+		<id column="chatroomkey" property="chatroomkey" />
+        <result column="chatuserkey" property="chatuserkey" />
+        <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back2.vo.userVO"/>
+	    <collection property="c_list" select="getChattingByChatroomKey" column="chatroomkey" ofType="com.sist.back2.vo.ChattingVO" />
+	</resultMap>
+    <resultMap id="chattingMap" type="com.sist.back2.vo.ChattingVO">
+		<id column="chattingkey" property="chattingkey" />
+        <result column="chattingemozikey" property="chattingemozikey" />
+        <association property="cevo" select="getChattingemoziByChattingemoziKey" column="chattingemozikey" javaType="com.sist.back2.vo.ChattingEmoziVO"/>
+        <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back2.vo.ChatImgVO"/>
+	</resultMap>
+
+    <resultMap id="userreviewMap" type="com.sist.back2.vo.UserReviewVO">
+        <result column="reviewlistkey" property="reviewlistkey" />
+        <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back2.vo.ReviewListVO"/>
+	</resultMap>
+
+
+
+    <!-- 1. post 관련 데이터 -->
+    <select id="getPostByPostKey" resultMap="postMap" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getCvoByPostKey" resultType="com.sist.back2.vo.categoryVO" parameterType="int">
+        SELECT * FROM `category`
+        WHERE categorykey = #{categorykey}
+    </select>
+    <select id="getUvoByPostKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getUvoByDealUserKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{dealuserkey}
+    </select>
+    <select id="getPImg_listByPostKey" resultType="com.sist.back2.vo.PostImgVO" parameterType="int">
+        SELECT * FROM `postimg`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getPInfo_listByPostKey" resultType="com.sist.back2.vo.PostInfoVO" parameterType="int">
+        SELECT * FROM `post_info`
+        WHERE postkey = #{postkey}
+    </select>
+
+
+
+    <!-- 2. town 관련 데이터 -->
+    <select id="getTownByPostKey" resultType="com.sist.back2.vo.TownVO" parameterType="int">
+        SELECT * FROM `town`
+        WHERE townkey = (SELECT townkey
+                        FROM `post`
+                        WHERE postkey = #{postkey})
+    </select>
+
+    <!-- 3. offer 관련 데이터 -->
+    <select id="getOfferByPostKey" resultMap="offerMap" parameterType="int">
+        SELECT * FROM `offer`
+        WHERE postkey = #{postkey}
+    </select>
+
+    <select id="getUserByOfferUserKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{offeruserkey}
+    </select>
+
+    <!-- 4. chatroom 관련 데이터 -->
+    <select id="getChatroomByPostKey" resultMap="chatroomMap" parameterType="int">
+        SELECT * FROM `chatroom`
+        WHERE postkey = #{postkey}
+    </select>
+
+    <select id="getUserByChatUserKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{chatuserkey}
+    </select>
+
+    <select id="getChattingByChatroomKey" resultMap="chattingMap" parameterType="int">
+        SELECT * FROM `chatting`
+        WHERE chatroomkey = #{chatroomkey}
+    </select>
+
+    <select id="getChatimgByChattingKey" resultType="com.sist.back2.vo.ChatImgVO" parameterType="int">
+        SELECT * FROM `chatimg`
+        WHERE chattingkey = #{chattingkey}
+    </select>
+
+    <select id="getChattingemoziByChattingemoziKey" resultType="com.sist.back2.vo.ChattingEmoziVO" parameterType="int">
+        SELECT * FROM `chattingemozi`
+        WHERE chattingemozikey = #{chattingemozikey}
+    </select>
+
+
+
+
+    <!-- 4. userreview 관련 데이터 -->
+    <select id="getUserReviewByPostKey" resultMap="userreviewMap" parameterType="int">
+        SELECT * FROM `userreview`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getReviewListByReviewListKey" resultType="com.sist.back2.vo.ReviewListVO" parameterType="int">
+        SELECT * FROM `reviewlist`
+        WHERE reviewlistkey = #{reviewlistkey}
+    </select>
+
+</mapper>

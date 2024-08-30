@@ -97,6 +97,10 @@ export default function SidebarItem(parentItem) {
   var parent_path = "";
   if (tmp == 2) {
     parent_path = pathname;
+  } else if(tmp == 4) {
+    parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
+    parent_path = parent_path.substring(0, parent_path.lastIndexOf("/"));
+    childpath = parent_path;
   } else {
     parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
   }
