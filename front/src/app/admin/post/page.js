@@ -1,4 +1,5 @@
-"use client";
+'use client'
+
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
 import axios from "axios";
