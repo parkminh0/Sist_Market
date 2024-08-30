@@ -1,5 +1,3 @@
-import React from "react";
-
 "use client";
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
