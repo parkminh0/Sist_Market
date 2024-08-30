@@ -1,7 +1,58 @@
-import React from "react";
+'use client'
+
+import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
+import axios from "axios";
+import ProductList from "@/component/ProductList";
 
 export default function Page() {
+  let API_URL = "/adpost/all";
+  const [list, setList] = useState([]);
+  const [param, setParam] = useState([]);
+
+  function requestProducts() {
+    //서버 호출
+    axios({
+      url: API_URL,
+      method: "post",
+      params: param,
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      console.log(res);
+      setList(res.data.post_list);
+    });
+  }
+
+  function searchProduct() {
+    console.log("121212");
+    let frm = document.getElementById("frmSearch");
+    const formData = new FormData(frm);
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
+
+    //서버 호출
+    axios({
+      url: "/post/all",
+      method: "post",
+      //params: param,
+      //withCredentials: true,
+      // headers: {
+      //   "Content-Type": "application/json",
+      // },
+    }).then((res) => {
+      console.log("res");
+      setList(res.data.post_list);
+    });
+  }
+
+  useEffect(() => {
+    //최초로 한번 호출되는 곳
+    requestProducts();
+  }, []);
+
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -124,7 +175,7 @@ export default function Page() {
               <tbody>
                 <tr>
                   <th scope="row">검색분류</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <ul className="mForm typeVer" id="eSearchFormGeneral">
                       <li>
                         <select className="fSelect eSearch" name="search1">
@@ -137,7 +188,6 @@ export default function Page() {
                           type="text"
                           className="fText eSearchText"
                           style={{ width: "500px" }}
-                          value=""
                           name="search1_text"
                         />
                       </li>
@@ -146,44 +196,29 @@ export default function Page() {
                 </tr>
                 <tr>
                   <th scope="row">상품분류</th>
-                  <td colspan="3">
+                  <td colSpan="1">
                     <div className="gSingle">
                       <select
                         className="fSelect category eCategory"
                         id="eCategory1"
                         name="search2_1"
                       >
-                        <option value="">- 대분류 전체 -</option>
+                        <option>- 대분류 전체 -</option>
                         {/* <c:forEach var="category" items="${applicationScope.category_list}">
                                             <option value="${category.category_key}">${category.category_name}</option>
                                         </c:forEach> */}
-                      </select>
-                      <select
-                        className="fSelect category eCategory"
-                        id="eCategory2"
-                        name="search2_2"
-                      >
-                        <option value="">- 중분류 전체 -</option>
-                      </select>
-                      <select
-                        className="fSelect category eCategory"
-                        id="eCategory3"
-                        name="search2_3"
-                      >
-                        <option value="">- 소분류 전체 -</option>
                       </select>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">상품등록일</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <input
                       type="date"
                       id="pr_start_date"
                       name="start_date"
                       className="fText gDate"
-                      value=""
                       style={{ width: "100px" }}
                     />
                     <span className="ec-mode-common-period-area">~</span>
@@ -192,14 +227,13 @@ export default function Page() {
                       id="pr_end_date"
                       name="end_date"
                       className="fText gDate"
-                      value=""
                       style={{ width: "100px" }}
                     />
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">판매상태</th>
-                  <td colspan="3">
+                  <td colSpan="">
                     <label className="gSingleLabel">
                       <input
                         type="radio"
@@ -228,18 +262,44 @@ export default function Page() {
                       />{" "}
                       판매안함
                     </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="fChk eDisplayStatus"
+                        name="selling"
+                        value="3"
+                      />{" "}
+                      예약중
+                    </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="fChk eDisplayStatus"
+                        name="selling"
+                        value="4"
+                      />{" "}
+                      거래중
+                    </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="fChk eDisplayStatus"
+                        name="selling"
+                        value="5"
+                      />{" "}
+                      기타
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">재고수량</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <ul className="mForm typeVer" id="eSearchFormStock">
                       <li>
                         <input
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="stock_min"
                         />{" "}
                         개 ~
@@ -247,7 +307,6 @@ export default function Page() {
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="stock_max"
                         />{" "}
                         개
@@ -257,7 +316,7 @@ export default function Page() {
                 </tr>
                 <tr>
                   <th scope="row">품절상태</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <label className="gLabel">
                       <input
                         type="radio"
@@ -290,7 +349,7 @@ export default function Page() {
                 </tr>
                 <tr>
                   <th scope="row">상품가격</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <ul className="mForm typeVer" id="eSearchFormPrice">
                       <li>
                         <select className="fSelect" name="price">
@@ -301,7 +360,6 @@ export default function Page() {
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="price_min"
                         />{" "}
                         <span className="txtCode">KRW</span> ~
@@ -309,7 +367,6 @@ export default function Page() {
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="price_max"
                         />{" "}
                         <span className="txtCode">KRW</span>
@@ -323,7 +380,7 @@ export default function Page() {
           <div className="mButton gCenter">
             <a
               href="#"
-              onclick="searchProduct(0)"
+              onClick={searchProduct}
               className="btnSearch"
               id="eBtnSearch"
             >
@@ -331,7 +388,7 @@ export default function Page() {
             </a>
             <a
               href="#"
-              onclick="clearAll()"
+              onClick="clearAll()"
               className="btnSearch reset"
               id="eSearchFormInit"
             >
@@ -354,43 +411,7 @@ export default function Page() {
             </p>
           </div>
         </div>
-        <div className="mCtrl typeHeader setting">
-          <div className="gTop">
-            <a
-              href="#"
-              onclick="delete_choice(0)"
-              className="btnNormal _manage_state"
-            >
-              <span>판매함</span>
-            </a>
-            <a
-              href="#"
-              onclick="delete_choice(1)"
-              className="btnNormal _manage_state"
-            >
-              <span>판매안함</span>
-            </a>
-            <a
-              href="#"
-              onclick="delete_choice(2)"
-              className="btnNormal _manage_delete"
-            >
-              <span>
-                <em className="icoDel"></em> 삭제
-              </span>
-            </a>
-            <a href="#" className="btnNormal _manage_category">
-              <span>
-                분류수정<em className="icoLink"></em>
-              </span>
-            </a>
-            <a href="#" className="btnNormal _manage_main_display">
-              <span>
-                메인진열수정<em className="icoLink"></em>
-              </span>
-            </a>
-          </div>
-        </div>
+
         <div id="searchResult">
           <div className="mBoard typeList gScroll gCell">
             <table border="1" summary="" className="eChkColor">
@@ -409,9 +430,6 @@ export default function Page() {
               </colgroup>
               <thead id="product-list-header">
                 <tr>
-                  <th scope="col">
-                    <input type="checkbox" id="allChk" className="allChk" />
-                  </th>
                   <th scope="col">No</th>
                   <th scope="col">상품명</th>
                   <th scope="col">원가</th>
@@ -423,66 +441,17 @@ export default function Page() {
                   <th scope="col">조회수</th>
                 </tr>
               </thead>
-              <tbody className="center" id="product-list"></tbody>
+              <tbody className="center" id="product-list">
+                <ProductList ar={list} />
+              </tbody>
             </table>
-            <p className="empty" style={{ display: "block" }}>
-              검색된 상품 내역이 없습니다.
-            </p>
-          </div>
-          <div className="mCtrl typeFooter">
-            <div className="gTop">
-              <a
-                href="#none"
-                onclick="delete_choice(0)"
-                className="btnNormal _manage_state"
-              >
-                <span>판매함</span>
-              </a>
-              <a
-                href="#none"
-                onclick="delete_choice(1)"
-                className="btnNormal _manage_state"
-              >
-                <span>판매안함</span>
-              </a>
-              <a
-                href="#none"
-                onclick="delete_choice(2)"
-                className="btnNormal _manage_delete"
-              >
-                <span>
-                  <em className="icoDel"></em> 삭제
-                </span>
-              </a>
-              <a
-                href="#none"
-                target="_blank"
-                title="새창 열림"
-                className="btnNormal _manage_category"
-              >
-                <span>
-                  분류수정<em className="icoLink"></em>
-                </span>
-              </a>
-              <a
-                href="#none"
-                target="_blank"
-                title="새창 열림"
-                className="btnNormal _manage_main_display"
-              >
-                <span>
-                  메인진열수정<em className="icoLink"></em>
-                </span>
-              </a>
-            </div>
-            <div className="gBottom">
-              <a
-                href="Controller?type=adproductcrud"
-                className="btnCtrl eRegProduct"
-              >
-                <span>상품등록</span>
-              </a>
-            </div>
+            {list == null ? (
+              <p className="empty" style={{ display: "block" }}>
+                검색된 상품 내역이 없습니다.
+              </p>
+            ) : (
+              ""
+            )}
           </div>
           <div className="mPaginate">
             <ol>
