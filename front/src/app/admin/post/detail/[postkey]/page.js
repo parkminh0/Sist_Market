@@ -34,12 +34,30 @@ export default function Page(props) {
   const API_URL = "/post/detail";
   
   function getPostDetail(p_key) {
+    // axios({
+    //   url: API_URL,
+    //   method: "post",
+    //   params: {"postkey":p_key},
+    //   withCredentials: true,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // }).then((res) => {
+    //   console.log("응답:"+response)
+    //   setPvo(response.data.pvo);
+    //   setTvo(response.data.tvo);
+    //   setO_list(response.data.o_list);
+    //   setCr_list(response.data.cr_list);
+    //   setUr_list(response.data.ur_list);
+    //   setLoaded(true);
+    // });
     axios
       .get(
         API_URL
         ,{params: {"postkey":p_key}}
       )
       .then((response) => {
+        console.log("응답:"+response)
         setPvo(response.data.pvo);
         setTvo(response.data.tvo);
         setO_list(response.data.o_list);

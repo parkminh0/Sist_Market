@@ -8,8 +8,8 @@ const nextConfig = {
                 destination: "http://localhost:8080/category/:path*"
             },
             {
-              source: "/post/:path",
-              destination: "http://localhost:8080/post/:path",
+              source: "/post/:path*",
+              destination: "http://localhost:8080/post/:path*",
             },
         ]
     }

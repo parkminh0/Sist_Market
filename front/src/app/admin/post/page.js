@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from "react";
-import DetailModal from "@/component/admin/post/detail/Modal";
 import "/public/css/admin/post.css";
 
 export default function Page() {
@@ -29,7 +28,7 @@ export default function Page() {
     }
   }, [open]);
 
-  const detail_ar = [{ "idx":1,
+  const detail_ar = [{ "postkey":1,
     "name":"[스위치]; 호그와트 레거시 팩",
     "price": 7500,
     "category": "game",
@@ -479,12 +478,6 @@ export default function Page() {
                       <td scope="col">{pvo.hit}</td>
                     </tr>
                 ))}
-                <DetailModal  prod_detail={prod_detail}
-                              handleClose={handleClose}
-                              descriptionElementRef={descriptionElementRef}
-                              open={open}
-                              scroll={scroll}
-                 />
               </tbody>
             </table>
             <p className="empty" style={{ display: "block" }}>

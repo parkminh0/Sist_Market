@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.PostService;
@@ -24,7 +26,6 @@ public class PostController {
         e_map.put("o_list", p_service.getOfferByPostKey(postkey));
         e_map.put("cr_list", p_service.getChatroomByPostKey(postkey));
         e_map.put("ur_list", p_service.getUserReviewByPostKey(postkey));
-
         return e_map;
     }
 
