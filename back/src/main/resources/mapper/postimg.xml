@@ -4,24 +4,15 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.PostimgMapper">
 
-	<select id="all" resultType="com.sist.back.vo.postimgVO">
-		SELECT * FROM postimg
-	</select>
-
-	<!-- postimgVO와 매핑되는 resultMap 정의 -->
-    <resultMap id="PostimgResultMap" type="com.sist.back.vo.postimgVO">
-        <result property="imgurl" column="imgurl" />
-        <result property="postimgkey" column="postimgkey" />
-        <result property="postkey" column="postkey" />
+    <!-- postimgVO에 대한 ResultMap 정의 -->
+    <resultMap id="postimgVOResultMap" type="com.sist.back.vo.postimgVO">
+        <id property="postimgkey" column="postimgkey"/>
+        <result property="imgurl" column="imgurl"/>
+        <result property="postkey" column="postkey"/>
     </resultMap>
 
-    <!-- resultMap을 사용하는 select 문 -->
-    <select id="all" resultMap="PostimgResultMap">
+    <!-- ResultMap을 사용하는 select 문 -->
+    <select id="all" resultMap="postimgVOResultMap">
         SELECT imgurl, postimgkey, postkey FROM postimg
     </select>
-
-	<select id="all" resultType="com.sist.back.vo.postVO">
-		SELECT * FROM post
-	</select>
-
 </mapper>
