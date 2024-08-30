@@ -7,14 +7,20 @@ import React, { useEffect, useState } from "react";
 export default function Home() {
   const [category_list, setCategory_list] = useState([]);
 
-  function getData() {
-    axios.get("/category/all").then((res) => {
+  function getCategory() {
+    axios({
+      url: "http://localhost:8080/category/all",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
       setCategory_list(res.data.category_list);
     });
   }
 
   useEffect(() => {
-    getData();
+    getCategory();
   }, []);
 
   // #region 메인 배너 슬라이드 이벤트
@@ -454,7 +460,7 @@ export default function Home() {
               </div>
               <Link
                 className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-                href="post?sort=recent&minprice=0&maxprice=0"
+                href="post?sort=recent&minPrice=0&maxPrice=0"
               >
                 <span
                   data-gtm="main_see_all"
@@ -915,7 +921,7 @@ export default function Home() {
                       </Link>
                     </div>
                     {/* 상품 끝 */}
-                    <Link href="post?sort=recent&minprice=0&maxprice=0">
+                    <Link href="post?sort=recent&minPrice=0&maxPrice=0">
                       <div className="_1kquttw0 _1b153uw8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy174 _1h4pbgy3oo _1h4pbgy94w _1kquttw1 _1b153uw6">
                         <div className="_1h4pbgy9ug _1h4pbgy8zs">
                           <span className="_1h4pbgy8g _1h4pbgy7ao">
