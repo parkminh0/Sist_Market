@@ -1,0 +1,25 @@
+.detailInfoTable .td{
+    font-size: 14px !important;
+    height: 80px;
+    text-align: center;
+    padding: 2px;
+}
+
+.detailInfoTable .td img{
+    width: 50px;
+    cursor: pointer;
+}
+
+
+.detailInfoTable .th{
+    font-size: 14px !important;
+    height: 50px;
+    text-align: center;
+    padding: 2px;
+    background-color: rgb(200,200,200);
+}
+
+
+.infoPart{
+    border: 2px solid black;
+}

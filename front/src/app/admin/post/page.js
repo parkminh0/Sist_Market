@@ -471,7 +471,7 @@ export default function Page() {
                         <input type="checkbox" />
                       </td>
                       <td scope="col">{pvo.idx}</td>
-                      <td scope="col" onDoubleClick={handleClickOpen('paper',pvo)}>{pvo.name}</td>
+                      <td scope="col" onDoubleClick={()=>window.open(`/admin/post/detail/${pvo.postkey}`)}>{pvo.name}</td>
                       <td scope="col">{pvo.price}원</td>
                       <td scope="col">{pvo.category}</td>
                       <td scope="col">{pvo.seller}</td>
