@@ -95,6 +95,7 @@ export default function SidebarItem(parentItem) {
   const pathname = usePathname();
   const tmp = pathname.split("/").length - 1;
   var parent_path = "";
+  var childpath = "";
   if (tmp == 2) {
     parent_path = pathname;
   } else if(tmp == 4) {
