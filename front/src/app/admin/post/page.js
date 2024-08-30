@@ -26,16 +26,22 @@ export default function Page() {
     });
   }
 
-  function searchProduct(list) {
+  function searchProduct() {
+    console.log("121212");
+    let frm = document.getElementById("frmSearch");
+    const formData = new FormData(frm);
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
+
     //서버 호출
     axios({
-      url: "/post/search",
+      url: "/post/all",
       method: "post",
-      params: param,
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      //params: param,
+      //withCredentials: true,
+      // headers: {
+      //   "Content-Type": "application/json",
+      // },
     }).then((res) => {
       console.log("res");
       setList(res.data.post_list);
@@ -169,7 +175,7 @@ export default function Page() {
               <tbody>
                 <tr>
                   <th scope="row">검색분류</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <ul className="mForm typeVer" id="eSearchFormGeneral">
                       <li>
                         <select className="fSelect eSearch" name="search1">
@@ -182,7 +188,6 @@ export default function Page() {
                           type="text"
                           className="fText eSearchText"
                           style={{ width: "500px" }}
-                          value=""
                           name="search1_text"
                         />
                       </li>
@@ -191,44 +196,29 @@ export default function Page() {
                 </tr>
                 <tr>
                   <th scope="row">상품분류</th>
-                  <td colspan="3">
+                  <td colSpan="1">
                     <div className="gSingle">
                       <select
                         className="fSelect category eCategory"
                         id="eCategory1"
                         name="search2_1"
                       >
-                        <option value="">- 대분류 전체 -</option>
+                        <option>- 대분류 전체 -</option>
                         {/* <c:forEach var="category" items="${applicationScope.category_list}">
                                             <option value="${category.category_key}">${category.category_name}</option>
                                         </c:forEach> */}
-                      </select>
-                      <select
-                        className="fSelect category eCategory"
-                        id="eCategory2"
-                        name="search2_2"
-                      >
-                        <option value="">- 중분류 전체 -</option>
-                      </select>
-                      <select
-                        className="fSelect category eCategory"
-                        id="eCategory3"
-                        name="search2_3"
-                      >
-                        <option value="">- 소분류 전체 -</option>
                       </select>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">상품등록일</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <input
                       type="date"
                       id="pr_start_date"
                       name="start_date"
                       className="fText gDate"
-                      value=""
                       style={{ width: "100px" }}
                     />
                     <span className="ec-mode-common-period-area">~</span>
@@ -237,14 +227,13 @@ export default function Page() {
                       id="pr_end_date"
                       name="end_date"
                       className="fText gDate"
-                      value=""
                       style={{ width: "100px" }}
                     />
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">판매상태</th>
-                  <td colspan="3">
+                  <td colSpan="">
                     <label className="gSingleLabel">
                       <input
                         type="radio"
@@ -273,18 +262,44 @@ export default function Page() {
                       />{" "}
                       판매안함
                     </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="fChk eDisplayStatus"
+                        name="selling"
+                        value="3"
+                      />{" "}
+                      예약중
+                    </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="fChk eDisplayStatus"
+                        name="selling"
+                        value="4"
+                      />{" "}
+                      거래중
+                    </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="fChk eDisplayStatus"
+                        name="selling"
+                        value="5"
+                      />{" "}
+                      기타
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">재고수량</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <ul className="mForm typeVer" id="eSearchFormStock">
                       <li>
                         <input
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="stock_min"
                         />{" "}
                         개 ~
@@ -292,7 +307,6 @@ export default function Page() {
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="stock_max"
                         />{" "}
                         개
@@ -302,7 +316,7 @@ export default function Page() {
                 </tr>
                 <tr>
                   <th scope="row">품절상태</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <label className="gLabel">
                       <input
                         type="radio"
@@ -335,7 +349,7 @@ export default function Page() {
                 </tr>
                 <tr>
                   <th scope="row">상품가격</th>
-                  <td colspan="3">
+                  <td colSpan="3">
                     <ul className="mForm typeVer" id="eSearchFormPrice">
                       <li>
                         <select className="fSelect" name="price">
@@ -346,7 +360,6 @@ export default function Page() {
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="price_min"
                         />{" "}
                         <span className="txtCode">KRW</span> ~
@@ -354,7 +367,6 @@ export default function Page() {
                           type="text"
                           className="fText right eSearchText"
                           style={{ width: "60px" }}
-                          value=""
                           name="price_max"
                         />{" "}
                         <span className="txtCode">KRW</span>
@@ -368,7 +380,7 @@ export default function Page() {
           <div className="mButton gCenter">
             <a
               href="#"
-              onclick="searchProduct()"
+              onClick={searchProduct}
               className="btnSearch"
               id="eBtnSearch"
             >
@@ -376,7 +388,7 @@ export default function Page() {
             </a>
             <a
               href="#"
-              onclick="clearAll()"
+              onClick="clearAll()"
               className="btnSearch reset"
               id="eSearchFormInit"
             >
