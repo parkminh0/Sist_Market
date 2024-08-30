@@ -3,25 +3,120 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.UserMapper">
+
+    <resultMap id="userResultMap" type="com.sist.back.vo.userVO">
+        <id column="userkey" property="userkey"/>
+        <result column="id" property="id"/>
+        <result column="pw" property="pw"/>
+        <result column="name" property="name"/>
+        <result column="nickname" property="nickname"/>
+        <result column="phone" property="phone"/>
+        <result column="access_token" property="access_token"/>
+        <result column="refresh_token" property="refresh_token"/>
+        <result column="email" property="email"/>
+        <result column="imgurl" property="imgurl"/>
+        <result column="login_dtm" property="login_dtm"/>
+        <result column="isdisturb" property="isdisturb"/>
+        <result column="disturb_start" property="disturb_start"/>
+        <result column="disturb_end" property="disturb_end"/>
+        <result column="isauthorized" property="isauthorized"/>
+        <result column="create_dtm" property="create_dtm"/>
+        <result column="update_dtm" property="update_dtm"/>
+        <result column="delete_dtm" property="delete_dtm"/>
+        <result column="isdeleted" property="isdeleted"/>
+
+        <!-- AddressVO 매핑 -->
+        <collection property="a_list" ofType="com.sist.back.vo.AddressVO"  select="getAddressByUserKey" column="userkey"/>
+        <!-- SetAlarmVO 매핑 -->
+        <collection property="s_list" ofType="com.sist.back.vo.SetAlarmVO" select="getSetAlarmsByUserKey" column="userkey"/>
+        <!-- PostVO 매핑 -->
+        <collection property="p_list" ofType="com.sist.back.vo.PostVO" select="getPostsByUserKey" column="userkey"/>
+        <!-- KeywordVO 매핑 -->
+        <collection property="k_list" ofType="com.sist.back.vo.KeywordVO" select="getKeywordByUserKey" column="userkey"/>
+        <!-- MannerVO 매핑 -->
+        <collection property="m_list" ofType="com.sist.back.vo.MannerVO" select="getMannersByUserKey" column="userkey"/>
+        <!-- LikeUserVO 매핑 -->
+        <collection property="l_list" ofType="com.sist.back.vo.LikeUserVO" select="getLikeUsersByUserKey" column="userkey"/>
+        <!-- BlockedVO 매핑 -->
+        <collection property="b_list" ofType="com.sist.back.vo.BlockedVO" select="getBlockedUsersByUserKey" column="userkey"/>
+        <!--wishlist 매핑-->
+        <collection property="w_list" ofType="com.sist.back.vo.Wishlist" select="getWishlistByUserKey" column="userkey"/>
+        <!-- NoseeVO 매핑 -->
+        <collection property="n_list" ofType="com.sist.back.vo.NoseeVO" select="getNoseeUsersByUserKey" column="userkey"/>
+        <!-- UserBadgeVO 매핑 -->
+        <collection property="ub_list" ofType="com.sist.back.vo.UserBadgeVO" select="getUserBadgesByUserKey" column="userkey"/>
+    </resultMap>
+
+
+    <!-- 관리자 유저 정보 가져오기 -->
+    <select id="getUserForAdmin" parameterType="String" resultMap="userResultMap">
+    SELECT * FROM user
+    WHERE userkey = #{userkey}
+    </select>
+
+    <!-- Address 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getAddressByUserKey" resultType="com.sist.back.vo.AddressVO" parameterType="String">
+        SELECT * FROM address WHERE userkey = #{userkey}
+    </select>
+    <!-- Post 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getPostsByUserKey" resultType="com.sist.back.vo.PostVO" parameterType="String">
+        SELECT * FROM post WHERE userkey = #{userkey}
+    </select>
+    <!-- Manner 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getMannersByUserKey" resultType="com.sist.back.vo.MannerVO" parameterType="String">
+        SELECT * FROM manner WHERE userkey = #{userkey}
+    </select>
+    <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getWishlistByUserKey" resultType="com.sist.back.vo.WishlistVO" parameterType="String">
+        SELECT * FROM wishlist WHERE userkey = #{userkey}
+    </select>
+    <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getKeywordByUserKey" resultType="com.sist.back.vo.KeywordVO" parameterType="String">
+        SELECT * FROM keyword WHERE userkey = #{userkey}
+    </select>
+    <!-- SetAlarm 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getSetAlarmsByUserKey" resultType="com.sist.back.vo.SetAlarmVO" parameterType="String">
+        SELECT * FROM setalarm WHERE userkey = #{userkey}
+    </select>
+    <!-- LikeUser 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getLikeUsersByUserKey" resultType="com.sist.back.vo.LikeUserVO" parameterType="String">
+        SELECT * FROM likeuser WHERE userkey = #{userkey}
+    </select>
+    <!-- Blocked 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getBlockedUsersByUserKey" resultType="com.sist.back.vo.BlockedVO" parameterType="String">
+        SELECT * FROM blocked WHERE userkey = #{userkey}
+    </select>
+    <!-- Nosee 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getNoseeUsersByUserKey" resultType="com.sist.back.vo.NoseeVO" parameterType="String">
+        SELECT * FROM nosee WHERE userkey = #{userkey}
+    </select>
+    <!-- UserBadge 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getUserBadgesByUserKey" resultType="com.sist.back.vo.UserBadgeVO" parameterType="String">
+        SELECT * FROM userbadge WHERE userkey = #{userkey}
+    </select>
+
+    <!-- 로그인 -->
     <select id="login" resultType="com.sist.back.vo.userVO" parameterType="com.sist.back.vo.userVO">
         SELECT * FROM user
          WHERE id = #{id} and pw = #{pw}
     </select>
 
+    <!-- 로그인 시간 업데이트 -->
     <update id="login_dtm" parameterType="com.sist.back.vo.userVO">
         UPDATE user
            SET login_dtm = now()
          WHERE userkey = #{userkey}
     </update>
 
-    <!-- 관리자 유저정보 뿌리기-->
+    <!-- 관리자 유저 정보 카운트 -->
     <select id="countForAdmin" resultType="com.sist.back.vo.UserCountVO">
-      SELECT COUNT(*) cntAll, 
-          COUNT(CASE WHEN isdeleted = 0 THEN 1 END) cntNotDel,
-            COUNT(CASE WHEN isdeleted = 1 THEN 1 END) cntDel
+      SELECT COUNT(*) AS cntAll, 
+          COUNT(CASE WHEN isdeleted = 0 THEN 1 END) AS cntNotDel,
+          COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS cntDel
         FROM user
-	  </select> 
+    </select> 
 
+    <!-- 관리자 페이징 검색 -->
     <select id="searchForAdminPaging" parameterType="map" resultType="int">
       SELECT COUNT(*)
       FROM user
@@ -49,10 +144,10 @@
         <if test="recent_login_start_date != '' and recent_login_end_date != ''">
           AND login_dtm BETWEEN #{recent_login_start_date} AND #{recent_login_end_date}
         </if>
-        <if test="recent_login_start_date != '' and recent_login_end_date != ''">
+        <if test="recent_login_start_date != '' and recent_login_end_date == ''">
           AND login_dtm <![CDATA[>=]]> #{recent_login_start_date}
         </if>
-        <if test="recent_login_start_date != '' and recent_login_end_date != ''">
+        <if test="recent_login_start_date == '' and recent_login_end_date != ''">
           AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
         </if>
 
@@ -66,7 +161,8 @@
       </where>
     </select>
 
-    <select id="searchForAdmin" parameterType="map" resultType="com.sist.back.vo.userVO">
+    <!-- 관리자 유저 검색 -->
+    <select id="searchForAdmin" parameterType="map" resultMap="userResultMap">
       SELECT x.*
       FROM ( SELECT *, row_number() over (order by userkey DESC) rnum FROM user
        <where>
@@ -93,10 +189,10 @@
         <if test="recent_login_start_date != '' and recent_login_end_date != ''">
           AND login_dtm BETWEEN #{recent_login_start_date} AND #{recent_login_end_date}
         </if>
-        <if test="recent_login_start_date != '' and recent_login_end_date != ''">
+        <if test="recent_login_start_date != '' and recent_login_end_date == ''">
           AND login_dtm <![CDATA[>=]]> #{recent_login_start_date}
         </if>
-        <if test="recent_login_start_date != '' and recent_login_end_date != ''">
+        <if test="recent_login_start_date == '' and recent_login_end_date != ''">
           AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
         </if>
 
@@ -112,11 +208,8 @@
     WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
-    <!-- 관리자 유저 정보 가져오기 -->
-    <select id="getUserForAdmin" parameterType="String" resultType="com.sist.back.vo.userVO">
-      select * from user
-      where userkey = #{userkey}
-    </select>
+   
+
 
     <!-- 관리자 회원 탈퇴 -->
     <update id="userDelForAdmin" parameterType="String">
@@ -125,12 +218,11 @@
         WHERE userkey = #{userkey}
     </update>
 
-    <!-- 관리자 유저정보 수정-->
+    <!-- 관리자 유저정보 수정 -->
     <update id="userEditForAdmin" parameterType="com.sist.back.vo.userVO">
         UPDATE user
         SET pw = #{pw}, email = #{email}, phone = #{phone}
         WHERE userkey = #{userkey}
     </update>
-
 
 </mapper>
