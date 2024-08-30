@@ -68,8 +68,12 @@ export default function SidebarItem(parentItem) {
       class: "link board",
       child: [
         {
-          title: "게시판",
-          path: "/",
+          title: "게시판 카테고리 관리",
+          path: "/admin/board",
+        },
+        {
+          title: "게시물 관리",
+          path: "/admin/board/post",
         },
       ],
     },
@@ -159,7 +163,7 @@ export default function SidebarItem(parentItem) {
                 <li className="hasChild ">
                   <a
                     id="QA_Lnb_Menu7"
-                    href="Controller?type=adbbs"
+                    href="/admin/board"
                     className="link board"
                     name="게시판"
                   >
@@ -241,10 +245,10 @@ export default function SidebarItem(parentItem) {
                           ? parent.child &&
                             parent.child.map((child, j) => (
                               <li
+                                key={`child - ${j}`}
                                 className={
                                   child.path == pathname ? "selected" : ""
                                 }
-                                key={j}
                               >
                                 <Link href={child.path} className="link ">
                                   <span className="ellips">{child.title}</span>

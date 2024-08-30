@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.BoardMapper">
+  
+    <resultMap id="map1" type="com.sist.back.vo.BoardVO">
+        <id property="boardkey" column="boardkey"/>
+    </resultMap>
+
+    <!--총 게시물의 수를 반환-->
+    <select id="count" resultType="int" parameterType="Map">
+        SELECT COUNT(*) FROM board
+        <where>
+            <if test="categorykey != null and categorykey != '0'">
+                categorykey=#{categorykey} AND
+            </if> 
+            isdeleted = 0
+            <if test="searchType != null and searchValue != null">
+                <choose>
+                    <when test="searchType == 0">
+                        AND subject LIKE CONCAT('%', #{searchValue}, '%')
+                    </when>
+                    <when test="searchType == 1">
+                        AND writer LIKE CONCAT('%', #{searchValue}, '%')
+                    </when>
+                    <when test="searchType == 2">
+                        AND content LIKE CONCAT('%', #{searchValue}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <!--게시물 목록 반환-->
+    <select id="b_list" resultMap="map1" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * FROM board
+                <where>
+                    <if test="categorykey != null and categorykey != '0'">
+                        categorykey=#{categorykey} AND
+                    </if> 
+                    isdeleted = 0
+                    <if test="searchType != null and searchValue != null">
+                        <choose>
+                            <when test="searchType == 0">
+                                AND subject LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchType == 1">
+                                AND writer LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchType == 2">
+                                AND content LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                        </choose>
+                    </if>
+                </where>
+                ORDER BY boardkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c WHERE c.rnum BETWEEN #{begin} AND #{end} 
+        
+    </select>
+
+	<!-- 원글저장 -->
+	<insert id="add" parameterType="com.sist.back.vo.BoardVO">
+		INSERT INTO board(userkey, townkey, categorykey, title, content, create_dtm, viewqty, isdeleted, likeqty)
+		VALUES (#{userkey}, #{townkey}, #{categorykey}, #{title}, #{content}, NOW(), 0, 0, 0)
+	</insert>
+
+    <!-- 이미지저장 -->
+    <insert id="saveImg" parameterType="com.sist.back.vo.BoardImgVO">
+        INSERT INTO boardimg(boardkey, imgurl)
+        VALUES (#{boardkey}, #{imgurl})
+    </insert>
+
+	<!-- 원글보기 -->
+	<select id="getBbs" parameterType="String" resultMap="map1">
+		SELECT * FROM board
+		WHERE boardkey = #{num}
+	</select>
+	
+	<!-- 원글 수정 -->
+	<update id="edit" parameterType="com.sist.back.vo.BoardVO">
+		UPDATE board
+		SET title = #{title}, content = #{content}, update_dtm = NOW()
+		WHERE boardkey = #{boardkey}
+	</update>
+	
+	<!-- 원글 삭제 -->
+	<update id="del" parameterType="String">
+		Update board
+		SET isdeleted = 1, delete_dtm = NOW()
+		WHERE boardkey = #{boardkey}
+	</update>
+    
+    <!-- 조회수 증가 -->
+	<update id="hit" parameterType="String">
+		UPDATE board
+		SET viewqty = viewqty + 1
+		WHERE boardkey = #{boardkey}
+	</update>
+
+    <!-- 파일저장
+    <update id="addFile" parameterType="com.sist.bbs_next.vo.BbsVO">
+        UPDATE board
+        SET file_name = #{file_name},
+            ori_name = #{ori_name}
+        WHERE b_idx = #{b_idx}
+    </update> -->
+
+
+
+
+
+    <!-- ######################게시판 카테고리 관리###################### -->
+    <resultMap id="map2" type="com.sist.back.vo.KeyTableVO">
+        <result property="key" column="categorykey"/>
+        <result property="value" column="categoryname"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+    <!-- 게시판 카테고리 선택 -->
+    <select id="selectBoardCategory" resultType="String" parameterType="String">
+        SELECT DISTINCT a.categoryname 
+        FROM(SELECT b.*, k.value as categoryname FROM board b
+            JOIN key_table k ON k.table = 'board' AND k.column = 'categorykey' AND k.key = b.categorykey) AS a
+        WHERE a.categorykey = #{key}
+    </select>
+
+    <!-- 전체 게시판 카테고리 리스트 -->
+    <select id="getAllBcList" resultType="com.sist.back.vo.KeyTableVO">
+        SELECT k.`key`, k.`value`, COUNT(b.categorykey) AS count
+        FROM `key_table` k LEFT JOIN `board` b ON k.`key` = b.`categorykey`
+        WHERE k.`table` = 'board' AND k.`column` = 'categorykey'
+        GROUP BY k.`key`, k.`value`;
+    </select>
+
+    <!-- 게시판 카테고리 리스트(게시글 있을 때) -->
+    <select id="boardCategoryList" resultMap="map2">
+		SELECT DISTINCT a.categoryname, a.categorykey
+        FROM(SELECT b.*, k.value as categoryname FROM board b
+            JOIN key_table k ON k.table = 'board' AND k.column = 'categorykey' AND k.key = b.categorykey) AS a
+	</select>
+
+    <!-- 게시판 카테고리 추가 -->
+    <insert id="addBoardCategory" parameterType="String">
+		INSERT INTO key_table (`table`, `column`, `key`, `value`)
+        VALUES ('board', 
+                'categorykey', 
+                (SELECT max + 1 FROM (SELECT IFNULL(MAX(`key`), 0) AS max
+                FROM key_table
+                WHERE `table` = 'board' AND `column` = 'categorykey') AS a), 
+                #{value})
+	</insert>
+
+    <!-- 게시판 카테고리 수정 -->
+    <update id="editBoardCategory" parameterType="com.sist.back.vo.KeyTableVO">
+		UPDATE key_table
+        SET value = #{value}
+        WHERE `key` = #{key}
+	</update>
+
+    <!-- 게시판 카테고리 삭제 -->
+	<delete id="delBoardCategory" parameterType="String">
+		DELETE FROM key_table
+        WHERE value = #{value}
+	</delete>
+
+    <!-- <select id="countByBc" resultType="int" parameterType="String">
+        SELECT COUNT(*) FROM board 
+        WHERE categorykey = #{categoryKey} AND isdeleted = 0
+    </select> -->
+</mapper>

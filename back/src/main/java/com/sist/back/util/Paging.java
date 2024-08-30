@@ -1,4 +1,3 @@
-
 package com.sist.back.util;
 
 public class Paging {
@@ -132,5 +131,4 @@ public class Paging {
 	public void setEndPage(int endPage) {
 		this.endPage = endPage;
 	}
-
 }
