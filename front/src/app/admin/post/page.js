@@ -1,50 +1,7 @@
-'use client'
-
-import { useEffect, useRef, useState } from "react";
-import DetailModal from "@/component/admin/post/detail/Modal";
+import React from "react";
 import "/public/css/admin/post.css";
 
 export default function Page() {
-  const [open, setOpen] = useState(false);
-  const [prod_detail, setProd_detail] = useState({});
-  const [scroll, setScroll] = useState('paper');
-
-  const handleClickOpen = (scrollType, prod_detail) => () => {
-    setOpen(true);
-    setScroll(scrollType);
-    setProd_detail(prod_detail);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const descriptionElementRef = useRef(null);
-  useEffect(() => {
-    if (open) {
-      const { current: descriptionElement } = descriptionElementRef;
-      if (descriptionElement !== null) {
-        descriptionElement.focus();
-      }
-    }
-  }, [open]);
-
-  const detail_ar = [{ "idx":1,
-    "name":"[스위치]; 호그와트 레거시 팩",
-    "price": 7500,
-    "category": "game",
-    "seller": "Sist_3",
-    "crtdtm": "2024-08-12",
-    "hit": 34,
-    },{ "idx":2,
-    "name":"BOX: LOST FRAGMENT",
-    "price": 8000,
-    "category": "game",
-    "seller": "S1st_4",
-    "crtdtm": "2024-08-20",
-    "hit": 22,
-    },];
-
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -457,35 +414,16 @@ export default function Page() {
                   </th>
                   <th scope="col">No</th>
                   <th scope="col">상품명</th>
+                  <th scope="col">원가</th>
                   <th scope="col">판매가</th>
                   <th scope="col">분류</th>
-                  <th scope="col">판매자</th>
+                  <th scope="col">제조사</th>
+                  <th scope="col">재고</th>
                   <th scope="col">상품등록일</th>
                   <th scope="col">조회수</th>
                 </tr>
               </thead>
-              <tbody className="center" id="product-list">
-                {detail_ar.map((pvo,i)=>(
-                    <tr key={i.index}>
-                      <td scope="col">
-                        <input type="checkbox" />
-                      </td>
-                      <td scope="col">{pvo.idx}</td>
-                      <td scope="col" onDoubleClick={handleClickOpen('paper',pvo)}>{pvo.name}</td>
-                      <td scope="col">{pvo.price}원</td>
-                      <td scope="col">{pvo.category}</td>
-                      <td scope="col">{pvo.seller}</td>
-                      <td scope="col">{pvo.crtdtm}</td>
-                      <td scope="col">{pvo.hit}</td>
-                    </tr>
-                ))}
-                <DetailModal  prod_detail={prod_detail}
-                              handleClose={handleClose}
-                              descriptionElementRef={descriptionElementRef}
-                              open={open}
-                              scroll={scroll}
-                 />
-              </tbody>
+              <tbody className="center" id="product-list"></tbody>
             </table>
             <p className="empty" style={{ display: "block" }}>
               검색된 상품 내역이 없습니다.
