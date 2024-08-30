@@ -1,10 +1,34 @@
 "use client";
-import { Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+} from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
+
+import "/public/css/myPage.css";
+import "/public/css/profile.css";
 
 export default function page() {
   const [category_list, setCategory_list] = useState([]);
@@ -54,7 +78,7 @@ export default function page() {
   }, [router.query]);
   // #endregion
 
-  // #region 글쓰기 버튼
+  // #region 내 물건 팔기 버튼
   useEffect(() => {
     const container = document.querySelector(
       "div._1h4pbgy8jc._1h4pbgy9ug._1h4pbgy9vs"
@@ -236,6 +260,41 @@ export default function page() {
     window.location.href = newUrl;
   }
   // #endregion
+
+  // # region 글쓰기
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [method, setMethod] = useState("0");
+  const [isFree, setIsFree] = useState(false);
+  const [price, setPrice] = useState(isFree ? 0 : "");
+  const [canBargain, setCanBargain] = useState(false);
+  const [content, setContent] = useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setTitle("");
+    setCategory("");
+    setMethod("0");
+    setPrice("");
+    setCanBargain(false);
+    setContent("");
+    setIsFree(false);
+    setOpen(false);
+  };
+
+  const method_enable = (e) => {
+    if (e.currentTarget.value == 0) setIsFree(false);
+    else setIsFree(true);
+  };
+
+  const handlePriceChange = (event) => {
+    setPrice(event.target.value);
+  };
+  // # endregion
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -4182,8 +4241,9 @@ export default function page() {
                 }}
                 variant="contained"
                 startIcon={<AddIcon />}
+                onClick={setOpen}
               >
-                글쓰기
+                내 물건 팔기
               </Button>
             </div>
           </section>
@@ -4296,6 +4356,139 @@ export default function page() {
           </div>
         </div>
       </div>
+
+      {/* 내 물건 팔기 모달 */}
+      <React.Fragment>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries(formData.entries());
+              console.log(formJson);
+
+              handleClose();
+            },
+          }}
+        >
+          <DialogTitle>내 물건 팔기</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <TextField
+                autoFocus
+                required
+                margin="dense"
+                id="title"
+                name="title"
+                label="제목"
+                type="text"
+                fullWidth
+                size="small"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <TextField
+                autoFocus
+                required
+                margin="dense"
+                id="category"
+                name="category"
+                label="카테고리"
+                select
+                fullWidth
+                size="small"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {category_list.map((item) => (
+                  <MenuItem key={item.categorykey} value={item.categorykey}>
+                    {item.categoryname}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <FormLabel
+                required
+                id="demo-simple-row-radio-buttons-group-label"
+              >
+                거래 방식
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="method"
+                value={method}
+                onChange={(e) => {
+                  setMethod(e.target.value);
+                  setIsFree(e.target.value == 0 ? false : true);
+                }}
+              >
+                <FormControlLabel
+                  value="0"
+                  control={<Radio />}
+                  label="판매하기"
+                />
+                <FormControlLabel
+                  value="1"
+                  control={<Radio />}
+                  label="나눔하기"
+                />
+              </RadioGroup>
+              <OutlinedInput
+                size="small"
+                id="price"
+                name="price"
+                placeholder="가격을 입력해주세요."
+                disabled={isFree}
+                value={isFree ? 0 : price}
+                onChange={(e) => setPrice(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">원</InputAdornment>
+                }
+                aria-describedby="outlined-weight-helper-text"
+                inputProps={{
+                  "aria-label": "weight",
+                }}
+              />
+              <FormControlLabel
+                id="canbargain"
+                name="canbargain"
+                style={{ display: isFree ? "none" : "block" }}
+                control={
+                  <Checkbox
+                    checked={canBargain}
+                    onChange={(e) => setCanBargain(e.target.checked)}
+                  />
+                }
+                label="가격 제안 받기"
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <TextField
+                required
+                id="content"
+                name="content"
+                label="자세한 설명"
+                multiline
+                rows={7}
+                placeholder={`OO동에 올릴 게시글 내용을 작성해 주세요. (판매 금지 물품은 게시가 제한될 수 있어요.)\n\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.`}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button type="submit">작성완료</Button>
+            <Button onClick={handleClose}>취소</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
     </>
   );
 }
