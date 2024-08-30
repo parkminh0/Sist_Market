@@ -200,6 +200,7 @@ export default function SidebarItem(parentItem) {
                     <ul className="menu">
                       {link_item.map((parent, i) => (
                         <li
+                          key={i}
                           className={
                             parent.path == parent_path
                               ? "haschild show"
