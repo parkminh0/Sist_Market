@@ -95,8 +95,13 @@ export default function SidebarItem(parentItem) {
   const pathname = usePathname();
   const tmp = pathname.split("/").length - 1;
   var parent_path = "";
+  var childpath = "";
   if (tmp == 2) {
     parent_path = pathname;
+  } else if(tmp == 4) {
+    parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
+    parent_path = parent_path.substring(0, parent_path.lastIndexOf("/"));
+    childpath = parent_path;
   } else {
     parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
   }
@@ -195,6 +200,7 @@ export default function SidebarItem(parentItem) {
                     <ul className="menu">
                       {link_item.map((parent, i) => (
                         <li
+                          key={i}
                           className={
                             parent.path == parent_path
                               ? "haschild show"
