@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sist.back.service.PostService;
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/adpost")
 public class PostController {
     
     @Autowired
