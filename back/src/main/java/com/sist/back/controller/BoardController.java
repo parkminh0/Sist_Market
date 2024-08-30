@@ -66,12 +66,13 @@ public class BoardController {
         int totalRecord = b_service.getCount(searchType, searchValue, categorykey);
 
         //위에서 전체 게시물의 수를 얻었으니 페이징 기법에 사용하는 객체를 생성할 수 있다.
-        Paging page = new Paging(nowPage, totalRecord, 7, 5, categorykey); //numPerPage와 pagePerBlock도 upload처럼 properties에 변수 선언하면 유지보수가 더 수월하다.
+        Paging page = new Paging(7, 5); //numPerPage와 pagePerBlock도 upload처럼 properties에 변수 선언하면 유지보수가 더 수월하다.
 
+        page.setNowPage(nowPage);
+        page.setTotalRecord(totalRecord);
         nowPage = page.getNowPage();
 
         //페이징 기법에 HTML코드를 얻어내자.
-        String pageCode = page.getSb().toString();
 
         //뷰페이지에서 표현할 목록 가져오기
         int begin = page.getBegin();
