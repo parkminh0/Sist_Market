@@ -13,11 +13,8 @@ import TownInfo from "@/component/admin/post/detail/TownInfo";
 import OfferInfo from "@/component/admin/post/detail/OfferInfo";
 import { Grid } from "@mui/material";
 import ImageModal from "@/component/admin/post/detail/ImageModal";
-import { useSearchParams } from "next/navigation";
 
 export default function Page(props) {
-  const params = useSearchParams();
-
   const [postkey, setPostkey] = useState("");
   const [pvo, setPvo] = useState({});
   const [tvo, setTvo] = useState({});
@@ -33,7 +30,6 @@ export default function Page(props) {
     setOpen(true);
   }
   const handleClose = () => setOpen(false);
-
   const API_URL = "/adpost/detail";
 
   function getPostDetail(p_key) {
@@ -56,9 +52,8 @@ export default function Page(props) {
   }
 
   useEffect(() => {
-    console.log(params.get("postkey"));
-    setPostkey(params.get("postkey"));
-    getPostDetail(params.get("postkey"));
+    setPostkey(props.params.postkey);
+    getPostDetail(props.params.postkey);
   }, []);
 
   return (
