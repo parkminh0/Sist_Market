@@ -11,9 +11,10 @@ public class WebCORSConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // localhost:3000번으로부터 요청이 들어올 때 모든 요청방식과
         // 모든 헤더에 실려오는 것을 허용함을 지정하자
-        registry.addMapping("/*")
+
+        registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedHeaders("")
+                .allowedHeaders("*")
                 .allowedMethods("*")
                 .allowCredentials(true);
     }

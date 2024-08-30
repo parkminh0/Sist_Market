@@ -4,42 +4,44 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.PostMapper">
 
-    <resultMap id="postMap" type="com.sist.back.vo.PostVO">
-		<id column="postkey" property="postkey" />
-        <result column="categorykey" property="categorykey" />
-        <result column="userkey" property="userkey" />
-        <result column="dealuserkey" property="dealuserkey" />
-        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
-        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
-        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
-	    <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
-	    <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
-	</resultMap>
+      <resultMap id="postMap" type="com.sist.back.vo.PostVO">
+      <id column="postkey" property="postkey" />
+          <result column="categorykey" property="categorykey" />
+          <result column="userkey" property="userkey" />
+          <result column="dealuserkey" property="dealuserkey" />
+          <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+          <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+          <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+        <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
+    </resultMap>
 
-    <resultMap id="offerMap" type="com.sist.back.vo.OfferVO">
-        <result column="offeruserkey" property="offeruserkey" />
-        <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back.vo.userVO"/>
-	</resultMap>
+      <resultMap id="offerMap" type="com.sist.back.vo.OfferVO">
+          <result column="offeruserkey" property="offeruserkey" />
+          <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back.vo.userVO"/>
+    </resultMap>
 
-    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatroomVO">
-		<id column="chatroomkey" property="chatroomkey" />
-        <result column="chatuserkey" property="chatuserkey" />
-        <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back.vo.userVO"/>
-	    <collection property="c_list" select="getChattingByChatroomKey" column="chatroomkey" ofType="com.sist.back.vo.ChattingVO" />
-	</resultMap>
-    <resultMap id="chattingMap" type="com.sist.back.vo.ChattingVO">
-		<id column="chattingkey" property="chattingkey" />
-        <result column="chattingemozikey" property="chattingemozikey" />
-        <association property="cevo" select="getChattingemoziByChattingemoziKey" column="chattingemozikey" javaType="com.sist.back.vo.ChattingEmoziVO"/>
-        <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back.vo.ChatImgVO"/>
-	</resultMap>
+      <resultMap id="chatroomMap" type="com.sist.back.vo.ChatroomVO">
+      <id column="chatroomkey" property="chatroomkey" />
+          <result column="chatuserkey" property="chatuserkey" />
+          <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back.vo.userVO"/>
+        <collection property="c_list" select="getChattingByChatroomKey" column="chatroomkey" ofType="com.sist.back.vo.ChattingVO" />
+    </resultMap>
+      <resultMap id="chattingMap" type="com.sist.back.vo.ChattingVO">
+      <id column="chattingkey" property="chattingkey" />
+          <result column="chattingemozikey" property="chattingemozikey" />
+          <association property="cevo" select="getChattingemoziByChattingemoziKey" column="chattingemozikey" javaType="com.sist.back.vo.ChattingEmoziVO"/>
+          <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back.vo.ChatImgVO"/>
+    </resultMap>
 
-    <resultMap id="userreviewMap" type="com.sist.back.vo.UserReviewVO">
-        <result column="reviewlistkey" property="reviewlistkey" />
-        <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back.vo.ReviewListVO"/>
-	</resultMap>
+      <resultMap id="userreviewMap" type="com.sist.back.vo.UserReviewVO">
+          <result column="reviewlistkey" property="reviewlistkey" />
+          <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back.vo.ReviewListVO"/>
+    </resultMap>
 
-
+    <select id="all" resultType="com.sist.back.vo.PostVO">
+      SELECT * FROM post
+    </select>
 
     <!-- 1. post 관련 데이터 -->
     <select id="getPostByPostKey" resultMap="postMap" parameterType="int">
@@ -128,3 +130,4 @@
     </select>
 
 </mapper>
+

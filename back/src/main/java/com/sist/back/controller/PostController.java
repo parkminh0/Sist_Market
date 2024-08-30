@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.PostService;
@@ -17,6 +15,14 @@ public class PostController {
     
     @Autowired
     PostService p_service;
+  
+    @RequestMapping("/all")
+    public Map<String, Object> all() {
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("post_list", p_service.all());
+        return res;
+    }
 
     @RequestMapping("/detail")
     public Map<String, Object> findById(int postkey) {
@@ -28,5 +34,5 @@ public class PostController {
         e_map.put("ur_list", p_service.getUserReviewByPostKey(postkey));
         return e_map;
     }
-
+  
 }

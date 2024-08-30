@@ -17,6 +17,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -27,8 +28,6 @@ public class UserController {
 
     @Autowired
     UserService service;
-
-    
 
     @RequestMapping(value="/login", method=RequestMethod.POST)
     @ResponseBody

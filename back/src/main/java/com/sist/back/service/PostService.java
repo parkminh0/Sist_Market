@@ -2,11 +2,11 @@ package com.sist.back.service;
 
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.PostMapper;
+
 import com.sist.back.vo.ChatroomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
@@ -18,6 +18,9 @@ public class PostService {
     @Autowired
     PostMapper p_mapper;
 
+    public PostVO[] all(){
+        return p_mapper.all();
+    }
     public PostVO getPostByPostKey(int postkey) {
         return p_mapper.getPostByPostKey(postkey);
     }
