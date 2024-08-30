@@ -15,14 +15,15 @@ export default function Page() {
   const [type,setType] = useState("");
   const [regist_start_date,setRegist_start_date] = useState("");
   const [regist_end_date,setRegist_end_date] = useState("");
-  const [isdeleted,setIsdeleted] = useState("");
-  const [isauthorized,setIsauthorized] = useState("");
+  const [isdeleted,setIsdeleted] = useState(0);
+  const [isauthorized,setIsauthorized] = useState(0);
   const [recent_login_start_date,setRecent_login_start_date] = useState("");
   const [recent_login_end_date,setRecent_login_end_date] = useState("");
 
   //유저 검색
   const API_URL_2 = "/api/search_user_admin";
   const [userlist, setUserlist] = useState([]);
+  const [totalRecords,setTotalRecords] = useState(0);
   //페이징
   const [totalPage,setTotalPage] = useState(0);
 
@@ -70,8 +71,8 @@ export default function Page() {
   function getCount() {
     axios.get(API_URL).then((response) => {
       setCount(response.data.ucvo);
-      setDel(response.data.ucvo.cntNotDel);
-      setAct(response.data.ucvo.cntDel);
+      setDel(response.data.ucvo.cntDel);
+      setAct(response.data.ucvo.cntNotDel);
     });
   }
 
@@ -94,6 +95,7 @@ export default function Page() {
   }).then((response) => {
         setUserlist(response.data.ar);
         setTotalPage(response.data.totalPage);
+        setTotalRecords(response.data.totalRecords);
       }).catch(error => {
         console.error("Error during search:", error);
     });
@@ -109,6 +111,7 @@ export default function Page() {
             setCheckedItems([]); // 개별 체크박스 해제
             setAllChecked(false); // 전체 선택 체크박스 해제
             doSrchFrm(0);
+            getCount();
         }) .catch(error => {
       console.error("Error deleting users:", error);
       alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
@@ -170,7 +173,7 @@ export default function Page() {
                     <strong className="underline txtEm">
                       <Link href="#">
                         {/* ${requestScope.ucvo.cntNotDel} */}
-                        {del}
+                        {act}
                       </Link>
                     </strong>
                     명
@@ -179,7 +182,7 @@ export default function Page() {
                     <strong className="underline txtEm">
                       <Link href="#">
                         {/* ${requestScope.ucvo.cntDel} */}
-                        {act}
+                        {del}
                       </Link>
                     </strong>
                     명
@@ -383,7 +386,7 @@ export default function Page() {
         <div className="mState">
           <div className="gLeft">
             <p className="total">
-              검색결과 <strong>0</strong>건
+              검색결과  <strong> {totalRecords}</strong> 건
             </p>
           </div>
         </div>
@@ -445,12 +448,12 @@ export default function Page() {
                     </td>
                     <td scope="row">{item.create_dtm}</td>
                     <td scope="row">
-                      <Link href={`/admin/userEdit/${item.userkey}`}>
+                      <Link href={`/admin/user/userEdit?userkey=${item.userkey}`}>
                         {item.name}
                       </Link>
                     </td>
                     <td scope="row">
-                      <Link href={`/admin/userEdit/${item.userkey}`}>
+                      <Link href={`/admin/user/userEdit?userkey=${item.userkey}`}>
                         {item.id}
                       </Link>
                     </td>

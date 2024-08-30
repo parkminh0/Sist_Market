@@ -79,14 +79,14 @@ public class UserController {
     public Map<String, Object> searchUserForAdmin(String search_type, String type, String regist_start_date,
             String regist_end_date, String isdeleted, String recent_login_start_date, String recent_login_end_date,
             String isauthorized, String cPage) {
-        System.out.println("@@@@@@@@@search_type="+search_type);
-        System.out.println("@@@@@@@@@type="+type);
-        System.out.println("@@@@@@@@@regist_start_date="+regist_start_date);
-        System.out.println("@@@@@@@@@isdeleted="+isdeleted);
-        System.out.println("@@@@@@@@@recent_login_start_date="+recent_login_start_date);
-        System.out.println("@@@@@@@@@recent_login_end_date="+recent_login_end_date);
-        System.out.println("@@@@@@@@@isauthorized="+isauthorized);
-        System.out.println("@@@@@@@@@cPage="+cPage);
+        //System.out.println("@@@@@@@@@search_type="+search_type);
+        //System.out.println("@@@@@@@@@type="+type);
+        //System.out.println("@@@@@@@@@regist_start_date="+regist_start_date);
+        //System.out.println("@@@@@@@@@isdeleted="+isdeleted);
+        //System.out.println("@@@@@@@@@recent_login_start_date="+recent_login_start_date);
+        //System.out.println("@@@@@@@@@recent_login_end_date="+recent_login_end_date);
+        //System.out.println("@@@@@@@@@isauthorized="+isauthorized);
+        //System.out.println("@@@@@@@@@cPage="+cPage);
 
 
         Map<String, String> iMap = new HashMap<>();
@@ -121,6 +121,7 @@ public class UserController {
         map.put("ar", ar);
         map.put("page", p);
         map.put("totalPage", p.getTotalPage());
+        map.put("totalRecords",p.getTotalRecord());
         return map;
     }
 
@@ -128,13 +129,9 @@ public class UserController {
     @RequestMapping("/api/admin/userEdit")
     @ResponseBody
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
-       
         Map<String, Object> map = new HashMap<>();
-        userVO vo = service.getUserForAdmin(userkey);
-        map.put("ar", vo);
-
-        
-
+        userVO uvo = service.getUserForAdmin(userkey);
+        map.put("ar", uvo);
 
         return map;
     }
@@ -172,7 +169,7 @@ public class UserController {
     @RequestMapping("/api/admin/checkUserDel")
     @ResponseBody
     public Map<String, Object> checkUserDel(@RequestBody List<String>userkeys) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@컨트롤러 탄다");
+        
         Map<String, Object> map = new HashMap<>();
         int cnt;
         for(String userkey:userkeys){
