@@ -8,8 +8,8 @@ export default function Page() {
   const router = useRouter();
 
   const [userkey, setUserkey] = useState(0);
-  const DEL_URL = `/api/admin/userDel?userkey=${userkey}`;
-  const EDIT_URL = `/api/admin/userEditReal?userkey=${userkey}`;
+  const DEL_URL = `/user/api/admin/userDel?userkey=${userkey}`;
+  const EDIT_URL = `/user/api/admin/userEditReal?userkey=${userkey}`;
   const [ar, setAR] = useState({});
   const [pw, setPW] = useState("");
   const [name, setNAME] = useState("");
@@ -34,7 +34,7 @@ export default function Page() {
           "회원 탈퇴가 완료되었습니다. 페이지를 이동하시겠습니까?"
         );
         if (userConfirmed) {
-          router.push("/admin/user");
+          router.push("/user/admin/user");
         } else {
           alert("탈퇴가 불가능 합니다.");
         }
@@ -77,7 +77,7 @@ export default function Page() {
 
   useEffect(() => {
     if (userkey) {
-      const API_URL = `/api/admin/userEdit?userkey=${userkey}`;
+      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}`;
       axios.get(API_URL).then((res) => {
         setAR(res.data.ar);
         setPW(res.data.ar.pw || "");
