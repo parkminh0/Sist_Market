@@ -40,7 +40,6 @@ public class CategoryEditController {
 
     @Autowired
     CategoryEditService ce_Service;
-    
     @RequestMapping("/deleted")
     @ResponseBody
     public Map<String, Object> deletedAll() {
@@ -63,6 +62,11 @@ public class CategoryEditController {
     @ResponseBody
     public Map<String,Object> addCategory(categoryVO cvo) {
         Map<String,Object> map = new HashMap<>();
+
+    @RequestMapping("/add")
+    @ResponseBody
+    public Map<String, Object> addCategory(categoryVO cvo) {
+        Map<String, Object> map = new HashMap<>();
         int cnt = 0;
         try {
             // 파일이 첨부된 상태인지 확인
@@ -88,14 +92,13 @@ public class CategoryEditController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
         return map;
     }
 
     @RequestMapping("/edit")
     @ResponseBody
-    public Map<String,Object> editCategory(categoryVO cvo) {
-        Map<String,Object> map = new HashMap<>();
+    public Map<String, Object> editCategory(categoryVO cvo) {
+        Map<String, Object> map = new HashMap<>();
         int cnt = 0;
         try {
             MultipartFile f = cvo.getFile();
@@ -120,13 +123,11 @@ public class CategoryEditController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
         return map;
     }
 
     @RequestMapping("/delete")
     @ResponseBody
-    public Map<String,Object> deleteCategory(@RequestBody List<String> list) {
         Map<String, Object> map = new HashMap<>();
         int cnt = 0;
         for (String categorykey : list) {
@@ -135,7 +136,4 @@ public class CategoryEditController {
         map.put("cnt", cnt);
         return map;
     }
-
-
-
 }
