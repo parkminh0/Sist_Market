@@ -5,17 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.PostimgMapper;
-import com.sist.back.vo.postimgVO;
+import com.sist.back.vo.PostImgVO;
 
 @Service
 public class PostimgService {
 
     @Autowired
-    PostimgMapper mapper;
+    PostimgMapper p_mapper;
 
 
-    public postimgVO[] all(){
-        return mapper.all();
+    public PostImgVO[] all(){
+        return p_mapper.all();
     }
     
 }
