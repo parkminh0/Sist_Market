@@ -6,7 +6,7 @@ import axios from "axios";
 
 export default function Page() {
   //유저 카운트
-  const API_URL = "/api/usercount";
+  const API_URL = "/user/api/usercount";
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
@@ -21,14 +21,14 @@ export default function Page() {
   const [recent_login_end_date,setRecent_login_end_date] = useState("");
 
   //유저 검색
-  const API_URL_2 = "/api/search_user_admin";
+  const API_URL_2 = "/user/api/search_user_admin";
   const [userlist, setUserlist] = useState([]);
   const [totalRecords,setTotalRecords] = useState(0);
   //페이징
   const [totalPage,setTotalPage] = useState(0);
 
   //체크한 유저 삭제 
-  const DEL_URL = "/api/admin/checkUserDel";
+  const DEL_URL = "/user/api/admin/checkUserDel";
   const [allChecked, setAllChecked] = useState(false); // 전체 선택 체크박스 
   const [checkedItems, setCheckedItems] = useState([]); // 개별 체크박스 
 
