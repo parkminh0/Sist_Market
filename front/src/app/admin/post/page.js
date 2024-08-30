@@ -6,7 +6,7 @@ import axios from "axios";
 import ProductList from "@/component/ProductList";
 
 export default function Page() {
-  let API_URL = "/post/all";
+  let API_URL = "/adpost/all";
   const [list, setList] = useState([]);
   const [param, setParam] = useState([]);
 

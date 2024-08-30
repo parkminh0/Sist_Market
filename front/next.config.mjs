@@ -11,8 +11,8 @@ const nextConfig = {
                 destination: "http://localhost:8080/api/:path*"
             },
             {
-              source: "/post/:path*",
-              destination: "http://localhost:8080/post/:path*",
+              source: "/adpost/:path*",
+              destination: "http://localhost:8080/adpost/:path*",
             },
         ]
     }
