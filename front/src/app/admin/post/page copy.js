@@ -1,51 +1,7 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "/public/css/admin/post.css";
-import axios from "axios";
-import ProductList from "@/component/ProductList";
 
 export default function Page() {
-  let API_URL = "/post/all";
-  const [list, setList] = useState([]);
-  const [param, setParam] = useState([]);
-
-  function requestProducts() {
-    //서버 호출
-    axios({
-      url: API_URL,
-      method: "post",
-      params: param,
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => {
-      console.log(res);
-      setList(res.data.post_list);
-    });
-  }
-
-  function searchProduct(list) {
-    //서버 호출
-    axios({
-      url: "/post/search",
-      method: "post",
-      params: param,
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => {
-      console.log("res");
-      setList(res.data.post_list);
-    });
-  }
-
-  useEffect(() => {
-    //최초로 한번 호출되는 곳
-    requestProducts();
-  }, []);
-
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -367,7 +323,7 @@ export default function Page() {
           <div className="mButton gCenter">
             <a
               href="#"
-              onclick="searchProduct()"
+              onclick="searchProduct(0)"
               className="btnSearch"
               id="eBtnSearch"
             >
@@ -398,7 +354,43 @@ export default function Page() {
             </p>
           </div>
         </div>
-
+        <div className="mCtrl typeHeader setting">
+          <div className="gTop">
+            <a
+              href="#"
+              onclick="delete_choice(0)"
+              className="btnNormal _manage_state"
+            >
+              <span>판매함</span>
+            </a>
+            <a
+              href="#"
+              onclick="delete_choice(1)"
+              className="btnNormal _manage_state"
+            >
+              <span>판매안함</span>
+            </a>
+            <a
+              href="#"
+              onclick="delete_choice(2)"
+              className="btnNormal _manage_delete"
+            >
+              <span>
+                <em className="icoDel"></em> 삭제
+              </span>
+            </a>
+            <a href="#" className="btnNormal _manage_category">
+              <span>
+                분류수정<em className="icoLink"></em>
+              </span>
+            </a>
+            <a href="#" className="btnNormal _manage_main_display">
+              <span>
+                메인진열수정<em className="icoLink"></em>
+              </span>
+            </a>
+          </div>
+        </div>
         <div id="searchResult">
           <div className="mBoard typeList gScroll gCell">
             <table border="1" summary="" className="eChkColor">
@@ -417,6 +409,9 @@ export default function Page() {
               </colgroup>
               <thead id="product-list-header">
                 <tr>
+                  <th scope="col">
+                    <input type="checkbox" id="allChk" className="allChk" />
+                  </th>
                   <th scope="col">No</th>
                   <th scope="col">상품명</th>
                   <th scope="col">원가</th>
@@ -428,17 +423,66 @@ export default function Page() {
                   <th scope="col">조회수</th>
                 </tr>
               </thead>
-              <tbody className="center" id="product-list">
-                <ProductList ar={list} />
-              </tbody>
+              <tbody className="center" id="product-list"></tbody>
             </table>
-            {list == null ? (
-              <p className="empty" style={{ display: "block" }}>
-                검색된 상품 내역이 없습니다.
-              </p>
-            ) : (
-              ""
-            )}
+            <p className="empty" style={{ display: "block" }}>
+              검색된 상품 내역이 없습니다.
+            </p>
+          </div>
+          <div className="mCtrl typeFooter">
+            <div className="gTop">
+              <a
+                href="#none"
+                onclick="delete_choice(0)"
+                className="btnNormal _manage_state"
+              >
+                <span>판매함</span>
+              </a>
+              <a
+                href="#none"
+                onclick="delete_choice(1)"
+                className="btnNormal _manage_state"
+              >
+                <span>판매안함</span>
+              </a>
+              <a
+                href="#none"
+                onclick="delete_choice(2)"
+                className="btnNormal _manage_delete"
+              >
+                <span>
+                  <em className="icoDel"></em> 삭제
+                </span>
+              </a>
+              <a
+                href="#none"
+                target="_blank"
+                title="새창 열림"
+                className="btnNormal _manage_category"
+              >
+                <span>
+                  분류수정<em className="icoLink"></em>
+                </span>
+              </a>
+              <a
+                href="#none"
+                target="_blank"
+                title="새창 열림"
+                className="btnNormal _manage_main_display"
+              >
+                <span>
+                  메인진열수정<em className="icoLink"></em>
+                </span>
+              </a>
+            </div>
+            <div className="gBottom">
+              <a
+                href="Controller?type=adproductcrud"
+                className="btnCtrl eRegProduct"
+              >
+                <span>상품등록</span>
+              </a>
+            </div>
           </div>
           <div className="mPaginate">
             <ol>
