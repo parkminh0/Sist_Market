@@ -40,7 +40,11 @@ public class CategoryEditController {
 
     @Autowired
     CategoryEditService ce_Service;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
     @RequestMapping("/deleted")
     @ResponseBody
     public Map<String, Object> deletedAll() {
@@ -58,11 +62,19 @@ public class CategoryEditController {
         res.put("category_list", c_Service.all());
         return res;
     }
+<<<<<<< HEAD
     
     @RequestMapping("/add")
     @ResponseBody
     public Map<String,Object> addCategory(categoryVO cvo) {
         Map<String,Object> map = new HashMap<>();
+=======
+
+    @RequestMapping("/add")
+    @ResponseBody
+    public Map<String, Object> addCategory(categoryVO cvo) {
+        Map<String, Object> map = new HashMap<>();
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
         int cnt = 0;
         try {
             // 파일이 첨부된 상태인지 확인
@@ -70,11 +82,14 @@ public class CategoryEditController {
             if (f != null && !f.isEmpty()) {
                 String fname = f.getOriginalFilename();
                 Path path = Paths.get(upload);
+<<<<<<< HEAD
                 if(path.toString().contains("back")){
                     String pathString = path.toString();
                     String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
+=======
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
                 String realPath = "/img/admin/category/";
                 String filePath = path.resolve(fname).toString();
                 cvo.setImg_url(realPath + fname);
@@ -88,25 +103,37 @@ public class CategoryEditController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
         return map;
     }
 
     @RequestMapping("/edit")
     @ResponseBody
+<<<<<<< HEAD
     public Map<String,Object> editCategory(categoryVO cvo) {
         Map<String,Object> map = new HashMap<>();
+=======
+    public Map<String, Object> editCategory(categoryVO cvo) {
+        Map<String, Object> map = new HashMap<>();
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
         int cnt = 0;
         try {
             MultipartFile f = cvo.getFile();
             if (f != null && !f.isEmpty()) {
                 String fname = f.getOriginalFilename();
                 Path path = Paths.get(upload);
+<<<<<<< HEAD
                 if(path.toString().contains("back")){
                     String pathString = path.toString();
                     String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
+=======
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
                 String realPath = "/img/admin/category/";
                 String filePath = path.resolve(fname).toString();
                 cvo.setImg_url(realPath + fname);
@@ -120,13 +147,21 @@ public class CategoryEditController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
         return map;
     }
 
     @RequestMapping("/delete")
     @ResponseBody
+<<<<<<< HEAD
     public Map<String,Object> deleteCategory(@RequestBody List<String> list) {
+=======
+    public Map<String, Object> deleteCategory(@RequestBody List<String> list) {
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
         Map<String, Object> map = new HashMap<>();
         int cnt = 0;
         for (String categorykey : list) {
@@ -136,6 +171,9 @@ public class CategoryEditController {
         return map;
     }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
 }

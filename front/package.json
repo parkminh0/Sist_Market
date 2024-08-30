@@ -13,7 +13,11 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.6",
+<<<<<<< HEAD
     "axios": "^1.7.3",
+=======
+    "axios": "^1.7.5",
+>>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
     "front": "file:",
     "next": "14.2.5",
     "react": "^18",
