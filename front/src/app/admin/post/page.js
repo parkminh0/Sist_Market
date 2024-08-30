@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-import React from "react";
-=======
-<<<<<<< HEAD
-import React from "react";
-=======
 "use client";
 import React, { useEffect, useState } from "react";
->>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
->>>>>>> 5710482a12a6738107ff6fcfe61a9ffe03bb02b9
 import "/public/css/admin/post.css";
 import axios from "axios";
 import ProductList from "@/component/ProductList";
 
 export default function Page() {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
   let API_URL = "/post/all";
   const [list, setList] = useState([]);
   const [param, setParam] = useState([]);
@@ -58,8 +46,6 @@ export default function Page() {
     requestProducts();
   }, []);
 
->>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
->>>>>>> 5710482a12a6738107ff6fcfe61a9ffe03bb02b9
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -442,17 +428,9 @@ export default function Page() {
                   <th scope="col">조회수</th>
                 </tr>
               </thead>
-<<<<<<< HEAD
-              <tbody className="center" id="product-list"></tbody>
-=======
-<<<<<<< HEAD
-              <tbody className="center" id="product-list"></tbody>
-=======
               <tbody className="center" id="product-list">
                 <ProductList ar={list} />
               </tbody>
->>>>>>> 45a02f36d05c53afdbd7c6701864f34c9b3cf576
->>>>>>> 5710482a12a6738107ff6fcfe61a9ffe03bb02b9
             </table>
             {list == null ? (
               <p className="empty" style={{ display: "block" }}>
