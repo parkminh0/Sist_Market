@@ -9,13 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-
     "axios": "^1.7.5",
     "front": "file:",
     "js-cookie": "^3.0.5",
