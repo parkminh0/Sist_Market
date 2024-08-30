@@ -15,7 +15,7 @@ import { Grid } from "@mui/material";
 import ImageModal from "@/component/admin/post/detail/ImageModal";
 import { useSearchParams } from "next/navigation";
 
-export default function Page() {
+export default function Page(props) {
   const params = useSearchParams();
 
   const [postkey, setPostkey] = useState("");
