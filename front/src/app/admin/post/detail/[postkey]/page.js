@@ -34,19 +34,31 @@ export default function Page() {
   }
   const handleClose = () => setOpen(false);
 
+<<<<<<< HEAD
   const API_URL = "/post/detail";
 
+=======
+  const API_URL = "/adpost/detail";
+  
+>>>>>>> c68979f0464b0d212e2dcd9c87e71e168587ac89
   function getPostDetail(p_key) {
     axios({
       url: API_URL,
       method: "post",
+<<<<<<< HEAD
       params: { postkey: p_key },
+=======
+      params: {"postkey":p_key},
+>>>>>>> c68979f0464b0d212e2dcd9c87e71e168587ac89
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
     }).then((response) => {
+<<<<<<< HEAD
       console.log("응답:" + response);
+=======
+>>>>>>> c68979f0464b0d212e2dcd9c87e71e168587ac89
       setPvo(response.data.pvo);
       setTvo(response.data.tvo);
       setO_list(response.data.o_list);
@@ -54,6 +66,10 @@ export default function Page() {
       setUr_list(response.data.ur_list);
       setLoaded(true);
     });
+<<<<<<< HEAD
+=======
+ 
+>>>>>>> c68979f0464b0d212e2dcd9c87e71e168587ac89
   }
 
   useEffect(() => {

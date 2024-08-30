@@ -2,7 +2,7 @@ export default function ProductList({ ar }) {
   return (
     <>
       {ar.map((data, index) => (
-        <tr>
+        <tr key={index} onDoubleClick={()=>window.open(`/admin/post/detail/${data.postkey}`)}>
           <td>{data.postkey}</td>
           <td>{data.userkey}</td>
           <td>{data.townkey}</td>

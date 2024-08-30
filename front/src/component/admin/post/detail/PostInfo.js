@@ -16,8 +16,6 @@ export default function PostInfo(props) {
   const pvo = props.pvo;
   const handleOpen = props.handleOpen;
   
-  console.log(pvo.pinfo_list);
-  
   var method = "판매";
   var poststatus = "임시저장";
   var canbargain = "불가";
