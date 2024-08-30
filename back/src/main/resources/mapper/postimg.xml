@@ -5,7 +5,7 @@
 <mapper namespace="com.sist.back.mapper.PostimgMapper">
 
     <!-- postimgVO에 대한 ResultMap 정의 -->
-    <resultMap id="postimgVOResultMap" type="com.sist.back.vo.postimgVO">
+    <resultMap id="postimgVOResultMap" type="com.sist.back.vo.PostImgVO">
         <id property="postimgkey" column="postimgkey"/>
         <result property="imgurl" column="imgurl"/>
         <result property="postkey" column="postkey"/>

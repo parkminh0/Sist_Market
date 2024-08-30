@@ -70,6 +70,11 @@ public class CategoryEditController {
             if (f != null && !f.isEmpty()) {
                 String fname = f.getOriginalFilename();
                 Path path = Paths.get(upload);
+                if(path.toString().contains("back")){
+                    String pathString = path.toString();
+                    String changedPath = pathString.replace("back\\", "");
+                    path = Paths.get(changedPath);
+                }
                 String realPath = "/img/admin/category/";
                 String filePath = path.resolve(fname).toString();
                 cvo.setImg_url(realPath + fname);
@@ -97,6 +102,11 @@ public class CategoryEditController {
             if (f != null && !f.isEmpty()) {
                 String fname = f.getOriginalFilename();
                 Path path = Paths.get(upload);
+                if(path.toString().contains("back")){
+                    String pathString = path.toString();
+                    String changedPath = pathString.replace("back\\", "");
+                    path = Paths.get(changedPath);
+                }
                 String realPath = "/img/admin/category/";
                 String filePath = path.resolve(fname).toString();
                 cvo.setImg_url(realPath + fname);

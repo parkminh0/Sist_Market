@@ -7,12 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-
-public class postimgVO {
-    String 
-    imgurl,
-    postimgkey,
-    postkey;
+@AllArgsConstructor
+public class ReviewListVO {
+    private int reviewlistkey, preference;
+    private String review;
 }
