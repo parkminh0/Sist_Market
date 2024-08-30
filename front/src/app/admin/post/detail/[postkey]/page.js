@@ -31,7 +31,7 @@ export default function Page(props) {
   };
   const handleClose = () => setOpen(false);
 
-  const API_URL = "/post_api/detail";
+  const API_URL = "/post/detail";
   
   function getPostDetail(p_key) {
     axios
@@ -40,8 +40,6 @@ export default function Page(props) {
         ,{params: {"postkey":p_key}}
       )
       .then((response) => {
-        console.log("response: ");
-        console.log(response.data);
         setPvo(response.data.pvo);
         setTvo(response.data.tvo);
         setO_list(response.data.o_list);

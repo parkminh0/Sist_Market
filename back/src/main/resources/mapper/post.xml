@@ -2,41 +2,41 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sist.back2.mapper.PostMapper">
+<mapper namespace="com.sist.back.mapper.PostMapper">
 
-    <resultMap id="postMap" type="com.sist.back2.vo.PostVO">
+    <resultMap id="postMap" type="com.sist.back.vo.PostVO">
 		<id column="postkey" property="postkey" />
         <result column="categorykey" property="categorykey" />
         <result column="userkey" property="userkey" />
         <result column="dealuserkey" property="dealuserkey" />
-        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back2.vo.categoryVO"/>
-        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back2.vo.userVO"/>
-        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back2.vo.userVO"/>
-	    <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back2.vo.PostImgVO" />
-	    <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back2.vo.PostInfoVO" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
+	    <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+	    <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
 	</resultMap>
 
-    <resultMap id="offerMap" type="com.sist.back2.vo.OfferVO">
+    <resultMap id="offerMap" type="com.sist.back.vo.OfferVO">
         <result column="offeruserkey" property="offeruserkey" />
-        <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back2.vo.userVO"/>
+        <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back.vo.userVO"/>
 	</resultMap>
 
-    <resultMap id="chatroomMap" type="com.sist.back2.vo.ChatroomVO">
+    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatroomVO">
 		<id column="chatroomkey" property="chatroomkey" />
         <result column="chatuserkey" property="chatuserkey" />
-        <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back2.vo.userVO"/>
-	    <collection property="c_list" select="getChattingByChatroomKey" column="chatroomkey" ofType="com.sist.back2.vo.ChattingVO" />
+        <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back.vo.userVO"/>
+	    <collection property="c_list" select="getChattingByChatroomKey" column="chatroomkey" ofType="com.sist.back.vo.ChattingVO" />
 	</resultMap>
-    <resultMap id="chattingMap" type="com.sist.back2.vo.ChattingVO">
+    <resultMap id="chattingMap" type="com.sist.back.vo.ChattingVO">
 		<id column="chattingkey" property="chattingkey" />
         <result column="chattingemozikey" property="chattingemozikey" />
-        <association property="cevo" select="getChattingemoziByChattingemoziKey" column="chattingemozikey" javaType="com.sist.back2.vo.ChattingEmoziVO"/>
-        <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back2.vo.ChatImgVO"/>
+        <association property="cevo" select="getChattingemoziByChattingemoziKey" column="chattingemozikey" javaType="com.sist.back.vo.ChattingEmoziVO"/>
+        <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back.vo.ChatImgVO"/>
 	</resultMap>
 
-    <resultMap id="userreviewMap" type="com.sist.back2.vo.UserReviewVO">
+    <resultMap id="userreviewMap" type="com.sist.back.vo.UserReviewVO">
         <result column="reviewlistkey" property="reviewlistkey" />
-        <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back2.vo.ReviewListVO"/>
+        <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back.vo.ReviewListVO"/>
 	</resultMap>
 
 
@@ -46,23 +46,23 @@
         SELECT * FROM `post`
         WHERE postkey = #{postkey}
     </select>
-    <select id="getCvoByPostKey" resultType="com.sist.back2.vo.categoryVO" parameterType="int">
+    <select id="getCvoByPostKey" resultType="com.sist.back.vo.categoryVO" parameterType="int">
         SELECT * FROM `category`
         WHERE categorykey = #{categorykey}
     </select>
-    <select id="getUvoByPostKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+    <select id="getUvoByPostKey" resultType="com.sist.back.vo.userVO" parameterType="int">
         SELECT * FROM `user`
         WHERE userkey = #{userkey}
     </select>
-    <select id="getUvoByDealUserKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+    <select id="getUvoByDealUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
         SELECT * FROM `user`
         WHERE userkey = #{dealuserkey}
     </select>
-    <select id="getPImg_listByPostKey" resultType="com.sist.back2.vo.PostImgVO" parameterType="int">
+    <select id="getPImg_listByPostKey" resultType="com.sist.back.vo.PostImgVO" parameterType="int">
         SELECT * FROM `postimg`
         WHERE postkey = #{postkey}
     </select>
-    <select id="getPInfo_listByPostKey" resultType="com.sist.back2.vo.PostInfoVO" parameterType="int">
+    <select id="getPInfo_listByPostKey" resultType="com.sist.back.vo.PostInfoVO" parameterType="int">
         SELECT * FROM `post_info`
         WHERE postkey = #{postkey}
     </select>
@@ -70,7 +70,7 @@
 
 
     <!-- 2. town 관련 데이터 -->
-    <select id="getTownByPostKey" resultType="com.sist.back2.vo.TownVO" parameterType="int">
+    <select id="getTownByPostKey" resultType="com.sist.back.vo.TownVO" parameterType="int">
         SELECT * FROM `town`
         WHERE townkey = (SELECT townkey
                         FROM `post`
@@ -83,7 +83,7 @@
         WHERE postkey = #{postkey}
     </select>
 
-    <select id="getUserByOfferUserKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+    <select id="getUserByOfferUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
         SELECT * FROM `user`
         WHERE userkey = #{offeruserkey}
     </select>
@@ -94,7 +94,7 @@
         WHERE postkey = #{postkey}
     </select>
 
-    <select id="getUserByChatUserKey" resultType="com.sist.back2.vo.userVO" parameterType="int">
+    <select id="getUserByChatUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
         SELECT * FROM `user`
         WHERE userkey = #{chatuserkey}
     </select>
@@ -104,12 +104,12 @@
         WHERE chatroomkey = #{chatroomkey}
     </select>
 
-    <select id="getChatimgByChattingKey" resultType="com.sist.back2.vo.ChatImgVO" parameterType="int">
+    <select id="getChatimgByChattingKey" resultType="com.sist.back.vo.ChatImgVO" parameterType="int">
         SELECT * FROM `chatimg`
         WHERE chattingkey = #{chattingkey}
     </select>
 
-    <select id="getChattingemoziByChattingemoziKey" resultType="com.sist.back2.vo.ChattingEmoziVO" parameterType="int">
+    <select id="getChattingemoziByChattingemoziKey" resultType="com.sist.back.vo.ChattingEmoziVO" parameterType="int">
         SELECT * FROM `chattingemozi`
         WHERE chattingemozikey = #{chattingemozikey}
     </select>
@@ -122,7 +122,7 @@
         SELECT * FROM `userreview`
         WHERE postkey = #{postkey}
     </select>
-    <select id="getReviewListByReviewListKey" resultType="com.sist.back2.vo.ReviewListVO" parameterType="int">
+    <select id="getReviewListByReviewListKey" resultType="com.sist.back.vo.ReviewListVO" parameterType="int">
         SELECT * FROM `reviewlist`
         WHERE reviewlistkey = #{reviewlistkey}
     </select>
