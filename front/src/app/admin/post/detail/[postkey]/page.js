@@ -33,13 +33,14 @@ export default function Page(props) {
     setOpen(true);
   }
   const handleClose = () => setOpen(false);
+
   const API_URL = "/adpost/detail";
 
   function getPostDetail(p_key) {
     axios({
       url: API_URL,
       method: "post",
-      params: {"postkey":p_key},
+      params: { postkey: p_key },
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
