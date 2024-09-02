@@ -15,13 +15,12 @@ public interface BoardMapper {
 
     List<BoardVO> search(Map<String, Object> b_map);
 
-    int add(Map<String, Object> add_map);
-
-    int addImage(BoardImgVO bivo);
+    int boardAdd(Map<String, Object> add_map);
 
     BoardVO getBbs(String boardkey);
 
     int edit(BoardVO bvo);
+    // List<BoardVO> boardedit(String boardkey);
 
     int del(String boardkey);
 
@@ -35,5 +34,7 @@ public interface BoardMapper {
 
     int editBoardCategory(KeyTableVO kvo);
 
-    int delBoardCategory(String value);
+    int delBoardCategory1(String value);
+
+    int delBoardCategory2(String value);
 }

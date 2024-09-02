@@ -83,7 +83,11 @@ export default function Page() {
 
   function delete_choice() {
     if (checkedItems.length == 0) {
-      alert("삭제할 카데고리을 선택해 주세요.");
+      alert("삭제할 카테고리을 선택해 주세요.");
+      return;
+    }
+    const confirmation = confirm("삭제할 카테고리에 해당하는 게시글들이 같이 삭제됩니다. \n계속 진행하시겠습니까?");
+    if (!confirmation) {
       return;
     }
     axios.post(
@@ -96,7 +100,7 @@ export default function Page() {
         console.error("삭제 중 오류가 발생했습니다.", error);
       });
   }
-
+  
   function openModalForEdit(key, value) {
     setKey(key);
     setValue(value);

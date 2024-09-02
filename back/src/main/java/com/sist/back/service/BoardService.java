@@ -31,13 +31,21 @@ public class BoardService {
         return new BoardVO[0];
     }
     
-    public int add(Map addMap) {
-        return b_mapper.add(addMap);
+    public int boardAdd(Map addMap) {
+        return b_mapper.boardAdd(addMap);
     }
 
-    public int addImage(BoardImgVO bivo) {
-        return b_mapper.addImage(bivo);
-    }
+    
+    // public BoardVO[] boardEdit(String boardkey){
+    //     List<BoardVO> list = mapper.boardedit(boardkey);
+    //     BoardVO[] ar = null;
+    //     if(list != null & list.size() > 0){
+    //         ar = new BoardVO[list.size()];
+    //         list.toArray(ar);
+    //     }
+    //     return ar;
+    // }
+
 
 	public BoardVO getBbs(String boardkey) {
 		return b_mapper.getBbs(boardkey);
@@ -76,7 +84,11 @@ public class BoardService {
         return b_mapper.editBoardCategory(kvo);
     }
 
-    public int delBoardCategory(String value) {
-        return b_mapper.delBoardCategory(value);
+    public int delBoardCategory1(String value) {
+        return b_mapper.delBoardCategory1(value);
+    }
+
+    public int delBoardCategory2(String value) {
+        return b_mapper.delBoardCategory2(value);
     }
 }
