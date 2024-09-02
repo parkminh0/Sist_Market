@@ -1,46 +1,42 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import "/public/css/admin/board_add.css";
+import "/public/css/admin/board.css";
 import { useRouter } from 'next/navigation';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default function page() {
     //npm install react-router-dom --save
-    const API_URL = '/api/admin/board/list';
-
+    
     const router = useRouter();
-
+    
+    const ADD_URL = '/api/admin/board/add';
+    const BC_URL = "/api/admin/board/getAllBc";
+    const [bc_list, setBc_list] = useState([]);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [boardkey, setBoardkey] = useState();
-    const [userkey, setUserkey] = useState();
-    const [townkey, setTownkey] = useState();
-    const [b_category, setB_category] = useState();
+    const [boardkey, setBoardkey] = useState(); //쓰나?
+    // const [userkey, setUserkey] = useState(); 
+    const [categoryName, setCategoryName] = useState('0');
     const [s_files, setS_files] = useState([]);
     
-
     const titleRef = useRef();
+    const quillRef = useRef(null);
 
-
-    function getData() {
-        axios.get(
-            API_URL
-        ).then((res) => {
-            const item = res.data.b_ar[0];
-            setUserkey(item.userkey);
-            setTownkey(item.townkey);
-            setB_category(item.b_category);
-            setBoardkey(item.boardkey);
-        });
-    }
+    // useEffect(() => {
+    //     로그인 관련 코드 보고 userkey 가져와서 set하기
+    //     setUserkey(res...);
+    // }, []);
 
     useEffect(() => {
-        getData();
-    }, []);
+        axios.get(BC_URL)
+          .then((res) => {
+            setBc_list(res.data.bc_list);
+          })
+      }, []);
 
-    const handleSubmit = (e) => {
+    const send = (e) => {
         e.preventDefault();
     
         if (title.length < 1) {
@@ -51,15 +47,16 @@ export default function page() {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("content", content);
-        formData.append("userkey", userkey);
         formData.append("boardkey", boardkey);
+        formData.append("categoryName", categoryName);
     
         // 여러 파일을 선택할 수 있으므로 모든 파일을 FormData에 추가합니다.
         s_files.forEach((file, index) => {
-            formData.append(`s_files[${index}]`, file);
+            // formData.append(`s_files[${index}]`, file);
+            formData.append(`s_files`, file);
         });
     
-        axios.post("http://localhost:8080/api/admin/board/write", formData, {
+        axios.post(ADD_URL, formData, {
             headers: {
                 "Content-Type": "multipart/form-data"
             }
@@ -72,153 +69,38 @@ export default function page() {
             }
         })
         .catch((error) => {
-            console.error("There was an error!", error);
+            console.error("추가 중 오류가 발생했습니다.", error);
         });
     };
 
-    const customUploadAdapter = (loader) => {
-        return {
-          upload() {
-            return new Promise((resolve, reject) => {
-              const formData = new FormData();
-              loader.file.then((file) => {
-                formData.append("file", file);
-                formData.append("title", title);
-                formData.append("content", content);
-                // 필요한 필드가 모두 포함되었는지 확인
-                formData.append("userkey", userkey);
-                formData.append("boardkey", boardkey);
-                formData.append("s_files", s_files[0])
-                // formData.append("townkey", townkey);
-                // formData.append("categorykey", categorykey);
-
-    
-                axios
-                  .post("http://localhost:8080/api/admin/board/write", formData)
-                  .then((res) => {
-                    resolve({
-                      default: res.data.data.uri,
-                    });
-                  })
-                  .catch((err) => reject(err));
-              });
-            });
-          },
-        };
-      };
-    
-      function uploadPlugin(editor) {
-        editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
-          return customUploadAdapter(loader);
-        };
-      }
-    
-    //   const handleSubmit = () => {
-    //     if (title.length < 1) {
-    //       titleRef.current.focus();
-    //       return;
-    //     }
-    
-    //     const data = {
-    //       title,
-    //       content,
-    //     };
-    
-    //     axios.post("http://localhost:8080/api/admin/board/write", data).then((res) => {
-    //       if (res.status === 200) {
-    //         router.push("/", { replace: true });
-    //         return;
-    //       } else {
-    //         alert("업로드 실패.");
-    //         return;
-    //       }
-    //     });
-    //   };
-    
   return (
-    // npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
-    <>
-        <div className="Editor">
-        <section>
-    <div className="title-wrapper">
-        <textarea
-            className="input-title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="제목을 입력하세요"
-            ref={titleRef}
-        />
-    </div>
-</section>
-<section>
-    <CKEditor
-        editor={ClassicEditor}
-        data=""
-        config={{ extraPlugins: [uploadPlugin] }}
-        onReady={(editor) => {
-            console.log("Editor is ready to use!", editor);
-        }}
-        onChange={(event, editor) => {
-            setContent(editor.getData());
-            console.log({ event, editor, content });
-        }}
-        onBlur={(event, editor) => {
-            console.log("Blur.", editor);
-        }}
-        onFocus={(event, editor) => {
-            console.log("Focus.", editor);
-        }}
-    />
-</section>
-<section>
-    <div className="file-upload-wrapper">
-        <input
-            type="file"
-            multiple
-            onChange={(e) => setS_files([...e.target.files])}
-        />
-    </div>
-</section>
-<section>
-    <div className="control-box">
-        <div className="cancel-btn-wrapper">
-            <button type='button' onClick={() => router.push('/admin/board/post')}>취소</button>
-        </div>
-        <div className="submit-btn-wrapper">
-            <button type='button' onClick={handleSubmit}>완료</button>
-        </div>
-    </div>
-</section>
-
-    </div>
-
-        {/* <div className="container">
-            <div className="card">
-                <header>
-                    <h2>게시물 쓰기</h2>
-                </header>
-                <hr className="divider"/>
-                <div>
-                    <input type="text" id="title" name="title" placeholder="제목" required className="input-field" value={title} onChange={(e) => setTitle(e.target.value)}/>
-                    <CKEditor
-                        editor={ClassicEditor}
-                        data={content}
-                        onReady={editor => {
-                            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-                                return handleImageUpload(loader);
-                            };
-                        }}
-                        onChange={(event, editor) => {
-                            const data = editor.getData();
-                            setContent(data);
-                        }}
-                    />
-                </div>
-                <div className="button-group">
-                    <button type="button" className="btn btn-error" onClick={() => router.push('/admin/board/post')}>취소</button>
-                </div>
+    <div className="container">
+        <div className="card">
+            <header>
+                <h2>게시글 추가</h2>
+            </header>
+            <hr className="divider" />
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <select className="fSelect" id="sel_board_no" name="sel_board_no" onChange={(e) => setCategoryName(e.target.value)}
+                        style={{ flex: '0.5', height: '40px', padding: '10px', marginBottom: '10px', boxSizing: 'border-box' }}>
+                    <option value="" disabled selected hidden>:::카테고리 선택:::</option>
+                        {bc_list.map((bc, i) => (
+                            <option key={i} value={bc.value}>{bc.value}</option>
+                        ))}
+                </select>
+                <input type="text" id="title" name="title" placeholder="제목" required  className="input-field" value={title} 
+                        onChange={(e) => setTitle(e.target.value)} 
+                        style={{ flex: '2', height: '40px', padding: '10px', boxSizing: 'border-box' }} />
             </div>
-        </div> */}
-    </>
+            <div>
+                <ReactQuill value={content} placeholder="내용을 입력하세요" style={{ height: '300px', marginBottom: '20px' }} 
+                            onChange={setContent} />
+            </div>
+            <div className="button-group">
+                <button type="button" className="btn btn-primary" onClick={send}>저장</button>
+                <button type="button" className="btn btn-error" onClick={() => router.push('/admin/board/post')}>취소</button>
+            </div>
+        </div>
+    </div>
   )
 }

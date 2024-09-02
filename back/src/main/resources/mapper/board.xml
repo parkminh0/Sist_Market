@@ -6,72 +6,101 @@
   
     <resultMap id="map1" type="com.sist.back.vo.BoardVO">
         <id property="boardkey" column="boardkey"/>
+        <result property="userkey" column="userkey"/>
+        <result property="categorykey" column="categorykey"/>
+        <result property="title" column="title"/>
+        <result property="create_dtm" column="create_dtm"/>
     </resultMap>
 
+    <!-- 전체 반환 -->
+    <select id="all" resultType="com.sist.back.vo.BoardVO">
+        SELECT * FROM board
+    </select>
+
     <!--총 게시물의 수를 반환-->
-    <select id="count" resultType="int" parameterType="Map">
+    <select id="count" resultType="int" parameterType="map">
         SELECT COUNT(*) FROM board
         <where>
-            <if test="categorykey != null and categorykey != '0'">
-                categorykey=#{categorykey} AND
-            </if> 
-            isdeleted = 0
-            <if test="searchType != null and searchValue != null">
-                <choose>
-                    <when test="searchType == 0">
-                        AND subject LIKE CONCAT('%', #{searchValue}, '%')
-                    </when>
-                    <when test="searchType == 1">
-                        AND writer LIKE CONCAT('%', #{searchValue}, '%')
-                    </when>
-                    <when test="searchType == 2">
-                        AND content LIKE CONCAT('%', #{searchValue}, '%')
-                    </when>
-                </choose>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryName != null and categoryName != ''">
+                AND categorykey IN (
+                    SELECT `key` 
+                    FROM key_table 
+                    WHERE value = #{categoryName} 
+                    AND `table` = 'board'
+                    AND `column` = 'categorykey'
+                )
+            </if>
+            AND isdeleted = 0
+            <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                AND create_dtm BETWEEN #{create_start_date} AND #{create_end_date}
+            </if>
+            <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                AND create_dtm <![CDATA[>=]]> #{create_start_date}
+            </if>
+            <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                AND create_dtm <![CDATA[<=]]> #{create_end_date}
             </if>
         </where>
     </select>
 
     <!--게시물 목록 반환-->
-    <select id="b_list" resultMap="map1" parameterType="Map">
+    <select id="search" resultMap="map1" parameterType="map">
         SELECT * FROM (
             SELECT @RN:=@RN+1 AS rnum, a.* FROM (
-                SELECT * FROM board
+                SELECT b.*, k.value AS categoryValue 
+                FROM board b
+                LEFT JOIN key_table k ON b.categorykey = k.key
+                    AND k.`table` = 'board'
+                    AND k.`column` = 'categorykey'
                 <where>
-                    <if test="categorykey != null and categorykey != '0'">
-                        categorykey=#{categorykey} AND
-                    </if> 
-                    isdeleted = 0
-                    <if test="searchType != null and searchValue != null">
-                        <choose>
-                            <when test="searchType == 0">
-                                AND subject LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchType == 1">
-                                AND writer LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchType == 2">
-                                AND content LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                        </choose>
+                    <if test="title != null and title != ''">
+                        b.title LIKE CONCAT('%', #{title}, '%')
+                    </if>
+                    <if test="categoryName != null and categoryName != ''">
+                        AND categorykey IN (
+                            SELECT `key` 
+                            FROM key_table 
+                            WHERE value = #{categoryName} 
+                            AND `table` = 'board'
+                            AND `column` = 'categorykey'
+                        )
+                    </if>
+                    AND b.isdeleted = 0
+                    <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                        AND create_dtm BETWEEN #{create_start_date} AND #{create_end_date}
+                    </if>
+                    <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                        AND create_dtm <![CDATA[>=]]> #{create_start_date}
+                    </if>
+                    <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                        AND create_dtm <![CDATA[<=]]> #{create_end_date}
                     </if>
                 </where>
-                ORDER BY boardkey DESC
+                ORDER BY b.boardkey DESC
             ) a, (SELECT @RN:=0) b
-        ) c WHERE c.rnum BETWEEN #{begin} AND #{end} 
-        
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
     </select>
 
-	<!-- 원글저장 -->
-	<insert id="add" parameterType="com.sist.back.vo.BoardVO">
-		INSERT INTO board(userkey, townkey, categorykey, title, content, create_dtm, viewqty, isdeleted, likeqty)
-		VALUES (#{userkey}, #{townkey}, #{categorykey}, #{title}, #{content}, NOW(), 0, 0, 0)
-	</insert>
+    <!-- 원글저장 -->
+    <!-- BoardVO에는 categoryName을 줄 수 없어서 map으로 받자 -->
+    <insert id="add" parameterType="map" useGeneratedKeys="true" keyProperty="boardkey">
+        INSERT INTO board(userkey, title, content, viewqty, likeqty, create_dtm, isdeleted, categorykey)
+        VALUES (#{userkey}, #{title}, #{content}, 0, 0, NOW(), 0,
+                (SELECT `key` FROM key_table 
+                WHERE `value` = #{categoryName} 
+                    AND `table` = 'board' 
+                    AND `column` = 'categorykey')
+                );
+    </insert>
 
     <!-- 이미지저장 -->
-    <insert id="saveImg" parameterType="com.sist.back.vo.BoardImgVO">
+    <insert id="addImage" parameterType="com.sist.back.vo.BoardImgVO">
         INSERT INTO boardimg(boardkey, imgurl)
-        VALUES (#{boardkey}, #{imgurl})
+        VALUES (#{boardkey}, #{imgurl});
     </insert>
 
 	<!-- 원글보기 -->
@@ -101,17 +130,6 @@
 		WHERE boardkey = #{boardkey}
 	</update>
 
-    <!-- 파일저장
-    <update id="addFile" parameterType="com.sist.bbs_next.vo.BbsVO">
-        UPDATE board
-        SET file_name = #{file_name},
-            ori_name = #{ori_name}
-        WHERE b_idx = #{b_idx}
-    </update> -->
-
-
-
-
 
     <!-- ######################게시판 카테고리 관리###################### -->
     <resultMap id="map2" type="com.sist.back.vo.KeyTableVO">
@@ -120,14 +138,6 @@
         <result property="count" column="count"/>
     </resultMap>
 
-    <!-- 게시판 카테고리 선택 -->
-    <select id="selectBoardCategory" resultType="String" parameterType="String">
-        SELECT DISTINCT a.categoryname 
-        FROM(SELECT b.*, k.value as categoryname FROM board b
-            JOIN key_table k ON k.table = 'board' AND k.column = 'categorykey' AND k.key = b.categorykey) AS a
-        WHERE a.categorykey = #{key}
-    </select>
-
     <!-- 전체 게시판 카테고리 리스트 -->
     <select id="getAllBcList" resultType="com.sist.back.vo.KeyTableVO">
         SELECT k.`key`, k.`value`, COUNT(b.categorykey) AS count
@@ -135,13 +145,6 @@
         WHERE k.`table` = 'board' AND k.`column` = 'categorykey'
         GROUP BY k.`key`, k.`value`;
     </select>
-
-    <!-- 게시판 카테고리 리스트(게시글 있을 때) -->
-    <select id="boardCategoryList" resultMap="map2">
-		SELECT DISTINCT a.categoryname, a.categorykey
-        FROM(SELECT b.*, k.value as categoryname FROM board b
-            JOIN key_table k ON k.table = 'board' AND k.column = 'categorykey' AND k.key = b.categorykey) AS a
-	</select>
 
     <!-- 게시판 카테고리 추가 -->
     <insert id="addBoardCategory" parameterType="String">
@@ -166,9 +169,4 @@
 		DELETE FROM key_table
         WHERE value = #{value}
 	</delete>
-
-    <!-- <select id="countByBc" resultType="int" parameterType="String">
-        SELECT COUNT(*) FROM board 
-        WHERE categorykey = #{categoryKey} AND isdeleted = 0
-    </select> -->
 </mapper>
