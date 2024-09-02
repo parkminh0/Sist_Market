@@ -2,6 +2,8 @@ package com.sist.back.service;
 
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +37,15 @@ public class PostService {
     }
     public List<UserReviewVO> getUserReviewByPostKey(int postkey) {
         return p_mapper.getUserReviewByPostKey(postkey);
+    }
+
+    public PostVO[] searchpost(Map<String, Object> map){
+        PostVO[] ar = null;
+        List<PostVO> list = p_mapper.searchpost(map);
+        if (list != null && list.size() > 0){
+            ar = new PostVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
     }
 }

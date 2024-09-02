@@ -119,7 +119,7 @@
 
 
 
-    <!-- 4. userreview 관련 데이터 -->
+    <!-- 5. userreview 관련 데이터 -->
     <select id="getUserReviewByPostKey" resultMap="userreviewMap" parameterType="int">
         SELECT * FROM `userreview`
         WHERE postkey = #{postkey}
@@ -128,6 +128,111 @@
         SELECT * FROM `reviewlist`
         WHERE reviewlistkey = #{reviewlistkey}
     </select>
+
+
+    <!-- 6. searchpost 관련 데이터 -->
+    <!-- <select id="searchpost" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM `post`
+        WHERE 1 = 1
+          <if test="searchCategory != null and searchCategory != ''">
+            <if test="searchCategory == 'title'">
+                AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="categorykey != null and searchCategory != ''">
+                AND categorykey = #{searchCategoryText}
+            </if>
+          </if>
+    </select> -->
+
+    <select id="searchpost" resultType="com.sist.back.vo.PostVO">
+        SELECT *
+        FROM post
+        WHERE 1 = 1
+        <!-- 검색분류 -->
+        <if test="searchCategory != null and searchCategory != '' and searchCategoryText != null and searchCategoryText != ''">
+            <if test="searchCategory == 'title'">
+                AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'postkey'">
+                AND postkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'hope_place'">
+                AND hope_place LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'townkey'">
+                AND townkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'userkey'">
+                AND userkey = #{searchCategoryText}
+            </if>
+        </if>
+        <!-- 게시글 분류 -->
+        <if test="categorykey != null and categorykey != '' and categorykey != '- 분류 선택 -'">
+            AND categorykey = #{categorykey}
+        </if>
+        <!-- 판매상태 -->
+        <if test="poststatus != null and poststatus != ''">
+            AND poststatus = #{poststatus}
+        </if>
+        <!-- 거래방식 -->
+        <if test="method != null and method != ''">
+            AND method = #{method}
+        </if>
+        <!-- 상품 가격 -->
+        <if test="minPrice != null and minPrice != ''">
+            AND price &gt;= #{minPrice}
+        </if>
+        <if test="maxPrice != null and maxPrice != ''">
+            AND price &lt;= #{maxPrice}
+        </if>
+        <!-- 흥정 가능 여부 -->
+        <if test="canbargain != null and canbargain != ''">
+            AND canbargain = #{canbargain}
+        </if>
+        <!-- 게시글 생성일 -->
+        <if test="create_dtm_a != null and create_dtm_a != ''">
+            AND create_dtm &gt;= #{create_dtm_a}
+        </if>
+        <if test="create_dtm_b != null and create_dtm_b != ''">
+            AND create_dtm &lt;= #{create_dtm_b}
+        </if>
+
+        <!-- 게시글 수정일 -->
+        <if test="update_dtm_a != null and update_dtm_a != ''">
+            AND update_dtm &gt;= #{update_dtm_a}
+        </if>
+        <if test="update_dtm_b != null and update_dtm_b != ''">
+            AND update_dtm &lt;= #{update_dtm_b}
+        </if>
+
+        <!-- 게시글 삭제일 -->
+        <if test="delete_dtm_a != null and delete_dtm_a != ''">
+            AND delete_dtm &gt;= #{delete_dtm_a}
+        </if>
+        <if test="delete_dtm_b != null and delete_dtm_b != ''">
+            AND delete_dtm &lt;= #{delete_dtm_b}
+        </if>
+
+        <!-- 끌어올리기 일자 -->
+        <if test="remind_dtm_a != null and remind_dtm_a != ''">
+            AND remind_dtm &gt;= #{remind_dtm_a}
+        </if>
+        <if test="remind_dtm_b != null and remind_dtm_b != ''">
+            AND remind_dtm &lt;= #{remind_dtm_b}
+        </if>
+
+        <!-- 거래 완료 일자 -->
+        <if test="deal_dtm_a != null and deal_dtm_a != ''">
+            AND deal_dtm &gt;= #{deal_dtm_a}
+        </if>
+        <if test="deal_dtm_b != null and deal_dtm_b != ''">
+            AND deal_dtm &lt;= #{deal_dtm_b}
+        </if>
+        
+    </select>
+
+
+        
 
 </mapper>
 
