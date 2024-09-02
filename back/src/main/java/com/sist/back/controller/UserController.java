@@ -182,6 +182,16 @@ public class UserController {
         return map;
     }
 
+
+    //계정관리 user정보
+    @RequestMapping("/api/getUser")
+    @ResponseBody
+    public Map<String, Object> getUser(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserForAdmin(userkey);
+        map.put("uvo", uvo);
+        return map;
+    }
     
 
 

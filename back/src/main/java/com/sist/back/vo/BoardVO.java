@@ -13,6 +13,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BoardVO {
     private String boardkey, userkey, townkey, categorykey, title, content, viewqty, likeqty, create_dtm, update_dtm, delete_dtm, isdeleted;
-
-    private MultipartFile file;
 }
