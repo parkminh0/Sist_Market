@@ -2,6 +2,7 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 
 export default function OfferInfo(props) {
     const o_list = props.o_list;
+    
     return (
       <TableContainer className="infoPart" component={Paper}>
         <Table className="detailInfoTable">
@@ -15,6 +16,7 @@ export default function OfferInfo(props) {
             </TableRow>
             {o_list.length > 0 ?
               o_list.map((ovo,index)=>{
+                const price = ovo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
                 var offerstatus = "대기상태";
                 switch(ovo.offerstatus){
                   case 1:
@@ -28,7 +30,7 @@ export default function OfferInfo(props) {
                 <TableRow key={index}>
                   <TableCell className="td">{ovo.offerkey}</TableCell>
                   <TableCell className="td">{ovo.ouvo.nickname}</TableCell>
-                  <TableCell className="td">{ovo.price}원</TableCell>
+                  <TableCell className="td">{price}</TableCell>
                   <TableCell className="td">{offerstatus}</TableCell>
                   <TableCell className="td" colSpan={2}>{ovo.create_dtm}</TableCell>
                 </TableRow>

@@ -39,19 +39,36 @@
         <collection property="l_list" ofType="com.sist.back.vo.LikeUserVO" select="getLikeUsersByUserKey" column="userkey"/>
         <!-- BlockedVO 매핑 -->
         <collection property="b_list" ofType="com.sist.back.vo.BlockedVO" select="getBlockedUsersByUserKey" column="userkey"/>
+        
         <!--wishlist 매핑-->
-        <collection property="w_list" ofType="com.sist.back.vo.Wishlist" select="getWishlistByUserKey" column="userkey"/>
+        <collection property="w_list" ofType="com.sist.back.vo.WishlistVO" select="getWishlistByUserKey" column="userkey"/>
+        <!--interestCategory 매핑-->
+        <collection property="ic_list" ofType="com.sist.back.vo.InterestCategoryVO" select="getInterestCategoryByUserKey" column="userkey"/>
+        <!--buy_list 매핑-->
+        <collection property="buy_list" ofType="com.sist.back.vo.PostVO" select="getBuyListByUserKey" column="userkey"/>
+        <!--cell_list 매핑-->
+        <collection property="cell_list" ofType="com.sist.back.vo.PostVO" select="getCellListByUserKey" column="userkey"/>
+        
         <!-- NoseeVO 매핑 -->
         <collection property="n_list" ofType="com.sist.back.vo.NoseeVO" select="getNoseeUsersByUserKey" column="userkey"/>
         <!-- UserBadgeVO 매핑 -->
         <collection property="ub_list" ofType="com.sist.back.vo.UserBadgeVO" select="getUserBadgesByUserKey" column="userkey"/>
     </resultMap>
 
+    <resultMap id="wishlistResultMap" type="com.sist.back.vo.WishlistVO">
+        <result column="postkey" property="postkey"/>
+        <association property="pvo" javaType="com.sist.back.vo.PostVO" select="com.sist.back.mapper.PostMapper.getPostByPostKey" column="postkey"/>
+    </resultMap>
+
+    <resultMap id="interestcategoryResultMap" type="com.sist.back.vo.InterestCategoryVO">
+        <result column="categorykey" property="categorykey"/>
+        <association property="cvo" javaType="com.sist.back.vo.categoryVO" select="getCategoryByCategoryKey" column="categorykey"/>
+    </resultMap>
 
     <!-- 관리자 유저 정보 가져오기 -->
     <select id="getUserForAdmin" parameterType="String" resultMap="userResultMap">
-    SELECT * FROM user
-    WHERE userkey = #{userkey}
+      SELECT * FROM user
+      WHERE userkey = #{userkey}
     </select>
 
     <!-- Address 테이블에서 데이터를 가져오는 select 쿼리 -->
@@ -60,16 +77,34 @@
     </select>
     <!-- Post 테이블에서 데이터를 가져오는 select 쿼리 -->
     <select id="getPostsByUserKey" resultType="com.sist.back.vo.PostVO" parameterType="String">
-        SELECT * FROM post WHERE userkey = #{userkey}
+        SELECT * FROM `post` WHERE userkey = #{userkey}
     </select>
     <!-- Manner 테이블에서 데이터를 가져오는 select 쿼리 -->
     <select id="getMannersByUserKey" resultType="com.sist.back.vo.MannerVO" parameterType="String">
         SELECT * FROM manner WHERE userkey = #{userkey}
     </select>
+
     <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getWishlistByUserKey" resultType="com.sist.back.vo.WishlistVO" parameterType="String">
+    <select id="getWishlistByUserKey" resultMap="wishlistResultMap" parameterType="String">
         SELECT * FROM wishlist WHERE userkey = #{userkey}
     </select>
+
+    <!-- interestcategory 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getInterestCategoryByUserKey" resultMap="interestcategoryResultMap" parameterType="String">
+        SELECT * FROM interestcategory WHERE userkey = #{userkey}
+    </select>
+    <select id="getCategoryByCategoryKey" resultType="com.sist.back.vo.categoryVO" parameterType="String">
+        SELECT * FROM `category` WHERE categorykey = #{categorykey}
+    </select>
+
+    <select id="getBuyListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
+        SELECT * FROM `post` WHERE dealuserkey = #{userkey} AND poststatus = 3
+    </select>
+
+    <select id="getCellListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
+        SELECT * FROM `post` WHERE userkey = #{userkey} AND poststatus != 0
+    </select>
+
     <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
     <select id="getKeywordByUserKey" resultType="com.sist.back.vo.KeywordVO" parameterType="String">
         SELECT * FROM keyword WHERE userkey = #{userkey}
