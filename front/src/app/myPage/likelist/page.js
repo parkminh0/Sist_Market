@@ -1,8 +1,11 @@
+'use client'
+
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/likelist.css";
 import Link from "next/link";
+import axios from "axios";
 
 export default function Page() {
   // $(function(){
@@ -14,6 +17,30 @@ export default function Page() {
   // 		$(this).addClass("active");
   // 	});
   // })
+
+  const [likeWhat, setLikeWhat] = useState('post');
+  const [likeList, setLikeList] = useState({});
+
+  const API_URL = '/user/api/likeLists';
+
+  function getLikeList(likeWhat){
+    axios({
+      url: API_URL,
+      method: "post",
+      params: {"likewhat":likeWhat},
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      console.log(res.data.likeList);
+      setLikeList(res.data.likeList);
+    });
+  }
+
+  useEffect(()=>{
+    getLikeList(likeWhat);
+  },[likeWhat]);
 
   return (
     <>
@@ -78,29 +105,14 @@ export default function Page() {
                 data-v-81750584=""
                 className="saved-chips-container"
               >
-                <button data-v-09af5873="" className="saved-chip active">
-                  <a
-                    data-v-09af5873=""
-                    aria-current="page"
-                    className="nuxt-link-exact-active nuxt-link-active"
-                  >
-                    상품
-                  </a>
+                <button data-v-09af5873="" onClick={()=>setLikeWhat('post')} className={likeWhat == 'post' ? "saved-chip active" : "saved-chip"}>
+                  게시글
                 </button>
-                <button data-v-09af5873="" className="saved-chip">
-                  <a data-v-09af5873="" className="">
-                    사용자
-                  </a>
+                <button data-v-09af5873="" onClick={()=>setLikeWhat('category')} className={likeWhat == 'category' ? "saved-chip active" : "saved-chip"}>
+                  카테고리
                 </button>
-                <button data-v-09af5873="" className="saved-chip">
-                  <a data-v-09af5873="" className="">
-                    카테고리
-                  </a>
-                </button>
-                <button data-v-09af5873="" className="saved-chip">
-                  <a data-v-09af5873="" className="">
-                    키워드
-                  </a>
+                <button data-v-09af5873="" onClick={()=>setLikeWhat('keyword')} className={likeWhat == 'keyword' ? "saved-chip active" : "saved-chip"}>
+                  키워드
                 </button>
               </div>
               <div data-v-81750584="" className="saved-product">

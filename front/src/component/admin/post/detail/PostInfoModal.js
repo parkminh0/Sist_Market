@@ -7,11 +7,6 @@ export default function PostInfoModal(props) {
     const handleClose_pi = props.handleClose_pi;
     const postinfo = props.postinfo;
 
-    if(open_pi){
-        console.log("AAAAAAAAAAAAAAAAAAA");
-        console.log(postinfo);
-    }
-
     const style = {
       position: 'absolute',
       top: '50%',
