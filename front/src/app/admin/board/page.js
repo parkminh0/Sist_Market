@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "/public/css/admin/board.css";
 import axios from 'axios';
-import { textAlign } from '@mui/system';
+import { Modal, Box, Typography, TextField, Button } from '@mui/material';
 
 export default function Page() {
   const API_URL = "/api/admin/board/getAllBc";
@@ -16,7 +16,6 @@ export default function Page() {
   const [checkedItems, setCheckedItems] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const modalBackground = useRef();
   const [value, setValue] = useState('');
   const [key, setKey] = useState('');
 
@@ -84,7 +83,7 @@ export default function Page() {
 
   function delete_choice() {
     if (checkedItems.length == 0) {
-      alert("삭제할 게시물을 선택해 주세요.");
+      alert("삭제할 카데고리을 선택해 주세요.");
       return;
     }
     axios.post(
@@ -108,13 +107,13 @@ export default function Page() {
   return (
     <>
       <div className="headingArea gSubmain">
-        <div className="mTitle">
+        <div className="mTitle" style={{ marginBottom: '50px'}} >
           <h1>게시판 카테고리 관리</h1>
         </div>
       </div>
       <div className="dashMain">
         <div className="mTitle">
-          <h2>게시물 작성 현황</h2>
+          <h2>게시글 작성 현황</h2>
         </div>
         <div className="mDashGrid gFlex3">
           <div className="grid">
@@ -127,7 +126,7 @@ export default function Page() {
                 <tbody className="right">
                   {list.map((ar, i) => (
                     <tr key={i}>
-                        <th scope="row" style={{textAlign: 'center', fontWeight: 'bold'}}>{ar.value}</th>
+                        <th scope="row" style={{fontWeight: 'bold'}}>{ar.value}</th>
                         <td><strong className="txtEm">{ar.count}</strong><span className="txtLight">개</span></td>
                     </tr>
                   ))}
@@ -138,13 +137,15 @@ export default function Page() {
         </div>
       </div>
       <div className="section">
-        <div className="mTitle">
-          <h2>게시판목록</h2>
-          <div className="cTip" code="BR.BO.BE.BS.30">
-            <div className='ModalBtnGroup'>
-              <a href="#none" className="btnNormal" onClick={() => { setModalMode('add'); setModalOpen(true); }} ><span><em className="icoDel"></em>추가</span></a>
-              <a href="#none" className="btnNormal" onClick={delete_choice} ><span><em className="icoDel"></em>삭제</span></a>
-            </div>
+        <div className="mTitle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="gLeft" style={{ display: 'flex', alignItems: 'center' }}>
+            <h2 style={{ marginRight: '10px' }}>게시판 목록</h2>
+          </div>
+          <div className="gRight" style={{ display: 'flex', alignItems: 'center' }}>
+            <span className="txtLess"></span>
+              < a id="eBtnSearch" onClick={() => { setModalMode('add'); setValue(''); setModalOpen(true); }} className="btnSearch" 
+                  style={{ marginRight: '10px' }}><span>추가</span></a>
+              <a id="eBtnSearch" onClick={delete_choice} className="btnSearch"><span>삭제</span></a>
           </div>
         </div>
         <div className="mBoard gScroll gCell">
@@ -182,27 +183,26 @@ export default function Page() {
             </tbody>
           </table>
         </div>
-        <span id="admngDebug"><script id="admngEffectScript" type="text/javascript" charset="utf-8" src="https://ad.cafe24.com/adManager/util/javascript/adMngEffect.js?ver=1.0.0"></script><script id="cookieScript" type="text/javascript" charset="utf-8" src="https://ad.cafe24.com/adManager/util/javascript/adMngCookie.js?ver=1.0.0"></script><script id="admngLayerScript" type="text/javascript" charset="utf-8" src="https://ad.cafe24.com/adManager/util/javascript/adMngLayer.js?ver=1.0.0"></script><link id="admngCSS" type="text/css" rel="stylesheet" href="https://ad.cafe24.com/adManager/util/javascript/admngCSS.css?ver=1.0.0"/><script id="admngURLLog" type="text/javascript" src="https://ad.cafe24.com/adManager/controller/ConclusionURLAD.php?siteType=malladmin&amp;url=https%3A%2F%2Fsist001.cafe24.com%2Fadmin%2Fphp%2Fshop1%2Fb%2Fboard_admin_l.php"></script><script type="text/javascript" src="https://ad.cafe24.com/adManager/controller/ConclusionAD.php?siteType_ADParam=malladmin&amp;userID_ADParam=sist001&amp;ckStr=&amp;ckAllStr=169,171&amp;ckByMulti=false&amp;ssl=true&amp;admngAreaView=false&amp;charset=utf-8&amp;admngValue=0&amp;dummy=1719812102044&amp;groupIdx_ADParam=2059"></script><script type="text/javascript" src="https://ad.cafe24.com/adManager/controller/ConclusionAD.php?siteType_ADParam=malladmin&amp;userID_ADParam=sist001&amp;ckStr=&amp;ckAllStr=169,171&amp;ckByMulti=false&amp;ssl=true&amp;admngAreaView=false&amp;charset=utf-8&amp;admngValue=0&amp;dummy=1719812102044&amp;groupIdx_ADParam=2060"></script></span><span id="admngSide_2"></span><script id="admng" type="text/javascript" src="//ad.cafe24.com/adManager/logic/WebAnalysis.js?siteType=malladmin&amp;userID=sist001&amp;groupIdx=2059"></script>
-        <span id="admngDebug"></span><span id="admngSide_9"></span><script id="admng" type="text/javascript" src="//ad.cafe24.com/adManager/logic/WebAnalysis.js?siteType=malladmin&amp;userID=sist001&amp;groupIdx=2060"></script>
+        {/* <span id="admngDebug"><script id="admngEffectScript" type="text/javascript" charset="utf-8" src="https://ad.cafe24.com/adManager/util/javascript/adMngEffect.js?ver=1.0.0"></script><script id="cookieScript" type="text/javascript" charset="utf-8" src="https://ad.cafe24.com/adManager/util/javascript/adMngCookie.js?ver=1.0.0"></script><script id="admngLayerScript" type="text/javascript" charset="utf-8" src="https://ad.cafe24.com/adManager/util/javascript/adMngLayer.js?ver=1.0.0"></script><link id="admngCSS" type="text/css" rel="stylesheet" href="https://ad.cafe24.com/adManager/util/javascript/admngCSS.css?ver=1.0.0"/><script id="admngURLLog" type="text/javascript" src="https://ad.cafe24.com/adManager/controller/ConclusionURLAD.php?siteType=malladmin&amp;url=https%3A%2F%2Fsist001.cafe24.com%2Fadmin%2Fphp%2Fshop1%2Fb%2Fboard_admin_l.php"></script><script type="text/javascript" src="https://ad.cafe24.com/adManager/controller/ConclusionAD.php?siteType_ADParam=malladmin&amp;userID_ADParam=sist001&amp;ckStr=&amp;ckAllStr=169,171&amp;ckByMulti=false&amp;ssl=true&amp;admngAreaView=false&amp;charset=utf-8&amp;admngValue=0&amp;dummy=1719812102044&amp;groupIdx_ADParam=2059"></script><script type="text/javascript" src="https://ad.cafe24.com/adManager/controller/ConclusionAD.php?siteType_ADParam=malladmin&amp;userID_ADParam=sist001&amp;ckStr=&amp;ckAllStr=169,171&amp;ckByMulti=false&amp;ssl=true&amp;admngAreaView=false&amp;charset=utf-8&amp;admngValue=0&amp;dummy=1719812102044&amp;groupIdx_ADParam=2060"></script></span><span id="admngSide_2"></span><script id="admng" type="text/javascript" src="//ad.cafe24.com/adManager/logic/WebAnalysis.js?siteType=malladmin&amp;userID=sist001&amp;groupIdx=2059"></script>
+        <span id="admngDebug"></span><span id="admngSide_9"></span><script id="admng" type="text/javascript" src="//ad.cafe24.com/adManager/logic/WebAnalysis.js?siteType=malladmin&amp;userID=sist001&amp;groupIdx=2060"></script> */}
       </div>
-      {
-        modalOpen &&
-        <div className={'modal-container'} ref={modalBackground} onClick={e => {
-          if (e.target == modalBackground.current) {
-            setModalOpen(false);
-          }
-        }}>
-          <div className={'modal-content'}>
-            <h1>{modalMode == 'add' ? "카테고리 추가" : "카테고리 수정"}</h1>
-            <input type="text" id="categoryname" name="categoryname" placeholder="게시판 카테고리명" required className="input-field" 
-                value={value} onChange={(e) => setValue(e.target.value)}/>
-            <div className='ModalBtnGroup'>
-              <a href="#none" className="btnNormal" onClick={addOrEditBc} ><span><em className="icoDel"></em>{modalMode == 'add' ? "추가" : "수정"}</span></a>
-              <a href="#none" className="btnNormal" onClick={() => setModalOpen(false)} ><span><em className="icoDel"></em>닫기</span></a>
-            </div>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box className="modal-box">
+          <Typography variant="h5" component="h2" className="modal-title" style={{ fontWeight: 'bold' }}>
+            {modalMode === 'add' ? "카테고리 추가" : "카테고리 수정"}
+          </Typography>
+          <TextField fullWidth margin="normal" variant="outlined" value={value} onChange={(e) => setValue(e.target.value)} 
+                    className="modal-textfield" placeholder="카테고리명을 입력하세요"/>
+          <div className="modal-button-group">
+            <Button variant="contained" color="primary"  onClick={addOrEditBc} className="modal-button">
+              {modalMode === 'add' ? "추가" : "수정"}
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={() => setModalOpen(false)} className="modal-button" >
+              닫기
+            </Button>
           </div>
-        </div>
-      }
+        </Box>
+      </Modal>
     </>
   );
 }

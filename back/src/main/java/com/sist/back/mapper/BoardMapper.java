@@ -1,6 +1,8 @@
 package com.sist.back.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.sist.back.vo.BoardImgVO;
@@ -9,13 +11,13 @@ import com.sist.back.vo.KeyTableVO;
 
 @Mapper
 public interface BoardMapper {
-    int count(String searchType, String searchValue, String categorykey);
+    int count(Map<String, Object> b_map);
 
-    List<BoardVO> b_list(String searchType, String searchValue, String categorykey, int begin, int end);
+    List<BoardVO> search(Map<String, Object> b_map);
 
-    int add(BoardVO bvo);
+    int add(Map<String, Object> add_map);
 
-    int saveImg(BoardImgVO bivo);
+    int addImage(BoardImgVO bivo);
 
     BoardVO getBbs(String boardkey);
 
@@ -27,17 +29,11 @@ public interface BoardMapper {
 
 
     //게시판 카테고리
-    String selectBoardCategory(String key);
-
     List<KeyTableVO> getAllBcList();
-
-    List<KeyTableVO> boardCategoryList();
 
     int addBoardCategory(String value);
 
     int editBoardCategory(KeyTableVO kvo);
 
     int delBoardCategory(String value);
-
-    int countByBc(String categorykey);
 }

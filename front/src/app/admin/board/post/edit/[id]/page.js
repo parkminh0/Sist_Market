@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import "/public/css/admin/board_add.css";
+import "/public/css/admin/board.css";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import React, { useEffect, useState } from 'react'
@@ -33,31 +33,6 @@ export default function page(props) {
 
     function send() {
         if (content == null) {
-            //content가 null일 때의 유효성 검사
-            alert("내용 없음");
-            return;
-        }
-        axios({
-            url: "/api/admin/board/write",
-            method: "post",
-            params: {
-                userkey: userkey,
-                townkey: townkey,
-                b_category: b_category,
-                title: title,
-                content: content,
-            }
-        }).then((res) => {
-            if (res.data.cnt == 1) {
-                setBoardkey(res.data.bvo.boardkey);
-                router.push('/admin/board/post');
-            }
-        });
-    }
-
-    function send() {
-        if (content == null) {
-            //content가 null일 때의 유효성 검사
             alert("내용 없음");
             return;
         }
@@ -77,24 +52,22 @@ export default function page(props) {
     }
 
   return (
-    <>
-        <div className="container">
-            <div className="card">
-                <header>
-                    <h2>게시물 수정</h2>
-                </header>
-                <hr className="divider"/>
-                <div>
-                    <input type="text" id="title" name="title" placeholder="제목" required className="input-field" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <ReactQuill value={content} placeholder="내용을 입력하세요" style={{ height: '300px', marginBottom: '20px' }} onChange={setContent} />
-                </div>
-                <div className="button-group">
-                    <button type="button" className="btn btn-list" onClick={() => router.push('/admin/board/post')}>목록</button>
-                    <button type="button" className="btn btn-primary" onClick={send}>수정</button>
-                    <button type="button" className="btn btn-error" onClick={() => router.push(`/admin/board/post/detail/${props.params.id}`)}>취소</button>
-                </div>
+    <div className="container">
+        <div className="card">
+            <header>
+                <h2>게시글 수정</h2>
+            </header>
+            <hr className="divider"/>
+            <div>
+                <input type="text" id="title" name="title" placeholder="제목" required className="input-field" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <ReactQuill value={content} placeholder="내용을 입력하세요" style={{ height: '300px', marginBottom: '20px' }} onChange={setContent} />
+            </div>
+            <div className="button-group">
+                <button type="button" className="btn btn-list" onClick={() => router.push('/admin/board/post')}>목록</button>
+                <button type="button" className="btn btn-primary" onClick={send}>수정</button>
+                <button type="button" className="btn btn-error" onClick={() => router.push(`/admin/board/post/detail/${props.params.id}`)}>취소</button>
             </div>
         </div>
-    </>
+    </div>
   )
 }
