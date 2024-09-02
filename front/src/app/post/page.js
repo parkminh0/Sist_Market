@@ -12,6 +12,9 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
+  IconButton,
+  ImageList,
+  ImageListItem,
   InputAdornment,
   InputLabel,
   MenuItem,
@@ -20,13 +23,16 @@ import {
   RadioGroup,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
-
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
 
@@ -271,10 +277,6 @@ export default function page() {
   const [canBargain, setCanBargain] = useState(false);
   const [content, setContent] = useState("");
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setTitle("");
     setCategory("");
@@ -284,17 +286,82 @@ export default function page() {
     setContent("");
     setIsFree(false);
     setOpen(false);
+    setPreviewImages([]);
   };
 
-  const method_enable = (e) => {
-    if (e.currentTarget.value == 0) setIsFree(false);
-    else setIsFree(true);
-  };
-
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
   // # endregion
+
+  const fileInputRef = useRef(null);
+  const [previewImages, setPreviewImages] = useState([]);
+
+  // 파일 업로드 버튼 클릭 시 파일 입력 요소 클릭 이벤트 발생
+  const uploadImg = (e) => {
+    fileInputRef.current.click();
+  };
+
+  // 파일 입력 요소의 값이 변경되면 호출되는 함수
+  const handleChange = (e) => {
+    // 선택한 파일들을 배열로 가져옴
+    let files = Array.from(e.target.files);
+
+    if (previewImages.length + files.length > 10) {
+      alert("10개를 초과할 수 없습니다.");
+      return; // 10개를 초과할 경우 추가하지 않고 함수 종료
+    }
+
+    const newPreviewImages = [];
+
+    // 파일들을 미리보기 이미지로 변환하여 저장
+    files.forEach((file, index) => {
+      let fileReader = new FileReader();
+      fileReader.onload = function () {
+        newPreviewImages.push({ id: index, src: fileReader.result, file });
+        if (newPreviewImages.length === files.length) {
+          setPreviewImages((prevImages) => [
+            ...prevImages,
+            ...newPreviewImages,
+          ]);
+        }
+      };
+      fileReader.readAsDataURL(file);
+    });
+  };
+
+  const handleDelete = (index) => {
+    setPreviewImages(previewImages.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    // 이미지 파일을 FormData에 추가
+    previewImages.forEach((image, index) => {
+      formData.append("post_img", image.file, `image-${index}.jpg`);
+    });
+
+    // price가 공백("")이면 null 또는 0으로 변환
+    formData.set("price", price === "" ? 0 : price);
+
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
+
+    axios
+      .post("http://localhost:8080/uspost/write", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        handleClose();
+      })
+      .catch((error) => {
+        console.error("There was an error uploading the images!", error);
+      });
+  };
+
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -799,16 +866,16 @@ export default function page() {
                           {minPriceParam == 0 && maxPriceParam == 0
                             ? "나눔"
                             : minPriceParam == 0 && maxPriceParam == 10000
-                            ? "1만원 이하"
-                            : minPriceParam == 0 && maxPriceParam == 50000
-                            ? "5만원 이하"
-                            : minPriceParam == 0 && maxPriceParam == 100000
-                            ? "10만원 이하"
-                            : minPriceParam == null ||
-                              minPriceParam !== 0 ||
-                              maxPriceParam == null
-                            ? `${minPriceParam} - ${maxPriceParam}`
-                            : ""}
+                              ? "1만원 이하"
+                              : minPriceParam == 0 && maxPriceParam == 50000
+                                ? "5만원 이하"
+                                : minPriceParam == 0 && maxPriceParam == 100000
+                                  ? "10만원 이하"
+                                  : minPriceParam == null ||
+                                      minPriceParam !== 0 ||
+                                      maxPriceParam == null
+                                    ? `${minPriceParam} - ${maxPriceParam}`
+                                    : ""}
                         </font>
                         <span
                           data-deltype="price"
@@ -4364,19 +4431,128 @@ export default function page() {
           onClose={handleClose}
           PaperProps={{
             component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
-              console.log(formJson);
-
-              handleClose();
-            },
+            onSubmit: handleSubmit,
           }}
         >
-          <DialogTitle>내 물건 팔기</DialogTitle>
+          <DialogTitle
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            내 물건 팔기
+            <Button
+              variant="outlined"
+              size="small"
+              //onClick={handleTempSave}
+              style={{
+                marginLeft: "auto",
+              }}
+            >
+              임시저장
+            </Button>
+          </DialogTitle>
           <DialogContent>
-            <FormControl fullWidth margin="dense" variant="standard">
+            <FormControl fullWidth margin="dense">
+              <ImageList cols={11} gap={8}>
+                <ImageListItem
+                  style={{
+                    width: 100,
+                    height: 100,
+                    position: "relative",
+                  }}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    name="file"
+                    onChange={handleChange}
+                    style={{ display: "none" }}
+                    multiple
+                  />
+                  <AddPhotoAlternateIcon
+                    color="primary"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      cursor: "pointer",
+                    }}
+                    onClick={uploadImg}
+                  />
+                  <Typography
+                    variant="caption"
+                    style={{
+                      position: "absolute",
+                      bottom: 5, // 아이콘 아래에 배치
+                      left: 0,
+                      right: 0,
+                      textAlign: "center",
+                      color: "black",
+                      backgroundColor: "rgba(255, 255, 255, 0.7)",
+                      fontSize: "16px",
+                    }}
+                  >
+                    {`${previewImages.length}/10`}
+                  </Typography>
+                </ImageListItem>
+                {previewImages.map((img, i) => (
+                  <ImageListItem
+                    key={i}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      border: "2px solid #ccc", // 이미지에 보더 추가
+                      position: "relative",
+                    }}
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => handleDelete(i)}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        padding: 2,
+                        zIndex: 10,
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                    <img
+                      src={img.src}
+                      alt={`Uploaded Preview ${i}`}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                    {i === 0 && (
+                      <Typography
+                        variant="caption"
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          textAlign: "center",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          color: "white",
+                          padding: "2px 0",
+                        }}
+                      >
+                        대표 사진
+                      </Typography>
+                    )}
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            </FormControl>
+            <FormControl fullWidth margin="dense">
               <TextField
                 autoFocus
                 required
@@ -4396,8 +4572,8 @@ export default function page() {
                 autoFocus
                 required
                 margin="dense"
-                id="category"
-                name="category"
+                id="categorykey"
+                name="categorykey"
                 label="카테고리"
                 select
                 fullWidth
@@ -4412,7 +4588,7 @@ export default function page() {
                 ))}
               </TextField>
             </FormControl>
-            <FormControl fullWidth margin="dense" variant="standard">
+            <FormControl fullWidth margin="dense">
               <FormLabel
                 required
                 id="demo-simple-row-radio-buttons-group-label"
@@ -4469,7 +4645,7 @@ export default function page() {
                 label="가격 제안 받기"
               />
             </FormControl>
-            <FormControl fullWidth margin="dense" variant="standard">
+            <FormControl fullWidth margin="dense">
               <TextField
                 required
                 id="content"
