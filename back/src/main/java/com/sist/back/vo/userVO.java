@@ -20,10 +20,15 @@ public class userVO {
 	private List<NoseeVO> n_list;
 	private List<AddressVO> a_list;
 	private List<SetAlarmVO> s_list;
-	private List<KeywordVO> k_list;
+	
 	private List<WishlistVO> w_list;
-
-	String userkey,
+	private List<InterestCategoryVO> ic_list;
+	private List<KeywordVO> k_list;
+	
+	private List<PostVO> buy_list;
+	private List<PostVO> cell_list;
+	
+	private String userkey,
 	id,
 	pw,
 	name,
