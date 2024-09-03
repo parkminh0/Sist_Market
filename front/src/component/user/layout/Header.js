@@ -155,6 +155,7 @@ export default function Header() {
 
   //회원가입 페이지 이동
   const handleSignUp = () => {
+    setOpen(false);
     router.push("/SignUp");  
   }
  
@@ -170,6 +171,7 @@ export default function Header() {
       console.log(res);
       if(res.data.msg== "로그아웃"){
           Cookies.remove("accessToken");
+          Cookies.remove("cnt");
           //Cookies.remove("refreshToken");
           //console.log(Cookies.get("accessToken")+"입니당");
           window.location.reload();
@@ -198,9 +200,12 @@ export default function Header() {
             "Content-Type": "application/json"
         }
     }).then((res) => {
-        //zzconsole.log(res);
-        if(res.status ==200)
+        //console.log(res.data.msg);
+        if(res.data.cnt ===1){
           window.location.reload(); //현재 경로 재로드 
+          }else{
+            alert(res.data.msg);
+          }
     });
  }
 
