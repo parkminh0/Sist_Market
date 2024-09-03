@@ -16,10 +16,15 @@ export default function Page() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [uvo,setUvo] = useState({});
-  
+  const router = useRouter();
   
   //sign up
   function signup(){
+
+    if (pw !== confirmPw) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return; 
+    }
     axios({
       url: reg_url,
       method: "post",
@@ -41,7 +46,7 @@ export default function Page() {
           router.push("/");
         }
       } else {
-        alert("수정이 불가능 합니다.");
+        
       }
     });
 
