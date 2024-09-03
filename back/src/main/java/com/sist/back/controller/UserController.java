@@ -160,10 +160,23 @@ public class UserController {
         return map;
     }
 
+
     //jwt token login 
     @PostMapping("/api/login")
     @ResponseBody
      public Map<String, Object> login(userVO vo, HttpServletResponse res) {
+
+
+    //계정관리 user정보
+    @RequestMapping("/api/getUser")
+    @ResponseBody
+    public Map<String, Object> getUser(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserForAdmin(userkey);
+        map.put("uvo", uvo);
+        return map;
+    }
+
     
     Map<String, Object> map = new HashMap<>();
     int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 

@@ -3,6 +3,7 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useState } from "react";
 import PostInfoModal from "@/component/admin/post/detail/PostInfoModal";
+import PostImg from "./PostImg";
 
 export default function PostInfo(props) {
 
@@ -16,6 +17,7 @@ export default function PostInfo(props) {
   const pvo = props.pvo;
   const handleOpen = props.handleOpen;
   
+
   var method = "판매";
   var poststatus = "임시저장";
   var canbargain = "불가";
@@ -24,6 +26,9 @@ export default function PostInfo(props) {
   var isdeleted = "X";
   var iscellvisible = "X";
   var isbuyvisible = "X";
+
+  const price = pvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
+  const lastprice = pvo.lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
 
   if(pvo.method == 1){
     method = "나눔";
@@ -108,6 +113,11 @@ export default function PostInfo(props) {
       </Table>
       <Table className="detailInfoTable">
         <TableBody>
+          <PostImg postimg={pvo.pimg_list} handleOpen={handleOpen} />
+        </TableBody>
+      </Table>
+      <Table className="detailInfoTable">
+        <TableBody>
           <TableRow>
             <TableCell className="th">가격</TableCell>
             <TableCell className="th">변동 후 가격</TableCell>
@@ -117,8 +127,8 @@ export default function PostInfo(props) {
             <TableCell className="th">경도</TableCell>
           </TableRow>
             <TableRow>
-              <TableCell className="td">{pvo.price}원</TableCell>
-              <TableCell className="td">{pvo.lastprice}원</TableCell>
+              <TableCell className="td">{price}</TableCell>
+              <TableCell className="td">{lastprice}</TableCell>
               <TableCell className="td">{range}</TableCell>
               <TableCell className="td" colSpan={2}>{pvo.hope_place}</TableCell>
               <TableCell className="td">{pvo.hope_lati}</TableCell>
@@ -132,7 +142,7 @@ export default function PostInfo(props) {
             <TableCell className="th" colSpan={5}>내용</TableCell>
             <TableCell className="th">생성일자</TableCell>
             <TableCell className="th">수정일자</TableCell>
-            <TableCell className="th">끌올일자</TableCell>
+            <TableCell className="th">끌올일자{pvo.pinfo_list.length-1>0?`(${pvo.pinfo_list.length-1}회)`:''}</TableCell>
             <TableCell className="th">삭제여부</TableCell>
             {pvo.isdeleted==1 ?
               <TableCell className="th">삭제일자</TableCell>

@@ -1,6 +1,7 @@
 package com.sist.back.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import com.sist.back.vo.ChatroomVO;
@@ -17,4 +18,5 @@ public interface PostMapper {
     List<OfferVO> getOfferByPostKey(int postkey);
     List<ChatroomVO> getChatroomByPostKey(int postkey);
     List<UserReviewVO> getUserReviewByPostKey(int postkey);
+    List<PostVO> searchpost(Map<String, Object> map);
 }
