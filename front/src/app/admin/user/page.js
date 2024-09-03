@@ -26,6 +26,7 @@ export default function Page() {
   const [totalRecords,setTotalRecords] = useState(0);
   //페이징
   const [totalPage,setTotalPage] = useState(0);
+  const [page, setPage] = useState({});
 
   //체크한 유저 삭제 
   const DEL_URL = "/user/api/admin/checkUserDel";
@@ -75,6 +76,10 @@ export default function Page() {
       setAct(response.data.ucvo.cntNotDel);
     });
   }
+  // 페이징 처리 함수
+  function changePage(newPage) {
+    doSrchFrm(newPage);
+  }
 
   function doSrchFrm(cPage) {
     let now = cPage;
@@ -95,7 +100,8 @@ export default function Page() {
   }).then((response) => {
         setUserlist(response.data.ar);
         setTotalPage(response.data.totalPage);
-        setTotalRecords(response.data.totalRecords);
+        setTotalRecords(response.data.totalRecord);
+        setPage(response.data.page);
       }).catch(error => {
         console.error("Error during search:", error);
     });
@@ -386,18 +392,18 @@ export default function Page() {
         <div className="mState">
           <div className="gLeft">
             <p className="total">
-              검색결과  <strong> {totalRecords}</strong> 건
+              검색결과  <strong> {totalRecords} </strong> 건
             </p>
           </div>
         </div>
         <div className="mCtrl typeHeader">
-          <div className="gLeft">
-      
-              <span>
-                <em className="icoDel" onClick={() => delete_choice()}></em> 탈퇴
-              </span>
-           
-          </div>
+        <div className="gLeft">
+          <button onClick={delete_choice} className="btnNormal">
+            <span>
+              <em className="icoDel"></em> 탈퇴
+            </span>
+          </button>
+        </div>
         </div>
         <div id="searchResult" className="searchResult">
           {/* <!-- 일반보기 --> */}
@@ -488,16 +494,29 @@ export default function Page() {
         </div>
       </div>
       <div className="mPaginate">
+        {page.startPage > 1 && (
+            <a href="#" onClick={() => changePage(page.startPage - page.pagePerBlock)} className="prev">
+                이전 {page.pagePerBlock}페이지
+            </a>
+        )}
         <ol>
-        {Array.from({ length: totalPage }, (_, index) => (
-            <li key={index + 1}>
-                <a href="#" onClick={() => doSrchFrm(index + 1)}>
-                    {index + 1}
-                </a>
-            </li>
-        ))}
+            {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                <li key={pNum}>
+                    {page.nowPage === pNum ? (
+                        <strong title="현재페이지">{pNum}</strong>
+                    ) : (
+                        <a href="#" onClick={() => changePage(pNum)}>{pNum}</a>
+                    )}
+                </li>
+            ))}
         </ol>
-      </div>
+        {page.endPage < page.totalPage && (
+            <a href="#" onClick={() => changePage(page.endPage + 1)} className="next">
+                다음 {page.pagePerBlock}페이지
+            </a>
+        )}
+    </div>
+
     </div>
   </div>
 </>
