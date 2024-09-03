@@ -180,7 +180,7 @@ public class UserController {
     
     Map<String, Object> map = new HashMap<>();
     int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
-    String msg = "fail";
+    String msg = "로그인에 실패하였습니다.";
 
     userVO uvo = null;
     if (vo.getId() != null) {
