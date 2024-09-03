@@ -147,6 +147,16 @@ export default function Page() {
 
                     </tr>
                     <tr>
+                      <th scope="row">회원 사진</th>
+                      <td>
+                        <img
+                          src={ar.imgurl || "/path/to/default-image.jpg"}
+                          alt="회원 사진"
+                          style={{ width: "100px", height: "100px"}}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
                       <th scope="row">아이디</th>
                       <td>
                         <span

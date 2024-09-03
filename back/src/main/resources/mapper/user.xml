@@ -225,4 +225,16 @@
         WHERE userkey = #{userkey}
     </update>
 
+    <!-- 아이디 찾기  -->
+    <select id="findByid" parameterType="String" resultType="com.sist.back.vo.userVO" >
+        SELECT * FROM user 
+        WHERE id = #{id}
+    </select>
+
+    <!-- 회원가입 -->
+    <insert id="saveUser" parameterType="com.sist.back.vo.userVO">
+      INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm,  isdeleted)
+      VALUES (#{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, #{imgurl}, now(), #{isauthorized}, now(),  0)
+    </insert>
+
 </mapper>
