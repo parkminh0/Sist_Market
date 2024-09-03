@@ -1,11 +1,18 @@
 "use client";
+import Cookies from 'js-cookie';
 import Link from "next/link";
 import HeaderItem from "./HeaderItem";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import React from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, TextField } from '@mui/material';
+import axios from 'axios';
+// 필요한 다른 import들도 여기에 추가
+
 
 export default function Header() {
   const pathname = usePathname();
+  
 
   useEffect(() => {
     const currentPath = pathname || "/";
@@ -45,22 +52,7 @@ export default function Header() {
     false
   );
 
-  // #region 로그인 모달 오픈
-  function show_login_dialog() {
-    document.querySelector("div.modal-overlay").style.display = "block";
-    document.querySelector("#login_dialog").style.display = "block";
-    document.querySelector("body").classList.add("modal-open");
-  }
-  // #endregion
-
-  // #region 로그인 모달 닫기
-  function close_login_dialog() {
-    document.querySelector("div.modal-overlay").style.display = "none";
-    document.querySelector("#login_dialog").style.display = "none";
-    document.querySelector("body").classList.remove("modal-open"); // 스크롤 해제
-  }
-  // #endregion
-
+ 
   // #region 위치 모달 오픈
   function show_location_dialog() {
     document.querySelector("div.modal-overlay").style.display = "block";
@@ -113,7 +105,7 @@ export default function Header() {
 
         const callback = (result, status) => {
           if (status === window.kakao.maps.services.Status.OK) {
-            console.log("결과", result);
+            //console.log("결과", result);
 
             setLocation1(result[0].address.region_1depth_name);
             setLocation2(result[0].address.region_2depth_name);
@@ -158,27 +150,87 @@ export default function Header() {
                       `;
   }
 
-  const [user, setUser] = useState({});
+  
   const router = useRouter();
 
-  function login() {
-    // axios({
-    //   url: "http://localhost:8080/user/login",
-    //   method: "post",
-    //   params: "",
-    //   withCredentials: true,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // }).then((res) => {
-    //   if (res.status == 200) {
-    //     alert("로그인 성공");
-    //     router.push(pathname);
-    //   } else {
-    //     alert("로그인 실패");
-    //   }
-    // });
+  //회원가입 페이지 이동
+  const handleSignUp = () => {
+    router.push("/SignUp");  
   }
+ 
+
+  //jwt 로그아웃 처리
+  const logout_url = "/user/api/logout";
+  
+  function logout(){
+    axios({
+      url: logout_url,
+      method: "POST",
+    }).then((res)=>{
+      console.log(res);
+      if(res.data.msg== "로그아웃"){
+          Cookies.remove("accessToken");
+          //Cookies.remove("refreshToken");
+          //console.log(Cookies.get("accessToken")+"입니당");
+          window.location.reload();
+          router.push("/");
+      }
+  })
+
+  }
+
+  //jwt 로그인 처리
+  const login_url = "/user/api/login";
+  const [user,setUser] = useState({});
+  
+  const c_path = usePathname();
+  //token 저장
+  const [accessToken,setAccessToken] = useState(null);
+  const [refreshToken,setRefreshToken] = useState(null);
+  
+  function signIn() {
+    axios({
+        url: login_url,
+        method: "post",
+        params : user,
+        withCredentials: true,
+        headers :{
+            "Content-Type": "application/json"
+        }
+    }).then((res) => {
+        //zzconsole.log(res);
+        if(res.status ==200)
+          window.location.reload(); //현재 경로 재로드 
+    });
+ }
+
+ useEffect(() =>{
+  const token = Cookies.get('accessToken');
+  console.log('Token:', token); 
+  setAccessToken(token);
+  },[c_path]);
+
+ const handleChange = (e) =>{ 
+  
+  const {name, value} = e.target; 
+  
+  setUser({...user,[name]:value});
+  //기존거 복사해서 값을 넣어주는애 name이 키로들어가고 value가 값으로 들어감
+
+
+}
+
+
+  // 로그인 모달 부분
+  const [open, setOpen] = useState(false);
+  // 로그인 모달 열기
+  const handleClose = () => {
+    setOpen(false);
+  };
+  // 로그인 모달 닫기 
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   return (
     <>
@@ -221,8 +273,10 @@ export default function Header() {
             <div>
               <nav className="_1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9wo">
                 <HeaderItem />
+                {
+                  accessToken == null ? (
                 <button
-                  onClick={show_login_dialog}
+                  onClick={handleOpen}
                   id="show_login"
                   style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
                   className="seed-box-button"
@@ -235,14 +289,30 @@ export default function Header() {
                 >
                   <span className="seed-semantic-typography-label4-bold">
                     <font>로그인</font>
-                    {/* <c:if test="${sessionScope.user_VO eq null }">
-                                <font >로그인</font>				
-                            </c:if>
-                            <c:if test="${sessionScope.user_VO ne null }">
-                                <font >로그아웃</font>				
-                            </c:if> */}
                   </span>
                 </button>
+              ) : (
+                <button
+                  onClick={logout}
+                  id="logout"
+                  style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
+                  className="seed-box-button"
+                  data-scope="button"
+                  data-part="root"
+                  type="button"
+                  data-gtm="gnb_app_download"
+                  data-size="xsmall"
+                  data-variant="primaryLow"
+                >
+                  <span className="seed-semantic-typography-label4-bold">
+                    <font>로그아웃</font>
+                  </span>
+                </button>
+                )
+              }
+
+
+
               </nav>
             </div>
           </div>
@@ -531,81 +601,61 @@ export default function Header() {
       {/* 모달 오버레이 */}
       <div className="modal-overlay"></div>
 
+      
       {/* 로그인 모달 */}
-      <div
-        style={{ pointerEvents: "auto", display: "none" }}
-        id="login_dialog"
-        role="dialog"
-        aria-describedby="radix-:R24pH2:"
-        aria-labelledby="radix-:R24pH1:"
-        data-state="open"
-        className="sboh910 sboh912 sboh915"
-        tabIndex="-1"
-      >
-        <div className="sboh91e">
-          <h2 id="radix-:R24pH1:" className="sboh91f">
-            쌍용마켙
-          </h2>
-        </div>
-        <div className="_588sy4i8 _588sy4ew _588sy4ne _588sy4k8 _588sy41z _588sy421">
-          <div className="_588sy41z _588sy421 _588sy42q _588sy4172 _588sy415q _588sy413q _588sy418e _588sy4gw">
-            <h2 className="_588sy419q _588sy41y _588sy41ak" level="2">
-              로그인
-            </h2>
-            <form id="login_form" onSubmit={login}>
-              <input type="text" id="id" name="id" placeholder="ID" required />
-              <input
-                type="password"
-                id="pw"
-                name="pw"
-                placeholder="Password"
-                required
-              />
-              <button className="login_btn" type="submit">
-                Log in
-              </button>
-              <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=2d3b46aa6f749ca133dedfb1664a1da7&redirect_uri=http://localhost:8080/login/kakao">
-                <img
-                  src="/resources/img/kakao_login_large_wide.png"
-                  width="222"
-                  alt="카카오 로그인 버튼"
-                />
-              </a>
-            </form>
-            <div className="options _588sy41z _588sy421 _588sy42q _588sy412w _588sy4168 _588sy415q">
-              <Link href="#">아이디 찾기</Link>
-              <Link href="#">비밀번호 찾기</Link>
-              <Link href="#">회원가입</Link>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="sboh91h"
-            onClick={close_login_dialog}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              data-seed-icon="true"
-              data-seed-icon-version="0.4.0-beta.2"
-              width="24"
-              height="24"
-              style={{ width: "100%", height: "100%" }}
-            >
-              <g>
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
-                  fill="currentColor"
-                ></path>
-              </g>
-            </svg>
-            <span className="ar0rax0">Close</span>
-          </button>
-        </div>
-      </div>
+  <React.Fragment>
+  <Dialog open={open} onClose={handleClose} PaperProps={{ component: "form", onSubmit: (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const formJson = Object.fromEntries(formData.entries());
+        console.log(formJson);
+
+        // 여기에 로그인 처리를 위한 로직을 추가
+        // 예: axios를 사용한 로그인 요청 보내기
+
+        handleClose();
+      },
+    }}
+  >
+    <DialogTitle>로그인</DialogTitle>
+    <DialogContent>
+      <FormControl fullWidth margin="dense" variant="standard">
+        <TextField
+          autoFocus
+          required
+          margin="dense"
+          id="id"
+          name="id"
+          label="아이디"
+          type="text"
+          fullWidth
+          size="small"
+         
+          onChange={handleChange}
+        />
+      </FormControl>
+      <FormControl fullWidth margin="dense" variant="standard">
+        <TextField
+          required
+          margin="dense"
+          id="pw"
+          name="pw"
+          label="비밀번호"
+          type="password"
+          fullWidth
+          size="small"
+          onChange={handleChange}
+        />
+      </FormControl>
+    </DialogContent>
+    <DialogActions>
+      <Button type="button" onClick={signIn}>로그인</Button>
+      <Button type="button" onClick={handleSignUp}>회원가입</Button>
+      <Button onClick={handleClose}>취소</Button>
+    </DialogActions>
+  </Dialog>
+</React.Fragment>
+
       {/* 위치설정 */}
       <div
         style={{ pointerEvents: "auto", display: "none" }}
