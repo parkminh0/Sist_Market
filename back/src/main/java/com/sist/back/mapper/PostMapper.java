@@ -13,10 +13,22 @@ import com.sist.back.vo.UserReviewVO;
 @Mapper
 public interface PostMapper {
     PostVO[] all();
+
     PostVO getPostByPostKey(int postkey);
+
     TownVO getTownByPostKey(int postkey);
+
     List<OfferVO> getOfferByPostKey(int postkey);
+
     List<ChatroomVO> getChatroomByPostKey(int postkey);
+
     List<UserReviewVO> getUserReviewByPostKey(int postkey);
+
     List<PostVO> searchpost(Map<String, Object> map);
+
+    int writePost(PostVO vo);
+
+    int editPost(PostVO vo);
+
+    List<PostVO> search(Map<String, String> map);
 }
