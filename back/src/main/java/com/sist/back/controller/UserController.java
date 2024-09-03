@@ -195,7 +195,7 @@ public class UserController {
             msg="success";
     }
     }
-    map.put("cnt", cnt);
+    map.put("cnt", cnt); 
     map.put("msg", msg);
     map.put("uvo", uvo);
     return map;
