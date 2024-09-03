@@ -27,4 +27,8 @@ public interface UserMapper {
 
     int userEditForAdmin(userVO vo);
 
+    userVO findByid(String id);
+
+    int saveUser(userVO vo);
+
 }

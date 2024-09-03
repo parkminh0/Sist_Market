@@ -44,6 +44,10 @@ public class userVO {
 	create_dtm,
 	update_dtm,
 	delete_dtm,
-	isdeleted;
+	isdeleted,
+	access_token,
+	refresh_token
+	
+	;
 
 }

@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -18,6 +19,7 @@ import com.sist.back.vo.UserCountVO;
 import com.sist.back.vo.userVO;
 
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -32,33 +34,7 @@ public class UserController {
 
     @Autowired
     UserService service;
-
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-
-    @ResponseBody
-    public Map<String, String> login(userVO vo) {
-
-        Map<String, String> response = new HashMap<String, String>();
-
-        userVO uvo = service.login(vo);
-        if (uvo != null) {
-            service.upt_login_dtm(uvo);
-            session.setAttribute("user_VO", uvo);
-            response.put("message", "로그인 성공");
-
-        } else {
-            response.put("message", "로그인 실패");
-        }
-
-        return response;
-    }
-
-    @RequestMapping(value = "/logout")
-    public String logout() {
-        session.removeAttribute("user_VO");
-        return "/";
-    }
+    
 
     @RequestMapping("/login/kakao")
     public ModelAndView login(String code) {
@@ -124,7 +100,9 @@ public class UserController {
         map.put("ar", ar);
         map.put("page", p);
         map.put("totalPage", p.getTotalPage());
-        map.put("totalRecords",p.getTotalRecord());
+        map.put("totalRecord",p.getTotalRecord());
+        map.put("numPerPage", p.getNumPerPage());
+      
         return map;
     }
 
@@ -183,6 +161,12 @@ public class UserController {
     }
 
 
+    //jwt token login 
+    @PostMapping("/api/login")
+    @ResponseBody
+     public Map<String, Object> login(userVO vo, HttpServletResponse res) {
+
+
     //계정관리 user정보
     @RequestMapping("/api/getUser")
     @ResponseBody
@@ -192,7 +176,90 @@ public class UserController {
         map.put("uvo", uvo);
         return map;
     }
+
     
+    Map<String, Object> map = new HashMap<>();
+    int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
+    String msg = "fail";
+
+    userVO uvo = null;
+    if (vo.getId() != null) {
+      
+      uvo = service.authAndMakeToken(vo.getId(),vo.getPw());
+      
+      if(uvo !=null){ 
+        ResponseCookie cookie = ResponseCookie
+            .from("accessToken",uvo.getAccess_token())
+            .path("/")
+            .sameSite("None")
+            .httpOnly(false)
+            .secure(true)
+            .build();
+            res.addHeader("Set-Cookie", cookie.toString());
+        cookie = ResponseCookie.from("refreshToken",uvo.getRefresh_token())
+            .path("/")
+            .sameSite("None")
+            .httpOnly(false)
+            .secure(true)
+            .build();
+            res.addHeader("Set-Cookie", cookie.toString());
+            //map.put("mvo",m);
+            cnt =1; 
+            msg="success";
+    }
+    }
+    map.put("cnt", cnt); 
+    map.put("msg", msg);
+    map.put("uvo", uvo);
+    return map;
+  }
+
+  //jwt token logout
+  @PostMapping("/api/logout")
+  @ResponseBody
+  public Map<String, Object> logout(HttpServletResponse res) {
+      
+      Map <String, Object> map = new HashMap<>();
+      //쿠키에서 accessToken과 refreshToken을 삭제하여 클라이언트에게 보내야한다. 
+      ResponseCookie cookie = ResponseCookie.from("accessToken",null)
+      .path("/")
+      .sameSite("None")
+      .secure(true)
+      .httpOnly(true)
+      .maxAge(0)
+      .build();
+      res.addHeader("Set-Cookie", cookie.toString());
+
+      cookie = ResponseCookie.from("refreshToken",null)
+      .path("/")
+      .sameSite("None")
+      .secure(true)
+      .httpOnly(true)
+      .maxAge(0)
+      .build();
+      res.addHeader("Set-Cookie", cookie.toString());
+    
+    
+      map.put("msg", "로그아웃");
+      map.put("totalCount", 0);
+      
+      return map;
+  }
+
+  @PostMapping("/api/reg")
+  @ResponseBody
+  public Map<String, Object> reg(userVO vo) {
+    Map<String, Object> map = new HashMap<>();
+
+    if (vo.getId() != null) {
+      // 사용자가 입력한 비밀번호를 암호화 시킨다.
+      // String pw = passwordEncoder.encode(member.getMPw());
+     
+      userVO uvo = service.reg(vo);
+      map.put("uvo", uvo);
+    }
+    return map;
+}
 
 
 }
