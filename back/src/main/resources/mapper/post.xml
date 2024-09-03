@@ -231,8 +231,127 @@
         
     </select>
 
+    <insert id="writePost" parameterType="com.sist.back.vo.PostVO" useGeneratedKeys="true" keyProperty="postkey">
+    INSERT INTO `post`
+        (
+        `userkey`,
+        `townkey`,
+        `categorykey`,
+        `title`,
+        `method`,
+        `price`,
+        `lastprice`,
+        `content`,
+        `range`,
+        `hope_place`,
+        `hope_lati`,
+        `hope_long`,
+        `canbargain`,
+        `viewqty`,
+        `create_dtm`,
+        `update_dtm`,
+        `delete_dtm`,
+        `remind_dtm`,
+        `dealuserkey`,
+        `deal_dtm`,
+        `userreview`,
+        `userreviewimg`,
+        `userreview_dtm`,
+        `dealuserreview`,
+        `dealuserreviewimg`,
+        `dealuserreview_dtm`,
+        `poststatus`,
+        `isdeleted`,
+        `iscellvisible`,
+        `isbuyvisible`
+        )
+        VALUES
+        (
+        #{userkey},
+        #{townkey},
+        #{categorykey},
+        #{title},
+        #{method},
+        #{price},
+        #{lastprice},
+        #{content},
+        #{range},
+        #{hope_place},
+        #{hope_lati},
+        #{hope_long},
+        #{canbargain},
+        0,
+        now(),
+        now(),
+        #{delete_dtm},
+        #{remind_dtm},
+        #{dealuserkey},
+        #{deal_dtm},
+        #{userreview},
+        #{userreviewimg},
+        #{userreview_dtm},
+        #{dealuserreview},
+        #{dealuserreviewimg},
+        #{dealuserreview_dtm},
+        #{poststatus},
+        0,
+        #{iscellvisible},
+        #{isbuyvisible}
+        )
+    </insert>
 
-        
+    <update id="editPost" parameterType="com.sist.back.vo.PostVO">
+    UPDATE `post`
+        SET
+        `townkey` = #{townkey},
+        `categorykey` = #{categorykey},
+        `title` = #{title},
+        `method` = #{method},
+        `price` = #{price},
+        `lastprice` = #{lastprice},
+        `content` = #{content},
+        `range` = #{range},
+        `hope_place` = #{hope_place},
+        `hope_lati` = #{hope_lati},
+        `hope_long` = #{hope_long},
+        `canbargain` = #{canbargain},
+        `update_dtm` = now(),
+        `remind_dtm` = #{remind_dtm},
+        `dealuserkey` = #{dealuserkey},
+        `deal_dtm` = #{deal_dtm},
+        `userreview` = #{userreview},
+        `userreviewimg` = #{userreviewimg},
+        `userreview_dtm` = #{userreview_dtm},
+        `dealuserreview` = #{dealuserreview},
+        `dealuserreviewimg` = #{dealuserreviewimg},
+        `dealuserreview_dtm` = #{dealuserreview_dtm},
+        `poststatus` = #{poststatus},
+        `iscellvisible` = #{iscellvisible},
+        `isbuyvisible` = #{isbuyvisible}
+        WHERE `postkey` = #{postkey}
+    </update>
+
+    <select id="search" resultType="com.sist.back.vo.PostVO" parameterType="map">
+        SELECT * FROM `post`
+         WHERE 1 = 1
+            <if test="category != null and category != ''">
+                AND categorykey = #{category}
+            </if>
+            <if test="minPrice != null and minPrice != ''">
+                AND price <![CDATA[>=]]> #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND price <![CDATA[<=]]> #{maxPrice}
+            </if>
+            <if test="sort != null and sort != ''">
+                    <if test="sort == 'recent'">
+                ORDER BY create_dtm DESC
+                    </if>
+                    <if test="sort == 'popular'">
+                ORDER BY create_dtm DESC
+                    </if>
+            </if>
+    </select>
 
 </mapper>
 
