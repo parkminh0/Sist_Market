@@ -1,5 +1,6 @@
 package com.sist.back.vo;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,4 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class WishlistVO {
     private String wishlistkey, userkey, postkey, create_dtm;
+
+	private PostVO pvo;
+    
 }
