@@ -2,6 +2,7 @@ package com.sist.back.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.sist.back.jwt.JwtProvider;
 import com.sist.back.mapper.UserMapper;
+import com.sist.back.vo.PostVO;
 import com.sist.back.vo.UserCountVO;
+import com.sist.back.vo.WishlistVO;
 import com.sist.back.vo.userVO;
 
 import lombok.RequiredArgsConstructor;
@@ -123,6 +126,83 @@ public class UserService {
         return mapper.userEditForAdmin(vo);
     }
 
+
+    public int getLikeCount(String userkey, String likewhat){
+        int likecount = 0;
+        switch(likewhat){
+            case "post":
+                likecount = mapper.getWishlistCount(userkey);
+                break;
+            case "category":
+                likecount = mapper.getInterestCategoryCount(userkey);
+                break;
+            case "keyword":
+                likecount = mapper.getKeywordCount(userkey);
+                break;
+            }
+        return likecount;
+    }
+    
+    public List<WishlistVO> getLikeLists(Map<String, Object> get_map, String likewhat){
+        List<WishlistVO> likelist = new ArrayList<>();
+        switch(likewhat){
+            case "post":
+            likelist = mapper.getWishlistByMap(get_map);
+            break;
+            case "category":
+            likelist = mapper.getInterestCategoryByMap(get_map);
+            break;
+            case "keyword":
+            likelist = mapper.getKeywordByMap(get_map);
+            break;
+        }
+        return likelist;
+    }
+    
+
+    public int getBuyTotalCount(String userkey){
+        int likecount = mapper.getBuyTotalCount(userkey);
+        return likecount;
+    }
+
+    public int getBuyCount(Map<String, Object> get_map){
+        int likecount = mapper.getBuyCount(get_map);
+        return likecount;
+    }
+
+    public List<PostVO> getBuyList(Map<String, Object> get_map){
+        List<PostVO> likelist = mapper.getBuylistByMap(get_map);
+        return likelist;
+    }
+
+    public int getCellTotalCount(String userkey){
+        int likecount = mapper.getCellTotalCount(userkey);
+        return likecount;
+    }
+    public int getCell1TotalCount(String userkey){
+        int likecount = mapper.getCellPartCount(userkey, 1);
+        return likecount;
+    }
+    public int getCell2TotalCount(String userkey){
+        int likecount = mapper.getCellPartCount(userkey, 2);
+        return likecount;
+    }
+    public int getCell3TotalCount(String userkey){
+        int likecount = mapper.getCellPartCount(userkey, 3);
+        return likecount;
+    }
+    public int getCell4TotalCount(String userkey){
+        int likecount = mapper.getCellPartCount(userkey, 4);
+        return likecount;
+    }
+    public int getCellCount(Map<String, Object> get_map){
+        int likecount = mapper.getCellCount(get_map);
+        return likecount;
+    }
+    public List<PostVO> getCellList(Map<String, Object> get_map){
+        List<PostVO> likelist = mapper.getCelllistByMap(get_map);
+        return likelist;
+    }
 
 
 }

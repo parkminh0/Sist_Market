@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.back.service.PostService;
 import com.sist.back.vo.PostVO;
+import com.sist.back.vo.userVO;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
@@ -53,6 +56,19 @@ public class PostController {
         e_map.put("ur_list", p_service.getUserReviewByPostKey(postkey));
         return e_map;
     }
+
+    @RequestMapping("/remind")
+    @ResponseBody
+    public Map<String, Object> remind(String postkey) {
+        Map<String, Object> map = new HashMap<>();
+  
+        int rst_ins = p_service.remindInsert(postkey);
+        int rst_udt = p_service.remindUpdate(postkey);
+        map.put("result_insert", rst_ins);
+        map.put("result_update", rst_udt);
+      
+    return map;
+  }
 
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")

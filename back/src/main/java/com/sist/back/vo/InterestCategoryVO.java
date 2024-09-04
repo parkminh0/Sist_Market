@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InterestCategoryVO {
-    private int autokey, userkey, categorykey;
+    private String rnum, autokey, userkey, categorykey;
 
     private categoryVO cvo;
 }
