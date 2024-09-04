@@ -24,6 +24,9 @@ public interface PostMapper {
 
     List<UserReviewVO> getUserReviewByPostKey(int postkey);
 
+    int insertRemindPost(String postkey);
+    int remindPostByPostKey(String postkey);
+
     List<PostVO> searchpost(Map<String, Object> map);
 
     int writePost(PostVO vo);

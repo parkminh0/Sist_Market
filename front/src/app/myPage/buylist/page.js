@@ -1,10 +1,83 @@
+'use client'
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/buylist.css";
+import "/public/css/paging.css";
+import axios from "axios";
+import BuyList from "@/component/user/myPage/buylist/BuyList";
 
 export default function Page() {
+
+  const [buylist, setBuylist] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalRecord, setTotalRecord] = useState(0);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [page, setPage] = useState({});
+
+  const API_URL = '/user/api/buyList';
+
+  function changePage(pNum) { 
+    getBuyList(pNum);
+  }
+
+  function getBuyList(cPage){
+    axios({
+      url: API_URL,
+      method: 'post',
+      params: {
+          userkey: 1,
+          cPage: cPage,
+          start_date: startDate,
+          end_date: endDate,
+      }
+    }).then((res) => {
+        console.log(res.data);
+        setBuylist(res.data.buylist);
+        setPage(res.data.page);
+        if(res.data.totalCount > 999){
+          setTotalCount(1000);
+        } else {
+          setTotalCount(res.data.totalCount);
+        }
+        if(res.data.totalRecord > 999){
+          setTotalRecord(1000);
+        } else {
+          setTotalRecord(res.data.totalRecord);
+        }
+        
+      });
+  }
+
+  function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
+  function dateButton(months){
+    let end_day = new Date();
+    let start_day = new Date();
+    start_day.setMonth(end_day.getMonth()-months);
+    setEndDate(formatDate(end_day));
+    setStartDate(formatDate(start_day));
+  }
+
+  useEffect(()=>{
+    getBuyList(1);
+  },[]);
+
+
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -35,13 +108,6 @@ export default function Page() {
                 </div>
               </Link>
             </div>
-            <Link href="/myPage/buylist">
-              <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                  <font style={{ verticalAlign: "inherit" }}>구매내역</font>
-                </h1>
-              </div>
-            </Link>
           </section>
         </div>
         <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -75,7 +141,7 @@ export default function Page() {
                           거래완료
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          77
+                          {totalCount > 999 ? '999+' : totalCount}
                         </dd>
                       </dl>
                     </Link>
@@ -93,6 +159,7 @@ export default function Page() {
                           data-v-77765e40=""
                           href="#"
                           className="month_link"
+                          onClick={()=>{dateButton(2)}}
                         >
                           최근 2개월
                         </Link>
@@ -102,6 +169,7 @@ export default function Page() {
                           data-v-77765e40=""
                           href="#"
                           className="month_link"
+                          onClick={()=>{dateButton(4)}}
                         >
                           4개월
                         </Link>
@@ -111,6 +179,7 @@ export default function Page() {
                           data-v-77765e40=""
                           href="#"
                           className="month_link"
+                          onClick={()=>{dateButton(6)}}
                         >
                           6개월
                         </Link>
@@ -122,45 +191,35 @@ export default function Page() {
                     data-v-77765e40=""
                     className="period_calendar_wrapper"
                   >
-                    <div data-v-14e5ae1c="" className="period_calendar">
-                      <div data-v-14e5ae1c="" className="calendar_wrap">
-                        <span data-v-14e5ae1c="">
-                          <div data-v-14e5ae1c="" className="calendar">
-                            <input
-                              data-v-14e5ae1c=""
-                              disabled="disabled"
-                              className="cal_input"
-                            />
-                            <span data-v-14e5ae1c="" className="cal_btn"></span>
-                          </div>
-                          <div
-                            data-v-4cb7b681=""
-                            className="vc-popover-content-wrapper is-interactive"
-                            style={{ margin: "0px" }}
-                          ></div>
+                    <div style={{ float: "left" }}>
+                        <span
+                          className="gLabel"
+                          style={{ float: "left", marginLeft: "5px" }}
+                        >
+                          <input
+                            type="date"
+                            id="startDate"
+                            name="startDate"
+                            className="fText gDate"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+                          <span className="ec-mode-common-period-area">~</span>
+                          <input
+                            type="date"
+                            id="endDate"
+                            name="endDate"
+                            className="fText gDate"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
                         </span>
                       </div>
-                      <span data-v-14e5ae1c="" className="swung_dash">
-                        ~
-                      </span>
-                      <div data-v-14e5ae1c="" className="calendar_wrap">
-                        <span data-v-14e5ae1c="">
-                          <div data-v-14e5ae1c="" className="calendar">
-                            <input data-v-14e5ae1c="" className="cal_input" />
-                            <span data-v-14e5ae1c="" className="cal_btn"></span>
-                          </div>
-                          <div
-                            data-v-4cb7b681=""
-                            className="vc-popover-content-wrapper is-interactive"
-                            style={{ margin: "0px" }}
-                          ></div>
-                        </span>
-                      </div>
-                    </div>
                     <div data-v-14e5ae1c="" className="period_btn_box">
                       <button
                         data-v-14e5ae1c=""
                         className="btn_search is_active"
+                        onClick={()=>getBuyList(1)}
                       >
                         조회
                       </button>
@@ -185,21 +244,14 @@ export default function Page() {
                 >
                   <div data-v-eff62a72="" className="purchase_head">
                     <div data-v-eff62a72="" className="head_product">
-                      <Link data-v-eff62a72="" href="#" className="btn_filter">
+                      <div data-v-eff62a72="" className="btn_filter">
                         {" "}
                         전체
-                        <svg
-                          data-v-eff62a72=""
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="ico-arr-dir-down-circle icon sprite-icons"
-                        >
-                          {/* <use
-                            data-v-eff62a72=""
-                            href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-arr-dir-down-circle"
-                            xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-arr-dir-down-circle"
-                          ></use> */}
-                        </svg>
-                      </Link>
+                          <div style={{display:"inline-block", textAlign:'center', paddingLeft:10}}>
+                            {totalRecord > 999 ? '999+' : totalRecord}
+                          </div>
+                          <div style={{display:"inline-block", position:'absolute', right:15}}>건</div>
+                      </div>
                     </div>
                     <div data-v-eff62a72="" className="head_status">
                       <div
@@ -232,165 +284,15 @@ export default function Page() {
                       </div>
                     </div>
                   </div>
-                  {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-                  <div data-v-eff62a72="">
-                    <div data-v-53e92c51="" data-v-eff62a72="">
-                      <div
-                        className="purchase_list_display_item"
-                        style={{ backgroundColor: "#FFFFFF" }}
-                        data-v-53e92c51=""
-                      >
-                        <div
-                          className="purchase_list_product"
-                          data-v-53e92c51=""
-                        >
-                          <div
-                            className="list_item_img_wrap"
-                            data-v-53e92c51=""
-                          >
-                            <img
-                              alt="product_image"
-                              src="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
-                              className="list_item_img"
-                              style={{ backgroundColor: "#ebf0f5" }}
-                              data-v-53e92c51=""
-                            />
-                          </div>
-                          <div
-                            className="list_item_title_wrap"
-                            data-v-53e92c51=""
-                          >
-                            <p className="list_item_title" data-v-53e92c51="">
-                              Nike Air Force 1 '07 WB Flax
-                            </p>
-                            <p
-                              className="list_item_description"
-                              data-v-53e92c51=""
-                            >
-                              <span data-v-53e92c51="">280</span>
-                            </p>
-                          </div>
-                        </div>
-                        <div className="list_item_status" data-v-53e92c51="">
-                          <div
-                            className="list_item_column column_secondary"
-                            data-v-53e92c51=""
-                          >
-                            <p
-                              className="text-lookup secondary_title display_paragraph"
-                              style={{ color: "#22222280" }}
-                              data-v-09bea70c=""
-                              data-v-7d3b6402=""
-                              data-v-53e92c51=""
-                            >
-                              23/10/31
-                            </p>
-                          </div>
-                          <div
-                            className="list_item_column column_last"
-                            data-v-53e92c51=""
-                          >
-                            <Link
-                              href="/"
-                              className="text-lookup last_description display_paragraph action_named_action"
-                              style={{ color: "#222222CC" }}
-                              data-v-09bea70c=""
-                              data-v-7d3b6402=""
-                              data-v-53e92c51=""
-                            >
-                              설정
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* <!-- 여기까지 FOREACH --> */}
-                  {/* <!-- 페이징 --> */}
+                  { buylist ?
+                  <BuyList buylist={buylist}/>
+                  : 
                   <div
-                    className="pagination"
-                    data-v-4857d0b8=""
-                    data-v-3b1b5d32=""
+                  data-v-24868902=""
+                  data-v-eff62a72=""
+                  className="empty_area"
                   >
-                    <div
-                      className="pagination_box first last"
-                      data-v-4857d0b8=""
-                    >
-                      <div className="prev_btn_box" data-v-4857d0b8="">
-                        <Link href="#" className="btn_arr" data-v-4857d0b8="">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="arr-page-first icon sprite-icons"
-                            data-v-4857d0b8=""
-                          >
-                            {/* <use
-                              href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-first"
-                              xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-first"
-                              data-v-4857d0b8=""
-                            ></use> */}
-                          </svg>
-                        </Link>
-                        <Link href="#" className="btn_arr" data-v-4857d0b8="">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="arr-page-prev icon sprite-icons"
-                            data-v-4857d0b8=""
-                          >
-                            {/* <use
-                              href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-prev"
-                              xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-prev"
-                              data-v-4857d0b8=""
-                            ></use> */}
-                          </svg>
-                        </Link>
-                      </div>
-                      <div className="page_bind" data-v-4857d0b8="">
-                        <Link
-                          href="#"
-                          className="btn_page active"
-                          data-v-4857d0b8=""
-                        >
-                          {" "}
-                          1{" "}
-                        </Link>
-                      </div>
-                      <div className="next_btn_box" data-v-4857d0b8="">
-                        <Link href="#" className="btn_arr" data-v-4857d0b8="">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="arr-page-next icon sprite-icons"
-                            data-v-4857d0b8=""
-                          >
-                            {/* <use
-                              href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-next"
-                              xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-next"
-                              data-v-4857d0b8=""
-                            ></use> */}
-                          </svg>
-                        </Link>
-                        <Link href="#" className="btn_arr" data-v-4857d0b8="">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="arr-page-last icon sprite-icons"
-                            data-v-4857d0b8=""
-                          >
-                            {/* <use
-                              href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-last"
-                              xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-last"
-                              data-v-4857d0b8=""
-                            ></use> */}
-                          </svg>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                  {/* <!--  --> */}
-                  {/* <!-- 없을 경우 --> */}
-                  <div
-                    data-v-24868902=""
-                    data-v-eff62a72=""
-                    className="empty_area"
-                  >
+                    {/* <!-- 없을 경우 --> */}
                     <p data-v-24868902="" className="desc">
                       구매 내역이 없습니다.
                     </p>
@@ -403,8 +305,34 @@ export default function Page() {
                       {" "}
                       SHOP 바로가기{" "}
                     </Link>
+                    {/* <!--  --> */}
                   </div>
-                  {/* <!--  --> */}
+                }
+                {/* 페이징 시작*/}
+              <div className="mPaginate">
+                  {page.startPage > 1 && (
+                    <Link href="#" onClick={() => {changePage(page.startPage - page.pagePerBlock)}} className="prev">
+                      이전 {page.pagePerBlock}페이지
+                    </Link>
+                  )}
+                  <ol>
+                    {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                      <li key={pNum}>
+                        {page.nowPage == pNum ? (
+                          <strong title="현재페이지">{pNum}</strong>
+                        ) : (
+                          <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                  {page.endPage < page.totalPage && (
+                    <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+                      다음 {page.pagePerBlock}페이지
+                    </Link>
+                  )}
+                </div>
+                {/* 페이징 끝*/}
                 </div>
               </div>
             </div>

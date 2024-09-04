@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WishlistVO {
-    private String wishlistkey, userkey, postkey, create_dtm;
+    private String rnum, wishlistkey, userkey, postkey, create_dtm;
 
 	private PostVO pvo;
     
