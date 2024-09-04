@@ -18,6 +18,7 @@ export default function page() {
   const [sell_1, setSell_1] = useState(0);
   const [sell_2, setSell_2] = useState(0);
   const [sell_3, setSell_3] = useState(0);
+  const [sell_4, setSell_4] = useState(0);
 
   function getData(){
     axios({
@@ -35,22 +36,28 @@ export default function page() {
       var sell1=0;
       var sell2=0;
       var sell3=0;
+      var sell4=0;
       for(var i=0;i<cell_list.length;i++){
         switch(cell_list[i].poststatus){
-          case 1:
+          case '1':
             sell1++;
             break;
-          case 2:
+          case '2':
             sell2++;
             break;
-          case 3:
+          case '3':
             sell3++;
+            break;
+          case '4':
+            sell4++;
             break;
         }
       }
       setSell_1(sell1);
       setSell_2(sell2);
       setSell_3(sell3);
+      setSell_4(sell4);
+      console.log([sell1,sell2,sell3,sell4]);
     });
   }
   
@@ -396,11 +403,11 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" className="tab_item">
+                  <div data-v-2cbb289b="" className="tab_item tab_on">
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
-                          거래완료
+                          예약중
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
                           {sell_2}
@@ -412,10 +419,22 @@ export default function page() {
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
-                          숨김
+                          거래완료
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
                           {sell_3}
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
+                  <div data-v-2cbb289b="" className="tab_item">
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          숨김
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                          {sell_4}
                         </dd>
                       </dl>
                     </Link>
@@ -513,7 +532,7 @@ export default function page() {
                   {" "}
                   관심 상품{" "}
                 </h3>
-                <Link data-v-6752ceb2="" href="myPage/likelist" className="btn_more">
+                <Link data-v-6752ceb2="" href='/myPage/likelist' className="btn_more">
                   <span data-v-6752ceb2="" className="btn_txt">
                     더보기
                   </span>
