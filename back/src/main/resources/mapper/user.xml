@@ -98,11 +98,19 @@
     </select>
 
     <select id="getBuyListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
-        SELECT * FROM `post` WHERE dealuserkey = #{userkey} AND poststatus = 3
+        SELECT *
+        FROM `post`
+        WHERE dealuserkey = #{userkey}
+        AND poststatus = 3
+        ORDER BY deal_dtm desc
     </select>
 
     <select id="getCellListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
-        SELECT * FROM `post` WHERE userkey = #{userkey} AND poststatus != 0
+        SELECT *
+        FROM `post`
+        WHERE userkey = #{userkey}
+        AND poststatus <![CDATA[>]]> 0
+        ORDER BY create_dtm desc
     </select>
 
     <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
@@ -243,7 +251,144 @@
     WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
-   
+   <!-- 관심목록 수, 내용 -->
+    <select id="getWishlistCount" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `wishlist`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getInterestCategoryCount" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `interestcategory`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getKeywordCount" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `keyword`
+        WHERE userkey = #{userkey}
+    </select>
+
+    <select id="getWishlistByMap" resultMap="wishlistResultMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT w.* 
+                FROM wishlist w
+                WHERE w.userkey = #{userkey}
+                ORDER BY w.wishlistkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getInterestCategoryByMap" resultMap="interestcategoryResultMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM interestcategory
+                WHERE userkey = #{userkey}
+                ORDER BY autokey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getKeywordByMap" resultType="com.sist.back.vo.KeywordVO" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `keyword`
+                WHERE userkey = #{userkey}
+                ORDER BY keywordkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    
+    <!-- buy_list -->
+    <select id="getBuyTotalCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE dealuserkey = #{userkey}
+    </select>
+    <select id="getBuyCount" resultType="int" parameterType="Map">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE dealuserkey = #{userkey}
+      <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+          AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+      </if>
+    </select>
+
+    <select id="getBuylistByMap" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `post`
+                WHERE dealuserkey = #{userkey}
+                <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                    AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+                </if>
+                ORDER BY postkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+
+    <!-- cell_list -->
+    <select id="getCellTotalCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE userkey = #{userkey}
+    </select>
+
+    <select id="getCellPartCount" resultType="int" parameterType="Map">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE userkey = #{userkey}
+      AND poststatus = #{poststatus}
+    </select>
+
+    <select id="getCellCount" resultType="int" parameterType="Map">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE userkey = #{userkey}
+      AND poststatus = #{poststatus}
+      <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+          AND create_dtm BETWEEN #{start_date} AND #{end_date}
+      </if>
+    </select>
+
+    <select id="getCelllistByMap" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `post`
+                WHERE userkey = #{userkey}
+                AND poststatus = #{poststatus}
+                <if test="poststatus == 1 or poststatus == 2">
+                  <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                      AND create_dtm BETWEEN #{start_date} AND #{end_date}
+                  </if>
+                  ORDER BY create_dtm DESC
+                </if>
+                <if test="poststatus == 3">
+                  <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                      AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+                  </if>
+                  ORDER BY deal_dtm DESC
+                </if>
+                <if test="poststatus == 4">
+                  <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                      AND update_dtm BETWEEN #{start_date} AND #{end_date}
+                  </if>
+                  ORDER BY update_dtm DESC
+                </if>
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+
 
 
     <!-- 관리자 회원 탈퇴 -->

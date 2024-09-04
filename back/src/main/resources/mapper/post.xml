@@ -129,6 +129,19 @@
         WHERE reviewlistkey = #{reviewlistkey}
     </select>
 
+    
+    <insert id="insertRemindPost" parameterType="String">
+        INSERT
+        INTO `post_info`(postkey,isupdate,dtm)
+        VALUES (#{postkey},1,NOW())
+    </insert>
+
+    <update id="remindPostByPostKey" parameterType="String">
+        UPDATE `post`
+        SET update_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+
 
     <!-- 6. searchpost 관련 데이터 -->
     <!-- <select id="searchpost" resultType="com.sist.back.vo.PostVO">

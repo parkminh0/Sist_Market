@@ -1,10 +1,116 @@
+'use client'
+
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/buylist.css";
+import "/public/css/celllist.css";
+import "/public/css/paging.css";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import CellList from "@/component/user/myPage/cellList/CellList";
 
 export default function page() {
+
+  const [celllist, setCelllist] = useState([]);
+  const [whatNow, setWhatNow] = useState('onSale');
+  const [cellStatus, setCellStatus] = useState(1);
+  const [cellCounts, setCellCounts] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalRecord, setTotalRecord] = useState(0);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [page, setPage] = useState({});
+  
+  const [firstTime, setFirstTime] = useState(false);
+
+  const API_URL = '/user/api/cellList';
+
+  var cellCategory = useSearchParams().get("cellCategory");
+  const cellCategoryList = ['onSale','Selling','Sold','Hidden'];
+
+  function changePage(pNum) { 
+    getCellList(pNum);
+  }
+
+  function updateCellList(cellCategory){
+    setWhatNow(cellCategory);
+    setCellStatus(cellCategoryList.indexOf(cellCategory)+1);
+  }
+
+  function getCellList(cPage){
+    axios({
+      url: API_URL,
+      method: 'post',
+      params: {
+          userkey: 1,
+          cPage: cPage,
+          poststatus: cellStatus,
+          start_date: startDate,
+          end_date: endDate,
+      }
+    }).then((res) => {
+        console.log(res.data);
+
+        setCelllist(res.data.celllist);
+        setCellCounts([res.data.cell1Count,
+                       res.data.cell2Count,
+                       res.data.cell3Count,
+                       res.data.cell4Count])
+        setPage(res.data.page);
+
+        if(res.data.totalCount > 99){
+          setTotalCount(100);
+        } else {
+          setTotalCount(res.data.totalCount);
+        }
+        if(res.data.totalRecord > 99){
+          setTotalRecord(100);
+        } else {
+          setTotalRecord(res.data.totalRecord);
+        }
+        
+      });
+  }
+
+  function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
+  function dateButton(months){
+    let end_day = new Date();
+    let start_day = new Date();
+    start_day.setMonth(end_day.getMonth()-months);
+    setEndDate(formatDate(end_day));
+    setStartDate(formatDate(start_day));
+  }
+
+  useEffect(()=>{
+    if(firstTime){
+      if(cellCategoryList.includes(cellCategory)){
+        setWhatNow(cellCategory);
+        alert(cellCategoryList.indexOf(cellCategory));
+        setCellStatus(cellCategoryList.indexOf(cellCategory)+1);
+      } else {
+        setWhatNow('onSale');
+        setCellStatus(1);
+      }
+    }
+    getCellList(1);
+  },[whatNow]);
+
+
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -35,13 +141,6 @@ export default function page() {
                 </div>
               </Link>
             </div>
-            <Link href="/myPage/cellist">
-              <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                  <font style={{ verticalAlign: "inherit" }}>판매내역</font>
-                </h1>
-              </div>
-            </Link>
           </section>
         </div>
         <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -69,38 +168,50 @@ export default function page() {
                   data-v-0a67d0b5=""
                   className="purchase_list_tab sell detail_tab"
                 >
-                  <div data-v-2cbb289b="" className="tab_item tab_on">
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('onSale')} className={`tab_item ${cellStatus == 1 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
                           판매중
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          0
+                          {cellCounts[0] > 99 ? '99+' : cellCounts[0]}
                         </dd>
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" className="tab_item">
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Selling')} className={`tab_item ${cellStatus == 2 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          예약중
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                        {cellCounts[1] > 99 ? '99+' : cellCounts[1]}
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Sold')} className={`tab_item ${cellStatus == 3 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
                           거래완료
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          0
+                        {cellCounts[2] > 99 ? '99+' : cellCounts[2]}
                         </dd>
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" className="tab_item">
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Hidden')} className={`tab_item ${cellStatus == 4 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
                           숨김
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          2
+                        {cellCounts[3] > 99 ? '99+' : cellCounts[3]}
                         </dd>
                       </dl>
                     </Link>
@@ -108,7 +219,7 @@ export default function page() {
                 </div>
                 <div
                   data-v-77765e40=""
-                  data-v-0a67d0b5=""
+                  data-v-3b1b5d32=""
                   className="period_search"
                 >
                   <div data-v-77765e40="" className="period_month">
@@ -118,6 +229,7 @@ export default function page() {
                           data-v-77765e40=""
                           href="#"
                           className="month_link"
+                          onClick={()=>{dateButton(2)}}
                         >
                           최근 2개월
                         </Link>
@@ -127,6 +239,7 @@ export default function page() {
                           data-v-77765e40=""
                           href="#"
                           className="month_link"
+                          onClick={()=>{dateButton(4)}}
                         >
                           4개월
                         </Link>
@@ -136,6 +249,7 @@ export default function page() {
                           data-v-77765e40=""
                           href="#"
                           className="month_link"
+                          onClick={()=>{dateButton(6)}}
                         >
                           6개월
                         </Link>
@@ -147,43 +261,35 @@ export default function page() {
                     data-v-77765e40=""
                     className="period_calendar_wrapper"
                   >
-                    <div data-v-14e5ae1c="" className="period_calendar">
-                      <div data-v-14e5ae1c="" className="calendar_wrap">
-                        <span data-v-14e5ae1c="">
-                          <div data-v-14e5ae1c="" className="calendar">
-                            <input
-                              data-v-14e5ae1c=""
-                              disabled="disabled"
-                              className="cal_input"
-                            />
-                            <span data-v-14e5ae1c="" className="cal_btn"></span>
-                          </div>
-                          <div
-                            data-v-4cb7b681=""
-                            className="vc-popover-content-wrapper"
-                          ></div>
+                    <div style={{ float: "left" }}>
+                        <span
+                          className="gLabel"
+                          style={{ float: "left", marginLeft: "5px" }}
+                        >
+                          <input
+                            type="date"
+                            id="startDate"
+                            name="startDate"
+                            className="fText gDate"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+                          <span className="ec-mode-common-period-area">~</span>
+                          <input
+                            type="date"
+                            id="endDate"
+                            name="endDate"
+                            className="fText gDate"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
                         </span>
                       </div>
-                      <span data-v-14e5ae1c="" className="swung_dash">
-                        ~
-                      </span>
-                      <div data-v-14e5ae1c="" className="calendar_wrap">
-                        <span data-v-14e5ae1c="">
-                          <div data-v-14e5ae1c="" className="calendar">
-                            <input data-v-14e5ae1c="" className="cal_input" />
-                            <span data-v-14e5ae1c="" className="cal_btn"></span>
-                          </div>
-                          <div
-                            data-v-4cb7b681=""
-                            className="vc-popover-content-wrapper"
-                          ></div>
-                        </span>
-                      </div>
-                    </div>
                     <div data-v-14e5ae1c="" className="period_btn_box">
                       <button
                         data-v-14e5ae1c=""
                         className="btn_search is_active"
+                        onClick={()=>getCellList(1)}
                       >
                         조회
                       </button>
@@ -195,21 +301,25 @@ export default function page() {
                   data-v-0a67d0b5=""
                   className="search_info"
                 >
+                  {(cellStatus==1 || cellStatus==2)  ? 
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
-                      판매중 조회 결과는 등록일 기준으로 노출됩니다.
+                      판매중(예약중) 조회 결과는 등록일 기준으로 노출됩니다.
                     </p>
                   </li>
+                  : cellStatus==3 ?
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
                       거래완료 조회 결과는 판매일 기준으로 노출됩니다.
                     </p>
                   </li>
+                  :
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
                       숨김 조회 결과는 숨김일 기준으로 노출됩니다.
                     </p>
                   </li>
+                  }
                 </ul>
                 <div
                   data-v-eff62a72=""
@@ -218,21 +328,14 @@ export default function page() {
                 >
                   <div data-v-eff62a72="" className="purchase_head">
                     <div data-v-eff62a72="" className="head_product">
-                      <Link data-v-eff62a72="" href="#" className="btn_filter">
+                      <div data-v-eff62a72="" className="btn_filter">
                         {" "}
                         전체
-                        <svg
-                          data-v-eff62a72=""
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="ico-arr-dir-down-circle icon sprite-icons"
-                        >
-                          {/* <use
-                            data-v-eff62a72=""
-                            href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-arr-dir-down-circle"
-                            xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-arr-dir-down-circle"
-                          ></use> */}
-                        </svg>
-                      </Link>
+                          <div style={{display:"inline-block", textAlign:'center', paddingLeft:10}}>
+                            {totalRecord > 999 ? '999+' : totalRecord}
+                          </div>
+                          <div style={{display:"inline-block", position:'absolute', right:15}}>건</div>
+                      </div>
                     </div>
                     <div data-v-eff62a72="" className="head_status">
                       <div
@@ -293,24 +396,40 @@ export default function page() {
                       </div>
                     </div>
                   </div>
-                  <div
-                    data-v-24868902=""
-                    data-v-eff62a72=""
-                    className="empty_area"
-                  >
-                    <p data-v-24868902="" className="desc">
-                      판매중인 게시글이 없어요.
-                    </p>
-                    <Link
-                      data-v-420a5cda=""
-                      data-v-24868902=""
-                      href="#"
-                      className="btn outlinegrey small"
-                    >
-                      {" "}
-                      내 물건 팔기{" "}
+                  
+                  { (whatNow=="onSale" || whatNow=="Selling") ?
+                  <CellList celllist={celllist} cellCategory={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
+                  :
+                  whatNow=="Sold" ?
+                  <CellList celllist={celllist} cellCategory="Sold" />
+                  :
+                  <CellList celllist={celllist} cellCategory="Hidden" />
+                }
+                {/* 페이징 시작*/}
+              <div className="mPaginate">
+                  {page.startPage > 1 && (
+                    <Link href="#" onClick={() => {changePage(page.startPage - page.pagePerBlock)}} className="prev">
+                      이전 {page.pagePerBlock}페이지
                     </Link>
-                  </div>
+                  )}
+                  <ol>
+                    {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                      <li key={pNum}>
+                        {page.nowPage == pNum ? (
+                          <strong title="현재페이지">{pNum}</strong>
+                        ) : (
+                          <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                  {page.endPage < page.totalPage && (
+                    <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+                      다음 {page.pagePerBlock}페이지
+                    </Link>
+                  )}
+                </div>
+                {/* 페이징 끝*/}
                 </div>
               </div>
             </div>

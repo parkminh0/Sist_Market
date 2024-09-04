@@ -15,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
 import com.sist.back.util.Paging;
+import com.sist.back.vo.PostVO;
 import com.sist.back.vo.UserCountVO;
+import com.sist.back.vo.WishlistVO;
 import com.sist.back.vo.userVO;
 
 import jakarta.servlet.ServletContext;
@@ -160,14 +162,6 @@ public class UserController {
         return map;
     }
 
-
-    //jwt token login 
-    @PostMapping("/api/login")
-    @ResponseBody
-     public Map<String, Object> login(userVO vo, HttpServletResponse res) {
-
-
-    //계정관리 user정보
     @RequestMapping("/api/getUser")
     @ResponseBody
     public Map<String, Object> getUser(String userkey) {
@@ -176,6 +170,14 @@ public class UserController {
         map.put("uvo", uvo);
         return map;
     }
+
+    //jwt token login 
+    @PostMapping("/api/login")
+    @ResponseBody
+     public Map<String, Object> login(userVO vo, HttpServletResponse res) {
+
+
+    //계정관리 user정보
 
     
     Map<String, Object> map = new HashMap<>();
@@ -261,5 +263,131 @@ public class UserController {
     return map;
 }
 
+    // 사용자 관심목록
+    @RequestMapping("/api/likeLists")
+    @ResponseBody
+    public Map<String, Object> getLikeList(String userkey, String likewhat, String cPage) {
+        Map<String, Object> l_map = new HashMap<>();
+        // Paging
+        Paging page = new Paging(3, 3);
+        int totalRecord = service.getLikeCount(userkey, likewhat);
+        l_map.put("totalCount", totalRecord);
+        page.setTotalRecord(totalRecord);
+        int nowPage = 1;
+        if (cPage != null) {
+            nowPage = Integer.parseInt(cPage);
+        } else {
+        }
+        page.setNowPage(nowPage);
+        
+        
+        int begin = page.getBegin();
+        int end = page.getEnd();
+        
+        l_map.put("page", page);
+        
+        Map<String, Object> get_map = new HashMap<>();
+        get_map.put("userkey", userkey);
+        get_map.put("begin", begin);
+        get_map.put("end", end);
+
+        List<WishlistVO> likeList = service.getLikeLists(get_map, likewhat);
+        l_map.put("likeList", likeList);
+        return l_map;
+    }
+
+    // 사용자 구매목록
+    @RequestMapping("/api/buyList")
+    @ResponseBody
+    public Map<String, Object> getBuyList(String userkey, String cPage, String start_date, String end_date) {
+        Map<String, Object> bl_map = new HashMap<>();
+        Map<String, Object> get_map = new HashMap<>();
+        // Paging
+        Paging page = new Paging(3, 3);
+        get_map.put("userkey", userkey);
+        int totalCount = service.getBuyTotalCount(userkey);
+        get_map.put("start_date", start_date);
+        get_map.put("end_date", end_date);
+        int totalRecord = service.getBuyCount(get_map);
+        bl_map.put("totalCount", totalCount);
+        bl_map.put("totalRecord", totalRecord);
+        page.setTotalRecord(totalRecord);
+        int nowPage = 1;
+        if (cPage != null) {
+            nowPage = Integer.parseInt(cPage);
+        } else {
+        }
+        page.setNowPage(nowPage);
+        
+        
+        int begin = page.getBegin();
+        int end = page.getEnd();
+        
+        
+        
+        bl_map.put("page", page);
+        
+        get_map.put("begin", begin);
+        get_map.put("end", end);
+        
+        List<PostVO> buyList = service.getBuyList(get_map);
+        bl_map.put("buylist", buyList);
+        return bl_map;
+    }
+
+
+    // 사용자 판매목록
+    @RequestMapping("/api/cellList")
+    @ResponseBody
+    public Map<String, Object> getCellList(String userkey, String cPage, String poststatus, String start_date, String end_date) {
+        Map<String, Object> bl_map = new HashMap<>();
+        Map<String, Object> get_map = new HashMap<>();
+        // Paging
+        Paging page = new Paging(3, 3);
+        get_map.put("userkey", userkey);
+
+        int totalCount = service.getCellTotalCount(userkey);
+        int cell1Count = service.getCell1TotalCount(userkey);
+        int cell2Count = service.getCell2TotalCount(userkey);
+        int cell3Count = service.getCell3TotalCount(userkey);
+        int cell4Count = service.getCell4TotalCount(userkey);
+        bl_map.put("totalCount", totalCount);
+        bl_map.put("cell1Count", cell1Count);
+        bl_map.put("cell2Count", cell2Count);
+        bl_map.put("cell3Count", cell3Count);
+        bl_map.put("cell4Count", cell4Count);
+
+        get_map.put("poststatus", poststatus);
+        get_map.put("start_date", start_date);
+        get_map.put("end_date", end_date);
+
+        int totalRecord = service.getCellCount(get_map);
+
+        bl_map.put("totalRecord", totalRecord);
+
+        page.setTotalRecord(totalRecord);
+        int nowPage = 1;
+        if (cPage != null) {
+            nowPage = Integer.parseInt(cPage);
+        } else {
+        }
+        page.setNowPage(nowPage);
+        
+        
+        int begin = page.getBegin();
+        int end = page.getEnd();
+        
+        
+        bl_map.put("page", page);
+        
+        get_map.put("begin", begin);
+        get_map.put("end", end);
+        
+        List<PostVO> cellList = service.getCellList(get_map);
+        bl_map.put("celllist", cellList);
+        return bl_map;
+    }
+
+    
 
 }

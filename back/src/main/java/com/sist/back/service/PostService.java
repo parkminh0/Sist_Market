@@ -44,6 +44,13 @@ public class PostService {
         return p_mapper.getUserReviewByPostKey(postkey);
     }
 
+    public int remindInsert(String postkey){
+        return p_mapper.insertRemindPost(postkey);
+    }
+    public int remindUpdate(String postkey){
+        return p_mapper.remindPostByPostKey(postkey);
+    }
+
     public PostVO[] searchpost(Map<String, Object> map) {
         PostVO[] ar = null;
         List<PostVO> list = p_mapper.searchpost(map);
@@ -78,4 +85,6 @@ public class PostService {
         }
         return ar;
     }
+
+
 }

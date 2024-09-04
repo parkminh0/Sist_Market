@@ -9,5 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KeywordVO {
-    private String keywordkey, userkey, content;
+    private String rnum, keywordkey, userkey, content;
 }
