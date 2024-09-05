@@ -56,5 +56,21 @@ public interface UserMapper {
     int getCellCount(Map<String, Object> get_map);
     List<PostVO> getCelllistByMap(Map<String, Object> get_map);
 
+        
+
+    
+    //회원정보 수정
+    int editImage(userVO uvo);
+
+    int delImage(String userkey);
+
+    int editNickname(userVO uvo);
+
+    int editEmail(userVO uvo);
+
+    int editPw (userVO uvo);
+
+    int editPhone(userVO uvo);
+
 
 }

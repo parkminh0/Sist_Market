@@ -423,4 +423,77 @@
       WHERE email = #{email}
     </select>
 
+
+      
+    <!-- 이미지 변경 -->
+    <update id="editImage" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET imgurl = #{imgurl}
+      WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 이미지 삭제 -->
+    <update id="delImage" parameterType="String">
+      UPDATE user
+      SET imgurl = null
+      WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 닉네임 변경(중복 확인) -->
+    <update id="editNickname" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET nickname = #{nickname}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM ( <!-- 1은 그냥 존재를 확인하기 위함 -->
+              SELECT 1 
+              FROM user 
+              WHERE nickname = #{nickname}
+          ) AS temp <!-- 동일한 테이블에 update랑 select 동시에 사용 불가 -> 서브쿼리를 임시 테이블(temp)로 감싸서 우회 -->
+      )
+  </update>
+
+    <!-- 이메일 변경(중복 확인 -> 인증 api 추가 고민) -->
+    <update id="editEmail" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET email = #{email}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM (
+              SELECT 1 
+              FROM user 
+              WHERE email = #{email}
+          ) AS temp
+      )
+    </update>
+
+    <!-- 비밀번호 변경(기존 비밀번호랑 일치하는지 확인) -->
+    <update id="editPw" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET pw = #{pw}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM (
+              SELECT 1 
+              FROM user 
+              WHERE pw = #{pw}
+          ) AS temp
+      )
+    </update>
+
+    <!-- 핸드폰 번호 변경 (중복 확인 -> 인증 api 추가 고민) -->
+    <update id="editPhone" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET phone = #{phone}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM (
+              SELECT 1 
+              FROM user 
+              WHERE phone = #{phone}
+          ) AS temp
+      )
+    </update>
+
+
 </mapper>
