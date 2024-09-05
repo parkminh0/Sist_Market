@@ -23,7 +23,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/api/admin/category")
+@RequestMapping("/admin/category")
 public class CategoryEditController {
 
     @Autowired
