@@ -31,4 +31,6 @@ public interface UserMapper {
 
     int saveUser(userVO vo);
 
+    userVO findbyEmail(String email);
+
 }

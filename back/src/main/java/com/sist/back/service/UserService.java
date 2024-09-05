@@ -123,6 +123,10 @@ public class UserService {
         return mapper.userEditForAdmin(vo);
     }
 
+    public userVO findByemail(String email){
+        return mapper.findbyEmail(email);
+    }
+
 
 
 }

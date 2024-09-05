@@ -21,6 +21,9 @@ import com.sist.back.vo.userVO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/user")
@@ -161,12 +164,6 @@ public class UserController {
     }
 
 
-    //jwt token login 
-    @PostMapping("/api/login")
-    @ResponseBody
-     public Map<String, Object> login(userVO vo, HttpServletResponse res) {
-
-
     //계정관리 user정보
     @RequestMapping("/api/getUser")
     @ResponseBody
@@ -177,6 +174,11 @@ public class UserController {
         return map;
     }
 
+
+    //jwt token login 
+    @PostMapping("/api/login")
+    @ResponseBody
+     public Map<String, Object> login(userVO vo, HttpServletResponse res) {
     
     Map<String, Object> map = new HashMap<>();
     int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
@@ -253,13 +255,77 @@ public class UserController {
 
     if (vo.getId() != null) {
       // 사용자가 입력한 비밀번호를 암호화 시킨다.
-      // String pw = passwordEncoder.encode(member.getMPw());
+      //String pw = passwordEncoder.encode(vo.getMPw());
      
       userVO uvo = service.reg(vo);
       map.put("uvo", uvo);
     }
     return map;
+  }
+
+  //kakao_login & reg
+@RequestMapping("/kakao/login")
+@ResponseBody
+public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
+    System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
+    System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@"+nickname);
+    Map<String, Object> map = new HashMap<>();  // 반환할 맵
+    userVO fvo = service.findByemail(email);  // 이메일로 회원 검색
+    
+    // 회원 정보가 없을 경우 회원가입 처리
+    if (fvo == null) {
+        fvo = new userVO();
+        fvo.setNickname(nickname);
+        fvo.setEmail(email);
+     
+        // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
+        String randomId = "user" + System.currentTimeMillis();
+        fvo.setId(randomId);
+
+        // 비밀번호는 카카오 로그인 사용자는 필요 없음
+        fvo.setPw(null);
+
+        // 회원가입 처리
+        fvo = service.reg(fvo);
+    }
+
+    // 로그인 처리
+    if (fvo != null) {
+        userVO uvo = service.authAndMakeToken(fvo.getId(), null);  // 비밀번호는 null로 처리
+
+        if (uvo != null) {
+            // accessToken과 refreshToken을 쿠키에 저장
+            ResponseCookie accessTokenCookie = ResponseCookie
+                    .from("accessToken", uvo.getAccess_token())
+                    .path("/")
+                    .sameSite("None")
+                    .httpOnly(false)  
+                    .secure(true)
+                    .build();
+            res.addHeader("Set-Cookie", accessTokenCookie.toString());
+
+            ResponseCookie refreshTokenCookie = ResponseCookie
+                    .from("refreshToken", uvo.getRefresh_token())
+                    .path("/")
+                    .sameSite("None")
+                    .httpOnly(false)  
+                    .secure(true)
+                    .build();
+            res.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+            map.put("msg", "로그인 성공");
+            map.put("uvo", uvo);
+            map.put("cnt", 1);
+        } else {
+            map.put("msg", "토큰 발급 실패");
+        }
+    } else {
+        map.put("msg", "회원가입 실패");
+    }
+    return map; 
 }
 
+    }
+        
 
-}
+
