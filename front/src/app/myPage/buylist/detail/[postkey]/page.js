@@ -10,6 +10,10 @@ import "/public/css/buylistDetail.css";
 export default function page() {
     const params = useParams();
     const [pvo, setPvo] = useState({});
+    const [price, setPrice] = useState('0원');
+    const [lastprice, setLastprice] = useState('0원');
+    const [deal_dtm, setDeal_dtm] = useState('');
+    const [method, setMethod] = useState('일반 판매');
   
     const API_URL = "/adpost/detail";
   
@@ -23,8 +27,28 @@ export default function page() {
           "Content-Type": "application/json",
         },
       }).then((response) => {
+        console.log("pvo: ");
         console.log(response.data.pvo);
         setPvo(response.data.pvo);
+        var price = response.data.pvo.price;
+        var lastprice = response.data.pvo.lastprice;
+        price = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
+        setPrice(price);
+        lastprice = lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
+        setLastprice(lastprice);
+        if(response.data.pvo.method == 1){
+          useState('나눔');
+        }
+
+        var yyyymmdd = response.data.pvo.deal_dtm.split(" ")[0];
+        var hhmmss = response.data.pvo.deal_dtm.split(" ")[1];
+        var yyyy = yyyymmdd.split("-")[0];
+        var mM = yyyymmdd.split("-")[1];
+        var dd = yyyymmdd.split("-")[2];
+        var hh = hhmmss.split(":")[0];
+        var mm = hhmmss.split(":")[1];
+        var deal_dtm = yyyy+"년 "+mM+"월 "+dd+"일  "+hh+"시 "+mm+"분";
+        setDeal_dtm(deal_dtm);
       });
     }
   
@@ -68,16 +92,59 @@ export default function page() {
               <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
                 <MyPageSide />
                 {/* <!-- 여기서부터 콘텐츠 --> */}
-                <div className='detailInfos'>
-                    <div>
-                        게시글 기본 내용
-                    </div>
-                    <div>
-                        거래 내용
-                    </div>
-                    <div>
-                        거래 일시
-                    </div>
+                <div className='detailInfoBody'>
+                  <div className='detailInfoTitle'>
+                    구매내역 상세
+                  </div>
+                  <div className='detailInfos'>
+                      <div className='detailInfoItem'>
+                          <div className='detailInfoPost'>
+                            <div className='detailInfoPostDesc'>
+                              <div className='detailInfoPostDescImg'>
+                                <img src={pvo.pimg_list?pvo.pimg_list[0].imgurl:''}/>
+                              </div>
+                              <div className='detailInfoPostDescTxt'>
+                                <p className='title'>{pvo.title}</p>
+                                <p className='category'>{pvo.cvo ? pvo.cvo.categoryname : pvo.title}</p>
+                                <p className='hope_place'>{pvo.hope_place}</p>
+                              </div>
+                            </div>
+                            <div className='detailInfoPostEtc'>
+                                <p className='method'>{method}</p>
+                            </div>
+                          </div>
+                      </div>
+                      <div className='detailInfoItem'>
+                          <div className='detailInfoTransaction'>
+                            <div className='transactionFinal'>
+                              <div className='transactionDesc'>
+                                <p>최초금액</p>
+                              </div>
+                              <div className='transactionPrice'>
+                                  <p className='price'>{price}</p>
+                              </div>
+                              <div className='transactionDesc'>
+                                <p>최종금액</p>
+                              </div>
+                              <div className='transactionPrice'>
+                                  <p className='lastprice'>{lastprice}</p>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                      <div className='detailInfoItem'>
+                          <div className='detailInfoTransaction'>
+                            <div className='transactionFinal'>
+                              <div className='transactionDesc'>
+                                <p>거래일시</p>
+                              </div>
+                              <div className='transactionPrice'>
+                                  <p className='price'>{deal_dtm}</p>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
                 </div>
                 {/* <!-- 여기까지 컨텐츠 --> */}
               </section>

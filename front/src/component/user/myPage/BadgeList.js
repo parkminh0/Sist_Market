@@ -94,7 +94,7 @@ export default function BadgeList({ onBadgeCountChange }) {
             </Box>
             <Divider sx={{ my: 4 }} />
             <Grid container spacing={2} justifyContent="center">
-                {list && list.map((badge) => {
+                {list.map((badge) => {
                     const isUnlocked = unlockedBadgeKeys.includes(badge.badgekey);
                     const isRepresentable = badge.isrepresentable == "1";
                     const backgroundColor = isRepresentable ? '#FFF9C4' : '#f5f5f5';

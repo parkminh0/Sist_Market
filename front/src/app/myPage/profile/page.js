@@ -35,18 +35,18 @@ export default function page() {
     getCellList(pNum);
   }
 
-    function updateList(category){
-        setWhatNow(category);
-        setStatus(categoryList.indexOf(category)+1);
-    
-        if (category == 'badge') {
-        setSelectedTab('1');
-        } else if (category == 'manner') {
-        setSelectedTab('2');
-        } else if (category == 'review') {
-        setSelectedTab('3');
-        }
-    }
+  function updateList(category){
+      setWhatNow(category);
+      setStatus(categoryList.indexOf(category)+1);
+  
+      if (category == 'badge') {
+      setSelectedTab('1');
+      } else if (category == 'manner') {
+      setSelectedTab('2');
+      } else if (category == 'review') {
+      setSelectedTab('3');
+      }
+  }
   
 
   function getCellList(cPage){
