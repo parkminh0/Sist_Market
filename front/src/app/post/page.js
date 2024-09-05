@@ -1009,7 +1009,11 @@ export default function page() {
                           <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
                             <font style={{ verticalAlign: "inherit" }}>
                               <font style={{ verticalAlign: "inherit" }}>
-                                {post.price == 0 ? "나눔♥" : post.price + "원"}
+                                {post.price == 0
+                                  ? "나눔♥"
+                                  : new Intl.NumberFormat("ko-KR").format(
+                                      post.price
+                                    ) + "원"}
                               </font>
                             </font>
                           </div>
