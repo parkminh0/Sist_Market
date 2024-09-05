@@ -278,13 +278,13 @@ export default function Page() {
                           className="status_link"
                         >
                           <span data-v-eff62a72="" className="status_txt">
-                            설정
+                            상세 내역
                           </span>
                         </Link>
                       </div>
                     </div>
                   </div>
-                  { buylist ?
+                  { buylist.length>0 ?
                   <BuyList buylist={buylist}/>
                   : 
                   <div

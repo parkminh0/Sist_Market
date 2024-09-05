@@ -143,6 +143,23 @@
     </update>
 
 
+    <delete id="delWishlistByKey" parameterType="String">
+        DELETE
+        FROM `wishlist`
+        WHERE wishlistkey = #{likeKey}
+    </delete>
+    <delete id="delInterestcategoryByKey" parameterType="String">
+        DELETE
+        FROM `interestcategory`
+        WHERE autokey = #{likeKey}
+    </delete>
+    <delete id="delKeywordByKey" parameterType="String">
+        DELETE
+        FROM `keyword`
+        WHERE keywordkey = #{likeKey}
+    </delete>
+
+
     <!-- 6. searchpost 관련 데이터 -->
     <!-- <select id="searchpost" resultType="com.sist.back.vo.PostVO">
         SELECT * FROM `post`
