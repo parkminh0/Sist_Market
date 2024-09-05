@@ -44,14 +44,15 @@ public class PostService {
         return p_mapper.getUserReviewByPostKey(postkey);
     }
 
-    public int remindInsert(String postkey){
+    public int remindInsert(String postkey) {
         return p_mapper.insertRemindPost(postkey);
     }
-    public int remindUpdate(String postkey){
+
+    public int remindUpdate(String postkey) {
         return p_mapper.remindPostByPostKey(postkey);
     }
 
-    public int delLikeFromList(String likeWhat, String likeKey){
+    public int delLikeFromList(String likeWhat, String likeKey) {
         int result = 0;
         switch (likeWhat) {
             case "post":
@@ -103,5 +104,8 @@ public class PostService {
         return ar;
     }
 
+    public PostVO[] main(String param) {
+        return p_mapper.main(param);
+    }
 
 }

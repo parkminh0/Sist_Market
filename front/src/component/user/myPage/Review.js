@@ -1,108 +1,85 @@
-import React, { useState } from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Avatar, Divider, Tabs, Tab } from '@mui/material';
+import axios from 'axios';
 
 export default function Review() {
-    const API_URL = "/user/dealReview";
+  const BUY_URL = "/user/buyingReview";
 
-    const [list, setList] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [buyingList, setBuyingList] = useState([]);
 
-    const [selectedTab, setSelectedTab] = useState(0);
+  useEffect(() => {
+    getData();
+  }, []);
 
-    const handleTabChange = (event, newValue) => {
-      setSelectedTab(newValue);
-    };
-  
-    const reviews = [
-      {
-        username: '당근은carrot',
-        role: '판매자',
-        location: '서울특별시 강남구',
-        rating: 5,
-        reviewText: '',
-        avatarUrl: '/path-to-avatar-image',
-      },
-      {
-        username: '떡이져아',
-        role: '구매자',
-        location: '경기도 용인시 수지구',
-        rating: 0,
-        reviewText: '잘 쓰겠습니다 :)',
-        avatarUrl: '/path-to-avatar-image',
-      },
-    ];
-  
-    const renderReviews = (filter) => {
-      const filteredReviews = reviews.filter((review) => {
-        if (filter === 'seller') {
-          return review.role === '판매자';
-        } else if (filter === 'buyer') {
-          return review.role === '구매자';
-        }
-        return true; // 전체 보기
-      });
+  function getData() {
+    axios.get(
+      BUY_URL, {
+        params: { userkey: 45 }
+      }).then((res) => {
+        console.log(res.data.buying_ar);
+        setBuyingList(res.data.buying_ar); // buyingList에 저장
+      })
+  }
 
-    return filteredReviews.map((review, index) => (
-        <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-          <Avatar src={review.avatarUrl} alt={review.username} sx={{ width: 48, height: 48 }} />
-          <Box sx={{ ml: 2, flexGrow: 1 }}>
-            <Typography variant="subtitle1">
-              {review.username} ({review.role})
-            </Typography>
-            <Typography variant="body2">
-              {review.location}
-            </Typography>
-            {review.rating > 0 ? (
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                {Array(review.rating)
-                  .fill('')
-                  .map((_, i) => (
-                    <Typography key={i} variant="body1">
-                      ●
-                    </Typography>
-                  ))}
+  const tabChange = (event, newValue) => {
+    setSelectedTab(newValue);
+  };
+
+  // 탭에 따른 데이터를 필터링하는 함수
+  function filter(f) {
+    if (f === 'buyer') {
+      return buyingList;
+    } else {
+      return [];
+    }
+  }
+
+  return (
+    <Box sx={{ width: '100%', padding: 2 }}>
+      <Typography variant="h5" sx={{ mb: 3, color: '#000' }}>거래 후기 상세</Typography>
+      <Tabs value={selectedTab} onChange={tabChange} aria-label="deal review tabs" sx={{ width: '100%' }}>
+        <Tab label="전체 후기" sx={{ flex: 1, color: '#000' }} />
+        <Tab label="판매자 후기" sx={{ flex: 1, color: '#000' }} />
+        <Tab label="구매자 후기" sx={{ flex: 1, color: '#000' }} />
+      </Tabs>
+      <Divider sx={{ my: 2 }} />
+      <div className="empty_area">
+        {/* 구매자 후기 탭에만 데이터 표시 */}
+        {selectedTab === 2 && filter('buyer').map((review, index) => (
+          <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, mb: 2 }}>
+            {/* 왼쪽 내용 */}
+            <Box sx={{ display: 'flex', flexGrow: 1 }}>
+              {/* 프로필 이미지 */}
+              <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
+              <Box sx={{ flexGrow: 1 }}>
+                {/* 닉네임 */}
+                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000' }}>
+                  {review.nickname}
+                </Typography>
+                {/* 리뷰 타입 및 주소 */}
+                <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666' }}>
+                  {review.reviewType} • {review.district} {review.city} {review.name}
+                </Typography>
+                {/* 후기 내용 */}
+                <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000' }}>
+                  {review.dealuserreview || '후기 내용이 없습니다.'}
+                </Typography>
               </Box>
-            ) : (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {review.reviewText}
-              </Typography>
+            </Box>
+            {/* 오른쪽 후기 이미지 */}
+            {review.dealuserreviewimg && (
+              <Box sx={{ ml: 2 }}>
+                <img src={review.dealuserreviewimg} alt="후기 이미지" style={{ width: '80px', height: '80px', borderRadius: '8px' }} />
+              </Box>
             )}
+            {/* 구분선 */}
           </Box>
-          <Box>
-            <Typography variant="body2" sx={{ cursor: 'pointer' }}>
-              ⋮
-            </Typography>
-          </Box>
-        </Box>
-      ));
-    };
-  
-    return (
-      <Box sx={{ width: '100%', padding: 2 }}>
-        {/* 제목 */}
-        <Typography variant="h5" sx={{ mb: 3 }}>
-          거래 후기 상세
-        </Typography>
-  
-    {/* 탭 */}
-    <Tabs 
-    value={selectedTab} 
-    onChange={handleTabChange} 
-    aria-label="deal review tabs" 
-    sx={{ width: '100%' }}
-    >
-    <Tab label="전체 후기" sx={{ flex: 1 }} />
-    <Tab label="판매자 후기" sx={{ flex: 1 }} />
-    <Tab label="구매자 후기" sx={{ flex: 1 }} />
-    </Tabs>
-
-  
-        {/* Divider */}
-        <Divider sx={{ my: 2 }} />
-  
-        {/* 후기 리스트 */}
-        {selectedTab === 0 && renderReviews('all')}
-        {selectedTab === 1 && renderReviews('seller')}
-        {selectedTab === 2 && renderReviews('buyer')}
-      </Box>
-    );
+        ))}
+      </div>
+      <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />
+    </Box>
+  );
 }
