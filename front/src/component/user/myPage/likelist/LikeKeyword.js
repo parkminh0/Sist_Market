@@ -1,7 +1,9 @@
+import Link from 'next/link';
 import React from 'react'
 
 export default function LikeKeyword(props) {
     const likelist = props.likelist;
+    const getDelLike = props.getDelLike;
     return (
         likelist.map((lvo,index)=>{
         return(
@@ -25,15 +27,16 @@ export default function LikeKeyword(props) {
                 className="wish_buy"
                 >
                 <div data-v-9ff60cb2="">
-                    <a
+                    <Link
                     data-v-9ff60cb2=""
                     href="#"
                     className="status_link"
                     style={{marginTop:20}}
+                    onClick={()=>{getDelLike('keyword',lvo.keywordkey)}} 
                     >
                     {" "}
                     삭제{" "}
-                    </a>
+                    </Link>
                 </div>
                 </div>
             </div>

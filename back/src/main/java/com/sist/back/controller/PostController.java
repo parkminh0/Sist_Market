@@ -68,7 +68,20 @@ public class PostController {
         map.put("result_update", rst_udt);
 
         return map;
+    }    
+    
+    @RequestMapping("/delLike")
+    @ResponseBody
+    public Map<String, Object> delLike(String likeWhat, String likeKey){
+        Map<String, Object> map = new HashMap<>();
+  
+        int rst_del = p_service.delLikeFromList(likeWhat, likeKey);
+        map.put("result_delete", rst_del);
+      
+        return map;
     }
+
+
 
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
