@@ -1,6 +1,7 @@
 package com.sist.back.controller;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -89,50 +89,105 @@ public class BoardController {
         return map;
     }
 
+    // @RequestMapping("/add")
+    // @ResponseBody
+    // public Map<String, Object> boardAdd(String userkey, String title, String content, String categoryName, String boardkey) {
+    //     Map<String, Object> addMap = new HashMap<>();
+    //     addMap.put("userkey", userkey);
+    //     addMap.put("title", title);
+    //     addMap.put("content", content);
+    //     addMap.put("categoryName", categoryName);
+
+    //     //여기서 저장 후 다시 DB에서 가서 b_idx값을 받아오면 그 사이에 다른 글이 작성되었을 수 있으므로 bbs.xml에 속성을 추가해주자.
+    //     int cnt = b_service.boardAdd(addMap);
+
+    //     Map<String, Object> map = new HashMap<>();
+    //     BoardVO bvo = new BoardVO();
+    //     bvo.setUserkey(userkey);
+    //     bvo.setTitle(title);
+    //     bvo.setContent(content);
+    //     bvo.setBoardkey(boardkey);
+
+    //     List<String> list = new ArrayList<>();
+
+    //     String regex = "<img[^>]+src=\"([^\"]+)\"";
+    //     Pattern pattern = Pattern.compile(regex);
+    //     Matcher matcher = pattern.matcher(bvo.getContent());
+    //     while(matcher.find()){
+    //         list.add(matcher.group(1));
+    //     }
+    //     bi_service.BoardImgDelete(list, bvo.getBoardkey());
+    //     map.put("bvo", bvo);
+    //     return map;
+    // }
+    
+    // @RequestMapping("/addImage")
+    // @ResponseBody
+    // public Map<String, Object> add(MultipartFile file, HttpServletRequest request) {
+    //     Map<String, Object> map = new HashMap<>();
+    //     try{
+    //         MultipartFile f = file;
+    //         String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
+    //         String webPath = "http://localhost:3000/img/admin/board/";
+    //         String sendFname = java.net.URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            
+    //         StringBuffer sb = new StringBuffer();
+    //         sb.append(upload); 
+    //         sb.append("/");
+    //         sb.append(fname);
+    //         String imglocalPath = sb.toString();
+
+    //         sb = new StringBuffer();
+    //         sb.append(webPath);
+    //         sb.append(sendFname);
+    //         String imgWebPath = sb.toString();
+
+    //         f.transferTo(new File(imglocalPath));
+
+    //         map.put("chk",1);
+    //         map.put("filePath",imgWebPath);
+    //         bi_service.BoardImgSave("1",fname,imgWebPath);
+    //     }catch(Exception e) {
+    //         e.printStackTrace();
+    //     }
+    //     return map;
+    // }
+
+
     @RequestMapping("/add")
     @ResponseBody
-    public Map<String, Object> boardAdd(String userkey, String title, String content, String categoryName, String boardkey) {
-        Map<String, Object> addMap = new HashMap<>();
-        addMap.put("userkey", userkey);
-        addMap.put("title", title);
-        addMap.put("content", content);
-        addMap.put("categoryName", categoryName);
-
-        //여기서 저장 후 다시 DB에서 가서 b_idx값을 받아오면 그 사이에 다른 글이 작성되었을 수 있으므로 bbs.xml에 속성을 추가해주자.
-        int cnt = b_service.boardAdd(addMap);
-
+    public Map<String, Object> boardAdd(BoardVO bvo, String categoryname) {
         Map<String, Object> map = new HashMap<>();
-        BoardVO bvo = new BoardVO();
-        bvo.setUserkey(userkey);
-        bvo.setTitle(title);
-        bvo.setContent(content);
-        bvo.setBoardkey(boardkey);
+        // 추후에 userkey, townkey 기입해줘야함
+        bvo.setCategorykey("1");
+        bvo.setTownkey("1");
+        int chk = b_service.boardAdd(bvo);
 
         List<String> list = new ArrayList<>();
 
         String regex = "<img[^>]+src=\"([^\"]+)\"";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(bvo.getContent());
-        while(matcher.find()){
+        while (matcher.find()) {
             list.add(matcher.group(1));
         }
         bi_service.BoardImgDelete(list, bvo.getBoardkey());
-        map.put("bvo", bvo);
+        map.put("chk", chk);
         return map;
     }
-    
+
     @RequestMapping("/addImage")
     @ResponseBody
-    public Map<String, Object> add(MultipartFile file, HttpServletRequest request) {
+    public Map<String, Object> add(MultipartFile file, HttpServletRequest request,String boardkey) {
         Map<String, Object> map = new HashMap<>();
-        try{
+        try {
             MultipartFile f = file;
             String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
             String webPath = "http://localhost:3000/img/admin/board/";
-            String sendFname = java.net.URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
-            
+            String sendFname = URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+
             StringBuffer sb = new StringBuffer();
-            sb.append(upload); 
+            sb.append(upload);
             sb.append("/");
             sb.append(fname);
             String imglocalPath = sb.toString();
@@ -144,14 +199,52 @@ public class BoardController {
 
             f.transferTo(new File(imglocalPath));
 
-            map.put("chk",1);
-            map.put("filePath",imgWebPath);
-            bi_service.BoardImgSave("1",fname,imgWebPath);
-        }catch(Exception e) {
+            map.put("chk", 1);
+            map.put("filePath", imgWebPath);
+            int chk = bi_service.BoardImgSave(boardkey, fname, imgWebPath);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return map;
     }
+
+    @RequestMapping("")
+    @ResponseBody
+    public Map<String, Object> addEmpty(BoardVO bvo) {
+        Map<String, Object> map = new HashMap<>();
+        bvo.setTownkey("1");
+        int boardkey = b_service.emptyAdd(bvo);
+        map.put("boardkey", boardkey);
+        map.put("chk", 1);
+        return map;
+    }
+    
+    @RequestMapping("/deleteLatest")
+    @ResponseBody
+    public Map<String, Object> deleteLatest(@RequestBody String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        int chk = b_service.deleteLatest(userkey);
+        map.put("chk", chk);
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     @RequestMapping("/getBbs")
     @ResponseBody

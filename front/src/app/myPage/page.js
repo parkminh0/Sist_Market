@@ -147,7 +147,7 @@ export default function page() {
                         type="button"
                       >
                         {" "}
-                        계정 관리{" "}
+                        프로필{" "}
                       </Link>
                     </div>
                   </div>
