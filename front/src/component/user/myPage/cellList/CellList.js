@@ -25,8 +25,8 @@ export default function CellList(props) {
     function canRemindFunc(latestRemind){
         var canRemind = true;
         const timeDiff = new Date() - new Date(latestRemind);
-        const daysDiff = Math.round( timeDiff / (1000 * 60 * 60 * 24) )
-        canRemind = (daysDiff>14);
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+        canRemind = (daysDiff>1.0);
         return canRemind;
     }
 
