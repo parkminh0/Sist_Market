@@ -61,14 +61,14 @@ public class PostController {
     @ResponseBody
     public Map<String, Object> remind(String postkey) {
         Map<String, Object> map = new HashMap<>();
-  
+
         int rst_ins = p_service.remindInsert(postkey);
         int rst_udt = p_service.remindUpdate(postkey);
         map.put("result_insert", rst_ins);
         map.put("result_update", rst_udt);
-      
-    return map;
-  }
+
+        return map;
+    }
 
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
@@ -166,12 +166,4 @@ public class PostController {
         return res;
     }
 
-    // 사용자 - 중고거래 글 상세
-    @GetMapping("/detail")
-    public Map<String, Object> detail(String postkey) {
-
-        Map<String, Object> res = new HashMap<>();
-        res.put("res_detail", p_service.getPostByPostKey(Integer.parseInt(postkey)));
-        return res;
-    }
 }
