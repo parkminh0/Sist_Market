@@ -79,7 +79,7 @@ export default function MyPageSide() {
                 href="/myPage/profile"
                 className="menu_link"
               >
-                계정 관리
+                프로필
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">

@@ -97,7 +97,7 @@
                 );
     </insert> -->
 
-<update id="boardAdd" parameterType="map">
+<!-- <update id="boardAdd" parameterType="map">
     UPDATE board
     SET userkey = #{userkey},
         title = #{title},
@@ -114,7 +114,27 @@
                 AND column = 'categorykey'
         )
     WHERE boardkey = #{boardkey};
-</update>
+</update> -->
+
+	<update id="boardAdd" parameterType="com.sist.back.vo.BoardVO">
+		UPDATE board
+    SET userkey = #{userkey}, townkey = #{townkey}, categorykey = #{categorykey}, title = #{title}, content = #{content}, viewqty = 0, likeqty = 0, update_dtm = NOW(), isdeleted = 0
+    WHERE boardkey = #{boardkey}
+  </update>
+  
+  <insert id="emptyAdd" useGeneratedKeys="true" keyProperty="boardkey">
+    INSERT INTO board(userkey, townkey, viewqty, likeqty, create_dtm, update_dtm, isdeleted)
+    VALUES(#{userkey}, #{townkey}, 0, 0, NOW(), NOW(), 0)
+  </insert>
+
+  <delete id="deleteLatest" parameterType="String">
+    DELETE b FROM board b
+    JOIN ( SELECT boardkey FROM board WHERE userkey = #{userkey} ORDER BY create_dtm DESC LIMIT 1)
+    AS subquery ON b.boardkey = subquery.boardkey;
+  </delete>
+
+
+
 
 	<!-- 원글보기 -->
 	<select id="getBbs" parameterType="String" resultMap="map1">
