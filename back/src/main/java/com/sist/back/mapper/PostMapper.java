@@ -25,6 +25,7 @@ public interface PostMapper {
     List<UserReviewVO> getUserReviewByPostKey(int postkey);
 
     int insertRemindPost(String postkey);
+
     int remindPostByPostKey(String postkey);
 
     List<PostVO> searchpost(Map<String, Object> map);
@@ -34,8 +35,12 @@ public interface PostMapper {
     int editPost(PostVO vo);
 
     int delWishlistByKey(String likeKey);
+
     int delInterestcategoryByKey(String likeKey);
+
     int delKeywordByKey(String likeKey);
 
     List<PostVO> search(Map<String, String> map);
+
+    PostVO[] main(String param);
 }

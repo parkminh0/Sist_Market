@@ -10,16 +10,18 @@ export default function CellList(props) {
     const cPage = props.cPage;
         
     function getLatestRemind(clvo){
-        var pi_list = clvo.pinfo_list;
-        var pl_length = pi_list.length;
-        if(pl_length > 0){
-            for(var i=pl_length-1;i>=0;i--){
-                if(pi_list[i].isupdate){
-                    return pi_list[i].dtm.split(" ")[0];
-                }
-            }
-        }
-        return clvo.create_dtm.split(" ")[0];
+        // var pi_list = clvo.pinfo_list;
+        // var pl_length = pi_list.length;
+
+        // if(pl_length > 0){
+        //     for(var i=pl_length-1;i>=0;i--){
+        //         if(pi_list[i].isupdate){
+        //             return pi_list[i].dtm;
+        //         }
+        //     }
+        // }
+        var remindDate = clvo.remind_dtm ? clvo.remind_dtm : clvo.create_dtm;
+        return clvo.create_dtm;
     }
 
     function canRemindFunc(latestRemind){
@@ -147,7 +149,7 @@ export default function CellList(props) {
                             </strong>
                         </button>
                     </div>
-                        <div style={{fontSize:10}}>최근일자: {latestRemind}</div>
+                        <div style={{fontSize:10, textAlign:'right'}}>최근일자: <br/>{latestRemind}</div>
                 </div>
                 <div
                     className="list_item_column column_last"

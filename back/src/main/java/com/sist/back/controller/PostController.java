@@ -1,10 +1,17 @@
 package com.sist.back.controller;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,8 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
+import com.sist.back.service.PostimgService;
+import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
+import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.userVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +36,15 @@ public class PostController {
 
     @Autowired
     PostService p_service;
+
+    @Autowired
+    PostimgService postimgService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Value("${server.upload.post.image}")
+    private String postImgPath;
 
     @RequestMapping("/all")
     public Map<String, Object> all() {
@@ -68,20 +88,18 @@ public class PostController {
         map.put("result_update", rst_udt);
 
         return map;
-    }    
-    
-    @RequestMapping("/delLike")
-    @ResponseBody
-    public Map<String, Object> delLike(String likeWhat, String likeKey){
-        Map<String, Object> map = new HashMap<>();
-  
-        int rst_del = p_service.delLikeFromList(likeWhat, likeKey);
-        map.put("result_delete", rst_del);
-      
-        return map;
     }
 
+    @RequestMapping("/delLike")
+    @ResponseBody
+    public Map<String, Object> delLike(String likeWhat, String likeKey) {
+        Map<String, Object> map = new HashMap<>();
 
+        int rst_del = p_service.delLikeFromList(likeWhat, likeKey);
+        map.put("result_delete", rst_del);
+
+        return map;
+    }
 
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
@@ -89,40 +107,55 @@ public class PostController {
 
         // userkey
         // townkey
-        System.out.println("카테고리:" + vo.getCategorykey());
-        System.out.println("제목:" + vo.getTitle());
-        System.out.println("메소드:" + vo.getMethod());
-        System.out.println("가격:" + vo.getPrice());
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
-        System.out.println("내용:" + vo.getContent());
         // range
         // hope_place
         // hope_lati
         // hope_long
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
-        if (vo.getCanbargain().equals("on")) {
+        if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
             vo.setCanbargain("0");
         }
-        System.out.println("바겐:" + vo.getCanbargain());
-        // viewqty
-        // create_dtm
-        // update_dtm
-        // delete_dtm
-        // remind_dtm
-        // dealuserkey
+        // 조회수 0
+        vo.setViewqty("0");
+
+        int newPostKey = p_service.writePost(vo);
 
         // 파일 데이터 처리
         if (post_img != null) {
-            for (MultipartFile file : post_img) {
-                System.out.println("Uploaded file name: " + file.getOriginalFilename());
+            for (MultipartFile f : post_img) {
+                PostImgVO pivo = new PostImgVO();
+
+                String fname = f.getOriginalFilename();
+                Path path = Paths.get(postImgPath);
+                if (path.toString().contains("back")) {
+                    String pathString = path.toString();
+                    String changedPath = pathString.replace("back\\", "");
+                    path = Paths.get(changedPath);
+                }
+                String realPath = "/img/postimg/";
+                String filePath = path.resolve(fname).toString();
+
+                pivo.setImgurl(realPath + fname);
+                pivo.setPostkey(newPostKey);
+
+                postimgService.addPostImg(pivo);
+
+                // 파일 업로드
+                try {
+                    f.transferTo(new File(filePath));
+                } catch (Exception e) {
+                }
+
+                System.out.println("Uploaded file name: " + f.getOriginalFilename());
             }
         }
 
         Map<String, Object> res = new HashMap<>();
-        res.put("savePostKey", p_service.writePost(vo));
+        res.put("savePostKey", newPostKey);
         return res;
     }
 
@@ -176,6 +209,37 @@ public class PostController {
 
         Map<String, Object> res = new HashMap<>();
         res.put("res_search", p_service.search(sort, category, minPrice, maxPrice));
+        return res;
+    }
+
+    // 사용자 - 메인 상품 뿌리기
+    @GetMapping("/main")
+    public Map<String, Object> main() {
+
+        categoryVO[] c_list = categoryService.all();
+        // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
+        List<Integer> randomCategories = new ArrayList<>();
+        Random random = new Random();
+
+        // 중복되지 않는 숫자 3개를 뽑는 반복문
+        while (randomCategories.size() < 3) {
+            int randomNum = random.nextInt(c_list.length); // 1부터 cnt까지 랜덤 숫자 생성
+            int key = Integer.parseInt(c_list[randomNum].getCategorykey());
+            if (!randomCategories.contains(key)) {
+                randomCategories.add(key); // 중복되지 않는 경우 추가
+            }
+            System.out.println(key);
+        }
+
+        List<PostVO>[] tmp = new List[3]; // 배열 초기화
+        // 배열을 리스트로 변환하여 할당
+        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0))));
+        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1))));
+        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2))));
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("free_list", p_service.main("free"));
+        res.put("cate_list", tmp);
         return res;
     }
 
