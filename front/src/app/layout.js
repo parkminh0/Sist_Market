@@ -7,20 +7,22 @@ import "/public/css/layout.css";
 import Header from "@/component/user/layout/Header";
 import Footer from "@/component/user/layout/Footer";
 import { usePathname } from "next/navigation";
-
+import { SessionProvider } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children ,session}) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith("/admin");
 
   return (
     <html lang="en">
+      <SessionProvider session={session}>
       <body className={inter.className}>
         {!isAdminRoute && <Header />}
         {children}
-        {!isAdminRoute && <Footer />}
+        {!isAdminRoute && <Footer />} 
       </body>
+      </SessionProvider>
     </html>
   );
 }

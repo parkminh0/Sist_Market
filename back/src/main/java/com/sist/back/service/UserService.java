@@ -126,6 +126,10 @@ public class UserService {
         return mapper.userEditForAdmin(vo);
     }
 
+    public userVO findByemail(String email){
+        return mapper.findbyEmail(email);
+    }
+
 
     public int getLikeCount(String userkey, String likewhat){
         int likecount = 0;

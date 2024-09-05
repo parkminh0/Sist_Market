@@ -417,4 +417,10 @@
       VALUES (#{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, #{imgurl}, now(), #{isauthorized}, now(),  0)
     </insert>
 
+    <!-- 카카오_이메일로 유저 확인-->
+    <select id="findbyEmail" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT * FROM user 
+      WHERE email = #{email}
+    </select>
+
 </mapper>
