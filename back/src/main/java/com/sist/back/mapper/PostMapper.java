@@ -33,5 +33,9 @@ public interface PostMapper {
 
     int editPost(PostVO vo);
 
+    int delWishlistByKey(String likeKey);
+    int delInterestcategoryByKey(String likeKey);
+    int delKeywordByKey(String likeKey);
+
     List<PostVO> search(Map<String, String> map);
 }

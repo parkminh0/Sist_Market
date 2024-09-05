@@ -1,7 +1,9 @@
+import Link from 'next/link';
 import React from 'react'
 
 export default function LikePost(props) {
     const likelist = props.likelist;
+    const getDelLike = props.getDelLike;
     return (
         likelist.map((lvo,index)=>{
 
@@ -89,14 +91,15 @@ export default function LikePost(props) {
                         </strong>
                     </button>
                     </div>
-                    <a
+                    <Link
                     data-v-9ff60cb2=""
                     href="#"
                     className="status_link"
+                    onClick={()=>{getDelLike('post',lvo.wishlistkey)}} 
                     >
                     {" "}
                     삭제{" "}
-                    </a>
+                    </Link>
                 </div>
                 </div>
             </div>
