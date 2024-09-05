@@ -51,6 +51,23 @@ public class PostService {
         return p_mapper.remindPostByPostKey(postkey);
     }
 
+    public int delLikeFromList(String likeWhat, String likeKey){
+        int result = 0;
+        switch (likeWhat) {
+            case "post":
+                result = p_mapper.delWishlistByKey(likeKey);
+                break;
+            case "category":
+                result = p_mapper.delInterestcategoryByKey(likeKey);
+                break;
+            case "keyword":
+                result = p_mapper.delKeywordByKey(likeKey);
+                break;
+        }
+
+        return result;
+    }
+
     public PostVO[] searchpost(Map<String, Object> map) {
         PostVO[] ar = null;
         List<PostVO> list = p_mapper.searchpost(map);

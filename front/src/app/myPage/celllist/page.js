@@ -362,7 +362,7 @@ export default function page() {
                           className="status_link"
                         >
                           <span data-v-eff62a72="" className="status_txt">
-                            등록일
+                          { (whatNow=="onSale" || whatNow=="Selling") ? '등록일' :  whatNow == "Sold" ? '판매일' : '숨김일'} 
                           </span>
                         </Link>
                       </div>
@@ -390,7 +390,7 @@ export default function page() {
                           href="#"
                         >
                           <span data-v-eff62a72="" className="status_txt">
-                            설정
+                          { (whatNow=="onSale" || whatNow=="Selling") ? '수정' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
                           </span>
                         </Link>
                       </div>
@@ -401,9 +401,9 @@ export default function page() {
                   <CellList celllist={celllist} cellCategory={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
                   :
                   whatNow=="Sold" ?
-                  <CellList celllist={celllist} cellCategory="Sold" />
+                  <CellList celllist={celllist} cellCategory="Sold"  getCellList={getCellList} cPage={page.nowPage} />
                   :
-                  <CellList celllist={celllist} cellCategory="Hidden" />
+                  <CellList celllist={celllist} cellCategory="Hidden"  getCellList={getCellList} cPage={page.nowPage} />
                 }
                 {/* 페이징 시작*/}
               <div className="mPaginate">

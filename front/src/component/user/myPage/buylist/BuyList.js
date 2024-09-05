@@ -3,7 +3,9 @@ import React from 'react'
 
 export default function BuyList(props) {
     const buylist = props.buylist;
+    
     return (buylist.map((blvo,index)=>{
+        const detailLink = `/myPage/buylist/detail/${blvo.postkey}`;
         return(
         <div key={index} data-v-eff62a72="">
             {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
@@ -64,14 +66,14 @@ export default function BuyList(props) {
                     data-v-53e92c51=""
                 >
                     <Link
-                    href="/"
+                    href={detailLink}
                     className="text-lookup last_description display_paragraph action_named_action"
                     style={{ color: "#222222CC" }}
                     data-v-09bea70c=""
                     data-v-7d3b6402=""
                     data-v-53e92c51=""
                     >
-                    설정
+                    확인
                     </Link>
                 </div>
                 </div>
