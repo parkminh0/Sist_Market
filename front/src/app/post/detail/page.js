@@ -12,6 +12,9 @@ export default function Page() {
   // postkey 파라미터 값
   const [postKey, setPostKey] = useState(null);
   const [postVO, setPostVO] = useState({});
+  const [userVO, setUserVO] = useState({});
+  const [categoryVO, setCategoryVO] = useState({});
+  const [chatroomVO, setChatroomVO] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -33,7 +36,12 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      setPostVO(res.data.res_detail);
+      setPostVO(res.data.pvo);
+      setCategoryVO(res.data.pvo.cvo);
+      setUserVO(res.data.pvo.uvo);
+      setChatroomVO(res.data.cr_list);
+      console.log(res.data.pvo);
+      console.log(res.data.pvo.uvo);
     });
   }, [router.query]);
 
@@ -161,7 +169,7 @@ export default function Page() {
                           className="_1gb2dg21"
                         >
                           <span className="_1ry6htkk _1ry6htkl _1ry6htkq _1ry6htkv _1ry6htkz">
-                            사용자 nickname 넣기
+                            {userVO.nickname}
                           </span>
                         </Link>
                         <Link
@@ -220,7 +228,7 @@ export default function Page() {
                     className="vqbuc97"
                     href="/buy-sell/all/?category_id=12&amp;in=manhattan-7426"
                   >
-                    카테고리명 넣기
+                    {categoryVO.categoryname}
                   </Link>{" "}
                   ·{" "}
                   <time dateTime="2024-08-11T23:32:15.393-04:00">
@@ -228,11 +236,11 @@ export default function Page() {
                   </time>
                 </h2>
                 <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
-                  {postVO.price}원
+                  {new Intl.NumberFormat("ko-KR").format(postVO.price)}원
                 </h3>
                 {postVO.canbargain == 0 ? (
                   <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
-                    "가격 제안 불가"
+                    가격 제안 불가
                   </span>
                 ) : (
                   <Link
@@ -248,7 +256,7 @@ export default function Page() {
                 )}
               </div>
               <p className="vqbuc98 _1h4pbgy7ao _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy8g _1h4pbgy7bs _1h4pbgya4g _1h4pbgy9y8">
-                상품 상세 설명 넣기
+                {postVO.content}
               </p>
               <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
                 <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
@@ -257,7 +265,8 @@ export default function Page() {
                 </li>
               </ul>
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
-                <span>채팅 0</span> · <span>관심 1</span> · <span>조회 17</span>
+                <span>채팅 {chatroomVO.length}</span> · <span>관심 1</span> ·{" "}
+                <span>조회 {postVO.viewqty}</span>
               </div>
               <Link
                 href="#"
@@ -280,8 +289,8 @@ export default function Page() {
         <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
-              [등록자명]님의 판매 물품 (6개까지만, 넘어가면 더보기, 안넘어가면
-              더보기 가림)
+              {userVO.nickname}님의 판매 물품 (6개까지만, 넘어가면 더보기,
+              안넘어가면 더보기 가림)
             </div>
             <Link
               className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
