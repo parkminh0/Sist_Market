@@ -184,7 +184,6 @@ public class UserController {
 
         userVO uvo = null;
         if (vo.getId() != null) {
-
             uvo = service.authAndMakeToken(vo.getId(), vo.getPw());
 
             if (uvo != null) {
@@ -441,8 +440,7 @@ public class UserController {
         return bl_map;
     }
 
-
-        //회원정보 수정
+    // 회원정보 수정
     @RequestMapping("/editImage")
     @ResponseBody
     public Map<String, Object> editImage(String userkey, MultipartFile image) {
@@ -450,11 +448,11 @@ public class UserController {
             throw new IllegalArgumentException("이미지가 업로드되지 않았습니다.");
         }
         String imagePath = service.saveImage(image);
-    
+
         userVO uvo = new userVO();
         uvo.setUserkey(userkey);
         uvo.setImgurl(imagePath);
-    
+
         Map<String, Object> map = new HashMap<>();
         map.put("cnt", service.editImage(uvo));
         return map;
@@ -467,7 +465,7 @@ public class UserController {
         map.put("cnt", service.delImage(userkey));
         return map;
     }
-    
+
     @RequestMapping("/editUser")
     @ResponseBody
     public Map<String, Object> editUser(String userkey, String key, String value) {
@@ -513,6 +511,5 @@ public class UserController {
         map.put("cnt", service.userDelForAdmin(userkey));
         return map;
     }
-
 
 }
