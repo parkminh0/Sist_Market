@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
@@ -439,5 +440,79 @@ public class UserController {
         bl_map.put("celllist", cellList);
         return bl_map;
     }
+
+
+        //회원정보 수정
+    @RequestMapping("/editImage")
+    @ResponseBody
+    public Map<String, Object> editImage(String userkey, MultipartFile image) {
+        if (image.isEmpty()) {
+            throw new IllegalArgumentException("이미지가 업로드되지 않았습니다.");
+        }
+        String imagePath = service.saveImage(image);
+    
+        userVO uvo = new userVO();
+        uvo.setUserkey(userkey);
+        uvo.setImgurl(imagePath);
+    
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", service.editImage(uvo));
+        return map;
+    }
+
+    @RequestMapping("/delImage")
+    @ResponseBody
+    public Map<String, Object> delImage(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", service.delImage(userkey));
+        return map;
+    }
+    
+    @RequestMapping("/editUser")
+    @ResponseBody
+    public Map<String, Object> editUser(String userkey, String key, String value) {
+        userVO uvo = new userVO();
+        uvo.setUserkey(userkey);
+
+        Map<String, Object> map = new HashMap<>();
+        int cnt = 0;
+
+        switch (key) {
+            case "nickname":
+                uvo.setNickname(value);
+                cnt = service.editNickname(uvo);
+                break;
+            case "email":
+                uvo.setEmail(value);
+                cnt = service.editEmail(uvo);
+                break;
+            case "pw":
+                uvo.setPw(value);
+                cnt = service.editPw(uvo);
+                break;
+            case "phone":
+                uvo.setPhone(value);
+                cnt = service.editPhone(uvo);
+                break;
+            default:
+                map.put("msg", "잘못된 필드입니다.");
+                return map;
+        }
+        if (cnt > 0) {
+            map.put("msg", "변경이 완료되었습니다.");
+        } else {
+            map.put("msg", "이미 사용중입니다.");
+        }
+        return map;
+    }
+
+    @RequestMapping("/delUser")
+    @ResponseBody
+    public Map<String, Object> delUser(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", service.userDelForAdmin(userkey));
+        return map;
+    }
+
 
 }

@@ -31,9 +31,9 @@ public class BoardService {
         return new BoardVO[0];
     }
     
-    public int boardAdd(Map addMap) {
-        return b_mapper.boardAdd(addMap);
-    }
+    // public int boardAdd(Map addMap) {
+    //     return b_mapper.boardAdd(addMap);
+    // }
 
     
     // public BoardVO[] boardEdit(String boardkey){
@@ -45,6 +45,30 @@ public class BoardService {
     //     }
     //     return ar;
     // }
+
+    public int boardAdd(BoardVO bvo) {
+        return b_mapper.boardAdd(bvo);
+    }
+
+    public BoardVO[] boardEdit(String boardkey){
+        List<BoardVO> list = b_mapper.boardedit(boardkey);
+        BoardVO[] ar = null;
+        if(list != null & list.size() > 0){
+            ar = new BoardVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public int emptyAdd(BoardVO bvo){
+        b_mapper.emptyAdd(bvo);
+        return Integer.parseInt(bvo.getBoardkey());
+    }
+
+    public int deleteLatest(String userkey){
+        return b_mapper.deleteLatest(userkey);
+    }
+
 
 
 	public BoardVO getBbs(String boardkey) {
