@@ -7,11 +7,14 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, TextField } from '@mui/material';
 import axios from 'axios';
+import {signIn, singOut,useSession} from 'next-auth/react';
+import { SessionProvider } from "next-auth/react";
 // 필요한 다른 import들도 여기에 추가
 
 
 export default function Header() {
   const pathname = usePathname();
+  const { data: session } = useSession();  //nextAtuh파일에서 nickname을 세션에 저장해서 받아옴
   
 
   useEffect(() => {
@@ -190,7 +193,7 @@ export default function Header() {
   const [accessToken,setAccessToken] = useState(null);
   const [refreshToken,setRefreshToken] = useState(null);
   
-  function signIn() {
+  function jwtLogin() {
     axios({
         url: login_url,
         method: "post",
@@ -209,11 +212,14 @@ export default function Header() {
     });
  }
 
- useEffect(() =>{
+ useEffect(() => {
   const token = Cookies.get('accessToken');
-  console.log('Token:', token); 
-  setAccessToken(token);
-  },[c_path]);
+  if (token) {
+    setAccessToken(token); // 액세스 토큰이 있으면 로그인 상태로 설정
+  } else {
+    setAccessToken(null); // 토큰이 없으면 로그아웃 상태로 설정
+  }
+}, [c_path]);  // 페이지 로드 시 한 번만 실행
 
  const handleChange = (e) =>{ 
   
@@ -224,6 +230,46 @@ export default function Header() {
 
 
 }
+
+//kakaoLogin
+const kakao_login = async(e)=>{
+  e.preventDefault(); //다른 기본동작을 실행하지 않도록함
+  //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
+  signIn("kakao",{callbackUrl: "http://localhost:8080/user/kakao/login"});
+  goController();
+} 
+
+useEffect(() => {
+  if (session && session.user && session.user.name&&session.user.email) {
+    goController();  // session.user.name이 준비된 후 호출
+  }
+}, [session]);
+
+
+const kakao_url = "/user/kakao/login";
+// kakao controller에 데이터 전달 
+const goController = async () => {
+ 
+    axios({
+      url: kakao_url,
+      method: "post",
+      params: {
+        nickname: session.user.name,
+        email: session.user.email,
+      },
+    }).then((res) => {
+      if (res.data.cnt === 1) {
+        alert("로그인 성공!");
+        router.push("/admin/user");
+      } else {
+        alert("로그인에 실패하였습니다.");
+      }
+    });
+
+};
+
+
+
 
 
   // 로그인 모달 부분
@@ -279,7 +325,7 @@ export default function Header() {
               <nav className="_1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9wo">
                 <HeaderItem />
                 {
-                  accessToken == null ? (
+                  accessToken == null && !session ? (
                 <button
                   onClick={handleOpen}
                   id="show_login"
@@ -293,7 +339,7 @@ export default function Header() {
                   data-variant="primaryLow"
                 >
                   <span className="seed-semantic-typography-label4-bold">
-                    <font>로그인</font>
+                    <font>{!session?'':session.user.name}{!session?'':session.user.email}로그인</font>
                   </span>
                 </button>
               ) : (
@@ -310,7 +356,7 @@ export default function Header() {
                   data-variant="primaryLow"
                 >
                   <span className="seed-semantic-typography-label4-bold">
-                    <font>로그아웃</font>
+                    <font>{!session?'':session.user.name}{!session?'':session.user.email}로그아웃</font>
                   </span>
                 </button>
                 )
@@ -654,7 +700,8 @@ export default function Header() {
       </FormControl>
     </DialogContent>
     <DialogActions>
-      <Button type="button" onClick={signIn}>로그인</Button>
+      <Button type="button" onClick={kakao_login}>카카오 로그인</Button>
+      <Button type="button" onClick={jwtLogin}>로그인</Button>
       <Button type="button" onClick={handleSignUp}>회원가입</Button>
       <Button onClick={handleClose}>취소</Button>
     </DialogActions>
