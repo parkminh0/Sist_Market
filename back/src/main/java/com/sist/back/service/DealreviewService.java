@@ -11,9 +11,9 @@ import java.util.List;
 public class DealreviewService {
     @Autowired
     private DealreviewMapper d_mapper;
-    
-    public PostVO[] dealReview(String userkey) {
-        List<PostVO> d_list = d_mapper.dealReview(userkey);
+
+    public PostVO[] buyingReview(String userkey) {
+        List<PostVO> d_list = d_mapper.buyingReview(userkey);
         PostVO[] d_ar = null;
         if (d_list != null && d_list.size() > 0) {
             d_ar = new PostVO[d_list.size()];

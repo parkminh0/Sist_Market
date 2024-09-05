@@ -15,4 +15,15 @@
     <select id="all" resultMap="postimgVOResultMap">
         SELECT imgurl, postimgkey, postkey FROM postimg
     </select>
+
+    <insert id="addPostImg" parameterType="com.sist.back.vo.PostImgVO">
+        INSERT INTO `postimg`
+        (
+            postkey,
+            imgurl
+        ) VALUES (
+            #{postkey},
+            #{imgurl}
+        )
+    </insert>
 </mapper>

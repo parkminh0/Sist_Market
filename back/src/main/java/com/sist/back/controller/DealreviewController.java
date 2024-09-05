@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sist.back.service.DealreviewService;
 import com.sist.back.vo.PostVO;
 
-
-
 @Controller
 @RequestMapping("/user")
 
@@ -20,14 +18,14 @@ public class DealreviewController {
     @Autowired
     private DealreviewService d_service;
 
-    @RequestMapping("/dealReview")
+    @RequestMapping("/buyingReview")
     @ResponseBody
-    public Map<String, Object> dealReview(String userkey) {
+    public Map<String, Object> buyingReview(String userkey) {
         Map<String, Object> map = new HashMap<>();
-        PostVO[] d_ar = d_service.dealReview(userkey);
-        map.put("d_ar", d_ar);
+        PostVO[] buying_ar = d_service.buyingReview(userkey);
+        map.put("buying_ar", buying_ar);
 
         return map;
     }
-    
+
 }
