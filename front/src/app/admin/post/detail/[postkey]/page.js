@@ -20,7 +20,6 @@ export default function Page(props) {
   const [tvo, setTvo] = useState({});
   const [o_list, setO_list] = useState([]);
   const [cr_list, setCr_list] = useState([]);
-  const [ur_list, setUr_list] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   const [open, setOpen] = useState(false);
@@ -46,7 +45,6 @@ export default function Page(props) {
       setTvo(response.data.tvo);
       setO_list(response.data.o_list);
       setCr_list(response.data.cr_list);
-      setUr_list(response.data.ur_list);
       setLoaded(true);
     });
   }
@@ -90,9 +88,6 @@ export default function Page(props) {
               <OfferInfo o_list={o_list} />
             </Grid>
             <Grid item xs={6}>
-              <UserreviewInfo ur_list={ur_list} />
-            </Grid>
-            <Grid item xs={12}>
               <ChatroomInfo cr_list={cr_list} />
             </Grid>
           </Grid>

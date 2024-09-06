@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MannerVO {
-    String mannerkey, userkey, estimateuserkey, ismanner, contetkey, create_dtm,delete_dtm, update_dtm, isdeleted;
+    String mannerkey, userkey, reviewlistkey, estimateuserkey, ismanner, chatordeal, contetkey, create_dtm, delete_dtm,
+            update_dtm, isdeleted;
 }

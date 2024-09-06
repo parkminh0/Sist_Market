@@ -83,31 +83,31 @@ export default function MyPageSide() {
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
+              <Link data-v-7a824f04="" href="/myPage/userManage?category=likeuser" className="menu_link">
                 모아보기 사용자 관리
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
+              <Link data-v-7a824f04="" href="#/myPage/userManage?category=blockedUser" className="menu_link">
                 차단 사용자 관리
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
+              <Link data-v-7a824f04="" href="/myPage/userManage?category=ignoreUser" className="menu_link">
                 게시글 미노출 사용자 관리
               </Link>
             </li>
-            <li data-v-7a824f04="" className="menu_item">
+            {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 관심 카테고리 설정
               </Link>
-            </li>
+            </li> */}
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 알림 설정
               </Link>
             </li>
-            <li data-v-7a824f04="" className="menu_item">
+            {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 매너온도
               </Link>
@@ -126,7 +126,7 @@ export default function MyPageSide() {
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 받은 거래 후기
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
         <div data-v-7bcac446="" className="snb_list">

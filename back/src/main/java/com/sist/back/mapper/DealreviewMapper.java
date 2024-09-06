@@ -9,4 +9,6 @@ import java.util.List;
 @Mapper
 public interface DealreviewMapper {
         List<PostVO> buyingReview(String userkey);
+
+        List<PostVO> sellingReview(String userkey);
 }

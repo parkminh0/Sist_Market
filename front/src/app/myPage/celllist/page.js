@@ -398,12 +398,12 @@ export default function page() {
                   </div>
                   
                   { (whatNow=="onSale" || whatNow=="Selling") ?
-                  <CellList celllist={celllist} cellCategory={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
+                  <CellList celllist={celllist} whatNow={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
                   :
-                  whatNow=="Sold" ?
-                  <CellList celllist={celllist} cellCategory="Sold"  getCellList={getCellList} cPage={page.nowPage} />
+                  (whatNow=="Sold") ?
+                  <CellList celllist={celllist} whatNow="Sold"  getCellList={getCellList} cPage={page.nowPage} />
                   :
-                  <CellList celllist={celllist} cellCategory="Hidden"  getCellList={getCellList} cPage={page.nowPage} />
+                  <CellList celllist={celllist} whatNow="Hidden"  getCellList={getCellList} cPage={page.nowPage} />
                 }
                 {/* 페이징 시작*/}
               <div className="mPaginate">

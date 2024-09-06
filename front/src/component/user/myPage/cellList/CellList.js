@@ -8,18 +8,10 @@ export default function CellList(props) {
     const whatNow = props.whatNow;
     const getCellList = props.getCellList;
     const cPage = props.cPage;
+
         
     function getLatestRemind(clvo){
-        // var pi_list = clvo.pinfo_list;
-        // var pl_length = pi_list.length;
-
-        // if(pl_length > 0){
-        //     for(var i=pl_length-1;i>=0;i--){
-        //         if(pi_list[i].isupdate){
-        //             return pi_list[i].dtm;
-        //         }
-        //     }
-        // }
+        
         var remindDate = clvo.remind_dtm ? clvo.remind_dtm : clvo.create_dtm;
         return clvo.create_dtm;
     }
@@ -41,6 +33,19 @@ export default function CellList(props) {
             'postkey': postkey,
           }
         }).then((res) => {
+            getCellList(cPage);
+        });
+    }
+
+    function unhidPost(postkey){
+        const API_URL = '/adpost/unhid';
+        axios({
+          url: API_URL,
+          method: 'get',
+          params: {
+            'postkey': postkey,
+          }
+        }).then((res) => {
             console.log(res.data);
             getCellList(cPage);
         });
@@ -51,6 +56,7 @@ export default function CellList(props) {
         var price = clvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
         var latestRemind = getLatestRemind(clvo);
         var canRemind = canRemindFunc(latestRemind);
+        const detailLink = `/myPage/celllist/detail/${clvo.postkey}`;
         return(
         <div key={index} data-v-eff62a72="">
             {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
@@ -117,7 +123,7 @@ export default function CellList(props) {
                     data-v-7d3b6402=""
                     data-v-53e92c51=""
                     >
-                    {whatNow == "Hidden" ? clvo.update_dtm.split(" ")[0] : whatNow == "Sold" ?  clvo.deal_dtm.split(" ")[0] : clvo.create_dtm.split(" ")[0]}
+                    {whatNow == "Hidden" ? clvo.update_dtm.split(" ")[0] : whatNow == "Sold" ?  clvo.create_dtm.split(" ")[0] : clvo.create_dtm.split(" ")[0]}
                     </p>
                 </div>
                 <div
@@ -155,16 +161,32 @@ export default function CellList(props) {
                     className="list_item_column column_last"
                     data-v-53e92c51=""
                 >
+                    {whatNow == "Hidden" ? 
+                    <Link
+                    href="#"
+                    onClick={()=>{unhidPost(clvo.postkey)}}
+                    className="text-lookup last_description display_paragraph action_named_action"
+                    style={{ color: "#222222CC" }}
+                    >
+                    해제
+                    </Link>
+                     : whatNow == "Sold" ? 
+                    <Link
+                    href={detailLink}
+                    className="text-lookup last_description display_paragraph action_named_action"
+                    style={{ color: "#222222CC" }}
+                    >
+                    확인
+                    </Link>
+                    :
                     <Link
                     href="/"
                     className="text-lookup last_description display_paragraph action_named_action"
                     style={{ color: "#222222CC" }}
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-53e92c51=""
                     >
-                    설정
+                    수정
                     </Link>
+                    }
                 </div>
                 </div>
             </div>

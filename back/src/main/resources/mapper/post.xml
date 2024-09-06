@@ -34,11 +34,6 @@
           <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back.vo.ChatImgVO"/>
     </resultMap>
 
-      <resultMap id="userreviewMap" type="com.sist.back.vo.UserReviewVO">
-          <result column="reviewlistkey" property="reviewlistkey" />
-          <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back.vo.ReviewListVO"/>
-    </resultMap>
-
     <select id="all" resultType="com.sist.back.vo.PostVO">
       SELECT * FROM post
     </select>
@@ -68,7 +63,6 @@
         SELECT * FROM `post_info`
         WHERE postkey = #{postkey}
     </select>
-
 
 
     <!-- 2. town 관련 데이터 -->
@@ -120,16 +114,13 @@
 
 
     <!-- 5. userreview 관련 데이터 -->
-    <select id="getUserReviewByPostKey" resultMap="userreviewMap" parameterType="int">
-        SELECT * FROM `userreview`
-        WHERE postkey = #{postkey}
-    </select>
     <select id="getReviewListByReviewListKey" resultType="com.sist.back.vo.ReviewListVO" parameterType="int">
         SELECT * FROM `reviewlist`
         WHERE reviewlistkey = #{reviewlistkey}
     </select>
 
-    
+
+
     <insert id="insertRemindPost" parameterType="String">
         INSERT
         INTO `post_info`(postkey,isupdate,dtm)
@@ -139,6 +130,12 @@
     <update id="remindPostByPostKey" parameterType="String">
         UPDATE `post`
         SET update_dtm = NOW(), remind_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+
+    <update id="unhidPostByPostKey" parameterType="String">
+        UPDATE `post`
+        SET poststatus = '1', update_dtm = NOW()
         WHERE postkey = #{postkey}
     </update>
 
@@ -396,5 +393,19 @@
           ORDER BY remind_dtm DESC
           limit 10
     </select>
+
+    <!-- 7. 게시글 현황 statuscounts 관련 데이터 -->
+    <select id="getPostStatusCounts" resultType="map">
+    SELECT 
+        COUNT(*) AS total_posts,
+        SUM(CASE WHEN poststatus = 1 THEN 1 ELSE 0 END) AS sale_posts,
+        SUM(CASE WHEN poststatus = 2 THEN 1 ELSE 0 END) AS not_for_sale_posts,
+        SUM(CASE WHEN poststatus = 3 THEN 1 ELSE 0 END) AS reserved_posts,
+        SUM(CASE WHEN poststatus = 4 THEN 1 ELSE 0 END) AS dealing_posts,
+        SUM(CASE WHEN poststatus = 5 THEN 1 ELSE 0 END) AS sold_out_posts,
+        SUM(CASE WHEN poststatus = 6 THEN 1 ELSE 0 END) AS deleted_posts
+        FROM post;
+    </select>
+
 </mapper>
 

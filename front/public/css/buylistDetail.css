@@ -112,6 +112,12 @@
     font-weight: bold;
 }
 
+.transactionPrice .dtm{
+    color: #2d2dff;
+    font-size: 27px;
+    font-weight: bold;
+}
+
 .transactionPrice .price{
     color: #fe6e9f;
     font-size: 27px;
@@ -125,4 +131,75 @@
 
 .transactionListItem{
     border: 3px solid #555555;
+}
+
+.title{
+    font-size: 20px;
+}
+
+.detailInfoSeller{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.SellerProfile{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    max-width: 150px;
+}
+
+.SellerReview{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.reviewRight{
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.userreviewtxt{
+    padding: 5px;
+}
+
+.userreviewtxt p{
+    min-width: 100%;
+    max-width: 100%;
+    height: 100px;
+    overflow: scroll;
+}
+
+.userreviewimg{
+    border: 5px ridge #efefef;
+    padding: 5px;
+}
+
+.reviewDowner{
+    margin-top: 20px;
+}
+
+.reviewTitle{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.reviewDtm{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.dtmDesc{
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.dtmVal{
+    margin-left: 10px;
 }
