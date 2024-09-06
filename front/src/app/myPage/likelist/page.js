@@ -25,6 +25,7 @@ export default function Page() {
   const [page, setPage] = useState({});
 
   const API_URL = '/user/api/likeLists';
+  const DEL_URL = '/adpost/delLike';
 
   function changePage(pNum) { 
     getLikeList(likeWhat,pNum);
@@ -48,6 +49,29 @@ export default function Page() {
         setWhatNow(likeWhat);
         setPage(res.data.page);
         setTotalCount(res.data.totalCount);
+      });
+  }
+
+  function getDelLike(likeWhat,likeKey){
+    alert(`likeWhat: ${likeWhat} || likeKey: ${likeKey}`);
+      axios({
+        url: DEL_URL,
+        method: "post",
+        params: {
+          "likeWhat": likeWhat,
+          "likeKey": likeKey,
+        },
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if(res.data.result_delete > 0){
+          alert("삭제 성공!");
+          getLikeList(likeWhat,page.nowPage);
+        } else{
+          alert("오류가 발생했습니다");
+        }
       });
   }
 
@@ -185,7 +209,7 @@ export default function Page() {
                       className="wish_list"
                     >
                       {/* ForEach로 돌리기 */}
-                      { whatNow == 'post' ? <LikePost likelist={likeList}/> : whatNow == 'category' ? <LikeCategory likelist={likeList}/>: <LikeKeyword likelist={likeList}/>}
+                      { whatNow == 'post' ? <LikePost likelist={likeList} getDelLike={getDelLike}/> : whatNow == 'category' ? <LikeCategory likelist={likeList} getDelLike={getDelLike}/>: <LikeKeyword likelist={likeList} getDelLike={getDelLike}/>}
                     </ul>
                     {/* 페이징 시작*/}
                     <div className="mPaginate">

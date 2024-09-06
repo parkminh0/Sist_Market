@@ -138,9 +138,26 @@
 
     <update id="remindPostByPostKey" parameterType="String">
         UPDATE `post`
-        SET update_dtm = NOW()
+        SET update_dtm = NOW(), remind_dtm = NOW()
         WHERE postkey = #{postkey}
     </update>
+
+
+    <delete id="delWishlistByKey" parameterType="String">
+        DELETE
+        FROM `wishlist`
+        WHERE wishlistkey = #{likeKey}
+    </delete>
+    <delete id="delInterestcategoryByKey" parameterType="String">
+        DELETE
+        FROM `interestcategory`
+        WHERE autokey = #{likeKey}
+    </delete>
+    <delete id="delKeywordByKey" parameterType="String">
+        DELETE
+        FROM `keyword`
+        WHERE keywordkey = #{likeKey}
+    </delete>
 
 
     <!-- 6. searchpost 관련 데이터 -->
@@ -293,11 +310,11 @@
         #{hope_lati},
         #{hope_long},
         #{canbargain},
-        0,
+        #{viewqty},
         now(),
         now(),
         #{delete_dtm},
-        #{remind_dtm},
+        now(),
         #{dealuserkey},
         #{deal_dtm},
         #{userreview},
@@ -344,7 +361,7 @@
         WHERE `postkey` = #{postkey}
     </update>
 
-    <select id="search" resultType="com.sist.back.vo.PostVO" parameterType="map">
+    <select id="search" resultMap="postMap" parameterType="map">
         SELECT * FROM `post`
          WHERE 1 = 1
             <if test="category != null and category != ''">
@@ -358,13 +375,26 @@
             </if>
             <if test="sort != null and sort != ''">
                     <if test="sort == 'recent'">
-                ORDER BY create_dtm DESC
+                ORDER BY remind_dtm DESC
                     </if>
                     <if test="sort == 'popular'">
-                ORDER BY create_dtm DESC
+                ORDER BY remind_dtm DESC
                     </if>
             </if>
     </select>
 
+    <select id="main" resultMap="postMap" parameterType="String">
+        select * from `post`
+         where 1 = 1
+          <if test ="param == 'free'">
+            AND method = 1 AND price = 0
+          </if>
+          <if test="param != 'free'">
+            AND categorykey = #{param}
+          </if>
+
+          ORDER BY remind_dtm DESC
+          limit 10
+    </select>
 </mapper>
 

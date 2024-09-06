@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
@@ -24,7 +25,6 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -37,7 +37,6 @@ public class UserController {
 
     @Autowired
     UserService service;
-    
 
     @RequestMapping("/login/kakao")
     public ModelAndView login(String code) {
@@ -62,24 +61,25 @@ public class UserController {
             String regist_end_date, String isdeleted, String recent_login_start_date, String recent_login_end_date,
             String isauthorized, String cPage) {
 
+
         Map<String, String> iMap = new HashMap<>();
-        
-        if (type != null && type.length() != 0){
+
+        if (type != null && type.length() != 0) {
             iMap.put("search_type", search_type.trim());
             iMap.put("type", type.trim());
         }
-        iMap.put("regist_start_date",regist_start_date.trim());
-        iMap.put("regist_end_date",regist_end_date.trim());
-        iMap.put("recent_login_start_date",recent_login_start_date.trim());
-        iMap.put("recent_login_end_date",recent_login_end_date.trim());
+        iMap.put("regist_start_date", regist_start_date.trim());
+        iMap.put("regist_end_date", regist_end_date.trim());
+        iMap.put("recent_login_start_date", recent_login_start_date.trim());
+        iMap.put("recent_login_end_date", recent_login_end_date.trim());
         iMap.put("isdeleted", isdeleted.trim());
-        iMap.put("isauthorized",isauthorized.trim());
+        iMap.put("isauthorized", isauthorized.trim());
 
         // 페이징 처리
         Paging p = new Paging(5, 3);
         // 전체 페이지
         p.setTotalRecord(service.searchForAdminPaging(iMap));
-        
+
         if (cPage != null && !cPage.equals("0")) {
             p.setNowPage(Integer.parseInt(cPage));
         } else {
@@ -94,13 +94,13 @@ public class UserController {
         map.put("ar", ar);
         map.put("page", p);
         map.put("totalPage", p.getTotalPage());
-        map.put("totalRecord",p.getTotalRecord());
+        map.put("totalRecord", p.getTotalRecord());
         map.put("numPerPage", p.getNumPerPage());
-      
+
         return map;
     }
 
-    //userAdmin 회원 정보 가져오기
+    // userAdmin 회원 정보 가져오기
     @RequestMapping("/api/admin/userEdit")
     @ResponseBody
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
@@ -111,14 +111,14 @@ public class UserController {
         return map;
     }
 
-    //userAdmin 회원 탈퇴
+    // userAdmin 회원 탈퇴
     @RequestMapping("/api/admin/userDel")
     @ResponseBody
     public Map<String, Object> userDel(String userkey) {
-       
+
         Map<String, Object> map = new HashMap<>();
         int cnt = service.userDelForAdmin(userkey);
-        if(cnt>0){
+        if (cnt > 0) {
             String str = "success";
             map.put("str", str);
         }
@@ -126,36 +126,35 @@ public class UserController {
         return map;
     }
 
-    //userAdmin 회원 정보 수정
+    // userAdmin 회원 정보 수정
     @RequestMapping("/api/admin/userEditReal")
     @ResponseBody
     public Map<String, Object> userEdit(userVO vo) {
-       
+
         Map<String, Object> map = new HashMap<>();
         int cnt = service.userEditForAdmin(vo);
-        if(cnt>0){
+        if (cnt > 0) {
             String str = "success";
             map.put("str", str);
         }
         return map;
     }
 
-    //userAdmin 체크된회원 탈퇴
+    // userAdmin 체크된회원 탈퇴
     @RequestMapping("/api/admin/checkUserDel")
     @ResponseBody
-    public Map<String, Object> checkUserDel(@RequestBody List<String>userkeys) {
-        
+    public Map<String, Object> checkUserDel(@RequestBody List<String> userkeys) {
+
         Map<String, Object> map = new HashMap<>();
         int cnt;
-        for(String userkey:userkeys){
+        for (String userkey : userkeys) {
             cnt = service.userDelForAdmin(userkey);
         }
 
         return map;
     }
 
-
-    //계정관리 user정보
+    // 계정관리 user정보
     @RequestMapping("/api/getUser")
     @ResponseBody
     public Map<String, Object> getUser(String userkey) {
@@ -165,10 +164,10 @@ public class UserController {
         return map;
     }
 
-
-    //jwt token login 
+    // jwt token login
     @PostMapping("/api/login")
     @ResponseBody
+
      public Map<String, Object> login(userVO vo, HttpServletResponse res){
     
     Map<String, Object> map = new HashMap<>();
@@ -254,69 +253,69 @@ public class UserController {
     return map;
   }
 
-  //kakao_login & reg
-@RequestMapping("/kakao/login")
-@ResponseBody
-public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
-    System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
-    System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@"+nickname);
-    System.out.println("@@@@@@@@@@@@@@이메일@@@@@@@@@@@@@@"+email);
-    Map<String, Object> map = new HashMap<>();  // 반환할 맵
-    userVO fvo = service.findByemail(email);  // 이메일로 회원 검색
-    
-    // 회원 정보가 없을 경우 회원가입 처리
-    if (fvo == null) {
-        fvo = new userVO();
-        fvo.setNickname(nickname);
-        fvo.setEmail(email);
-     
-        // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
-        String randomId = "user" + System.currentTimeMillis();
-        fvo.setId(randomId);
+  
 
-        // 비밀번호는 카카오 로그인 사용자는 필요 없음
-        fvo.setPw(null);
+    // kakao_login & reg
+    @RequestMapping("/kakao/login")
+    @ResponseBody
+    public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
+        System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
+        System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
+        Map<String, Object> map = new HashMap<>(); // 반환할 맵
+        userVO fvo = service.findByemail(email); // 이메일로 회원 검색
 
-        // 회원가입 처리
-        fvo = service.reg(fvo);
-    }
+        // 회원 정보가 없을 경우 회원가입 처리
+        if (fvo == null) {
+            fvo = new userVO();
+            fvo.setNickname(nickname);
+            fvo.setEmail(email);
 
-    // 로그인 처리
-    if (fvo != null) {
-        userVO uvo = service.authAndMakeToken(fvo.getId(), null);  // 비밀번호는 null로 처리
+            // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
+            String randomId = "user" + System.currentTimeMillis();
+            fvo.setId(randomId);
 
-        if (uvo != null) {
-            // accessToken과 refreshToken을 쿠키에 저장
-            ResponseCookie accessTokenCookie = ResponseCookie
-                    .from("accessToken", uvo.getAccess_token())
-                    .path("/")
-                    .sameSite("None")
-                    .httpOnly(false)  
-                    .secure(true)
-                    .build();
-            res.addHeader("Set-Cookie", accessTokenCookie.toString());
+            // 비밀번호는 카카오 로그인 사용자는 필요 없음
+            fvo.setPw(null);
 
-            ResponseCookie refreshTokenCookie = ResponseCookie
-                    .from("refreshToken", uvo.getRefresh_token())
-                    .path("/")
-                    .sameSite("None")
-                    .httpOnly(false)  
-                    .secure(true)
-                    .build();
-            res.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
-            map.put("msg", "로그인 성공");
-            map.put("uvo", uvo);
-            map.put("cnt", 1);
-        } else {
-            map.put("msg", "토큰 발급 실패");
+            // 회원가입 처리
+            fvo = service.reg(fvo);
         }
-    } else {
-        map.put("msg", "회원가입 실패");
+
+        // 로그인 처리
+        if (fvo != null) {
+            userVO uvo = service.authAndMakeToken(fvo.getId(), null); // 비밀번호는 null로 처리
+
+            if (uvo != null) {
+                // accessToken과 refreshToken을 쿠키에 저장
+                ResponseCookie accessTokenCookie = ResponseCookie
+                        .from("accessToken", uvo.getAccess_token())
+                        .path("/")
+                        .sameSite("None")
+                        .httpOnly(false)
+                        .secure(true)
+                        .build();
+                res.addHeader("Set-Cookie", accessTokenCookie.toString());
+
+                ResponseCookie refreshTokenCookie = ResponseCookie
+                        .from("refreshToken", uvo.getRefresh_token())
+                        .path("/")
+                        .sameSite("None")
+                        .httpOnly(false)
+                        .secure(true)
+                        .build();
+                res.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+                map.put("msg", "로그인 성공");
+                map.put("uvo", uvo);
+                map.put("cnt", 1);
+            } else {
+                map.put("msg", "토큰 발급 실패");
+            }
+        } else {
+            map.put("msg", "회원가입 실패");
+        }
+        return map;
     }
-    return map; 
-}
-        
 
     // 사용자 관심목록
     @RequestMapping("/api/likeLists")
@@ -334,13 +333,12 @@ public Map<String, Object> kakaologin(String email, String nickname, HttpServlet
         } else {
         }
         page.setNowPage(nowPage);
-        
-        
+
         int begin = page.getBegin();
         int end = page.getEnd();
-        
+
         l_map.put("page", page);
-        
+
         Map<String, Object> get_map = new HashMap<>();
         get_map.put("userkey", userkey);
         get_map.put("begin", begin);
@@ -373,28 +371,25 @@ public Map<String, Object> kakaologin(String email, String nickname, HttpServlet
         } else {
         }
         page.setNowPage(nowPage);
-        
-        
+
         int begin = page.getBegin();
         int end = page.getEnd();
-        
-        
-        
+
         bl_map.put("page", page);
-        
+
         get_map.put("begin", begin);
         get_map.put("end", end);
-        
+
         List<PostVO> buyList = service.getBuyList(get_map);
         bl_map.put("buylist", buyList);
         return bl_map;
     }
 
-
     // 사용자 판매목록
     @RequestMapping("/api/cellList")
     @ResponseBody
-    public Map<String, Object> getCellList(String userkey, String cPage, String poststatus, String start_date, String end_date) {
+    public Map<String, Object> getCellList(String userkey, String cPage, String poststatus, String start_date,
+            String end_date) {
         Map<String, Object> bl_map = new HashMap<>();
         Map<String, Object> get_map = new HashMap<>();
         // Paging
@@ -427,21 +422,20 @@ public Map<String, Object> kakaologin(String email, String nickname, HttpServlet
         } else {
         }
         page.setNowPage(nowPage);
-        
-        
+
         int begin = page.getBegin();
         int end = page.getEnd();
-        
-        
+
         bl_map.put("page", page);
-        
+
         get_map.put("begin", begin);
         get_map.put("end", end);
-        
+
         List<PostVO> cellList = service.getCellList(get_map);
         bl_map.put("celllist", cellList);
         return bl_map;
     }
+
 
     
     //회원가입 전화번호 중복 검사 
@@ -472,5 +466,78 @@ public Map<String, Object> kakaologin(String email, String nickname, HttpServlet
     }
 
     
+
+    // 회원정보 수정
+    @RequestMapping("/editImage")
+    @ResponseBody
+    public Map<String, Object> editImage(String userkey, MultipartFile image) {
+        if (image.isEmpty()) {
+            throw new IllegalArgumentException("이미지가 업로드되지 않았습니다.");
+        }
+        String imagePath = service.saveImage(image);
+
+        userVO uvo = new userVO();
+        uvo.setUserkey(userkey);
+        uvo.setImgurl(imagePath);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", service.editImage(uvo));
+        return map;
+    }
+
+    @RequestMapping("/delImage")
+    @ResponseBody
+    public Map<String, Object> delImage(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", service.delImage(userkey));
+        return map;
+    }
+
+    @RequestMapping("/editUser")
+    @ResponseBody
+    public Map<String, Object> editUser(String userkey, String key, String value) {
+        userVO uvo = new userVO();
+        uvo.setUserkey(userkey);
+
+        Map<String, Object> map = new HashMap<>();
+        int cnt = 0;
+
+        switch (key) {
+            case "nickname":
+                uvo.setNickname(value);
+                cnt = service.editNickname(uvo);
+                break;
+            case "email":
+                uvo.setEmail(value);
+                cnt = service.editEmail(uvo);
+                break;
+            case "pw":
+                uvo.setPw(value);
+                cnt = service.editPw(uvo);
+                break;
+            case "phone":
+                uvo.setPhone(value);
+                cnt = service.editPhone(uvo);
+                break;
+            default:
+                map.put("msg", "잘못된 필드입니다.");
+                return map;
+        }
+        if (cnt > 0) {
+            map.put("msg", "변경이 완료되었습니다.");
+        } else {
+            map.put("msg", "이미 사용중입니다.");
+        }
+        return map;
+    }
+
+    @RequestMapping("/delUser")
+    @ResponseBody
+    public Map<String, Object> delUser(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", service.userDelForAdmin(userkey));
+        return map;
+    }
+
 
 }

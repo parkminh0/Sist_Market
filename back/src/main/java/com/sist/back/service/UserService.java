@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.io.File;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.back.jwt.JwtProvider;
 import com.sist.back.mapper.UserMapper;
@@ -17,6 +19,7 @@ import com.sist.back.vo.UserCountVO;
 import com.sist.back.vo.WishlistVO;
 import com.sist.back.vo.userVO;
 
+import jakarta.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +27,9 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     @Autowired
     UserMapper mapper;
+
+        @Autowired
+    private ServletContext context;
 
     //jwt provider
     private final JwtProvider jwtProvider;
@@ -215,6 +221,55 @@ public class UserService {
         List<PostVO> likelist = mapper.getCelllistByMap(get_map);
         return likelist;
     }
+
+
+
+
+        
+    //회원정보 수정
+    public int editImage(userVO uvo) {
+        return mapper.editImage(uvo);
+    }
+
+    public String saveImage(MultipartFile image) {
+        String uploadDir = context.getRealPath("/public/img/user/");
+        String fileName = image.getOriginalFilename();
+        String filePath = uploadDir + "/" + fileName;
+
+        File directory = new File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        try {
+            File f = new File(filePath);
+            image.transferTo(f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "/img/user/" + fileName;
+    }
+
+    public int delImage(String userkey) {
+        return mapper.delImage(userkey);
+    }
+
+    public int editNickname(userVO uvo) {
+        return mapper.editNickname(uvo);
+    }
+
+    public int editEmail(userVO uvo) {
+        return mapper.editEmail(uvo);
+    }
+
+    public int editPw(userVO uvo) {
+        return mapper.editPw(uvo);
+    }
+
+    public int editPhone(userVO uvo) {
+        return mapper.editPhone(uvo);
+    }
+
+
 
 
 }

@@ -1,34 +1,85 @@
 'use client'
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
-import "/public/css/profile.css";
-import Link from "next/link";
-import { Button, TextField } from "@mui/material";
+import "/public/css/buylist.css";
+import "/public/css/paging.css";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import BadgeList from "@/component/user/myPage/BadgeList";
+import Manner from "@/component/user/myPage/Manner";
+import Review from "@/component/user/myPage/Review";
 
-export default function Page() {
+export default function page() {
 
-  const API_URL = "/user/api/getUser";
+    const [selectedTab, setSelectedTab] = useState('');
+  const [list, setList] = useState([]);
+  const [whatNow, setWhatNow] = useState('badge');
+  const [status, setStatus] = useState(1);
+  const [page, setPage] = useState({});
+  const [badgeCount, setBadgeCount] = useState(0);
 
-  const [uvo, setUvo] = useState({});
-  const [userkey, setUserkey] = useState('');
+  
+  const API_URL = '/user/api/cellList';
+  
+  var category = useSearchParams().get("category");
+  const categoryList = ['badge','manner','review'];
+  
+  const handleBadgeCount = (count) => {
+    setBadgeCount(count);
+  };
 
-  function getData() {
-    axios.get(
-        API_URL, {
-          params: { userkey: '45' }
-      }
-    ).then((res) => {
-      console.log(res.data);
-      setUvo(res.data.uvo);
-    })
+  function changePage(pNum) { 
+    getCellList(pNum);
   }
 
-  useEffect(() => {
-      getData();
-  }, []);
+  function updateList(category){
+      setWhatNow(category);
+      setStatus(categoryList.indexOf(category)+1);
+  
+      if (category == 'badge') {
+      setSelectedTab('1');
+      } else if (category == 'manner') {
+      setSelectedTab('2');
+      } else if (category == 'review') {
+      setSelectedTab('3');
+      }
+  }
+  
+
+  function getCellList(cPage){
+    axios({
+      url: API_URL,
+      method: 'post',
+      params: {
+          userkey: 1,
+          cPage: cPage,
+          poststatus: status,
+          start_date: startDate,
+          end_date: endDate,
+      }
+    }).then((res) => {
+        console.log(res.data);
+        setCelllist(res.data.celllist);
+      });
+  }
+
+//   useEffect(()=>{
+//     if(firstTime){
+//       if(categoryList.includes(category)){
+//         setWhatNow(category);
+//         alert(categoryList.indexOf(category));
+//         setStatus(categoryList.indexOf(category)+1);
+//       } else {
+//         setWhatNow('badge');
+//         setStatus(1);
+//       }
+//     }
+//     getCellList(1);
+//   },[whatNow]);
+
 
   return (
     <>
@@ -60,193 +111,118 @@ export default function Page() {
                 </div>
               </Link>
             </div>
-            <Link href="/myPage">
-              <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                  <font style={{ verticalAlign: "inherit" }}>마이 페이지</font>
-                </h1>
-              </div>
-            </Link>
           </section>
         </div>
         <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
-            {/* <jsp:include page="/WEB-INF/views/user/myPageSub/myPageSide.jsp"/> */}
+            {/* <jsp:include page="/WEB-INF/views/user/myPageSub/myPageSide.jsp" /> */}
             <MyPageSide />
-            <div data-v-1ac01578="" data-v-0adb81cc="" className="content_area my-page-content" >
-              <div data-v-1ac01578="" className="my_profile">
-                {/* 타이틀 */}
-                <div data-v-6b53f901="" data-v-1ac01578="" className="content_title border" >
+            {/* <!-- 여기서부터 콘텐츠 --> */}
+            <div data-v-0a67d0b5="" data-v-0adb81cc="" className="content_area my-page-content">
+              <div data-v-0a67d0b5="" className="my_purchase">
+                <div data-v-6b53f901="" data-v-0a67d0b5="" className="content_title">
                   <div data-v-6b53f901="" className="title">
-                    <h3 data-v-6b53f901="">계정 관리</h3>
+                    <h3 data-v-6b53f901="">프로필</h3>
                   </div>
                 </div>
-                {/* 프로필 이미지 */}
-                <div data-v-5691f94f="" data-v-708ef468="" className="user_profile">
-                  <div data-v-5691f94f="" className="profile_thumb">
-                    <img data-v-5691f94f="" src={uvo.imgurl} alt="사용자 이미지" className="thumb_img"/>
+                <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership">
+                <div data-v-ed683452="" className="user_detail">
+                  <div data-v-ed683452="" className="user_thumb">
+                    <img data-v-ed683452=""
+                    //src={uvo.imgurl}
+                    alt="사용자 이미지" className="thumb_img"/>
                   </div>
-                  <div data-v-5691f94f="" className="profile_detail">
-                    <strong data-v-5691f94f="" className="name">
-                      {uvo.nickname}
-                    </strong>
-                    <div data-v-5691f94f="" className="profile_btn_box">
-                      <button data-v-420a5cda=""  data-v-5691f94f="" type="button"  className="btn outlinegrey small">
-                        {" "}
-                        이미지 변경{" "}
-                      </button>
-                      <button data-v-420a5cda="" data-v-5691f94f="" type="button" className="btn outlinegrey small" >
-                        {" "}
-                        삭제{" "}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                {/* 프로필 정보 */}
-                <div data-v-8b96a82e="" data-v-1ac01578="" className="profile_group">
-                  <h4 data-v-8b96a82e="" className="group_title">
-                    프로필 정보
-                  </h4>
-                  <div data-v-0c9f3f9e="" data-v-6d416020="" data-v-708ef468="" className="unit" data-v-8b96a82e="">
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      프로필 이름
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="standard-basic" defaultValue={uvo.nickname} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 2%' }}></div>
-                      <Button variant="outlined" style={{ flex: '0 0 3%' }}>변경</Button>
-                    </div>
-                  </div>
-                  <div data-v-0c9f3f9e="" data-v-6d416020="" data-v-708ef468="" className="unit" data-v-8b96a82e="">
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      이름
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="standard-basic" defaultValue={uvo.name} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 2%' }}></div>
-                      <Button variant="outlined" style={{ flex: '0 0 3%' }}>변경</Button>
-                    </div>
-                  </div>
-                </div>
-                {/* 계정 정보 */}
-                <div data-v-8b96a82e="" data-v-1ac01578="" className="profile_group" >
-                  <h4 data-v-8b96a82e="" className="group_title">
-                    내 계정
-                  </h4>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      이메일 주소
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="standard-basic" defaultValue={uvo.email} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 2%' }}></div>
-                      <Button variant="outlined" style={{ flex: '0 0 3%' }}>변경</Button>
-                    </div>
-                  </div>
-                  <div data-v-1ac01578="" data-v-8b96a82e="" className="modify" style={{ display: "none" }}>
-                    <div data-v-5ee806c3="" data-v-1ac01578="" className="input_box" data-v-8b96a82e="">
-                      <h6  data-v-1ac01578="" data-v-5ee806c3="" className="input_title">
-                        이메일 주소 변경
-                      </h6>
-                      <div data-v-5ee806c3="" className="input_item">
-                        <input data-v-5ee806c3="" type="email" autoComplete="off" className="input_txt" placeholder="사용자 이메일 넣기"/>
-                      </div>
-                      <p data-v-1ac01578="" data-v-5ee806c3="" className="input_error">
-                        {" "}
+                  <div data-v-ed683452="" className="user_info">
+                    <div data-v-ed683452="" className="info_box">
+                      <strong data-v-ed683452="" className="name">
+                        {/* {uvo.nickname} */}
+                      </strong>
+                      <p data-v-ed683452="" className="email">
+                        {/* {uvo.id} [ {uvo.email} ] */}
                       </p>
                     </div>
-                    <div data-v-1ac01578="" data-v-8b96a82e="" className="modify_btn_box" >
-                      <button data-v-420a5cda="" data-v-1ac01578="" type="button" className="btn outlinegrey medium" slot="button" data-v-8b96a82e="">
+                    <div data-v-ed683452="" className="info-buttons">
+                      <Link data-v-420a5cda="" data-v-ed683452="" href="/myPage/profile/edit" className="btn btn outlinegrey small" type="button" >
                         {" "}
-                        취소{" "}
-                      </button>
-                      <button data-v-420a5cda="" data-v-1ac01578="" disabled="disabled" type="button" className="btn solid medium disabled" slot="button" data-v-8b96a82e="">
-                        {" "}
-                        인증 메일 발송{" "}
-                      </button>
-                    </div>
-                  </div>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      아이디
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="standard-basic" defaultValue={uvo.id} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 2%' }}></div>
-                      <Button variant="outlined" style={{ flex: '0 0 3%' }}>변경</Button>
-                    </div>
-                  </div>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      비밀번호
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="standard-basic" defaultValue={uvo.pw} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 2%' }}></div>
-                      <Button variant="outlined" style={{ flex: '0 0 3%' }}>변경</Button>
-                    </div>
-                  </div>
-                  <div data-v-1ac01578="" data-v-8b96a82e="" className="modify" style={{ display: "none" }}>
-                    <h5 data-v-1ac01578="" data-v-8b96a82e="" className="title">
-                      비밀번호 변경
-                    </h5>
-                    <div data-v-5ee806c3="" data-v-1ac01578="" className="input_box" data-v-8b96a82e="">
-                      <h6 data-v-1ac01578="" data-v-5ee806c3="" className="input_title">
-                        이전 비밀번호
-                      </h6>
-                      <div data-v-5ee806c3="" className="input_item">
-                        <input data-v-5ee806c3="" type="password" placeholder="영문, 숫자, 특수문자 조합 8-16자" autoComplete="off" className="input_txt"/>
-                      </div>
-                      <p data-v-1ac01578="" data-v-5ee806c3="" className="input_error">
-                        {" "}
-                        영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-16자){" "}
-                      </p>
-                    </div>
-                    <div data-v-5ee806c3="" data-v-1ac01578="" className="input_box" data-v-8b96a82e="">
-                      <h6 data-v-1ac01578="" data-v-5ee806c3="" className="input_title">
-                        새 비밀번호
-                      </h6>
-                      <div data-v-5ee806c3="" className="input_item">
-                        <input data-v-5ee806c3="" type="password" placeholder="영문, 숫자, 특수문자 조합 8-16자" autoComplete="off" className="input_txt"/>
-                      </div>
-                      <p data-v-1ac01578="" data-v-5ee806c3="" className="input_error">
-                        {" "}
-                        영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-16자){" "}
-                      </p>
-                    </div>
-                    <div data-v-1ac01578="" data-v-8b96a82e="" className="modify_btn_box">
-                      <button data-v-420a5cda="" data-v-1ac01578="" type="button" className="btn outlinegrey medium" slot="button" data-v-8b96a82e="">
-                        {" "}
-                        취소{" "}
-                      </button>
-                      <button data-v-420a5cda="" data-v-1ac01578="" disabled="disabled" type="button" className="btn solid medium disabled" slot="button" data-v-8b96a82e="">
-                        {" "}
-                        저장{" "}
-                      </button>
+                        프로필 수정{" "}
+                      </Link>
                     </div>
                   </div>
                 </div>
-                {/* 개인 정보 */}
-                <div data-v-8b96a82e="" data-v-1ac01578="" className="profile_group">
-                  <h4 data-v-8b96a82e="" className="group_title">
-                    개인 정보
-                  </h4>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      휴대폰 번호
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="standard-basic" defaultValue={uvo.phone} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 2%' }}></div>
-                      <Button variant="outlined" style={{ flex: '0 0 3%' }}>변경</Button>
-                    </div>
+              </div>
+                <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
+                  <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          {badgeCount}
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                          활동 배지
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                            0
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                            받은 매너 평가
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                            0
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                            받은 거래 후기
+                        </dd>
+                      </dl>
+                    </Link>
                   </div>
                 </div>
-                <Link  data-v-1ac01578="" href="/my/withdrawal" className="btn_withdrawal">
-                  회원 탈퇴
-                </Link>
+                <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
+                    <div data-v-24868902="" data-v-eff62a72="" className="empty_area"> {/* 이 공간 줄이든 없애기 */}
+                        {selectedTab === '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
+                        {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner/></p>)}
+                        {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review/></p>)}
+                    </div>
+                {/* 페이징 시작*/}
+                    {/* <div className="mPaginate">
+                        {page.startPage > 1 && (
+                            <Link href="#" onClick={() => {changePage(page.startPage - page.pagePerBlock)}} className="prev">
+                            이전 {page.pagePerBlock}페이지
+                            </Link>
+                        )}
+                        <ol>
+                            {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                            <li key={pNum}>
+                                {page.nowPage == pNum ? (
+                                <strong title="현재페이지">{pNum}</strong>
+                                ) : (
+                                <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+                                )}
+                            </li>
+                            ))}
+                        </ol>
+                        {page.endPage < page.totalPage && (
+                            <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+                            다음 {page.pagePerBlock}페이지
+                            </Link>
+                        )}
+                    </div> */}
+                {/* 페이징 끝*/}
+                </div>
               </div>
             </div>
+            {/* <!-- 여기까지 컨텐츠 --> */}
           </section>
         </div>
       </article>
@@ -256,41 +232,98 @@ export default function Page() {
           <div className="a1nvr40 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy14w _1h4pbgy8jc">
             <div className="a1nvr41">
               <div className="a1nvr42 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9wi _1h4pbgy9vs _1h4pbgya0o">
-                <div className="a1nvr43 _1h4pbgy78g _1h4pbgy78p _1h4pbgy796 _1h4pbgy79n _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy48 _1h4pbgya54 _1h4pbgya4i _19xafot0 _19xafot4 _19xafot5"
-                  style={{ _19xafot2: "0ms", _19xafot1: "500ms", _19xafot3: "translateY(1rem)" }}>
+                <div
+                  className="a1nvr43 _1h4pbgy78g _1h4pbgy78p _1h4pbgy796 _1h4pbgy79n _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy48 _1h4pbgya54 _1h4pbgya4i _19xafot0 _19xafot4 _19xafot5"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "500ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                >
                   <font>
                     <font>오늘 대단한 발견을 해보세요!</font>
                   </font>
                 </div>
                 <div
                   className="a1nvr44 _1h4pbgy79c _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy8g _1h4pbgy81k _19xafot0 _19xafot4 _19xafot5"
-                  style={{ _19xafot2: "0ms", _19xafot1: "500ms", _19xafot3: "translateY(1rem)" }} >
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "500ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                >
                   <font>
                     <font>앱을 받으세요</font>
                   </font>
                 </div>
                 <div className="a1nvr45 _1h4pbgy9vc _1h4pbgy90g _1h4pbgy90r">
-                  <Link href="#" className="_19xafot0 _19xafot4 _19xafot5" style={{ _19xafot2: "0ms", _19xafot1: "500ms", _19xafot3: "translateY(1rem)" }} target="_blank" rel="noopener noreferrer" >
-                    <img className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4" alt="앱스토어에서 다운로드"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/49380c1c7e70e49f0f93baf0f790925eefc69082-120x40.svg"/>
+                  <Link
+                    href="#"
+                    className="_19xafot0 _19xafot4 _19xafot5"
+                    style={{
+                      _19xafot2: "0ms",
+                      _19xafot1: "500ms",
+                      _19xafot3: "translateY(1rem)",
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
+                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/49380c1c7e70e49f0f93baf0f790925eefc69082-120x40.svg"
+                      alt="앱스토어에서 다운로드"
+                    />
                   </Link>
-                  <Link href="#" className="_19xafot0 _19xafot4 _19xafot5" target="_blank" rel="noopener noreferrer"
-                      style={{ _19xafot2: "0ms", _19xafot1: "500ms", _19xafot3: "translateY(1rem)",}}>
-                    <img className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4" alt="Google Play에서 받으세요"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/0d8f72b8e4cdb98af115a7c1f04c4abf19f5c419-180x53.svg"/>
+                  <Link
+                    href="#"
+                    className="_19xafot0 _19xafot4 _19xafot5"
+                    style={{
+                      _19xafot2: "0ms",
+                      _19xafot1: "500ms",
+                      _19xafot3: "translateY(1rem)",
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
+                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/0d8f72b8e4cdb98af115a7c1f04c4abf19f5c419-180x53.svg"
+                      alt="Google Play에서 받으세요"
+                    />
                   </Link>
                 </div>
               </div>
               <div className="a1nvr46">
-                <img src="https://karrotmarket-com-sanity-cdn.krrt.io/production/bff14eb869318da13eeb329ac060450dfe1ecadf-750x1624.png"
-                    className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5" alt="홈 피드 화면의 스크린샷"
-                    style={{ _19xafot2: "0ms", _19xafot1: "1000ms", _19xafot3: "translateY(1rem)" }}/>
-                <img src="https://karrotmarket-com-sanity-cdn.krrt.io/production/5cfdb708e8491051b4765819e796ca373e58fc44-753x1637.png"
-                    className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5" alt="상세 페이지의 스크린샷"
-                    style={{ _19xafot2: "0ms", _19xafot1: "1000ms", _19xafot3: "translateY(-1rem)" }}/>
-                <img src="https://karrotmarket-com-sanity-cdn.krrt.io/production/1da74f52dfcb54be6b1ec40af8d8480ed6abc4c0-900x339.png"
-                    className="a1nvr4b _19xafot0 _19xafot4 _19xafot5" alt="홈 피드 항목의 스크린샷"
-                    style={{ _19xafot2: "0ms", _19xafot1: "1000ms", _19xafot3: "translateY(1rem)" }}/>
+                <img
+                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/bff14eb869318da13eeb329ac060450dfe1ecadf-750x1624.png"
+                  className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
+                  alt="홈 피드 화면의 스크린샷"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "1000ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                />
+                <img
+                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/5cfdb708e8491051b4765819e796ca373e58fc44-753x1637.png"
+                  className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
+                  alt="상세 페이지의 스크린샷"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "1000ms",
+                    _19xafot3: "translateY(-1rem)",
+                  }}
+                />
+                <img
+                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/1da74f52dfcb54be6b1ec40af8d8480ed6abc4c0-900x339.png"
+                  className="a1nvr4b _19xafot0 _19xafot4 _19xafot5"
+                  alt="홈 피드 항목의 스크린샷"
+                  style={{
+                    _19xafot2: "0ms",
+                    _19xafot1: "1000ms",
+                    _19xafot3: "translateY(1rem)",
+                  }}
+                />
                 <div className="a1nvr47"></div>
               </div>
             </div>

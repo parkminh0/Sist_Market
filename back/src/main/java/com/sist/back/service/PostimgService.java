@@ -1,6 +1,5 @@
 package com.sist.back.service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +12,12 @@ public class PostimgService {
     @Autowired
     PostimgMapper p_mapper;
 
-
-    public PostImgVO[] all(){
+    public PostImgVO[] all() {
         return p_mapper.all();
     }
-    
+
+    public int addPostImg(PostImgVO vo) {
+        return p_mapper.addPostImg(vo);
+    }
+
 }

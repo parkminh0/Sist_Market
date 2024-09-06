@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.DealreviewMapper">
+    <!-- 받은 거래 후기 -->
+    <select id="dealReview" parameterType="String" resultType="com.sist.back.vo.PostVO">
+      SELECT p.userreview, p.userreviewimg, 'sell' AS reviewType
+      FROM post p
+      WHERE p.userkey = #{userkey} AND p.userreview IS NOT NULL
+      UNION ALL
+      SELECT p.dealuserreview, p.dealuserreviewimg,'buy' AS reviewType
+      FROM post p
+      WHERE p.dealuserkey = #{userkey} AND p.dealuserreview IS NOT NULL
+    </select>
+
+    <select id="buyingReview" parameterType="String" resultType="com.sist.back.vo.PostVO">
+      SELECT p.dealuserreview, p.dealuserreviewimg, u.nickname, u.imgurl, t.city, t.district, t.`name`, 'buying' AS reviewType
+      FROM post p
+      JOIN user u ON p.dealuserkey = u.userkey
+      JOIN address a ON u.userkey = a.userkey
+      JOIN town t ON a.townkey = t.townkey
+      WHERE p.userkey = #{userkey};
+    </select>
+</mapper>
+
+
