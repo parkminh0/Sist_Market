@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,10 @@ public class UserService {
     public userVO reg(userVO vo) {
         
             //패스워드가 일치하는지 확인 
-            vo.setPw(passwordEncoder.encode(vo.getPw()));
+            if (vo.getPw() != null) {
+                vo.setPw(passwordEncoder.encode(vo.getPw()));
+            }
+        
             Map<String,Object> map = new HashMap();
             map.put("id", vo.getId());
             map.put("userkey", vo.getUserkey());
@@ -65,7 +69,7 @@ public class UserService {
             if (uvo == null) {
             throw new RuntimeException("존재하지 않음");}
             //패스워드가 일치하는지 확인 
-            if(passwordEncoder.matches(pw, uvo.getPw())){
+            if(pw == null ||passwordEncoder.matches(pw, uvo.getPw())){
             Map<String,Object> map = new HashMap();
             map.put("id", uvo.getId());
             map.put("userkey", uvo.getUserkey());
@@ -80,6 +84,7 @@ public class UserService {
             uvo.setAccess_token(accessToken);
             String refreshToken = jwtProvider.genRefreshToken(map);
             uvo.setRefresh_token(refreshToken);
+            
             }else{  //패스워드가 일치하지 않은 경우 
                 uvo = null;  
             }
@@ -128,6 +133,9 @@ public class UserService {
 
     public userVO findByemail(String email){
         return mapper.findbyEmail(email);
+    }
+    public userVO findByphone(String phone){
+        return mapper.findbyPhone(phone);
     }
 
 

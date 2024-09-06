@@ -37,6 +37,8 @@ public class ApiSecurityConfig {
                     .requestMatchers("/user/api/likeLists").permitAll() // /api/member/reg 경로는 허용
                     .requestMatchers("/user/api/buyList").permitAll() // /api/member/reg 경로는 허용
                     .requestMatchers("/user/api/cellList").permitAll() // /api/member/reg 경로는 허용
+                    .requestMatchers("/user/api/chkEmail").permitAll() // /api/member/reg 경로는 허용
+                    .requestMatchers("/user/api/chkPhone").permitAll() // /api/member/reg 경로는 허용
                     .anyRequest().authenticated() // 나머지 모든 요청은 인증이 되어야 함
             )
             .csrf(csrf -> csrf.disable()) // CSRF 토큰 비활성화

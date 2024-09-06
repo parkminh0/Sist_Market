@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, TextField } from '@mui/material';
 import axios from 'axios';
-import {signIn, singOut,useSession} from 'next-auth/react';
-import { SessionProvider } from "next-auth/react";
+import {signIn, signOut,useSession} from 'next-auth/react';
+
 // 필요한 다른 import들도 여기에 추가
 
 
@@ -173,12 +173,12 @@ export default function Header() {
     }).then((res)=>{
       console.log(res);
       if(res.data.msg== "로그아웃"){
-          Cookies.remove("accessToken");
-          Cookies.remove("cnt");
-          //Cookies.remove("refreshToken");
-          //console.log(Cookies.get("accessToken")+"입니당");
-          window.location.reload();
-          router.push("/");
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
+        Cookies.remove("next-auth.session-token");
+        Cookies.remove("next-auth.csrf-token");
+        
+        signOut({ callbackUrl: '/' });
       }
   })
 
@@ -215,11 +215,11 @@ export default function Header() {
  useEffect(() => {
   const token = Cookies.get('accessToken');
   if (token) {
-    setAccessToken(token); // 액세스 토큰이 있으면 로그인 상태로 설정
+    setAccessToken(token);  // 토큰이 있으면 로그인 상태로 변경
   } else {
-    setAccessToken(null); // 토큰이 없으면 로그아웃 상태로 설정
+    setAccessToken(null);   // 토큰이 없으면 로그아웃 상태로 설정
   }
-}, [c_path]);  // 페이지 로드 시 한 번만 실행
+}, [session]);  // session이 변경될 때만 실행
 
  const handleChange = (e) =>{ 
   
@@ -236,12 +236,14 @@ const kakao_login = async(e)=>{
   e.preventDefault(); //다른 기본동작을 실행하지 않도록함
   //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
   signIn("kakao",{callbackUrl: "http://localhost:8080/user/kakao/login"});
-  goController();
+  //goController();
 } 
-
+const [chk,setChk] = useState(true);
 useEffect(() => {
-  if (session && session.user && session.user.name&&session.user.email) {
-    goController();  // session.user.name이 준비된 후 호출
+  if(chk){
+  if (session && session.user) {
+    goController(); // session.user.name이 준비된 후 호출
+  }
   }
 }, [session]);
 
@@ -249,29 +251,30 @@ useEffect(() => {
 const kakao_url = "/user/kakao/login";
 // kakao controller에 데이터 전달 
 const goController = async () => {
- 
-    axios({
-      url: kakao_url,
-      method: "post",
-      params: {
-        nickname: session.user.name,
-        email: session.user.email,
-      },
-    }).then((res) => {
-      if (res.data.cnt === 1) {
-        alert("로그인 성공!");
-        router.push("/admin/user");
-      } else {
-        alert("로그인에 실패하였습니다.");
-      }
-    });
-
+    if (session && session.user) { 
+      axios({
+        url: kakao_url,
+        method: "post",
+        params: {
+          nickname: session.user.name,
+          email: session.user.email,
+        },
+        withCredentials: true,
+          headers :{
+              "Content-Type": "application/json"
+          }
+      }).then((res) => {
+        if (res.data.cnt === 1) {
+          alert("로그인 성공!");
+        
+        } else {
+          alert("로그인에 실패하였습니다.");
+        }
+      
+      });
+     setChk(false);
 };
-
-
-
-
-
+}
   // 로그인 모달 부분
   const [open, setOpen] = useState(false);
   // 로그인 모달 열기
@@ -325,7 +328,7 @@ const goController = async () => {
               <nav className="_1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9wo">
                 <HeaderItem />
                 {
-                  accessToken == null && !session ? (
+                  accessToken == null ? (
                 <button
                   onClick={handleOpen}
                   id="show_login"
@@ -339,12 +342,12 @@ const goController = async () => {
                   data-variant="primaryLow"
                 >
                   <span className="seed-semantic-typography-label4-bold">
-                    <font>{!session?'':session.user.name}{!session?'':session.user.email}로그인</font>
+                    <font>로그인</font>
                   </span>
                 </button>
               ) : (
                 <button
-                  onClick={logout}
+                  onClick={logout}  // 로그아웃 버튼에는 logout 함수 연결
                   id="logout"
                   style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
                   className="seed-box-button"
@@ -356,7 +359,7 @@ const goController = async () => {
                   data-variant="primaryLow"
                 >
                   <span className="seed-semantic-typography-label4-bold">
-                    <font>{!session?'':session.user.name}{!session?'':session.user.email}로그아웃</font>
+                    <font>로그아웃</font>
                   </span>
                 </button>
                 )
@@ -700,7 +703,12 @@ const goController = async () => {
       </FormControl>
     </DialogContent>
     <DialogActions>
-      <Button type="button" onClick={kakao_login}>카카오 로그인</Button>
+      <Button type="button" 
+        onClick={(e) => {
+          e.preventDefault();  // 이벤트 전파 방지
+          kakao_login(e);  // 카카오 로그인 함수 호출
+        }}
+      >카카오 로그인</Button>
       <Button type="button" onClick={jwtLogin}>로그인</Button>
       <Button type="button" onClick={handleSignUp}>회원가입</Button>
       <Button onClick={handleClose}>취소</Button>
