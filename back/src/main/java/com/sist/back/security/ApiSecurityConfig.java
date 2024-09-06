@@ -25,20 +25,23 @@ public class ApiSecurityConfig {
             .authorizeHttpRequests( // 요청에 대한 권한을 지정
                 authorizeHttpRequests -> authorizeHttpRequests
                     .requestMatchers("/user/api/reg").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers(HttpMethod.POST,"/user/api/login").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers(HttpMethod.POST,"/user/api/logout").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers(HttpMethod.POST,"/user/api/reg").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/usercount").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/search_user_admin").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/admin/userEdit").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/admin/userDel").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/admin/userEditReal").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/admin/checkUserDel").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/likeLists").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/buyList").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/cellList").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/chkEmail").permitAll() // /api/member/reg 경로는 허용
-                    .requestMatchers("/user/api/chkPhone").permitAll() // /api/member/reg 경로는 허용
+                    .requestMatchers(HttpMethod.POST,"/user/api/login").permitAll() 
+                    .requestMatchers(HttpMethod.POST,"/user/api/logout").permitAll() 
+                    .requestMatchers(HttpMethod.POST,"/user/api/reg").permitAll() 
+                    .requestMatchers("/user/api/usercount").permitAll() 
+                    .requestMatchers("/user/api/search_user_admin").permitAll() 
+                    .requestMatchers("/user/api/admin/userEdit").permitAll() 
+                    .requestMatchers("/user/api/admin/userDel").permitAll() 
+                    .requestMatchers("/user/api/admin/userEditReal").permitAll() 
+                    .requestMatchers("/user/api/admin/checkUserDel").permitAll() 
+                    .requestMatchers("/user/api/likeLists").permitAll() 
+                    .requestMatchers("/user/api/buyList").permitAll() 
+                    .requestMatchers("/user/api/cellList").permitAll() 
+                    .requestMatchers("/user/api/chkEmail").permitAll() 
+                    .requestMatchers("/user/api/chkPhone").permitAll() 
+                    .requestMatchers("/user/delImage").permitAll() 
+                    .requestMatchers("/user/api/getUser").permitAll() 
+
                     .anyRequest().authenticated() // 나머지 모든 요청은 인증이 되어야 함
             )
             .csrf(csrf -> csrf.disable()) // CSRF 토큰 비활성화

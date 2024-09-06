@@ -44,11 +44,29 @@ public class PostService {
         return p_mapper.getUserReviewByPostKey(postkey);
     }
 
-    public int remindInsert(String postkey){
+    public int remindInsert(String postkey) {
         return p_mapper.insertRemindPost(postkey);
     }
-    public int remindUpdate(String postkey){
+
+    public int remindUpdate(String postkey) {
         return p_mapper.remindPostByPostKey(postkey);
+    }
+
+    public int delLikeFromList(String likeWhat, String likeKey) {
+        int result = 0;
+        switch (likeWhat) {
+            case "post":
+                result = p_mapper.delWishlistByKey(likeKey);
+                break;
+            case "category":
+                result = p_mapper.delInterestcategoryByKey(likeKey);
+                break;
+            case "keyword":
+                result = p_mapper.delKeywordByKey(likeKey);
+                break;
+        }
+
+        return result;
     }
 
     public PostVO[] searchpost(Map<String, Object> map) {
@@ -86,5 +104,8 @@ public class PostService {
         return ar;
     }
 
+    public PostVO[] main(String param) {
+        return p_mapper.main(param);
+    }
 
 }

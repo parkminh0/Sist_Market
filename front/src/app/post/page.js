@@ -2,6 +2,7 @@
 
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import QuestionAnswerOutlinedIcon from "@mui/icons-material/QuestionAnswerOutlined";
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
 import {
   Button,
   Checkbox,
@@ -963,7 +964,8 @@ export default function page() {
                   >
                     <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
                       <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                        <span
+                        {post.pimg_list && post.pimg_list.length > 0 ? (
+                          <span
                           className=" lazy-load-image-background opacity lazy-load-image-loaded"
                           style={{
                             color: "transparent",
@@ -972,16 +974,22 @@ export default function page() {
                         >
                           <img
                             className="_1b153uwe _1h4pbgya3k"
-                            src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/d2169e45b570499799183c1bfa77d7b56cfd356316f6e70aff70b7b66955e253.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
+                            src={post.pimg_list[0].imgurl}
                             alt="썸네일"
                           />
                         </span>
+
+                        ) : <ImageNotSupportedRoundedIcon style={{
+                          width: '100%',  // 아이콘의 너비를 100%로 설정
+                          height: '100%', // 아이콘의 높이를 100%로 설정
+                          zIndex: 1      // 필요하면 z-index로 가시성을 확보
+                        }}/>}
                         {post.poststatus == 2 ? (
-                          <span class="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
+                          <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
                             예약중
                           </span>
                         ) : post.poststatus == 3 ? (
-                          <span class="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
+                          <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
                             거래완료
                           </span>
                         ) : (

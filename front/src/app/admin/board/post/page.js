@@ -1,240 +1,194 @@
-'use client'
+'use client';
 
-import React, { useEffect, useState } from 'react'
-import "/public/css/admin/board.css";
 import axios from 'axios';
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { ImageActions } from '@xeger/quill-image-actions';
+import { ImageFormats } from '@xeger/quill-image-formats';
+import { Button, TextField } from '@mui/material';
 
-export default function page() {
+// formats로 사용자가 넣을 수 있는 데이터를 제한함
+const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
+const BC_URL = "/api/admin/board/getAllBc";
+const AddImage_URL = "/api/admin/board/addImage";
+const Add_URL = "/api/admin/board/add";
+const EmptyAdd_URL = "/api/admin/board/";
+const deleteLatest_URL="/api/admin/board/deleteLatest";
+// 이미지 사이즈 조절을 위한 모듈
+Quill.register('modules/imageActions', ImageActions);
+Quill.register('modules/imageFormats', ImageFormats);
 
-  const API_URL = '/api/admin/board/list';
-  const BC_URL = "/api/admin/board/getAllBc";
-  const DEL_URL = "/api/admin/board/chkDel";
-
-  const router = useRouter();
-
-  const [list, setList] = useState([]);
+const ReactEditor = () => {
   const [bc_list, setBc_list] = useState([]);
-  const [title, setTitle] = useState("");
-  const [categoryName, setCategoryName] = useState("");
-  const [create_start_date, setCreate_start_date] = useState("");
-  const [create_end_date, setCreate_end_date] = useState("");
-  const [allChecked, setAllChecked] = useState(false);
-  const [checkedItems, setCheckedItems] = useState([]);
-  const [page, setPage] = useState({});
+  const [content, setContent] = useState(); // 에디터에 적히는 값 콘솔에 출력
+  const [title, setTitle] = useState();
+  const [categoryname, setCategoryName] = useState();
+  const [userkey, setUserkey] = useState("1");
+  const boardkey = useRef(1);
+  console.log(content);
 
-  function getData(cPage) {
-    axios({
-      url: `${API_URL}?cPage=${cPage}`,
-      method: 'post',
-      params: {
-          title: title,
-          categoryName: categoryName,
-          create_start_date: create_start_date,
-          create_end_date: create_end_date,
-      }
-  }).then((res) => {
-        setList(res.data.b_ar);
-        setPage(res.data.page);
-      });
+  const quillRef = useRef(); // 레퍼런스 객체로서 DOM 요소 접근 조작 가능
+
+  const emptyAdd = async () => {
+    const formData = new FormData();
+    formData.append('userkey', userkey);
+    const response = await axios({
+      url: EmptyAdd_URL,
+      method: "post",
+      data: formData
+    });
+    if (response.data.chk === 1) {
+      boardkey.current = response.data.boardkey;
+    } else {
+      throw new Error('빈 글 생성 실패')
+    }
   }
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userkey', userkey);
+    formData.append('boardkey', boardkey.current);
+    const response = await axios({
+      url: AddImage_URL,
+      method: "post",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
+    if (response.data.chk === 1) {
+      return response.data.filePath;
+    } else {
+      throw new Error('업로드 실패');
+    }
+  };
+
+  const uploadContent = async () => {
+    const formData = new FormData();
+    formData.append('boardkey', boardkey.current);
+    formData.append('content', content);
+    formData.append('title', title);
+    formData.append('userkey', userkey);
+    formData.append('categoryname', categoryname);
+    const response = await axios({
+      url: Add_URL,
+      method: "post",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
+    if (response.data.chk === 1) {
+      alert("저장 성공");
+      return response.data.filePath;
+    } else {
+      throw new Error('업로드 실패');
+    }
+  };
 
   useEffect(() => {
-    axios.get(BC_URL)
-      .then((res) => {
-        setBc_list(res.data.bc_list);
-      })
+    let reaction = true;
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = '변경 사항이 저장되지 않을 수 있습니다.';
+      navigator.sendBeacon(deleteLatest_URL, userkey);
+    };
+    const multiFunction = async () => {
+      const res = await axios.get(BC_URL);
+      setBc_list(res.data.bc_list);
+      if (reaction) {
+        emptyAdd();
+      };
+    };
+
+    multiFunction();
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      reaction = false;
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
   }, []);
 
-  function changePage(pNum) { 
-    getData(pNum);
-  }
 
-  const handleAllCheck = (e) => {
-    const checked = e.target.checked;
-    setAllChecked(checked);
-    if (checked) {
-        const allCheckedItems = list.map((item) => item.boardkey);
-        setCheckedItems(allCheckedItems);
-    } else {
-        setCheckedItems([]);
-    }
-  };
-
-  const handleRowCheck = (e, boardkey) => {
-    const checked = e.target.checked;
-    let updatedCheckedItems = [...checkedItems];
-    if (checked) {
-        updatedCheckedItems.push(boardkey);
-    } else {
-        updatedCheckedItems = updatedCheckedItems.filter((item) => item !== boardkey);
-    }
-    setCheckedItems(updatedCheckedItems);
-    setAllChecked(updatedCheckedItems.length === list.length);
-  };
-
-  function delete_choice() {
-    if (checkedItems.length === 0) {
-      alert("삭제할 게시글을 선택해 주세요.");
-      return;
-    }
-    axios.post(
-      DEL_URL, checkedItems
-    ).then(res => {
-        alert("삭제 완료");
-        getData(0);
-      })
-      .catch(error => {
-        console.error("삭제 중 오류가 발생했습니다.", error);
-      });
-    }
-
-    //categorykey -> name으로 변경
-    const categoryMap = bc_list.reduce((map, bc) => {
-      map[bc.key] = bc.value; // bc.key로 bc.value를 매핑
-      return map;
-    }, {});
-
+  const modules = useMemo(() => ({
+    imageActions: {}, //추가
+    imageFormats: {}, //추가,
+    toolbar: {
+      container: [
+        ["link", "image", "video"],
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+      ],
+      handlers: {
+        image: async () => {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.setAttribute('multiple', '');
+          input.addEventListener('change', async () => {
+            const editor = quillRef.current.getEditor(); // quill 에디터 인스턴스
+            const range = editor.getSelection(true);
+            const file2 = input.files && input.files[0];
+            const files = input.files;
+            if (file2) {
+              for (const file of files) {
+                try {
+                  const filePath = `/img/admin/post/`;
+                  const url = await uploadImage(file, filePath);
+                  editor.insertEmbed(range.index, "image", url);
+                  editor.setSelection(range.index + 1);
+                } catch (error) {
+                  console.error("이미지 삽입 오류", error);
+                }
+              }
+            }
+          });
+          input.click();
+        },
+      },
+    },
+  }), []);
   return (
     <>
-      <form name="frm" id="frm" method="post">
-        <div className="headingArea">
-          <div className="mTitle">
-            <h1>게시글 관리</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <select className="fSelect" id="sel_board_no" name="sel_board_no" onChange={(e) => setCategoryName(e.target.value)}
+            style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginRight: '10px' }}>
+            <option value="" disabled selected hidden>:::카테고리 선택:::</option>
+            {bc_list && bc_list.map((bc, i) => (<option key={i} value={bc.value}>{bc.value}</option>))}
+          </select>
+
+          <div className="button-group" style={{ display: 'flex', gap: '10px' }}>
+            <Button variant='contained' color="warning">임시 저장</Button>
+            <Button variant="contained" color="success" onClick={uploadContent}>저장</Button>
+            <Button variant="contained" color="error">취소</Button>
           </div>
         </div>
-        <div className="section">
-          <div className="mTitle">
-            <h2>게시글 검색</h2>
-          </div>
-          <div className="mBoard gSmall typeSearch">
-            <table border="1" summary="">
-              <caption>게시글 검색</caption>
-              <tbody>
-                <tr>
-                  <th scope="row" className="th-center-bold">작성일</th>
-                  <td>
-                  <div style={{ float: "left" }}>
-                        <span className="gLabel" style={{ float: "left", marginLeft: "5px" }}>
-                          <input type="date" id="create_start_date" name="create_start_date" className="fText gDate"
-                                style={{ width: "100px" }} onChange={(e) => setCreate_start_date(e.target.value)}/>
-                          <span className="ec-mode-common-period-area"> ~ </span>
-                          <input type="date" id="create_end_date" name="create_end_date" className="fText gDate"
-                                style={{ width: "100px" }} onChange={(e) => setCreate_end_date(e.target.value)}/>
-                        </span>
-                      </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" className="th-center-bold">게시판 선택</th>
-                  <td>
-                    <select className="fSelect" id="sel_board_no" name="sel_board_no" onChange={(e) => setCategoryName(e.target.value)}>
-                      <option value="">전체</option>
-                        {bc_list.map((bc, i) => (
-                          <option key={i} value={bc.value}>{bc.value}</option>
-                        ))}
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" className="th-center-bold">게시글 제목</th>
-                  <td>
-                    <input type="text" id="title" name="title" className="fText" style={{ width: '400px' }} 
-                          onChange={(e) => setTitle(e.target.value)}/>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="mButton gCenter">
-            <a id="eBtnSearch" onClick={() => getData(1)} className="btnSearch"><span>검색</span></a>
-          </div>
-          <input type="hidden" name="page" />
-        </div>
-      </form>
-      <div className="section">
-        <div className="mTitle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="gLeft" style={{ display: 'flex', alignItems: 'center' }}>
-            <h2 style={{ marginRight: '10px' }}>게시글 목록</h2>
-            <p className="total">(검색결과 <strong style={{ color: 'blue' }}>{page.totalRecord || 0}</strong> 건)</p>
-          </div>
-          <div className="gRight" style={{ display: 'flex', alignItems: 'center' }}>
-            <span className="txtLess"></span>
-            <a id="eBtnSearch" onClick={() => router.push('/admin/board/post/add')} className="btnSearch" style={{ marginRight: '10px' }}><span>작성</span></a>
-            <a id="eBtnSearch" onClick={delete_choice} className="btnSearch"><span>삭제</span></a>
-          </div>
-        </div>
-        <div className="mBoard gScroll gCell typeList">
-          <table border="1" summary="" className="eChkTr">
-            <caption>게시글 목록</caption>
-            <colgroup>
-              <col className="chk" />
-              <col style={{ width: '80px' }} />
-              <col style={{ width: '90px' }} />
-              <col style={{ width: '250px' }} />
-              <col style={{ width: '140px' }} />
-              <col style={{ width: '140px' }} />
-              <col style={{ width: '90px' }} />
-            </colgroup>
-            <thead>
-              <tr>
-                <th scope="col"><input type="checkbox" className="allChk" checked={allChecked} onChange={handleAllCheck}/></th>
-                <th scope="col" className="th-center-bold">번호</th>
-                <th scope="col" className="th-center-bold">분류</th>
-                <th scope="col" className="th-center-bold">제목</th>
-                <th scope="col" className="th-center-bold">작성일</th>
-                <th scope="col" className="th-center-bold">수정일</th>
-                <th scope="col" className="th-center-bold">조회</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list && list.length > 0 ? (
-                  list.map((ar, i) => (
-                    <tr key={i} style={{textAlign: 'center'}}>
-                        <td>
-                          <input type="checkbox" className="rowChk" name="use_board[]" value={ar.boardkey} 
-                                checked={checkedItems.includes(ar.boardkey)} onChange={(e) => handleRowCheck(e, ar.boardkey)}/>
-                        </td>
-                        <td onClick={() => router.push(`/admin/board/post/detail/${ar.boardkey}`)} style={{ cursor: 'pointer' }}>
-                          {(page.nowPage - 1) * page.numPerPage + i + 1}
-                        </td>
-                        <td>{categoryMap[ar.categorykey] || 'X'}</td>
-                        <td onClick={() => router.push(`/admin/board/post/detail/${ar.boardkey}`)} style={{ cursor: 'pointer' }}>{ar.title}</td>
-                        <td>{ar.create_dtm}</td>
-                        <td>{ar.update_dtm}</td>
-                        <td>{ar.viewqty}</td>
-                    </tr>
-                  ))
-              ) : (
-                  <tr><td colSpan="7">게시글이 없습니다.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="mPaginate">
-          {page.startPage > 1 && (
-            <a href="#" onClick={() => changePage(page.startPage - page.pagePerBlock)} className="prev">
-              이전 {page.pagePerBlock}페이지
-            </a>
-          )}
-          <ol>
-            {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
-              <li key={pNum}>
-                {page.nowPage == pNum ? (
-                  <strong title="현재페이지">{pNum}</strong>
-                ) : (
-                  <a href="#" onClick={() => changePage(pNum)}>{pNum}</a>
-                )}
-              </li>
-            ))}
-          </ol>
-          {page.endPage < page.totalPage && (
-            <a href="#" onClick={() => changePage(page.endPage + 1)} className="next">
-              다음 {page.pagePerBlock}페이지
-            </a>
-          )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <input type="text" id="title" name="title" placeholder="제목" required className="input-field"
+            value={title} onChange={(e) => setTitle(e.target.value)}
+            style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginBottom: '10px' }} />
         </div>
       </div>
+
+      <div>
+        <ReactQuill
+          theme="snow"
+          ref={quillRef}
+          modules={modules}
+          formats={formats}
+          onChange={setContent}
+          style={{ height: '800px', width: '1000px' }}
+        />
+      </div>
     </>
-  )
-}
+  );
+};
+
+export default ReactEditor;

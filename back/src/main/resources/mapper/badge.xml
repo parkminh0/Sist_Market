@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.BadgeMapper">
+    <!-- 전체 뱃지 -->
+    <select id="getAllBadge" resultType="com.sist.back.vo.BadgeVO">
+        SELECT * FROM badge
+    </select>
+
+    <!-- 사용자 소유 뱃지 -->
+    <select id="getBadge" parameterType="String" resultType="com.sist.back.vo.BadgeVO">
+        SELECT b.*, ub.isrepresent 
+        FROM badge b 
+        JOIN userbadge ub ON b.badgekey = ub.badgekey
+        WHERE ub.userkey = #{userkey} AND b.isdeleted = 0;
+    </select>
+
+    <!-- 대표 뱃지 설정 -->
+    <update id="representBadge" parameterType="map">
+        UPDATE userbadge ub
+        SET ub.isrepresent = CASE
+            WHEN ub.badgekey = #{badgekey} AND EXISTS (
+                SELECT 1
+                FROM badge b
+                WHERE b.badgekey = ub.badgekey
+                AND b.isrepresentable = 1
+            ) THEN 1
+            ELSE 0
+        END
+        WHERE ub.userkey = #{userkey};
+    </update>
+
+    <!-- 대표 뱃지 취소 -->
+    <update id="cancelRep" parameterType="map">
+        UPDATE userbadge
+        SET isrepresent = 0
+        WHERE userkey = #{userkey} AND badgekey = #{badgekey}
+    </update>
+</mapper>
