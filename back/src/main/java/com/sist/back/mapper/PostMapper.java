@@ -8,7 +8,6 @@ import com.sist.back.vo.ChatroomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
-import com.sist.back.vo.UserReviewVO;
 
 @Mapper
 public interface PostMapper {
@@ -22,11 +21,11 @@ public interface PostMapper {
 
     List<ChatroomVO> getChatroomByPostKey(int postkey);
 
-    List<UserReviewVO> getUserReviewByPostKey(int postkey);
-
     int insertRemindPost(String postkey);
 
     int remindPostByPostKey(String postkey);
+
+    int unhidPostByPostKey(String postkey);
 
     List<PostVO> searchpost(Map<String, Object> map);
 
@@ -43,4 +42,7 @@ public interface PostMapper {
     List<PostVO> search(Map<String, String> map);
 
     PostVO[] main(String param);
+
+    // 상태별 게시글 수를 반환하는 메서드
+    Map<String, Integer> getPostStatusCounts();
 }

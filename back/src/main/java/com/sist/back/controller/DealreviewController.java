@@ -28,4 +28,14 @@ public class DealreviewController {
         return map;
     }
 
+    @RequestMapping("/sellingReview")
+    @ResponseBody
+    public Map<String, Object> sellingReview(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        PostVO[] selling_ar = d_service.sellingReview(userkey);
+        map.put("selling_ar", selling_ar);
+
+        return map;
+    }
+
 }
