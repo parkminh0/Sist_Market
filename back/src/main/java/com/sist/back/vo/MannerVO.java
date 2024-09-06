@@ -10,6 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MannerVO {
-    String mannerkey, userkey, reviewlistkey, estimateuserkey, ismanner, chatordeal, contetkey, create_dtm, delete_dtm,
+    private String mannerkey, userkey, reviewlistkey, estimateuserkey, ismanner, chatordeal, contetkey, create_dtm,
+            delete_dtm,
             update_dtm, isdeleted;
+    private int count;
 }

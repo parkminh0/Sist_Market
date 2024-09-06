@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.sist.back.vo.ChatroomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
+import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.TownVO;
 
 @Mapper
@@ -43,6 +44,8 @@ public interface PostMapper {
 
     PostVO[] main(String param);
 
-    // 상태별 게시글 수를 반환하는 메서드
-    Map<String, Integer> getPostStatusCounts();
+    PostCountVO countpostForAdmin();
+
+    int deletePostImg(String postkey);
+
 }

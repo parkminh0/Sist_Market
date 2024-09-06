@@ -13,6 +13,7 @@ import com.sist.back.vo.ChatroomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
+import com.sist.back.vo.PostCountVO;
 
 @Service
 public class PostService {
@@ -87,6 +88,10 @@ public class PostService {
         return p_mapper.editPost(vo);
     }
 
+    public int deletePostImg(String postkey) {
+        return p_mapper.deletePostImg(postkey);
+    }
+
     public PostVO[] search(String sort, String category, String minPrice, String maxPrice) {
         Map<String, String> map = new HashMap<>();
         map.put("sort", sort);
@@ -107,9 +112,7 @@ public class PostService {
         return p_mapper.main(param);
     }
 
-    // getPostStatusCounts 메서드
-    public Map<String, Integer> getPostStatusCounts() {
-        return p_mapper.getPostStatusCounts(); // p_mapper에서 올바른 메서드 호출
+    public PostCountVO postForPostAdmin() {
+        return p_mapper.countpostForAdmin();
     }
-
 }

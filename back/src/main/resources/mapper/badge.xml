@@ -13,7 +13,7 @@
         SELECT b.*, ub.isrepresent 
         FROM badge b 
         JOIN userbadge ub ON b.badgekey = ub.badgekey
-        WHERE ub.userkey = #{userkey} AND b.isdeleted = 0;
+        WHERE ub.userkey = #{userkey} AND b.isdeleted = 0
     </select>
 
     <!-- 대표 뱃지 설정 -->
@@ -28,7 +28,7 @@
             ) THEN 1
             ELSE 0
         END
-        WHERE ub.userkey = #{userkey};
+        WHERE ub.userkey = #{userkey}
     </update>
 
     <!-- 대표 뱃지 취소 -->

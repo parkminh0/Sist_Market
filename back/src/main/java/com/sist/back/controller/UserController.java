@@ -2,6 +2,7 @@ package com.sist.back.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,48 +168,48 @@ public class UserController {
     @PostMapping("/api/login")
     @ResponseBody
 
-     public Map<String, Object> login(userVO vo, HttpServletResponse res){
-    
-    Map<String, Object> map = new HashMap<>();
-    int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
-    String msg = "로그인에 실패하였습니다.";
-    userVO uvo = null;
-    if (vo.getId() != null) {
-      
-      uvo = service.authAndMakeToken(vo.getId(),vo.getPw());
-      
-      if(uvo !=null){ 
-        ResponseCookie cookie = ResponseCookie
-            .from("accessToken",uvo.getAccess_token())
-            .path("/")
-            .sameSite("None")
-            .httpOnly(false)
-            .secure(true)
-            .build();
-            res.addHeader("Set-Cookie", cookie.toString());
-            cookie = ResponseCookie.from("refreshToken",uvo.getRefresh_token())
-            .path("/")
-            .sameSite("None")
-            .httpOnly(false)
-            .secure(true)
-            .build();
-            res.addHeader("Set-Cookie", cookie.toString());
-            cookie = ResponseCookie.from("userkey",uvo.getUserkey())
-            .path("/")
-            .sameSite("None")
-            .httpOnly(false)
-            .secure(true)
-            .build();
-            res.addHeader("Set-Cookie", cookie.toString());
-            cnt =1; 
-            msg="success";
+    public Map<String, Object> login(userVO vo, HttpServletResponse res) {
+
+        Map<String, Object> map = new HashMap<>();
+        int cnt = 0; // 아무 작업도 못했어 0 한번했어 1
+        String msg = "로그인에 실패하였습니다.";
+        userVO uvo = null;
+        if (vo.getId() != null) {
+
+            uvo = service.authAndMakeToken(vo.getId(), vo.getPw());
+
+            if (uvo != null) {
+                ResponseCookie cookie = ResponseCookie
+                        .from("accessToken", uvo.getAccess_token())
+                        .path("/")
+                        .sameSite("None")
+                        .httpOnly(false)
+                        .secure(true)
+                        .build();
+                res.addHeader("Set-Cookie", cookie.toString());
+                cookie = ResponseCookie.from("refreshToken", uvo.getRefresh_token())
+                        .path("/")
+                        .sameSite("None")
+                        .httpOnly(false)
+                        .secure(true)
+                        .build();
+                res.addHeader("Set-Cookie", cookie.toString());
+                cookie = ResponseCookie.from("userkey", uvo.getUserkey())
+                        .path("/")
+                        .sameSite("None")
+                        .httpOnly(false)
+                        .secure(true)
+                        .build();
+                res.addHeader("Set-Cookie", cookie.toString());
+                cnt = 1;
+                msg = "success";
+            }
+        }
+        map.put("cnt", cnt);
+        map.put("msg", msg);
+        map.put("uvo", uvo);
+        return map;
     }
-    }
-    map.put("cnt", cnt); 
-    map.put("msg", msg);
-    map.put("uvo", uvo);
-    return map;
-  }
 
     // jwt token logout
     @PostMapping("/api/logout")
@@ -250,31 +251,27 @@ public class UserController {
         return map;
     }
 
+    @PostMapping("/api/reg")
+    @ResponseBody
+    public Map<String, Object> reg(userVO vo) {
+        Map<String, Object> map = new HashMap<>();
 
+        if (vo.getId() != null) {
+            // 사용자가 입력한 비밀번호를 암호화 시킨다.
+            // String pw = passwordEncoder.encode(vo.getMPw());
 
-  @PostMapping("/api/reg")
-  @ResponseBody
-  public Map<String, Object> reg(userVO vo) {
-    Map<String, Object> map = new HashMap<>();
-
-    if (vo.getId() != null) {
-      // 사용자가 입력한 비밀번호를 암호화 시킨다.
-      //String pw = passwordEncoder.encode(vo.getMPw());
-     
-      userVO uvo = service.reg(vo);
-      map.put("uvo", uvo);
+            userVO uvo = service.reg(vo);
+            map.put("uvo", uvo);
+        }
+        return map;
     }
-    return map;
-  }
-
-
 
     // kakao_login & reg
     @RequestMapping("/kakao/login")
     @ResponseBody
     public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
-        //System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
-        //System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
+        // System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
+        // System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
         userVO fvo = service.findByemail(email); // 이메일로 회원 검색
 
@@ -459,38 +456,106 @@ public class UserController {
         return bl_map;
     }
 
+    // 사용자 특정사용자목록
+    @RequestMapping("/api/lbiUsers")
+    @ResponseBody
+    public Map<String, Object> getUsersList(String userkey, String cPage, String userType) {
+        Map<String, Object> ul_map = new HashMap<>();
+        Map<String, Object> get_map = new HashMap<>();
+        // Paging
+        Paging page = new Paging(5, 3);
+        get_map.put("userkey", userkey);
+        int user1Count = service.getlikeuserCount(userkey);
+        int user2Count = service.getblockeduserCount(userkey);
+        int user3Count = service.getnoseeuserCount(userkey);
+        ul_map.put("user1Count", user1Count);
+        ul_map.put("user2Count", user2Count);
+        ul_map.put("user3Count", user3Count);
+        ul_map.put("totalCount", user1Count + user2Count + user3Count);
 
+        int totalRecord = 0;
+        switch (userType) {
+            case "likeUser":
+                totalRecord = user1Count;
+                break;
+            case "blockedUser":
+                totalRecord = user2Count;
+                break;
+            case "noseeUser":
+                totalRecord = user3Count;
+                break;
+        }
+        ul_map.put("totalRecord", totalRecord);
 
-    
-    //회원가입 전화번호 중복 검사 
+        page.setTotalRecord(totalRecord);
+        int nowPage = 1;
+        if (cPage != null) {
+            nowPage = Integer.parseInt(cPage);
+        }
+        page.setNowPage(nowPage);
+
+        int begin = page.getBegin();
+        int end = page.getEnd();
+
+        ul_map.put("page", page);
+
+        get_map.put("begin", begin);
+        get_map.put("end", end);
+
+        List<userVO> userlist = new ArrayList<>();
+
+        switch (userType) {
+            case "likeUser":
+                userlist = service.getlikeuserByMap(get_map);
+                break;
+            case "blockedUser":
+                userlist = service.getblockeduserByMap(get_map);
+                break;
+            case "noseeUser":
+                userlist = service.getnoseeuserByMap(get_map);
+                break;
+        }
+        ul_map.put("userlist", userlist);
+        return ul_map;
+    }
+
+    // 회원가입 전화번호 중복 검사
+    @RequestMapping("/api/uncheck")
+    @ResponseBody
+    public Map<String, Object> uncheck(String whatNow, String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        int result_update = service.uncheckUser(whatNow, userkey);
+        map.put("result_update", result_update);
+        return map;
+    }
+
+    // 회원가입 전화번호 중복 검사
     @RequestMapping("/api/chkPhone")
     @ResponseBody
-    public Map<String,Object> chkPhone(String phone){
-        Map<String,Object> map = new HashMap<>();
+    public Map<String, Object> chkPhone(String phone) {
+        Map<String, Object> map = new HashMap<>();
         int cnt = 0;
         userVO vo = service.findByphone(phone);
-        if(vo!=null){   //중복이 된 경우 1 뱉어냄.
+        if (vo != null) { // 중복이 된 경우 1 뱉어냄.
             cnt = 1;
         }
         map.put("cnt", cnt);
         return map;
     }
-    //회원가입 이메일 중복 검사 
+
+    // 회원가입 이메일 중복 검사
     @RequestMapping("/api/chkEmail")
     @ResponseBody
-    public Map<String,Object> chkEmail(String email){
-        Map<String,Object> map = new HashMap<>();
+    public Map<String, Object> chkEmail(String email) {
+        Map<String, Object> map = new HashMap<>();
         int cnt = 0;
         userVO vo = service.findByemail(email);
-        if(vo!=null){   //중복이 된 경우 1 뱉어냄.
+        if (vo != null) { // 중복이 된 경우 1 뱉어냄.
             cnt = 1;
         }
         map.put("cnt", cnt);
         return map;
     }
-
-    
-
 
     // 회원정보 수정
     @RequestMapping("/editImage")

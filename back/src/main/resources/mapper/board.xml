@@ -94,7 +94,7 @@
                 WHERE `value` = #{categoryName} 
                     AND `table` = 'board' 
                     AND `column` = 'categorykey')
-                );
+                )
     </insert> -->
 
 <!-- <update id="boardAdd" parameterType="map">
@@ -113,7 +113,7 @@
                 AND table = 'board' 
                 AND column = 'categorykey'
         )
-    WHERE boardkey = #{boardkey};
+    WHERE boardkey = #{boardkey}
 </update> -->
 
 	<update id="boardAdd" parameterType="com.sist.back.vo.BoardVO">
@@ -130,7 +130,7 @@
   <delete id="deleteLatest" parameterType="String">
     DELETE b FROM board b
     JOIN ( SELECT boardkey FROM board WHERE userkey = #{userkey} ORDER BY create_dtm DESC LIMIT 1)
-    AS subquery ON b.boardkey = subquery.boardkey;
+    AS subquery ON b.boardkey = subquery.boardkey
   </delete>
 
 
@@ -176,7 +176,7 @@
         SELECT k.`key`, k.`value`, COUNT(b.categorykey) AS count
         FROM `key_table` k LEFT JOIN `board` b ON k.`key` = b.`categorykey`
         WHERE k.`table` = 'board' AND k.`column` = 'categorykey' AND k.isdeleted = 0
-        GROUP BY k.`key`, k.`value`;
+        GROUP BY k.`key`, k.`value`
     </select>
 
     <!-- 게시판 카테고리 추가 -->
@@ -201,7 +201,7 @@
     <update id="delBoardCategory1" parameterType="String">
         UPDATE key_table
         SET isdeleted = 1
-        WHERE `value` = #{value};
+        WHERE `value` = #{value}
     </update>
 
     <!-- 삭제된 카테고리에 해당하는 게시물 작세 -->
@@ -209,6 +209,6 @@
         UPDATE board
         SET isdeleted = 1, delete_dtm = NOW()
         WHERE categorykey = (SELECT `key` FROM key_table WHERE `value` = #{value})
-        AND isdeleted = 0;
+        AND isdeleted = 0
     </update>
 </mapper>

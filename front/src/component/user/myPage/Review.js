@@ -18,10 +18,6 @@ export default function Review({ onReviewCountChange }) {
     getData();
   }, []);
 
-  useEffect(() => {
-    getData();
-  }, []);
-
   function getData() {
     Promise.all([
       axios.get(BUY_URL, { params: { userkey: 45} }),
