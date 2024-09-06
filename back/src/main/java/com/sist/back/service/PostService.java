@@ -13,7 +13,6 @@ import com.sist.back.vo.ChatroomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
-import com.sist.back.vo.UserReviewVO;
 
 @Service
 public class PostService {
@@ -40,12 +39,12 @@ public class PostService {
         return p_mapper.getChatroomByPostKey(postkey);
     }
 
-    public List<UserReviewVO> getUserReviewByPostKey(int postkey) {
-        return p_mapper.getUserReviewByPostKey(postkey);
-    }
-
     public int remindInsert(String postkey) {
         return p_mapper.insertRemindPost(postkey);
+    }
+
+    public int unhidPost(String postkey) {
+        return p_mapper.unhidPostByPostKey(postkey);
     }
 
     public int remindUpdate(String postkey) {
@@ -106,6 +105,11 @@ public class PostService {
 
     public PostVO[] main(String param) {
         return p_mapper.main(param);
+    }
+
+    // getPostStatusCounts 메서드
+    public Map<String, Integer> getPostStatusCounts() {
+        return p_mapper.getPostStatusCounts(); // p_mapper에서 올바른 메서드 호출
     }
 
 }

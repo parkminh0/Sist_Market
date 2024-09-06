@@ -1,10 +1,16 @@
 "use client";
 
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import QuestionAnswerOutlinedIcon from "@mui/icons-material/QuestionAnswerOutlined";
+import Button from '@mui/joy/Button';
+import Card from '@mui/joy/Card';
+import CardContent from '@mui/joy/CardContent';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import IconButton from '@mui/joy/IconButton';
+import AspectRatio from '@mui/joy/AspectRatio';
+import Typography from '@mui/joy/Typography';
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
 import {
-  Button,
   Checkbox,
   Dialog,
   DialogActions,
@@ -13,7 +19,6 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
   ImageList,
   ImageListItem,
   InputAdornment,
@@ -22,7 +27,6 @@ import {
   Radio,
   RadioGroup,
   TextField,
-  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
@@ -954,128 +958,207 @@ export default function page() {
               <div
                 data-gtm="search_article"
                 className="_13tpfox0 _1h4pbgy9vc _1h4pbgy8jc _13tpfox1"
+                style={{ minWidth: '0' }}
               >
                 {post_list.map((post, i) => (
                   <Link
-                    key={i}
-                    data-gtm="search_article"
-                    className="_1h4pbgy9ug"
-                    href={`/post/detail?postkey=${post.postkey}`}
-                  >
-                    <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                      <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                        {post.pimg_list && post.pimg_list.length > 0 ? (
-                          <span
-                          className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                          style={{
-                            color: "transparent",
-                            display: "inlineBlock",
-                          }}
-                        >
-                          <img
-                            className="_1b153uwe _1h4pbgya3k"
-                            src={post.pimg_list[0].imgurl}
-                            alt="썸네일"
-                          />
-                        </span>
-
-                        ) : <ImageNotSupportedRoundedIcon style={{
-                          width: '100%',  // 아이콘의 너비를 100%로 설정
-                          height: '100%', // 아이콘의 높이를 100%로 설정
-                          zIndex: 1      // 필요하면 z-index로 가시성을 확보
-                        }}/>}
-                        {post.poststatus == 2 ? (
-                          <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
-                            예약중
-                          </span>
-                        ) : post.poststatus == 3 ? (
-                          <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
-                            거래완료
-                          </span>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                      <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                        <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                          <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              <font style={{ verticalAlign: "inherit" }}>
-                                {post.title}
-                              </font>
-                            </font>
-                          </div>
-                          <div className="_1b153uwh _1h4pbgy8jc">
-                            <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                              <font style={{ verticalAlign: "inherit" }}>
-                                <font style={{ verticalAlign: "inherit" }}>
-                                  위치 · (끌올) 몇분 전(몇시간 전, 몇일 전)
-                                </font>
-                              </font>
-                            </h2>
-                          </div>
-                          <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              <font style={{ verticalAlign: "inherit" }}>
-                                {post.price == 0
-                                  ? "나눔♥"
-                                  : new Intl.NumberFormat("ko-KR").format(
-                                      post.price
-                                    ) + "원"}
-                              </font>
-                            </font>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          gap: "4px", // 아이콘 사이의 간격 조정
-                          marginTop: "0", // 상단과의 간격 조정
+                  key={i}
+                  data-gtm="search_article"
+                  className="_1h4pbgy9ug"
+                  href={`/post/detail?postkey=${post.postkey}`}
+                  style={{ minWidth: '0' }}
+                >
+                  <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', minWidth: '0', padding:'5px', gap: '0.5rem', backgroundColor:'white'}}>
+                    <div style={{ width: '100%',  minWidth: '0', marginLeft: '5px'}}>
+                      <Typography component="span" level="title-lg" sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '100%', // 제목이 있는 부모 요소의 너비에 맞춰서 제한
+                          display: 'block',   
+                          minWidth: '0',              // 텍스트가 줄어들지 않도록 설정
+                          marginTop: '5px',
                         }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "2px",
-                          }}
-                        >
-                          <IconButton
-                            aria-label="share"
-                            size="small"
-                            style={{ padding: "2px" }} // 아이콘 버튼의 패딩을 줄여서 더 작게
-                          >
-                            <QuestionAnswerOutlinedIcon
-                              style={{ fontSize: "16px" }}
-                            />
-                            {/* 아이콘 크기를 16px로 */}
-                          </IconButton>
-                          <span style={{ fontSize: "14px" }}>5</span>
-                          {/* 공유 수 */}
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "2px",
-                          }}
-                        >
-                          <IconButton
-                            aria-label="add to favorites"
-                            size="small"
-                            style={{ padding: "2px" }} // 아이콘 버튼의 패딩을 줄여서 더 작게
-                          >
-                            <FavoriteIcon style={{ fontSize: "16px" }} />
-                            {/* 아이콘 크기를 16px로 */}
-                          </IconButton>
-                          <span style={{ fontSize: "14px" }}>10</span>
-                          {/* 좋아요 수 */}
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
+                      >{post.title}</Typography>
+                      <Typography level="body-sm">위치, 동네, 몇분전</Typography>
+                    </div>
+                  <AspectRatio minHeight="200px" maxHeight="200px" minWidth="200px" maxWidth="200px" margin="0" padding="0">
+                  {post.pimg_list && post.pimg_list.length > 0 ? (
+                    <span
+                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
+                    style={{
+                      color: "transparent",
+                      display: "inlineBlock",
+                    }}
+                  >
+                    <img
+                      className="_1b153uwe _1h4pbgya3k"
+                      src={post.pimg_list[0].imgurl}
+                    />
+                  </span>
+                  ) : <ImageNotSupportedRoundedIcon style={{
+                    width: '100%',  // 아이콘의 너비를 100%로 설정
+                    height: '100%', // 아이콘의 높이를 100%로 설정
+                    zIndex: 1      // 필요하면 z-index로 가시성을 확보
+                  }}/>}
+                  {post.poststatus == 2 ? (
+                    <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
+                      예약중
+                    </span>
+                  ) : post.poststatus == 3 ? (
+                    <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
+                      거래완료
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                  </AspectRatio>
+                  <CardContent
+                    orientation="horizontal"
+                    sx={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}
+                  >
+                    <Typography sx={{ fontSize: 'lg', fontWeight: 'lg', flexGrow: 1, marginLeft: '5px', }}>
+                      {post.price == 0
+                        ? '나눔♥'
+                        : new Intl.NumberFormat('ko-KR').format(post.price) + '원'}
+                    </Typography>
+                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0' }}>
+                      <IconButton variant="plain" size="sm" sx={{ padding: '4px' }}>
+                        <RemoveRedEyeOutlinedIcon style={{ fontSize: '14px' }} />
+                      </IconButton>
+                      <span style={{ fontSize: '12px', marginLeft: '0' }}>{post.viewqty}</span>
+                      <IconButton variant="plain" size="sm" sx={{ padding: '4px' }}>
+                        <ChatBubbleOutlineOutlinedIcon style={{ fontSize: '14px' }} />
+                      </IconButton>
+                      <span style={{ fontSize: '12px', marginLeft: '0' }}>5</span>
+                      <IconButton variant="plain" size="sm" sx={{ padding: '4px' }}>
+                        <FavoriteBorderOutlinedIcon style={{ fontSize: '14px' }} />
+                      </IconButton>
+                      <span style={{ fontSize: '12px', marginLeft: '0' }}>10</span>
+                    </div>
+                  </CardContent>
+                </Card>
+                </Link>
+                  // <Link
+                  //   key={i}
+                  //   data-gtm="search_article"
+                  //   className="_1h4pbgy9ug"
+                  //   href={`/post/detail?postkey=${post.postkey}`}
+                  // >
+                  //   <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
+                  //     <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
+                  //       {post.pimg_list && post.pimg_list.length > 0 ? (
+                  //         <span
+                  //         className=" lazy-load-image-background opacity lazy-load-image-loaded"
+                  //         style={{
+                  //           color: "transparent",
+                  //           display: "inlineBlock",
+                  //         }}
+                  //       >
+                  //         <img
+                  //           className="_1b153uwe _1h4pbgya3k"
+                  //           src={post.pimg_list[0].imgurl}
+                  //           alt="썸네일"
+                  //         />
+                  //       </span>
+
+                  //       ) : <ImageNotSupportedRoundedIcon style={{
+                  //         width: '100%',  // 아이콘의 너비를 100%로 설정
+                  //         height: '100%', // 아이콘의 높이를 100%로 설정
+                  //         zIndex: 1      // 필요하면 z-index로 가시성을 확보
+                  //       }}/>}
+                  //       {post.poststatus == 2 ? (
+                  //         <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
+                  //           예약중
+                  //         </span>
+                  //       ) : post.poststatus == 3 ? (
+                  //         <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
+                  //           거래완료
+                  //         </span>
+                  //       ) : (
+                  //         ""
+                  //       )}
+                  //     </div>
+                  //     <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
+                  //       <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
+                  //         <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
+                  //           <font style={{ verticalAlign: "inherit" }}>
+                  //             <font style={{ verticalAlign: "inherit" }}>
+                  //               {post.title}
+                  //             </font>
+                  //           </font>
+                  //         </div>
+                  //         <div className="_1b153uwh _1h4pbgy8jc">
+                  //           <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
+                  //             <font style={{ verticalAlign: "inherit" }}>
+                  //               <font style={{ verticalAlign: "inherit" }}>
+                  //                 위치 · (끌올) 몇분 전(몇시간 전, 몇일 전)
+                  //               </font>
+                  //             </font>
+                  //           </h2>
+                  //         </div>
+                  //         <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
+                  //           <font style={{ verticalAlign: "inherit" }}>
+                  //             <font style={{ verticalAlign: "inherit" }}>
+                  //               {post.price == 0
+                  //                 ? "나눔♥"
+                  //                 : new Intl.NumberFormat("ko-KR").format(
+                  //                     post.price
+                  //                   ) + "원"}
+                  //             </font>
+                  //           </font>
+                  //         </div>
+                  //       </div>
+                  //     </div>
+                  //     <div
+                  //       style={{
+                  //         display: "flex",
+                  //         justifyContent: "flex-end",
+                  //         gap: "4px", // 아이콘 사이의 간격 조정
+                  //         marginTop: "0", // 상단과의 간격 조정
+                  //       }}
+                  //     >
+                  //       <div
+                  //         style={{
+                  //           display: "flex",
+                  //           alignItems: "center",
+                  //           gap: "2px",
+                  //         }}
+                  //       >
+                  //         <IconButton
+                  //           aria-label="share"
+                  //           size="small"
+                  //           style={{ padding: "2px" }} // 아이콘 버튼의 패딩을 줄여서 더 작게
+                  //         >
+                  //           <QuestionAnswerOutlinedIcon
+                  //             style={{ fontSize: "16px" }}
+                  //           />
+                  //           {/* 아이콘 크기를 16px로 */}
+                  //         </IconButton>
+                  //         <span style={{ fontSize: "14px" }}>5</span>
+                  //         {/* 공유 수 */}
+                  //       </div>
+                  //       <div
+                  //         style={{
+                  //           display: "flex",
+                  //           alignItems: "center",
+                  //           gap: "2px",
+                  //         }}
+                  //       >
+                  //         <IconButton
+                  //           aria-label="add to favorites"
+                  //           size="small"
+                  //           style={{ padding: "2px" }} // 아이콘 버튼의 패딩을 줄여서 더 작게
+                  //         >
+                  //           <FavoriteIcon style={{ fontSize: "16px" }} />
+                  //           {/* 아이콘 크기를 16px로 */}
+                  //         </IconButton>
+                  //         <span style={{ fontSize: "14px" }}>10</span>
+                  //         {/* 좋아요 수 */}
+                  //       </div>
+                  //     </div>
+                  //   </article>
+                  // </Link>
                 ))}
               </div>
               <div data-gtm="search_show_more_articles" className="_1h4pbgy7y8">

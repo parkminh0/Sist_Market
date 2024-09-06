@@ -2,8 +2,13 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sist.back.mapper.DealreviewMapper">
+<mapper namespace="com.sist.back.mapper.MannerMapper">
     <!-- 받은 거래 후기 -->
+
+
+
+
+
     <select id="buyingReview" parameterType="String" resultType="com.sist.back.vo.PostVO">
       SELECT p.dealuserreview, p.dealuserreviewimg, u.nickname, u.imgurl, t.city, t.district, t.`name`, '구매자' AS reviewType
       FROM post p

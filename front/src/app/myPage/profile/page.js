@@ -14,14 +14,14 @@ import Review from "@/component/user/myPage/Review";
 
 export default function page() {
 
-    const [selectedTab, setSelectedTab] = useState('');
+  const [selectedTab, setSelectedTab] = useState('');
   const [list, setList] = useState([]);
   const [whatNow, setWhatNow] = useState('badge');
   const [status, setStatus] = useState(1);
   const [page, setPage] = useState({});
   const [badgeCount, setBadgeCount] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
-  
   const API_URL = '/user/api/cellList';
   
   var category = useSearchParams().get("category");
@@ -29,6 +29,10 @@ export default function page() {
   
   const handleBadgeCount = (count) => {
     setBadgeCount(count);
+  };
+
+  const handleReviewCount = (count) => {
+    setReviewCount(count);
   };
 
   function changePage(pNum) { 
@@ -48,7 +52,6 @@ export default function page() {
       }
   }
   
-
   function getCellList(cPage){
     axios({
       url: API_URL,
@@ -65,21 +68,6 @@ export default function page() {
         setCelllist(res.data.celllist);
       });
   }
-
-//   useEffect(()=>{
-//     if(firstTime){
-//       if(categoryList.includes(category)){
-//         setWhatNow(category);
-//         alert(categoryList.indexOf(category));
-//         setStatus(categoryList.indexOf(category)+1);
-//       } else {
-//         setWhatNow('badge');
-//         setStatus(1);
-//       }
-//     }
-//     getCellList(1);
-//   },[whatNow]);
-
 
   return (
     <>
@@ -179,7 +167,7 @@ export default function page() {
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
-                            0
+                            {reviewCount}
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
                             받은 거래 후기
@@ -192,7 +180,7 @@ export default function page() {
                     <div data-v-24868902="" data-v-eff62a72="" className="empty_area"> {/* 이 공간 줄이든 없애기 */}
                         {selectedTab === '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
                         {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner/></p>)}
-                        {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review/></p>)}
+                        {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
                 {/* 페이징 시작*/}
                     {/* <div className="mPaginate">

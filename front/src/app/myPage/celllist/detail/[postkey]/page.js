@@ -14,7 +14,7 @@ export default function page() {
     const [price, setPrice] = useState('0원');
     const [lastprice, setLastprice] = useState('0원');
     const [deal_dtm, setDeal_dtm] = useState('');
-    const [userreview_dtm, setUserreview_dtm] = useState('');
+    const [dureview_dtm, setDureview_dtm] = useState('');
     const [method, setMethod] = useState('일반 판매');
   
     const API_URL = "/adpost/detail";
@@ -64,7 +64,7 @@ export default function page() {
         }
 
         setDeal_dtm(getDateFormat(response.data.pvo.deal_dtm));
-        setUserreview_dtm(getDateFormat(response.data.pvo.userreview_dtm));
+        setDureview_dtm(getDateFormat(response.data.pvo.dealuserreview_dtm));
       });
     }
   
@@ -110,7 +110,7 @@ export default function page() {
                 {/* <!-- 여기서부터 콘텐츠 --> */}
                 <div className='detailInfoBody'>
                   <div className='detailInfoTitle'>
-                    구매내역 상세
+                    판매내역 상세
                   </div>
                   <div className='detailInfos'>
                       <div className='detailInfoItem'>
@@ -151,32 +151,32 @@ export default function page() {
                       <div className='detailInfoItem'>
                           <div class="reviewTitle">
                             <div class="title">
-                              판매자 후기
+                              구매자 후기
                             </div>
                             <div class="reviewDtm">
                                 <p className='dtmDesc'>작성일자</p>
-                                <p className='dtmVal'>{userreview_dtm}</p>
+                                <p className='dtmVal'>{dureview_dtm}</p>
                             </div>
                           </div>
                           <div className='detailInfoSeller'>
                             <div className='SellerProfile'>
                               <div className='profiileImg'>
-                                <img src={pvo.uvo ? pvo.uvo.imgurl : ''} style={{width: 50, marginTop: 10}}/>
+                                <img src={pvo.duvo ? pvo.duvo.imgurl : ''} style={{width: 50, marginTop: 10}}/>
                               </div>
                               <div className='profileDesc'>
-                                  <p className='nickname'>{pvo.uvo ? pvo.uvo.nickname : ''}</p>
-                                  <p className='userId'>@{pvo.uvo ? pvo.uvo.id : ''}</p>
+                                  <p className='nickname'>{pvo.duvo ? pvo.duvo.nickname : ''}</p>
+                                  <p className='userId'>@{pvo.duvo ? pvo.duvo.id : ''}</p>
                               </div>
                             </div>
                             <div className='SellerReview'>
                               <div class="reviewLeft">
                                 <div className='userreviewtxt'>
-                                    <p className='userreview'>{pvo.userreview}</p>
+                                    <p className='userreview'>{pvo.dealuserreview}</p>
                                 </div>
                               </div>
                               <div class="reviewRight">
                                 <div className='userreviewimg'>
-                                  <img src={pvo.userreviewimg} onClick={()=>handleOpen(pvo.userreviewimg)} style={{width: 100, marginTop: 10, cursor:'pointer'}}/>
+                                  <img src={pvo.dealuserreviewimg} onClick={()=>handleOpen(pvo.dealuserreviewimg)} style={{width: 100, marginTop: 10, cursor:'pointer'}}/>
                                 </div>
                               </div>
                             </div>

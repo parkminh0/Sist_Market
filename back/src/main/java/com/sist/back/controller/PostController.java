@@ -23,10 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
+import com.sist.back.util.FileRenameUtil;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.categoryVO;
-import com.sist.back.vo.userVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -73,7 +73,6 @@ public class PostController {
         e_map.put("tvo", p_service.getTownByPostKey(postkey));
         e_map.put("o_list", p_service.getOfferByPostKey(postkey));
         e_map.put("cr_list", p_service.getChatroomByPostKey(postkey));
-        e_map.put("ur_list", p_service.getUserReviewByPostKey(postkey));
         return e_map;
     }
 
@@ -86,6 +85,17 @@ public class PostController {
         int rst_udt = p_service.remindUpdate(postkey);
         map.put("result_insert", rst_ins);
         map.put("result_update", rst_udt);
+
+        return map;
+    }
+
+    @RequestMapping("/unhid")
+    @ResponseBody
+    public Map<String, Object> unhid(String postkey) {
+        Map<String, Object> map = new HashMap<>();
+
+        int rst_unhid = p_service.unhidPost(postkey);
+        map.put("result_unhid", rst_unhid);
 
         return map;
     }
@@ -124,33 +134,39 @@ public class PostController {
 
         int newPostKey = p_service.writePost(vo);
 
+        // try {
+        // //파일 업로드(upload폴더에 저장)
+        // f.transferTo(new File(realPath, fname));
+        // vo.setFile_name(fname);//저장된 파일명
+
         // 파일 데이터 처리
         if (post_img != null) {
             for (MultipartFile f : post_img) {
                 PostImgVO pivo = new PostImgVO();
 
+                String realPath = "/img/postimg/";
                 String fname = f.getOriginalFilename();
+
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
                     String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
-                String realPath = "/img/postimg/";
                 String filePath = path.resolve(fname).toString();
-
+                System.out.println("리얼패스" + filePath);
+                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0, filePath.lastIndexOf("/")));
+                System.out.println("파일명" + fname);
                 pivo.setImgurl(realPath + fname);
+                System.out.println("db이미지경로" + pivo.getImgurl());
                 pivo.setPostkey(newPostKey);
-
-                postimgService.addPostImg(pivo);
+                // postimgService.addPostImg(pivo);
 
                 // 파일 업로드
                 try {
-                    f.transferTo(new File(filePath));
+                    // f.transferTo(new File(filePath));
                 } catch (Exception e) {
                 }
-
-                System.out.println("Uploaded file name: " + f.getOriginalFilename());
             }
         }
 
@@ -243,4 +259,9 @@ public class PostController {
         return res;
     }
 
+    // 관리자 - 게시글 현황
+    @GetMapping("/statuscounts")
+    public Map<String, Integer> getPostStatusCounts() {
+        return p_service.getPostStatusCounts();
+    }
 }

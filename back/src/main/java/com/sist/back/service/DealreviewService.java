@@ -21,4 +21,14 @@ public class DealreviewService {
         }
         return d_ar;
     }
+
+    public PostVO[] sellingReview(String userkey) {
+        List<PostVO> d_list = d_mapper.sellingReview(userkey);
+        PostVO[] d_ar = null;
+        if (d_list != null && d_list.size() > 0) {
+            d_ar = new PostVO[d_list.size()];
+            d_list.toArray(d_ar);
+        }
+        return d_ar;
+    }
 }
