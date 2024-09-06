@@ -24,8 +24,6 @@ import com.sist.back.vo.userVO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/user")
@@ -62,14 +60,7 @@ public class UserController {
     public Map<String, Object> searchUserForAdmin(String search_type, String type, String regist_start_date,
             String regist_end_date, String isdeleted, String recent_login_start_date, String recent_login_end_date,
             String isauthorized, String cPage) {
-        // System.out.println("@@@@@@@@@search_type="+search_type);
-        // System.out.println("@@@@@@@@@type="+type);
-        // System.out.println("@@@@@@@@@regist_start_date="+regist_start_date);
-        // System.out.println("@@@@@@@@@isdeleted="+isdeleted);
-        // System.out.println("@@@@@@@@@recent_login_start_date="+recent_login_start_date);
-        // System.out.println("@@@@@@@@@recent_login_end_date="+recent_login_end_date);
-        // System.out.println("@@@@@@@@@isauthorized="+isauthorized);
-        // System.out.println("@@@@@@@@@cPage="+cPage);
+
 
         Map<String, String> iMap = new HashMap<>();
 
@@ -176,88 +167,93 @@ public class UserController {
     // jwt token login
     @PostMapping("/api/login")
     @ResponseBody
-    public Map<String, Object> login(userVO vo, HttpServletResponse res) {
 
-        Map<String, Object> map = new HashMap<>();
-        int cnt = 0; // 아무 작업도 못했어 0 한번했어 1
-        String msg = "로그인에 실패하였습니다.";
+     public Map<String, Object> login(userVO vo, HttpServletResponse res){
+    
+    Map<String, Object> map = new HashMap<>();
+    int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
+    String msg = "로그인에 실패하였습니다.";
 
-        userVO uvo = null;
-        if (vo.getId() != null) {
-            uvo = service.authAndMakeToken(vo.getId(), vo.getPw());
-
-            if (uvo != null) {
-                ResponseCookie cookie = ResponseCookie
-                        .from("accessToken", uvo.getAccess_token())
-                        .path("/")
-                        .sameSite("None")
-                        .httpOnly(false)
-                        .secure(true)
-                        .build();
-                res.addHeader("Set-Cookie", cookie.toString());
-                cookie = ResponseCookie.from("refreshToken", uvo.getRefresh_token())
-                        .path("/")
-                        .sameSite("None")
-                        .httpOnly(false)
-                        .secure(true)
-                        .build();
-                res.addHeader("Set-Cookie", cookie.toString());
-                // map.put("mvo",m);
-                cnt = 1;
-                msg = "success";
-            }
-        }
-        map.put("cnt", cnt);
-        map.put("msg", msg);
-        map.put("uvo", uvo);
-        return map;
+    userVO uvo = null;
+    if (vo.getId() != null) {
+      
+      uvo = service.authAndMakeToken(vo.getId(),vo.getPw());
+      
+      if(uvo !=null){ 
+        ResponseCookie cookie = ResponseCookie
+            .from("accessToken",uvo.getAccess_token())
+            .path("/")
+            .sameSite("None")
+            .httpOnly(false)
+            .secure(true)
+            .build();
+            res.addHeader("Set-Cookie", cookie.toString());
+            cookie = ResponseCookie.from("refreshToken",uvo.getRefresh_token())
+            .path("/")
+            .sameSite("None")
+            .httpOnly(false)
+            .secure(true)
+            .build();
+            res.addHeader("Set-Cookie", cookie.toString());
+            //map.put("mvo",m);
+            cnt =1; 
+            msg="success";
     }
-
-    // jwt token logout
-    @PostMapping("/api/logout")
-    @ResponseBody
-    public Map<String, Object> logout(HttpServletResponse res) {
-
-        Map<String, Object> map = new HashMap<>();
-        // 쿠키에서 accessToken과 refreshToken을 삭제하여 클라이언트에게 보내야한다.
-        ResponseCookie cookie = ResponseCookie.from("accessToken", null)
-                .path("/")
-                .sameSite("None")
-                .secure(true)
-                .httpOnly(true)
-                .maxAge(0)
-                .build();
-        res.addHeader("Set-Cookie", cookie.toString());
-
-        cookie = ResponseCookie.from("refreshToken", null)
-                .path("/")
-                .sameSite("None")
-                .secure(true)
-                .httpOnly(true)
-                .maxAge(0)
-                .build();
-        res.addHeader("Set-Cookie", cookie.toString());
-
-        map.put("msg", "로그아웃");
-        map.put("totalCount", 0);
-
-        return map;
     }
+    map.put("cnt", cnt); 
+    map.put("msg", msg);
+    map.put("uvo", uvo);
+    return map;
+  }
 
-    @PostMapping("/api/reg")
-    @ResponseBody
-    public Map<String, Object> reg(userVO vo) {
-        Map<String, Object> map = new HashMap<>();
+  //jwt token logout
+  @PostMapping("/api/logout")
+  @ResponseBody
+  public Map<String, Object> logout(HttpServletResponse res) {
+      
+      Map <String, Object> map = new HashMap<>();
+      //쿠키에서 accessToken과 refreshToken을 삭제하여 클라이언트에게 보내야한다. 
+      ResponseCookie cookie = ResponseCookie.from("accessToken",null)
+      .path("/")
+      .sameSite("None")
+      .secure(true)
+      .httpOnly(true)
+      .maxAge(0)
+      .build();
+      res.addHeader("Set-Cookie", cookie.toString());
 
-        if (vo.getId() != null) {
-            // 사용자가 입력한 비밀번호를 암호화 시킨다.
-            // String pw = passwordEncoder.encode(vo.getMPw());
+      cookie = ResponseCookie.from("refreshToken",null)
+      .path("/")
+      .sameSite("None")
+      .secure(true)
+      .httpOnly(true)
+      .maxAge(0)
+      .build();
+      res.addHeader("Set-Cookie", cookie.toString());
+    
+    
+      map.put("msg", "로그아웃");
+      map.put("totalCount", 0);
+      
+      return map;
+  }
 
-            userVO uvo = service.reg(vo);
-            map.put("uvo", uvo);
-        }
-        return map;
+  @PostMapping("/api/reg")
+  @ResponseBody
+  public Map<String, Object> reg(userVO vo) {
+    Map<String, Object> map = new HashMap<>();
+
+    if (vo.getId() != null) {
+      // 사용자가 입력한 비밀번호를 암호화 시킨다.
+      //String pw = passwordEncoder.encode(vo.getMPw());
+     
+      userVO uvo = service.reg(vo);
+      map.put("uvo", uvo);
     }
+    return map;
+  }
+
+  
 
     // kakao_login & reg
     @RequestMapping("/kakao/login")
@@ -440,6 +436,37 @@ public class UserController {
         return bl_map;
     }
 
+
+    
+    //회원가입 전화번호 중복 검사 
+    @RequestMapping("/api/chkPhone")
+    @ResponseBody
+    public Map<String,Object> chkPhone(String phone){
+        Map<String,Object> map = new HashMap<>();
+        int cnt = 0;
+        userVO vo = service.findByphone(phone);
+        if(vo!=null){   //중복이 된 경우 1 뱉어냄.
+            cnt = 1;
+        }
+        map.put("cnt", cnt);
+        return map;
+    }
+    //회원가입 이메일 중복 검사 
+    @RequestMapping("/api/chkEmail")
+    @ResponseBody
+    public Map<String,Object> chkEmail(String email){
+        Map<String,Object> map = new HashMap<>();
+        int cnt = 0;
+        userVO vo = service.findByemail(email);
+        if(vo!=null){   //중복이 된 경우 1 뱉어냄.
+            cnt = 1;
+        }
+        map.put("cnt", cnt);
+        return map;
+    }
+
+    
+
     // 회원정보 수정
     @RequestMapping("/editImage")
     @ResponseBody
@@ -511,5 +538,6 @@ public class UserController {
         map.put("cnt", service.userDelForAdmin(userkey));
         return map;
     }
+
 
 }
