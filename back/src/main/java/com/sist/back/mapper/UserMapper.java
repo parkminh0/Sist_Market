@@ -36,6 +36,8 @@ public interface UserMapper {
 
     userVO findbyEmail(String email);
 
+    userVO findbyPhone(String phone);
+
     // likelist
     int getWishlistCount(String userkey);
     int getInterestCategoryCount(String userkey);
@@ -55,6 +57,7 @@ public interface UserMapper {
     int getCellPartCount(String userkey, int poststatus);
     int getCellCount(Map<String, Object> get_map);
     List<PostVO> getCelllistByMap(Map<String, Object> get_map);
+
 
         
 
