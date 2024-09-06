@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.sist.back.vo.BoardImgVO;
 import com.sist.back.vo.BoardVO;
 import com.sist.back.vo.KeyTableVO;
 
@@ -34,8 +33,7 @@ public interface BoardMapper {
 
     int hit(String boardkey);
 
-
-    //게시판 카테고리
+    // 게시판 카테고리
     List<KeyTableVO> getAllBcList();
 
     int addBoardCategory(String value);

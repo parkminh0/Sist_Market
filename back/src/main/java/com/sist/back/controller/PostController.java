@@ -27,6 +27,7 @@ import com.sist.back.util.FileRenameUtil;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.categoryVO;
+import com.sist.back.vo.PostCountVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -114,8 +115,6 @@ public class PostController {
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {
-
-        // userkey
         // townkey
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
@@ -134,18 +133,13 @@ public class PostController {
 
         int newPostKey = p_service.writePost(vo);
 
-        // try {
-        // //파일 업로드(upload폴더에 저장)
-        // f.transferTo(new File(realPath, fname));
-        // vo.setFile_name(fname);//저장된 파일명
-
         // 파일 데이터 처리
         if (post_img != null) {
             for (MultipartFile f : post_img) {
                 PostImgVO pivo = new PostImgVO();
 
                 String realPath = "/img/postimg/";
-                String fname = f.getOriginalFilename();
+                String fname = newPostKey + "-" + f.getOriginalFilename();
 
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
@@ -154,17 +148,16 @@ public class PostController {
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
-                System.out.println("리얼패스" + filePath);
-                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0, filePath.lastIndexOf("/")));
-                System.out.println("파일명" + fname);
+                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
+                        filePath.lastIndexOf("\\")));
                 pivo.setImgurl(realPath + fname);
-                System.out.println("db이미지경로" + pivo.getImgurl());
                 pivo.setPostkey(newPostKey);
-                // postimgService.addPostImg(pivo);
+                postimgService.addPostImg(pivo);
 
                 // 파일 업로드
                 try {
-                    // f.transferTo(new File(filePath));
+                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +
+                            fname));
                 } catch (Exception e) {
                 }
             }
@@ -178,28 +171,19 @@ public class PostController {
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
     public Map<String, Object> edit(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {
-
-        // userkey
         // townkey
-        System.out.println("카테고리:" + vo.getCategorykey());
-        System.out.println("제목:" + vo.getTitle());
-        System.out.println("메소드:" + vo.getMethod());
-        System.out.println("가격:" + vo.getPrice());
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
-        System.out.println("내용:" + vo.getContent());
         // range
         // hope_place
         // hope_lati
         // hope_long
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
-        if (vo.getCanbargain().equals("on")) {
+        if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
             vo.setCanbargain("0");
         }
-        System.out.println("바겐:" + vo.getCanbargain());
-        // viewqty
         // create_dtm
         // update_dtm
         // delete_dtm
@@ -207,9 +191,36 @@ public class PostController {
         // dealuserkey
 
         // 파일 데이터 처리
+        // 1) 기존 존재하던 이미지 삭제
+        p_service.deletePostImg(vo.getPostkey());
+        // 2) front/public/img/postimg 에 있는 이미지 삭제해야하는데 흠
+        // 파일 데이터 처리
         if (post_img != null) {
-            for (MultipartFile file : post_img) {
-                System.out.println("Uploaded file name: " + file.getOriginalFilename());
+            for (MultipartFile f : post_img) {
+                PostImgVO pivo = new PostImgVO();
+
+                String realPath = "/img/postimg/";
+                String fname = vo.getPostkey() + "-" + f.getOriginalFilename();
+
+                Path path = Paths.get(postImgPath);
+                if (path.toString().contains("back")) {
+                    String pathString = path.toString();
+                    String changedPath = pathString.replace("back\\", "");
+                    path = Paths.get(changedPath);
+                }
+                String filePath = path.resolve(fname).toString();
+                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
+                        filePath.lastIndexOf("\\")));
+                pivo.setImgurl(realPath + fname);
+                pivo.setPostkey(Integer.parseInt(vo.getPostkey()));
+                postimgService.addPostImg(pivo);
+
+                // 파일 업로드
+                try {
+                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +
+                            fname));
+                } catch (Exception e) {
+                }
             }
         }
 
@@ -260,8 +271,20 @@ public class PostController {
     }
 
     // 관리자 - 게시글 현황
-    @GetMapping("/statuscounts")
-    public Map<String, Integer> getPostStatusCounts() {
-        return p_service.getPostStatusCounts();
-    }
+    // @GetMapping("/statuscounts")
+    // public Map<String, Integer> getPostStatusCounts() {
+    // Map<String, Integer> res = new HashMap<>();
+    // return res;
+    // }
+
+    // 관리자 게시글 현황 확인
+    // @RequestMapping("/postcount")
+    // @ResponseBody
+    // public Map<String, Object> getPostCount() {
+    // Map<String, Object> map = new HashMap<>();
+    // PostCountVO pcvo = p_service.postForAdmin();
+    // map.put("pcvo", pcvo);
+    // return map;
+    // }
+
 }

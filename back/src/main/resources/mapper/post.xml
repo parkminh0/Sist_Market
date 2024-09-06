@@ -308,10 +308,21 @@
         #{hope_long},
         #{canbargain},
         #{viewqty},
-        now(),
-        now(),
+        <if test="poststatus == 0">
+            #{create_dtm},
+            #{update_dtm},
+        </if>
+        <if test="poststatus == 1">
+            now(),
+            now(),
+        </if>
         #{delete_dtm},
-        now(),
+        <if test="poststatus == 0">
+            #{remind_dtm},
+        </if>
+        <if test="poststatus == 1">
+            now(),
+        </if>
         #{dealuserkey},
         #{deal_dtm},
         #{userreview},
@@ -326,6 +337,11 @@
         #{isbuyvisible}
         )
     </insert>
+
+    <delete id="deletePostImg" parameterType="String">
+        DELETE FROM `postimg`
+         WHERE postkey=#{postkey}
+    </delete>
 
     <update id="editPost" parameterType="com.sist.back.vo.PostVO">
     UPDATE `post`
@@ -342,8 +358,16 @@
         `hope_lati` = #{hope_lati},
         `hope_long` = #{hope_long},
         `canbargain` = #{canbargain},
+        <if test="isPostPage = 1 and poststatus != 0">
+        `create_dtm` = now(),
+        </if>
         `update_dtm` = now(),
+        <if test="isPostPage = 0">
         `remind_dtm` = #{remind_dtm},
+        </if>
+        <if test="isPostPage = 1 and poststatus != 0">
+        `remind_dtm` = now(),
+        </if>
         `dealuserkey` = #{dealuserkey},
         `deal_dtm` = #{deal_dtm},
         `userreview` = #{userreview},
@@ -394,18 +418,17 @@
           limit 10
     </select>
 
-    <!-- 7. 게시글 현황 statuscounts 관련 데이터 -->
-    <select id="getPostStatusCounts" resultType="map">
-    SELECT 
-        COUNT(*) AS total_posts,
-        SUM(CASE WHEN poststatus = 1 THEN 1 ELSE 0 END) AS sale_posts,
-        SUM(CASE WHEN poststatus = 2 THEN 1 ELSE 0 END) AS not_for_sale_posts,
-        SUM(CASE WHEN poststatus = 3 THEN 1 ELSE 0 END) AS reserved_posts,
-        SUM(CASE WHEN poststatus = 4 THEN 1 ELSE 0 END) AS dealing_posts,
-        SUM(CASE WHEN poststatus = 5 THEN 1 ELSE 0 END) AS sold_out_posts,
-        SUM(CASE WHEN poststatus = 6 THEN 1 ELSE 0 END) AS deleted_posts
-        FROM post;
-    </select>
+    <!-- 관리자 게시글 현황 정보 카운트 -->
+    <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
+      SELECT COUNT(*) AS all_posts, 
+          COUNT(CASE WHEN poststatus = 0 THEN 1 END) AS sale_posts,
+          COUNT(CASE WHEN poststatus = 1 THEN 1 END) AS unsale_posts
+          COUNT(CASE WHEN poststatus = 2 THEN 1 END) AS saleing_posts
+          COUNT(CASE WHEN poststatus = 3 THEN 1 END) AS hide_posts
+          COUNT(CASE WHEN poststatus = 4 THEN 1 END) AS saled_posts
+          COUNT(CASE WHEN poststatus = 5 THEN 1 END) AS deleted_posts
+        FROM post
+    </select> 
 
 </mapper>
 
