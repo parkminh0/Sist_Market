@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.io.File;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,60 +27,60 @@ public class UserService {
     @Autowired
     UserMapper mapper;
 
-        @Autowired
+    @Autowired
     private ServletContext context;
 
-    //jwt provider
+    // jwt provider
     private final JwtProvider jwtProvider;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-    //jwt reg > refreshToken 생성 
+    // jwt reg > refreshToken 생성
     public userVO reg(userVO vo) {
-        
-            //패스워드가 일치하는지 확인 
-            if (vo.getPw() != null) {
-                vo.setPw(passwordEncoder.encode(vo.getPw()));
-            } 
-            Map<String,Object> map = new HashMap();
-            map.put("id", vo.getId());
-            map.put("userkey", vo.getUserkey());
-            map.put("pw", vo.getPw());
-       
-            String refreshToken = jwtProvider.genRefreshToken(map);
-            vo.setRefresh_token(refreshToken);
-            
-            int cnt = mapper.saveUser(vo);
-            if(cnt>0){
-                return vo;
-            }else{
-                throw new RuntimeException("회원가입에 실패했습니다.");
-            }
+
+        // 패스워드가 일치하는지 확인
+        if (vo.getPw() != null) {
+            vo.setPw(passwordEncoder.encode(vo.getPw()));
+        }
+        Map<String, Object> map = new HashMap();
+        map.put("id", vo.getId());
+        map.put("userkey", vo.getUserkey());
+        map.put("pw", vo.getPw());
+
+        String refreshToken = jwtProvider.genRefreshToken(map);
+        vo.setRefresh_token(refreshToken);
+
+        int cnt = mapper.saveUser(vo);
+        if (cnt > 0) {
+            return vo;
+        } else {
+            throw new RuntimeException("회원가입에 실패했습니다.");
+        }
     }
 
-    // jwt login 을 위한 인증 > refreshToken , accessToken 생성 
-    public userVO authAndMakeToken(String id,String pw) {
+    // jwt login 을 위한 인증 > refreshToken , accessToken 생성
+    public userVO authAndMakeToken(String id, String pw) {
         userVO uvo = null;
         try {
             uvo = mapper.findByid(id);
-            if (uvo == null) {  // 회원이 없는 경우 > RuntimeException 찍어줌 
-            throw new RuntimeException("존재하지 않음");}
-            //패스워드가 일치하는지 확인 
-            if(pw == null ||passwordEncoder.matches(pw, uvo.getPw())){  //비밀번호가 없을경우 > 소셜로그인 
-            Map<String,Object> map = new HashMap(); // 있을 경우는 패스워드 비교하여 맞는지 확인해줌
-            map.put("id", uvo.getId());
-            map.put("userkey", uvo.getUserkey());
-            map.put("pw", uvo.getPw());
+            if (uvo == null) { // 회원이 없는 경우 > RuntimeException 찍어줌
+                throw new RuntimeException("존재하지 않음");
+            }
+            // 패스워드가 일치하는지 확인
+            if (pw == null || passwordEncoder.matches(pw, uvo.getPw())) { // 비밀번호가 없을경우 > 소셜로그인
+                Map<String, Object> map = new HashMap(); // 있을 경우는 패스워드 비교하여 맞는지 확인해줌
+                map.put("id", uvo.getId());
+                map.put("userkey", uvo.getUserkey());
+                map.put("pw", uvo.getPw());
 
-            String accessToken = jwtProvider.genAccessToken(map);
-            uvo.setAccess_token(accessToken);
-            String refreshToken = jwtProvider.genRefreshToken(map);
-            uvo.setRefresh_token(refreshToken);
-            
-            }else{  //패스워드가 일치하지 않은 경우 
-                uvo = null;  
+                String accessToken = jwtProvider.genAccessToken(map);
+                uvo.setAccess_token(accessToken);
+                String refreshToken = jwtProvider.genRefreshToken(map);
+                uvo.setRefresh_token(refreshToken);
+
+            } else { // 패스워드가 일치하지 않은 경우
+                uvo = null;
             }
         } catch (Exception e) {
         }
@@ -116,27 +115,26 @@ public class UserService {
     public userVO getUserForAdmin(String userkey) {
         return mapper.getUserForAdmin(userkey);
     }
-        
 
-    public int userDelForAdmin(String userkey){
+    public int userDelForAdmin(String userkey) {
         return mapper.userDelForAdmin(userkey);
     }
 
-    public int userEditForAdmin(userVO vo){
+    public int userEditForAdmin(userVO vo) {
         return mapper.userEditForAdmin(vo);
     }
 
-    public userVO findByemail(String email){
+    public userVO findByemail(String email) {
         return mapper.findbyEmail(email);
     }
-    public userVO findByphone(String phone){
+
+    public userVO findByphone(String phone) {
         return mapper.findbyPhone(phone);
     }
 
-
-    public int getLikeCount(String userkey, String likewhat){
+    public int getLikeCount(String userkey, String likewhat) {
         int likecount = 0;
-        switch(likewhat){
+        switch (likewhat) {
             case "post":
                 likecount = mapper.getWishlistCount(userkey);
                 break;
@@ -146,76 +144,124 @@ public class UserService {
             case "keyword":
                 likecount = mapper.getKeywordCount(userkey);
                 break;
-            }
+        }
         return likecount;
     }
-    
-    public List<WishlistVO> getLikeLists(Map<String, Object> get_map, String likewhat){
+
+    public List<WishlistVO> getLikeLists(Map<String, Object> get_map, String likewhat) {
         List<WishlistVO> likelist = new ArrayList<>();
-        switch(likewhat){
+        switch (likewhat) {
             case "post":
-            likelist = mapper.getWishlistByMap(get_map);
-            break;
+                likelist = mapper.getWishlistByMap(get_map);
+                break;
             case "category":
-            likelist = mapper.getInterestCategoryByMap(get_map);
-            break;
+                likelist = mapper.getInterestCategoryByMap(get_map);
+                break;
             case "keyword":
-            likelist = mapper.getKeywordByMap(get_map);
-            break;
+                likelist = mapper.getKeywordByMap(get_map);
+                break;
         }
         return likelist;
     }
-    
 
-    public int getBuyTotalCount(String userkey){
+    public int getBuyTotalCount(String userkey) {
         int likecount = mapper.getBuyTotalCount(userkey);
         return likecount;
     }
 
-    public int getBuyCount(Map<String, Object> get_map){
+    public int getBuyCount(Map<String, Object> get_map) {
         int likecount = mapper.getBuyCount(get_map);
         return likecount;
     }
 
-    public List<PostVO> getBuyList(Map<String, Object> get_map){
+    public List<PostVO> getBuyList(Map<String, Object> get_map) {
         List<PostVO> likelist = mapper.getBuylistByMap(get_map);
         return likelist;
     }
 
-    public int getCellTotalCount(String userkey){
+    public int getCellTotalCount(String userkey) {
         int likecount = mapper.getCellTotalCount(userkey);
         return likecount;
     }
-    public int getCell1TotalCount(String userkey){
+
+    public int getCell1TotalCount(String userkey) {
         int likecount = mapper.getCellPartCount(userkey, 1);
         return likecount;
     }
-    public int getCell2TotalCount(String userkey){
+
+    public int getCell2TotalCount(String userkey) {
         int likecount = mapper.getCellPartCount(userkey, 2);
         return likecount;
     }
-    public int getCell3TotalCount(String userkey){
+
+    public int getCell3TotalCount(String userkey) {
         int likecount = mapper.getCellPartCount(userkey, 3);
         return likecount;
     }
-    public int getCell4TotalCount(String userkey){
+
+    public int getCell4TotalCount(String userkey) {
         int likecount = mapper.getCellPartCount(userkey, 4);
         return likecount;
     }
-    public int getCellCount(Map<String, Object> get_map){
+
+    public int getCellCount(Map<String, Object> get_map) {
         int likecount = mapper.getCellCount(get_map);
         return likecount;
     }
-    public List<PostVO> getCellList(Map<String, Object> get_map){
+
+    public List<PostVO> getCellList(Map<String, Object> get_map) {
         List<PostVO> likelist = mapper.getCelllistByMap(get_map);
         return likelist;
     }
 
+    public int getlikeuserCount(String userkey) {
+        int count = mapper.getlikeuserCount(userkey);
+        return count;
+    }
 
+    public int getblockeduserCount(String userkey) {
+        int count = mapper.getblockeduserCount(userkey);
+        return count;
+    }
 
+    public int getnoseeuserCount(String userkey) {
+        int count = mapper.getnoseeuserCount(userkey);
+        return count;
+    }
 
-        
-    //회원정보 수정
+    public List<userVO> getlikeuserByMap(Map<String, Object> get_map) {
+        List<userVO> userList = mapper.getlikeuserByMap(get_map);
+        return userList;
+    }
+
+    public List<userVO> getblockeduserByMap(Map<String, Object> get_map) {
+        List<userVO> userList = mapper.getblockeduserByMap(get_map);
+        return userList;
+    }
+
+    public List<userVO> getnoseeuserByMap(Map<String, Object> get_map) {
+        List<userVO> userList = mapper.getnoseeuserByMap(get_map);
+        return userList;
+    }
+
+    public int uncheckUser(String whatNow, String userkey) {
+        int result = 0;
+        switch (whatNow) {
+            case "likeUser":
+                result = mapper.uncheckLikeuser(userkey);
+                break;
+            case "blockedUser":
+                result = mapper.uncheckBlockeduser(userkey);
+                break;
+            case "noseeUser":
+                result = mapper.uncheckNoseeuser(userkey);
+                break;
+        }
+
+        return result;
+    }
+
+    // 회원정보 수정
     public int editImage(userVO uvo) {
         return mapper.editImage(uvo);
     }
@@ -257,8 +303,5 @@ public class UserService {
     public int editPhone(userVO uvo) {
         return mapper.editPhone(uvo);
     }
-
-
-
 
 }

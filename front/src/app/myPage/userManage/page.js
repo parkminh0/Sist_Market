@@ -1,65 +1,49 @@
 'use client'
 import MyPageSide from "@/component/user/layout/MyPageSide";
+import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/buylist.css";
-import "/public/css/paging.css";
-import axios from "axios";
-import BuyList from "@/component/user/myPage/buylist/BuyList";
-
 import "/public/css/celllist.css";
+import "/public/css/paging.css";
+
 import { useSearchParams } from "next/navigation";
-import CellList from "@/component/user/myPage/cellList/CellList";
+import UserList from "@/component/user/myPage/userList/UserList";
 
 
-export default function page() {
+export default function page(props) {
 
-    const [celllist, setCelllist] = useState([]);
-    const [whatNow, setWhatNow] = useState('onSale');
-    const [cellStatus, setCellStatus] = useState(1);
-    const [cellCounts, setCellCounts] = useState(1);
+    const [userlist, setUserlist] = useState([]);
+    const [whatNow, setWhatNow] = useState(props.searchParams.category ? props.searchParams.category : 'likeUser');
+    const [changeNow, setChangeNow] = useState('');
+    const [userCounts, setUserCounts] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
     const [totalRecord, setTotalRecord] = useState(0);
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
     const [page, setPage] = useState({});
-    
-    const [firstTime, setFirstTime] = useState(false);
   
-    const API_URL = '/user/api/cellList';
-  
-    var cellCategory = useSearchParams().get("cellCategory");
-    const cellCategoryList = ['onSale','Selling','Sold','Hidden'];
+    const API_URL = '/user/api/lbiUsers';
   
     function changePage(pNum) { 
-      getCellList(pNum);
+        getUserList(pNum);
     }
   
-    function updateCellList(cellCategory){
-      setWhatNow(cellCategory);
-      setCellStatus(cellCategoryList.indexOf(cellCategory)+1);
-    }
-  
-    function getCellList(cPage){
+    function getUserList(cPage){
       axios({
         url: API_URL,
         method: 'post',
         params: {
             userkey: 1,
             cPage: cPage,
-            poststatus: cellStatus,
-            start_date: startDate,
-            end_date: endDate,
+            userType: whatNow,
         }
       }).then((res) => {
           console.log(res.data);
   
-          setCelllist(res.data.celllist);
-          setCellCounts([res.data.cell1Count,
-                         res.data.cell2Count,
-                         res.data.cell3Count,
-                         res.data.cell4Count])
+          setUserlist(res.data.userlist);
+          setUserCounts([res.data.user1Count,
+                         res.data.user2Count,
+                         res.data.user3Count])
           setPage(res.data.page);
   
           if(res.data.totalCount > 99){
@@ -72,7 +56,7 @@ export default function page() {
           } else {
             setTotalRecord(res.data.totalRecord);
           }
-          
+          setChangeNow(whatNow);
         });
     }
   
@@ -99,17 +83,7 @@ export default function page() {
     }
   
     useEffect(()=>{
-      if(firstTime){
-        if(cellCategoryList.includes(cellCategory)){
-          setWhatNow(cellCategory);
-          alert(cellCategoryList.indexOf(cellCategory));
-          setCellStatus(cellCategoryList.indexOf(cellCategory)+1);
-        } else {
-          setWhatNow('onSale');
-          setCellStatus(1);
-        }
-      }
-      getCellList(1);
+        getUserList(page.nowPage);
     },[whatNow]);
   
   
@@ -162,7 +136,7 @@ export default function page() {
                     className="content_title"
                   >
                     <div data-v-6b53f901="" className="title">
-                      <h3 data-v-6b53f901="">판매내역</h3>
+                      <h3 data-v-6b53f901="">사용자 관리</h3>
                     </div>
                   </div>
                   <div
@@ -170,159 +144,43 @@ export default function page() {
                     data-v-0a67d0b5=""
                     className="purchase_list_tab sell detail_tab"
                   >
-                    <div data-v-2cbb289b="" onClick={()=>updateCellList('onSale')} className={`tab_item ${cellStatus == 1 ? 'tab_on' : ''}`}>
+                    <div data-v-2cbb289b="" onClick={()=>setWhatNow('likeUser')} className={`tab_item ${changeNow == 'likeUser' ? 'tab_on' : ''}`}>
                       <Link data-v-2cbb289b="" href="#" className="tab_link">
                         <dl data-v-2cbb289b="" className="tab_box">
                           <dt data-v-2cbb289b="" className="title">
-                            판매중
+                            모아보기
                           </dt>
                           <dd data-v-2cbb289b="" className="count">
-                            {cellCounts[0] > 99 ? '99+' : cellCounts[0]}
+                            {userCounts[0] > 99 ? '99+' : userCounts[0]}
                           </dd>
                         </dl>
                       </Link>
                     </div>
-                    <div data-v-2cbb289b="" onClick={()=>updateCellList('Selling')} className={`tab_item ${cellStatus == 2 ? 'tab_on' : ''}`}>
+                    <div data-v-2cbb289b="" onClick={()=>setWhatNow('blockedUser')} className={`tab_item ${changeNow == 'blockedUser' ? 'tab_on' : ''}`}>
                       <Link data-v-2cbb289b="" href="#" className="tab_link">
                         <dl data-v-2cbb289b="" className="tab_box">
                           <dt data-v-2cbb289b="" className="title">
-                            예약중
+                            차단
                           </dt>
                           <dd data-v-2cbb289b="" className="count">
-                          {cellCounts[1] > 99 ? '99+' : cellCounts[1]}
+                          {userCounts[1] > 99 ? '99+' : userCounts[1]}
                           </dd>
                         </dl>
                       </Link>
                     </div>
-                    <div data-v-2cbb289b="" onClick={()=>updateCellList('Sold')} className={`tab_item ${cellStatus == 3 ? 'tab_on' : ''}`}>
+                    <div data-v-2cbb289b="" onClick={()=>setWhatNow('noseeUser')} className={`tab_item ${changeNow == 'noseeUser' ? 'tab_on' : ''}`}>
                       <Link data-v-2cbb289b="" href="#" className="tab_link">
                         <dl data-v-2cbb289b="" className="tab_box">
                           <dt data-v-2cbb289b="" className="title">
-                            거래완료
+                            게시글 미노출
                           </dt>
                           <dd data-v-2cbb289b="" className="count">
-                          {cellCounts[2] > 99 ? '99+' : cellCounts[2]}
-                          </dd>
-                        </dl>
-                      </Link>
-                    </div>
-                    <div data-v-2cbb289b="" onClick={()=>updateCellList('Hidden')} className={`tab_item ${cellStatus == 4 ? 'tab_on' : ''}`}>
-                      <Link data-v-2cbb289b="" href="#" className="tab_link">
-                        <dl data-v-2cbb289b="" className="tab_box">
-                          <dt data-v-2cbb289b="" className="title">
-                            숨김
-                          </dt>
-                          <dd data-v-2cbb289b="" className="count">
-                          {cellCounts[3] > 99 ? '99+' : cellCounts[3]}
+                          {userCounts[2] > 99 ? '99+' : userCounts[2]}
                           </dd>
                         </dl>
                       </Link>
                     </div>
                   </div>
-                  <div
-                    data-v-77765e40=""
-                    data-v-3b1b5d32=""
-                    className="period_search"
-                  >
-                    <div data-v-77765e40="" className="period_month">
-                      <ul data-v-77765e40="" className="month_list">
-                        <li data-v-77765e40="" className="month_item">
-                          <Link
-                            data-v-77765e40=""
-                            href="#"
-                            className="month_link"
-                            onClick={()=>{dateButton(2)}}
-                          >
-                            최근 2개월
-                          </Link>
-                        </li>
-                        <li data-v-77765e40="" className="month_item">
-                          <Link
-                            data-v-77765e40=""
-                            href="#"
-                            className="month_link"
-                            onClick={()=>{dateButton(4)}}
-                          >
-                            4개월
-                          </Link>
-                        </li>
-                        <li data-v-77765e40="" className="month_item">
-                          <Link
-                            data-v-77765e40=""
-                            href="#"
-                            className="month_link"
-                            onClick={()=>{dateButton(6)}}
-                          >
-                            6개월
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                    <div
-                      data-v-14e5ae1c=""
-                      data-v-77765e40=""
-                      className="period_calendar_wrapper"
-                    >
-                      <div style={{ float: "left" }}>
-                          <span
-                            className="gLabel"
-                            style={{ float: "left", marginLeft: "5px" }}
-                          >
-                            <input
-                              type="date"
-                              id="startDate"
-                              name="startDate"
-                              className="fText gDate"
-                              value={startDate}
-                              onChange={(e) => setStartDate(e.target.value)}
-                            />
-                            <span className="ec-mode-common-period-area">~</span>
-                            <input
-                              type="date"
-                              id="endDate"
-                              name="endDate"
-                              className="fText gDate"
-                              value={endDate}
-                              onChange={(e) => setEndDate(e.target.value)}
-                            />
-                          </span>
-                        </div>
-                      <div data-v-14e5ae1c="" className="period_btn_box">
-                        <button
-                          data-v-14e5ae1c=""
-                          className="btn_search is_active"
-                          onClick={()=>getCellList(1)}
-                        >
-                          조회
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <ul
-                    data-v-a54c4c26=""
-                    data-v-0a67d0b5=""
-                    className="search_info"
-                  >
-                    {(cellStatus==1 || cellStatus==2)  ? 
-                    <li data-v-a54c4c26="" className="info_item">
-                      <p data-v-a54c4c26="">
-                        판매중(예약중) 조회 결과는 등록일 기준으로 노출됩니다.
-                      </p>
-                    </li>
-                    : cellStatus==3 ?
-                    <li data-v-a54c4c26="" className="info_item">
-                      <p data-v-a54c4c26="">
-                        거래완료 조회 결과는 판매일 기준으로 노출됩니다.
-                      </p>
-                    </li>
-                    :
-                    <li data-v-a54c4c26="" className="info_item">
-                      <p data-v-a54c4c26="">
-                        숨김 조회 결과는 숨김일 기준으로 노출됩니다.
-                      </p>
-                    </li>
-                    }
-                  </ul>
                   <div
                     data-v-eff62a72=""
                     data-v-0a67d0b5=""
@@ -342,20 +200,6 @@ export default function page() {
                       <div data-v-eff62a72="" className="head_status">
                         <div
                           data-v-eff62a72=""
-                          className="status_box field_price"
-                        >
-                          <Link
-                            data-v-eff62a72=""
-                            href="#"
-                            className="status_link"
-                          >
-                            <span data-v-eff62a72="" className="status_txt">
-                              판매 가격
-                            </span>
-                          </Link>
-                        </div>
-                        <div
-                          data-v-eff62a72=""
                           className="status_box field_date_purchased"
                         >
                           <Link
@@ -364,21 +208,7 @@ export default function page() {
                             className="status_link"
                           >
                             <span data-v-eff62a72="" className="status_txt">
-                            { (whatNow=="onSale" || whatNow=="Selling") ? '등록일' :  whatNow == "Sold" ? '판매일' : '숨김일'} 
-                            </span>
-                          </Link>
-                        </div>
-                        <div
-                          data-v-eff62a72=""
-                          className="status_box field_expires_at"
-                        >
-                          <Link
-                            data-v-eff62a72=""
-                            href="#"
-                            className="status_link"
-                          >
-                            <span data-v-eff62a72="" className="status_txt">
-                              끌어올리기
+                                등록일 
                             </span>
                           </Link>
                         </div>
@@ -392,21 +222,14 @@ export default function page() {
                             href="#"
                           >
                             <span data-v-eff62a72="" className="status_txt">
-                            { (whatNow=="onSale" || whatNow=="Selling") ? '수정' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
+                            { changeNow=="likeUser" ? '모아보기 취소' :  changeNow == "blockedUser" ? '차단 해제' : '미노출 해제'}
                             </span>
                           </Link>
                         </div>
                       </div>
                     </div>
                     
-                    { (whatNow=="onSale" || whatNow=="Selling") ?
-                    <CellList celllist={celllist} whatNow={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
-                    :
-                    (whatNow=="Sold") ?
-                    <CellList celllist={celllist} whatNow="Sold"  getCellList={getCellList} cPage={page.nowPage} />
-                    :
-                    <CellList celllist={celllist} whatNow="Hidden"  getCellList={getCellList} cPage={page.nowPage} />
-                  }
+                    <UserList userlist={userlist} changeNow={changeNow} getUserList={getUserList} cPage={page.nowPage}/>
                   {/* 페이징 시작*/}
                 <div className="mPaginate">
                     {page.startPage > 1 && (

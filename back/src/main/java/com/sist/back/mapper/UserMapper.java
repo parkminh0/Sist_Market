@@ -33,36 +33,59 @@ public interface UserMapper {
 
     int saveUser(userVO vo);
 
-
     userVO findbyEmail(String email);
 
     userVO findbyPhone(String phone);
 
     // likelist
     int getWishlistCount(String userkey);
+
     int getInterestCategoryCount(String userkey);
+
     int getKeywordCount(String userkey);
 
     List<WishlistVO> getWishlistByMap(Map<String, Object> get_map);
+
     List<WishlistVO> getInterestCategoryByMap(Map<String, Object> get_map);
+
     List<WishlistVO> getKeywordByMap(Map<String, Object> get_map);
 
     // buylist
     int getBuyTotalCount(String userkey);
+
     int getBuyCount(Map<String, Object> get_map);
+
     List<PostVO> getBuylistByMap(Map<String, Object> get_map);
 
     // cellList
     int getCellTotalCount(String userkey);
+
     int getCellPartCount(String userkey, int poststatus);
+
     int getCellCount(Map<String, Object> get_map);
+
     List<PostVO> getCelllistByMap(Map<String, Object> get_map);
 
+    // user(like,block,nosee) list
+    int getlikeuserCount(String userkey);
 
-        
+    int getblockeduserCount(String userkey);
 
-    
-    //회원정보 수정
+    int getnoseeuserCount(String userkey);
+
+    List<userVO> getlikeuserByMap(Map<String, Object> get_map);
+
+    List<userVO> getblockeduserByMap(Map<String, Object> get_map);
+
+    List<userVO> getnoseeuserByMap(Map<String, Object> get_map);
+
+    int uncheckLikeuser(String userkey);
+
+    int uncheckBlockeduser(String userkey);
+
+    int uncheckNoseeuser(String userkey);
+
+    // 회원정보 수정
     int editImage(userVO uvo);
 
     int delImage(String userkey);
@@ -71,10 +94,8 @@ public interface UserMapper {
 
     int editEmail(userVO uvo);
 
-    int editPw (userVO uvo);
+    int editPw(userVO uvo);
 
     int editPhone(userVO uvo);
-
-
 
 }

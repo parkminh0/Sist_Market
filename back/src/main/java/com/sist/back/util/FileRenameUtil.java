@@ -26,7 +26,9 @@ public class FileRenameUtil {
 		while (f != null && f.exists()) {
 			StringBuffer sb = new StringBuffer();
 			sb.append(f_name);
+			sb.append("(");
 			sb.append(idx++);
+			sb.append(")");
 			sb.append(suffix);
 
 			fileName = sb.toString(); // test121.txt
