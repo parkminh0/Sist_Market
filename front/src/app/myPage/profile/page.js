@@ -21,6 +21,7 @@ export default function page() {
   const [page, setPage] = useState({});
   const [badgeCount, setBadgeCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
+  const [mannerCount, setMannerCount] = useState(0);
 
   const API_URL = '/user/api/cellList';
   
@@ -33,6 +34,10 @@ export default function page() {
 
   const handleReviewCount = (count) => {
     setReviewCount(count);
+  };
+
+  const handleMannerCount = (count) => {
+    setMannerCount(count);
   };
 
   function changePage(pNum) { 
@@ -68,6 +73,22 @@ export default function page() {
         setCelllist(res.data.celllist);
       });
   }
+
+  useEffect(() => {
+    updateList('badge');
+    axios.get("/user/manner/getManner", {
+      params: { userkey: 45 }
+    }).then((res) => {
+      const totalCount = res.data.m_ar.reduce((sum, item) => sum + item.count, 0);
+      setMannerCount(totalCount);
+    });
+    Promise.all([
+      axios.get("/user/buyingReview", { params: { userkey: 45} }),
+      axios.get("/user/sellingReview", { params: { userkey: 45} })
+    ]).then(([res1, res2]) => {
+        setReviewCount([...res1.data.buying_ar, ...res2.data.selling_ar].length);
+    });
+  }, []);
 
   return (
     <>
@@ -155,7 +176,7 @@ export default function page() {
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
-                            0
+                            {mannerCount}
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
                             받은 매너 평가
@@ -177,36 +198,11 @@ export default function page() {
                   </div>
                 </div>
                 <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
-                    <div data-v-24868902="" data-v-eff62a72="" className="empty_area"> {/* 이 공간 줄이든 없애기 */}
+                    <div data-v-24868902="" data-v-eff62a72="" className="empty_area" style={{paddingTop: '50px'}}>
                         {selectedTab === '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
-                        {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner/></p>)}
+                        {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner onMannerCountChange={handleMannerCount}/></p>)}
                         {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
-                {/* 페이징 시작*/}
-                    {/* <div className="mPaginate">
-                        {page.startPage > 1 && (
-                            <Link href="#" onClick={() => {changePage(page.startPage - page.pagePerBlock)}} className="prev">
-                            이전 {page.pagePerBlock}페이지
-                            </Link>
-                        )}
-                        <ol>
-                            {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
-                            <li key={pNum}>
-                                {page.nowPage == pNum ? (
-                                <strong title="현재페이지">{pNum}</strong>
-                                ) : (
-                                <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
-                                )}
-                            </li>
-                            ))}
-                        </ol>
-                        {page.endPage < page.totalPage && (
-                            <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
-                            다음 {page.pagePerBlock}페이지
-                            </Link>
-                        )}
-                    </div> */}
-                {/* 페이징 끝*/}
                 </div>
               </div>
             </div>

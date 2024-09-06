@@ -37,6 +37,7 @@ import { useRouter } from "next/navigation";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
+import Cookies from 'js-cookie';
 
 export default function page() {
   const [category_list, setCategory_list] = useState([]);
@@ -351,22 +352,35 @@ export default function page() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const mode = event.currentTarget.dataset.mode;
     const formData = new FormData(event.currentTarget);
+
+    // 유저 토큰 확인
+    let tmpUserKey = Cookies.get('userkey');
+    if (tmpUserKey == null || tmpUserKey == ''){
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
+    formData.append("userkey", tmpUserKey);
+
     // 이미지 파일 FormData에 추가
     previewImages.forEach((image, index) => {
-      formData.append("post_img", image.file, `image-${index}.jpg`);
+      const fileName = image.file.name;
+      formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
     });
-
-    // 0: 임시저장  1: 판매중
+    
+    // 0: 임시저장  1: 판매중(작성완료)
+    const mode = event.currentTarget.dataset.mode;
     formData.append("poststatus", mode === "save" ? 0 : 1);
+    
     // price가 공백("")이면 null 또는 0으로 변환
     formData.set("price", price === "" ? 0 : price);
+
     // 임시저장 후 작성완료 누를 경우 수정해야 함
     if (savePostKey != null && savePostKey != "") {
       formData.append("postkey", savePostKey);
     }
     formData.set("canBargain", canBargain);
+    formData.append("isPostPage", 1);
     axios
       .post(
         savePostKey == null || savePostKey == ""
@@ -383,7 +397,7 @@ export default function page() {
         if (mode === "write") {
           setSavePostKey("");
           alert("게시글이 작성되었습니다.");
-          handleClose();
+          window.location.reload();
         } else {
           setSavePostKey(response.data.savePostKey);
         }
@@ -982,7 +996,7 @@ export default function page() {
                       >{post.title}</Typography>
                       <Typography level="body-sm">위치, 동네, 몇분전</Typography>
                     </div>
-                  <AspectRatio minHeight="200px" maxHeight="200px" minWidth="200px" maxWidth="200px" margin="0" padding="0">
+                  <AspectRatio minHeight="200px" maxHeight="200px" minWidth="200px" maxwidth="200px" margin="0" padding="0">
                   {post.pimg_list && post.pimg_list.length > 0 ? (
                     <span
                     className=" lazy-load-image-background opacity lazy-load-image-loaded"
@@ -1187,7 +1201,7 @@ export default function page() {
                   backgroundColor: "#ff6f0f",
                 }}
                 variant="contained"
-                startIcon={<AddIcon />}
+                starticon={<AddIcon />}
                 onClick={setOpen}
               >
                 내 물건 팔기

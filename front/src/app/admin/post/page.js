@@ -7,31 +7,19 @@ import axios from "axios";
 export default function Page() {
   const [list, setList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const [totalPosts, setTotalPosts] = useState(0); // 전체 게시글 수
-  const [salePosts, setSalePosts] = useState(0); // 판매 중 게시글 수
-  const [notForSalePosts, setNotForSalePosts] = useState(0); // 판매 안하는 게시글 수
-  const [reservedPosts, setReservedPosts] = useState(0); // 예약 중 게시글 수
-  const [dealingPosts, setDealingPosts] = useState(0); // 거래 중 게시글 수
-  const [soldOutPosts, setSoldOutPosts] = useState(0); // 거래 완료 게시글 수
-  const [deletedPosts, setDeletedPosts] = useState(0); // 삭제된 게시글 수
 
+  //게시판 현황 카운트
+  const API_URL = "/adpost/postcount";
+  const [count, setCount] = useState({});
+  const [all, set_all_posts] = useState(0);
+  const [sale, set_sale_posts] = useState(0);
+  const [unsale, set_unsale_posts] = useState(0);
+  const [saleing, set_saleing_posts] = useState(0);
+  const [hide, set_hide_posts] = useState(0);
+  const [saled, set_saled_posts] = useState(0);
+  const [deleted, set_deleted_posts] = useState(0);
 
- // 전체 게시글 수를 가져오는 함수
- function getTotalPosts() {
-  axios({
-    url: "/adpost/totalposts", // 전체 게시글 수를 가져오는 백엔드 API 엔드포인트
-    method: "get",
-  })
-    .then((res) => {
-      console.log("전체 게시글 수 응답 데이터:", res.data); // 응답 데이터 확인
-      setTotalPosts(res.data); // 응답 데이터가 숫자이므로 바로 상태로 저장
-    })
-    .catch((error) => {
-      console.error("There was an error fetching total posts:", error);
-    });
-}
-
-
+  
 
   function searchpost() {
     let frm = document.getElementById("frmSearch");
@@ -57,30 +45,24 @@ export default function Page() {
         console.error("There was an error with the search request:", error);
       });
   }
-
-    const fetchPostStatusCounts = () => {
-      axios.get("/adpost/statuscounts")
-        .then((response) => {
-          console.log("게시글 상태별 카운트:", response.data); // 서버에서 반환된 데이터 로그
-          // 받아온 데이터를 상태로 저장하거나 처리
-          setTotalPosts(response.data.total_posts);
-          setSalePosts(response.data.sale_posts);
-          setNotForSalePosts(response.data.not_for_sale_posts);
-          setReservedPosts(response.data.reserved_posts);
-          setDealingPosts(response.data.dealing_posts);
-          setSoldOutPosts(response.data.sold_out_posts);
-          setDeletedPosts(response.data.deleted_posts);
-        })
-        .catch((error) => {
-          console.error("게시글 상태별 카운트 조회 실패:", error);
-        });
-    };
-  
-
+    function getCount() {
+      axios.get(API_URL).then((response) =>{
+        setCount(response.data.pcvo);
+        set_all_posts(response.data.pcvo.all_posts);
+        set_sale_posts(response.data.pcvo.sale_posts);
+        set_unsale_posts(response.data.pcvo.unsale_posts);
+        set_saleing_posts(response.data.pcvo.saleing_posts);
+        set_hide_posts(response.data.pcvo.hide_posts);
+        set_saled_posts(response.data.pcvo.saled_posts);
+        set_deleted_posts(response.data.pcvo.deleted_posts);
+      }).catch((error) => {
+        console.error("Error fetching post counts:", error);
+      });
+    }
 
   useEffect(() => {
     searchpost();
-    fetchPostStatusCounts();
+    getCount();
     callData();
   }, []);
 
@@ -132,7 +114,9 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{totalPosts}</strong> {/*전체 게시글 수 출력*/}                      </a>
+                        {/* ${requestScope.pcvo.all_posts} */}
+                        {all}       
+                      </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
                       </span>
@@ -148,7 +132,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{salePosts}</strong>
+                      <strong>{sale}</strong>
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -165,7 +149,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{notForSalePosts}</strong> 
+                      <strong>{unsale}</strong> 
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -177,12 +161,12 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        예약중 게시물
+                        판매중(예약중) 게시물
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{reservedPosts}</strong> 
+                      <strong>{saleing}</strong> 
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -194,12 +178,12 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        거래중 게시물
+                        숨김 게시물
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{dealingPosts}</strong> 
+                      <strong>{hide}</strong> 
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -216,7 +200,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{soldOutPosts}</strong> 
+                      <strong>{saled}</strong> 
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -233,7 +217,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{deletedPosts}</strong> 
+                      <strong>{deleted}</strong> 
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개

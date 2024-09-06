@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.sist.back.mapper.BoardMapper;
-import com.sist.back.vo.BoardImgVO;
 import com.sist.back.vo.BoardVO;
 import com.sist.back.vo.KeyTableVO;
 
@@ -16,11 +15,11 @@ public class BoardService {
     @Autowired
     private BoardMapper b_mapper;
 
-    public int count(Map b_map){
+    public int count(Map b_map) {
         return b_mapper.count(b_map);
     }
 
-    public BoardVO[] search(Map b_map){
+    public BoardVO[] search(Map b_map) {
         List<BoardVO> b_list = b_mapper.search(b_map);
 
         if (b_list != null && !b_list.isEmpty()) {
@@ -30,65 +29,61 @@ public class BoardService {
         }
         return new BoardVO[0];
     }
-    
+
     // public int boardAdd(Map addMap) {
-    //     return b_mapper.boardAdd(addMap);
+    // return b_mapper.boardAdd(addMap);
     // }
 
-    
     // public BoardVO[] boardEdit(String boardkey){
-    //     List<BoardVO> list = mapper.boardedit(boardkey);
-    //     BoardVO[] ar = null;
-    //     if(list != null & list.size() > 0){
-    //         ar = new BoardVO[list.size()];
-    //         list.toArray(ar);
-    //     }
-    //     return ar;
+    // List<BoardVO> list = mapper.boardedit(boardkey);
+    // BoardVO[] ar = null;
+    // if(list != null & list.size() > 0){
+    // ar = new BoardVO[list.size()];
+    // list.toArray(ar);
+    // }
+    // return ar;
     // }
 
     public int boardAdd(BoardVO bvo) {
         return b_mapper.boardAdd(bvo);
     }
 
-    public BoardVO[] boardEdit(String boardkey){
+    public BoardVO[] boardEdit(String boardkey) {
         List<BoardVO> list = b_mapper.boardedit(boardkey);
         BoardVO[] ar = null;
-        if(list != null & list.size() > 0){
+        if (list != null & list.size() > 0) {
             ar = new BoardVO[list.size()];
             list.toArray(ar);
         }
         return ar;
     }
 
-    public int emptyAdd(BoardVO bvo){
+    public int emptyAdd(BoardVO bvo) {
         b_mapper.emptyAdd(bvo);
         return Integer.parseInt(bvo.getBoardkey());
     }
 
-    public int deleteLatest(String userkey){
+    public int deleteLatest(String userkey) {
         return b_mapper.deleteLatest(userkey);
     }
 
+    public BoardVO getBbs(String boardkey) {
+        return b_mapper.getBbs(boardkey);
+    }
 
+    public int edit(BoardVO bvo) {
+        return b_mapper.edit(bvo);
+    }
 
-	public BoardVO getBbs(String boardkey) {
-		return b_mapper.getBbs(boardkey);
-	}
-	
-	public int edit(BoardVO bvo) {
-		return b_mapper.edit(bvo);
-	}
-	
-	public int del(String boardkey) {
-		return b_mapper.del(boardkey);
-	}
+    public int del(String boardkey) {
+        return b_mapper.del(boardkey);
+    }
 
     public int hit(String boardkey) {
-		return b_mapper.hit(boardkey);
-	}
+        return b_mapper.hit(boardkey);
+    }
 
-
-    //게시판 카테고리
+    // 게시판 카테고리
     public KeyTableVO[] getAllBcList() {
         List<KeyTableVO> bc_list = b_mapper.getAllBcList();
         KeyTableVO[] bc_ar = null;
@@ -96,7 +91,7 @@ public class BoardService {
             bc_ar = new KeyTableVO[bc_list.size()];
             bc_list.toArray(bc_ar);
         }
-        
+
         return bc_ar;
     }
 
