@@ -1,135 +1,152 @@
+"use client";
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
+
 import Link from "next/link";
-import React from "react";
-import { IconButton } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Breadcrumbs, Button, IconButton, MobileStepper, Paper, Typography } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import "/public/css/post_detail.css";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useTheme } from "@emotion/react";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
 export default function Page() {
+  // postkey 파라미터 값
+  const [postKey, setPostKey] = useState(null);
+  const [postVO, setPostVO] = useState({});
+  const [userVO, setUserVO] = useState({});
+  const [categoryVO, setCategoryVO] = useState({});
+  const [chatroomVO, setChatroomVO] = useState({});
+  const router = useRouter();
+
+  useEffect(() => {
+    let currentUrl = window.location.href;
+    let currentUrlObj = new URL(currentUrl);
+    let params = new URLSearchParams(currentUrlObj.search);
+    // 'category' 파라미터의 모든 값 가져오기
+    let postkey = params.get("postkey");
+
+    setPostKey(postkey);
+
+    axios({
+      url: "http://localhost:8080/adpost/detail",
+      method: "get",
+      params: {
+        postkey: postkey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setPostVO(res.data.pvo);
+      setCategoryVO(res.data.pvo.cvo);
+      setUserVO(res.data.pvo.uvo);
+      setChatroomVO(res.data.cr_list);
+      console.log(res.data.pvo.uvo);
+    });
+  }, [router.query]);
+
+  const theme = useTheme();
+  const [activeStep, setActiveStep] = useState(0);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   return (
     <>
       <article className="vqbuc90 _1h4pbgy7zs _1h4pbgy83s _1h4pbgy84b _1h4pbgy84l _1h4pbgy89k _1h4pbgy8eg _1h4pbgy9ug _1h4pbgy9vs _1h4pbgya0o">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <div className="_588sy41z _588sy421 vqbuc9j _588sy422 _588sy42b _588sy4qe _588sy4r5">
-            <nav aria-label="Buy sell page navigation" className="xzyefz0">
-              <ol className="xzyefz1">
-                <li className="xzyefz2">
-                  <Link href="/" className="xzyefz5">
-                    홈
-                  </Link>
-                  <span className="xzyefz4" role="presentation">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-seed-icon="true"
-                      data-seed-icon-version="0.4.0-beta.2"
-                      width="12"
-                      height="12"
-                    >
-                      <g>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </span>
-                </li>
-                <li className="xzyefz2">
-                  <Link href="/post" className="xzyefz5">
-                    중고거래
-                  </Link>
-                  <span className="xzyefz4" role="presentation">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-seed-icon="true"
-                      data-seed-icon-version="0.4.0-beta.2"
-                      width="12"
-                      height="12"
-                    >
-                      <g>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </span>
-                </li>
-                <li className="xzyefz2 xzyefz3">상품명 넣기</li>
-              </ol>
-            </nav>
+            <Breadcrumbs separator="›" aria-label="breadcrumb">
+              <Link
+                className="xzyefz5"
+                underline="hover"
+                color="inherit"
+                href="/"
+              >
+                홈
+              </Link>
+              <Link
+                className="xzyefz5"
+                underline="hover"
+                color="inherit"
+                href="/post?sort=recent"
+              >
+                중고거래
+              </Link>
+              <Typography
+                className="xzyefz2 xzyefz3"
+                sx={{ color: "text.primary" }}
+              >
+                {postVO.title}
+              </Typography>
+            </Breadcrumbs>
           </div>
           <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9vn _1h4pbgy7v4 _1h4pbgy7wz">
             <section className="vqbuc92 _9rcp1w1 _1h4pbgya0o _1h4pbgy808 _1h4pbgy81v _1h4pbgy83p">
               <div className="_588sy41b _588sy462 _588sy49e" id="relative">
                 <div
                   className="_588sy41z _588sy421 _588sy42q _588sy462"
-                  style={{ transform: "translate3d(0px, 0px, 0px)" }}
+                  style={{ width: '100%', height: '100%' }} // 부모 div의 크기를 100%로 설정
                 >
-                  {/* 이미지 리스트 */}
-                  <img
-                    className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
-                    src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/7c887c3fcb70e6b745aca2a761805c18a3b16cd0e6557203b281db46ae714d9d.jpg?f=webp&amp;q=95&amp;s=1440x1440&amp;t=inside"
-                    alt=""
+                {postVO.pimg_list && postVO.pimg_list.length > 0 ? 
+                <Box sx={{ width: '100%', height: '100%', flexGrow: 1 }}>
+                  <Box sx={{ width: '100%', height: '100%', p: 2 }}>
+                    <img
+                        className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
+                        src={postVO.pimg_list[activeStep].imgurl}
+                        alt=""
+                        style={{
+                          width: '100%',    // 부모 요소에 맞게 너비 100%
+                          height: '100%',   // 부모 요소에 맞게 높이 100%
+                          objectFit: 'cover', // 비율 유지하며 부모 요소에 맞게
+                          imageRendering: 'auto' // 이미지 렌더링 속성 설정 (smooth, high-quality)
+                        }}
+                    />
+                  </Box>
+                  <MobileStepper
+                    variant="dots"
+                    steps={postVO.pimg_list.length}
+                    position="static"
+                    activeStep={activeStep}
+                    nextButton={
+                      <Button
+                        size="small"
+                        onClick={handleNext}
+                        disabled={activeStep === postVO.pimg_list.length - 1}
+                      >
+                        다음
+                        {theme.direction === 'rtl' ? (
+                          <KeyboardArrowLeft />
+                        ) : (
+                          <KeyboardArrowRight />
+                        )}
+                      </Button>
+                    }
+                    backButton={
+                      <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                        {theme.direction === 'rtl' ? (
+                          <KeyboardArrowRight />
+                        ) : (
+                          <KeyboardArrowLeft />
+                        )}
+                        이전
+                      </Button>
+                    }
                   />
-                  <img
-                    className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
-                    src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/22d5e81b0a617b550b08e7b47bb1254cb7176115ec9f5fcc0dedba28b0358b79.jpg?f=webp&amp;q=95&amp;s=1440x1440&amp;t=inside"
-                    alt=""
-                  />
-                  <img
-                    className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
-                    src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/faa8163b39e494a4de7b44af4662c7edf8465396443aef1e762efca2ddf7cdfd.jpg?f=webp&amp;q=95&amp;s=1440x1440&amp;t=inside"
-                    alt=""
-                  />
-                </div>
-                <div className="_588sy41z _588sy421 _588sy422 _588sy42b">
-                  {/* 안보이게 할거면 _1io8bol6 클래스 추가 */}
-                  <IconButton
-                    size="small"
-                    className="_1io8bol5 _1io8bol4 _1io8bol3 _588sy49k _588sy41q _588sy4cw"
-                  >
-                    <ArrowBackIosNewIcon />
-                    {/* <DeleteIcon fontSize="inherit" /> */}
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    className="_1io8bol8 _1io8bol4 _1io8bol3 _588sy49k _588sy41q _588sy4cw _1io8bola"
-                  >
-                    <ArrowForwardIosIcon />
-                    {/* <DeleteIcon fontSize="inherit" /> */}
-                  </IconButton>
-                </div>
-                <div>
-                  {/* 이미지 개수만큼 */}
-                  <ol className="_1io8bold _1io8bolc _588sy4e2 _588sy4h8 _588sy42q _588sy417k _588sy4168 _588sy415q _588sy49k _588sy41r _588sy41s _588sy41u _588sy412q">
-                    <li className="_1io8bolf _1io8bole _588sy42q _588sy4168">
-                      <button
-                        aria-label="Carousel indicator"
-                        className="_1io8bolh _1io8bolg _588sy428 _588sy41b _588sy45q _588sy48w _588sy41n _1io8boli"
-                      ></button>
-                    </li>
-                    <li className="_1io8bolf _1io8bole _588sy42q _588sy4168">
-                      <button
-                        aria-label="Carousel indicator"
-                        className="_1io8bolh _1io8bolg _588sy428 _588sy41b _588sy45q _588sy48w _588sy41n"
-                      ></button>
-                    </li>
-                    <li className="_1io8bolf _1io8bole _588sy42q _588sy4168">
-                      <button
-                        aria-label="Carousel indicator"
-                        className="_1io8bolh _1io8bolg _588sy428 _588sy41b _588sy45q _588sy48w _588sy41n"
-                      ></button>
-                    </li>
-                  </ol>
+                </Box> : <ImageNotSupportedRoundedIcon style={{
+                              width: '100%',  // 아이콘의 너비를 100%로 설정
+                              height: '100%', // 아이콘의 높이를 100%로 설정
+                              zIndex: 1      // 필요하면 z-index로 가시성을 확보
+                            }}/>
+                }
                 </div>
               </div>
               <div className="vqbuc91 _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp">
@@ -161,7 +178,7 @@ export default function Page() {
                           className="_1gb2dg21"
                         >
                           <span className="_1ry6htkk _1ry6htkl _1ry6htkq _1ry6htkv _1ry6htkz">
-                            사용자 nickname 넣기
+                            {userVO.nickname}
                           </span>
                         </Link>
                         <Link
@@ -213,39 +230,52 @@ export default function Page() {
             <section className="vqbuc93 _1h4pbgya0o _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy914 _1h4pbgy7eo _1h4pbgy7f6 _1h4pbgy7cr _1h4pbgy7jc _1h4pbgy7ju _1h4pbgy7hf _1h4pbgy808 _1h4pbgy82r _1h4pbgy83x _1h4pbgy84w _1h4pbgy883">
               <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1h4pbgy90q">
                 <div className="_1h4pbgy7ag _1h4pbgy78o _1h4pbgy796 _1h4pbgy79h _1h4pbgy7c8">
-                  <h1 className="_1h4pbgy9uo">상품명 넣기</h1>
+                  <h1 className="_1h4pbgy9uo">{postVO.title}</h1>
                 </div>
                 <h2 className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s _1h4pbgy77u _1h4pbgy785 _1h4pbgy7c0">
                   <Link
                     className="vqbuc97"
                     href="/buy-sell/all/?category_id=12&amp;in=manhattan-7426"
                   >
-                    카테고리명 넣기
+                    {categoryVO.categoryname}
                   </Link>{" "}
                   ·{" "}
                   <time dateTime="2024-08-11T23:32:15.393-04:00">
                     끌올 2시간 전 or 2시간 전
                   </time>
                 </h2>
-                <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
-                  38,000원
+                {postVO.price == 0 && postVO.method == 1 ? (
+                  <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
+                  나눔♥
                 </h3>
-                <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
-                  가격 제안 불가
-                </span>
-                <Link
-                  href="#"
-                  className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
-                  style={{
-                    color: "var(--seed-semantic-color-primary)",
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  <b>가격 제안하기</b>
-                </Link>
+                   ) : (
+                  <>
+                  <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
+                    {new Intl.NumberFormat("ko-KR").format(postVO.price)}원
+                  </h3>
+                  {postVO.canbargain == 0 ? (
+                    <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
+                      가격 제안 불가
+                    </span>
+                  ) : (
+                    <Link
+                      href="#"
+                      className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
+                      style={{
+                        color: "var(--seed-semantic-color-primary)",
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      <b>가격 제안하기</b>
+                    </Link>
+                  )}
+                  </>
+                  )
+                }
+                
               </div>
               <p className="vqbuc98 _1h4pbgy7ao _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy8g _1h4pbgy7bs _1h4pbgya4g _1h4pbgy9y8">
-                상품 상세 설명 넣기
+                {postVO.content}
               </p>
               <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
                 <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
@@ -254,7 +284,8 @@ export default function Page() {
                 </li>
               </ul>
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
-                <span>채팅 0</span> · <span>관심 1</span> · <span>조회 17</span>
+                <span>채팅 {chatroomVO.length}</span> · <span>관심 1</span> ·{" "}
+                <span>조회 {postVO.viewqty}</span>
               </div>
               <Link
                 href="#"
@@ -277,8 +308,8 @@ export default function Page() {
         <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
-              [등록자명]님의 판매 물품 (6개까지만, 넘어가면 더보기, 안넘어가면
-              더보기 가림)
+              {userVO.nickname}님의 판매 물품 (6개까지만, 넘어가면 더보기,
+              안넘어가면 더보기 가림)
             </div>
             <Link
               className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"

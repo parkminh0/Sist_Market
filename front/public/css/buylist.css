@@ -725,7 +725,7 @@
 
 .head_status .status_txt[data-v-eff62a72] {
     display: inline-block;
-    vertical-align: top
+    vertical-align: center;
 }
 
 .btn_filter[data-v-eff62a72] {
@@ -2076,7 +2076,7 @@
 
 .head_status .status_txt[data-v-eff62a72] {
     display: inline-block;
-    vertical-align: top
+    vertical-align: center;
 }
 
 .btn_filter[data-v-eff62a72] {
@@ -2700,4 +2700,11 @@
 [class*=arr-page-][data-v-4857d0b8] {
     height: 22px;
     width: 18px
+}
+
+
+.fText.gDate{
+    background-color: #ffffff;
+    padding: 5px;
+    border: 1px solid #eeeeee;
 }

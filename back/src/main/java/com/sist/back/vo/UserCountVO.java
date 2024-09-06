@@ -12,3 +12,4 @@ import lombok.Setter;
 public class UserCountVO {
 	String cntNotDel, cntDel, cntAll;
 }
+

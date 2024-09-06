@@ -1,10 +1,95 @@
-import MyPageSide from "@/component/user/layout/MyPageSide";
-import React from "react";
-import "/public/css/myPage.css";
-import "/public/css/profile.css";
-import Link from "next/link";
+'use client'
 
-export default function Page() {
+import MyPageSide from "@/component/user/layout/MyPageSide";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import "/public/css/myPage.css";
+import "/public/css/buylist.css";
+import "/public/css/paging.css";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import BadgeList from "@/component/user/myPage/BadgeList";
+import Manner from "@/component/user/myPage/Manner";
+import Review from "@/component/user/myPage/Review";
+
+export default function page() {
+
+  const [selectedTab, setSelectedTab] = useState('');
+  const [list, setList] = useState([]);
+  const [whatNow, setWhatNow] = useState('badge');
+  const [status, setStatus] = useState(1);
+  const [page, setPage] = useState({});
+  const [badgeCount, setBadgeCount] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [mannerCount, setMannerCount] = useState(0);
+
+  const API_URL = '/user/api/cellList';
+  
+  var category = useSearchParams().get("category");
+  const categoryList = ['badge','manner','review'];
+  
+  const handleBadgeCount = (count) => {
+    setBadgeCount(count);
+  };
+
+  const handleReviewCount = (count) => {
+    setReviewCount(count);
+  };
+
+  const handleMannerCount = (count) => {
+    setMannerCount(count);
+  };
+
+  function changePage(pNum) { 
+    getCellList(pNum);
+  }
+
+  function updateList(category){
+      setWhatNow(category);
+      setStatus(categoryList.indexOf(category)+1);
+  
+      if (category == 'badge') {
+      setSelectedTab('1');
+      } else if (category == 'manner') {
+      setSelectedTab('2');
+      } else if (category == 'review') {
+      setSelectedTab('3');
+      }
+  }
+  
+  function getCellList(cPage){
+    axios({
+      url: API_URL,
+      method: 'post',
+      params: {
+          userkey: 1,
+          cPage: cPage,
+          poststatus: status,
+          start_date: startDate,
+          end_date: endDate,
+      }
+    }).then((res) => {
+        console.log(res.data);
+        setCelllist(res.data.celllist);
+      });
+  }
+
+  useEffect(() => {
+    updateList('badge');
+    axios.get("/user/manner/getManner", {
+      params: { userkey: 45 }
+    }).then((res) => {
+      const totalCount = res.data.m_ar.reduce((sum, item) => sum + item.count, 0);
+      setMannerCount(totalCount);
+    });
+    Promise.all([
+      axios.get("/user/buyingReview", { params: { userkey: 45} }),
+      axios.get("/user/sellingReview", { params: { userkey: 45} })
+    ]).then(([res1, res2]) => {
+        setReviewCount([...res1.data.buying_ar, ...res2.data.selling_ar].length);
+    });
+  }, []);
+
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -35,467 +120,93 @@ export default function Page() {
                 </div>
               </Link>
             </div>
-            <Link href="/myPage">
-              <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                  <font style={{ verticalAlign: "inherit" }}>마이 페이지</font>
-                </h1>
-              </div>
-            </Link>
           </section>
         </div>
         <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
-            {/* <jsp:include page="/WEB-INF/views/user/myPageSub/myPageSide.jsp"/> */}
+            {/* <jsp:include page="/WEB-INF/views/user/myPageSub/myPageSide.jsp" /> */}
             <MyPageSide />
-            <div
-              data-v-1ac01578=""
-              data-v-0adb81cc=""
-              className="content_area my-page-content"
-            >
-              <div data-v-1ac01578="" className="my_profile">
-                {/* 타이틀 */}
-                <div
-                  data-v-6b53f901=""
-                  data-v-1ac01578=""
-                  className="content_title border"
-                >
+            {/* <!-- 여기서부터 콘텐츠 --> */}
+            <div data-v-0a67d0b5="" data-v-0adb81cc="" className="content_area my-page-content">
+              <div data-v-0a67d0b5="" className="my_purchase">
+                <div data-v-6b53f901="" data-v-0a67d0b5="" className="content_title">
                   <div data-v-6b53f901="" className="title">
-                    <h3 data-v-6b53f901="">계정 관리</h3>
+                    <h3 data-v-6b53f901="">프로필</h3>
                   </div>
                 </div>
-                {/* 프로필 이미지 */}
-                <div
-                  data-v-5691f94f=""
-                  data-v-708ef468=""
-                  className="user_profile"
-                >
-                  <div data-v-5691f94f="" className="profile_thumb">
-                    <img
-                      data-v-5691f94f=""
-                      src="https://kream-phinf.pstatic.net/MjAyMDEyMTZfMjk2/MDAxNjA4MDk4NDc4NTU5.HC3x5Quc4dbD5BHHQyYMFNNb9Ak0bvnUCMFzgtHhpJkg.5Pg21oe9j3T-gwX6IUER0htw9IluFG7eFM56cyyPusYg.JPEG/p_7b98e208cbff4b758d6c35f2e41c50eb.jpeg?type=m"
-                      alt="사용자 이미지"
-                      className="thumb_img"
-                    />
+                <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership">
+                <div data-v-ed683452="" className="user_detail">
+                  <div data-v-ed683452="" className="user_thumb">
+                    <img data-v-ed683452=""
+                    //src={uvo.imgurl}
+                    alt="사용자 이미지" className="thumb_img"/>
                   </div>
-                  <div data-v-5691f94f="" className="profile_detail">
-                    <strong data-v-5691f94f="" className="name">
-                      사용자 nickname 넣기
-                    </strong>
-                    <div data-v-5691f94f="" className="profile_btn_box">
-                      <button
-                        data-v-420a5cda=""
-                        data-v-5691f94f=""
-                        type="button"
-                        className="btn outlinegrey small"
-                      >
+                  <div data-v-ed683452="" className="user_info">
+                    <div data-v-ed683452="" className="info_box">
+                      <strong data-v-ed683452="" className="name">
+                        {/* {uvo.nickname} */}
+                      </strong>
+                      <p data-v-ed683452="" className="email">
+                        {/* {uvo.id} [ {uvo.email} ] */}
+                      </p>
+                    </div>
+                    <div data-v-ed683452="" className="info-buttons">
+                      <Link data-v-420a5cda="" data-v-ed683452="" href="/myPage/profile/edit" className="btn btn outlinegrey small" type="button" >
                         {" "}
-                        이미지 변경{" "}
-                      </button>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-5691f94f=""
-                        type="button"
-                        className="btn outlinegrey small"
-                      >
-                        {" "}
-                        삭제{" "}
-                      </button>
+                        프로필 수정{" "}
+                      </Link>
                     </div>
                   </div>
                 </div>
-                {/* 프로필 정보 */}
-                <div
-                  data-v-8b96a82e=""
-                  data-v-1ac01578=""
-                  className="profile_group"
-                >
-                  <h4 data-v-8b96a82e="" className="group_title">
-                    프로필 정보
-                  </h4>
-                  <div
-                    data-v-0c9f3f9e=""
-                    data-v-6d416020=""
-                    data-v-708ef468=""
-                    className="unit"
-                    data-v-8b96a82e=""
-                  >
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      프로필 이름
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content">
-                      <p
-                        data-v-24a03828=""
-                        data-v-6d416020=""
-                        className="desc desc_modify"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        사용자 nickname 넣기{" "}
-                      </p>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-6d416020=""
-                        type="button"
-                        className="btn btn_modify outlinegrey small"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        변경{" "}
-                      </button>
-                    </div>
+              </div>
+                <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
+                  <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          {badgeCount}
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                          활동 배지
+                        </dd>
+                      </dl>
+                    </Link>
                   </div>
-                  <div
-                    data-v-0c9f3f9e=""
-                    data-v-6d416020=""
-                    data-v-708ef468=""
-                    className="unit"
-                    data-v-8b96a82e=""
-                  >
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      이름
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content">
-                      <p
-                        data-v-24a03828=""
-                        data-v-6d416020=""
-                        className="desc desc_modify"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        사용자 name 넣기{" "}
-                      </p>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-6d416020=""
-                        type="button"
-                        className="btn btn_modify outlinegrey small"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        변경{" "}
-                      </button>
-                    </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                            {mannerCount}
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                            받은 매너 평가
+                        </dd>
+                      </dl>
+                    </Link>
                   </div>
-                  <div
-                    data-v-0c9f3f9e=""
-                    data-v-6d416020=""
-                    data-v-708ef468=""
-                    className="unit"
-                    data-v-8b96a82e=""
-                  >
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      소개
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content">
-                      <p
-                        data-v-24a03828=""
-                        data-v-6d416020=""
-                        className="desc desc_modify placeholder"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        나를 소개하세요{" "}
-                      </p>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-6d416020=""
-                        type="button"
-                        className="btn btn_modify outlinegrey small"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        변경{" "}
-                      </button>
-                    </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                            {reviewCount}
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                            받은 거래 후기
+                        </dd>
+                      </dl>
+                    </Link>
                   </div>
                 </div>
-                {/* 계정 정보 */}
-                <div
-                  data-v-8b96a82e=""
-                  data-v-1ac01578=""
-                  className="profile_group"
-                >
-                  <h4 data-v-8b96a82e="" className="group_title">
-                    내 계정
-                  </h4>
-                  <div
-                    data-v-0c9f3f9e=""
-                    data-v-1ac01578=""
-                    className="unit"
-                    data-v-8b96a82e=""
-                  >
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      이메일 주소
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content">
-                      <p
-                        data-v-24a03828=""
-                        data-v-1ac01578=""
-                        className="desc email"
-                        data-v-0c9f3f9e=""
-                      >
-                        사용자 이메일 넣기
-                      </p>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        type="button"
-                        className="btn btn_modify outlinegrey small"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        변경{" "}
-                      </button>
+                <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
+                    <div data-v-24868902="" data-v-eff62a72="" className="empty_area" style={{paddingTop: '50px'}}>
+                        {selectedTab === '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
+                        {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner onMannerCountChange={handleMannerCount}/></p>)}
+                        {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
-                  </div>
-                  <div
-                    data-v-1ac01578=""
-                    data-v-8b96a82e=""
-                    className="modify"
-                    style={{ display: "none" }}
-                  >
-                    <div
-                      data-v-5ee806c3=""
-                      data-v-1ac01578=""
-                      className="input_box"
-                      data-v-8b96a82e=""
-                    >
-                      <h6
-                        data-v-1ac01578=""
-                        data-v-5ee806c3=""
-                        className="input_title"
-                      >
-                        이메일 주소 변경
-                      </h6>
-                      <div data-v-5ee806c3="" className="input_item">
-                        <input
-                          data-v-5ee806c3=""
-                          type="email"
-                          autoComplete="off"
-                          className="input_txt"
-                          placeholder="사용자 이메일 넣기"
-                        />
-                      </div>
-                      <p
-                        data-v-1ac01578=""
-                        data-v-5ee806c3=""
-                        className="input_error"
-                      >
-                        {" "}
-                      </p>
-                    </div>
-                    <div
-                      data-v-1ac01578=""
-                      data-v-8b96a82e=""
-                      className="modify_btn_box"
-                    >
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        type="button"
-                        className="btn outlinegrey medium"
-                        slot="button"
-                        data-v-8b96a82e=""
-                      >
-                        {" "}
-                        취소{" "}
-                      </button>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        disabled="disabled"
-                        type="button"
-                        className="btn solid medium disabled"
-                        slot="button"
-                        data-v-8b96a82e=""
-                      >
-                        {" "}
-                        인증 메일 발송{" "}
-                      </button>
-                    </div>
-                  </div>
-                  <div
-                    data-v-0c9f3f9e=""
-                    data-v-1ac01578=""
-                    className="unit"
-                    data-v-8b96a82e=""
-                  >
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      비밀번호
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content">
-                      <p
-                        data-v-24a03828=""
-                        data-v-1ac01578=""
-                        className="desc password"
-                        data-v-0c9f3f9e=""
-                      >
-                        ●●●●●●●●●
-                      </p>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        type="button"
-                        className="btn btn_modify outlinegrey small"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        변경{" "}
-                      </button>
-                    </div>
-                  </div>
-                  <div
-                    data-v-1ac01578=""
-                    data-v-8b96a82e=""
-                    className="modify"
-                    style={{ display: "none" }}
-                  >
-                    <h5 data-v-1ac01578="" data-v-8b96a82e="" className="title">
-                      비밀번호 변경
-                    </h5>
-                    <div
-                      data-v-5ee806c3=""
-                      data-v-1ac01578=""
-                      className="input_box"
-                      data-v-8b96a82e=""
-                    >
-                      <h6
-                        data-v-1ac01578=""
-                        data-v-5ee806c3=""
-                        className="input_title"
-                      >
-                        이전 비밀번호
-                      </h6>
-                      <div data-v-5ee806c3="" className="input_item">
-                        <input
-                          data-v-5ee806c3=""
-                          type="password"
-                          placeholder="영문, 숫자, 특수문자 조합 8-16자"
-                          autoComplete="off"
-                          className="input_txt"
-                        />
-                      </div>
-                      <p
-                        data-v-1ac01578=""
-                        data-v-5ee806c3=""
-                        className="input_error"
-                      >
-                        {" "}
-                        영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-16자){" "}
-                      </p>
-                    </div>
-                    <div
-                      data-v-5ee806c3=""
-                      data-v-1ac01578=""
-                      className="input_box"
-                      data-v-8b96a82e=""
-                    >
-                      <h6
-                        data-v-1ac01578=""
-                        data-v-5ee806c3=""
-                        className="input_title"
-                      >
-                        새 비밀번호
-                      </h6>
-                      <div data-v-5ee806c3="" className="input_item">
-                        <input
-                          data-v-5ee806c3=""
-                          type="password"
-                          placeholder="영문, 숫자, 특수문자 조합 8-16자"
-                          autoComplete="off"
-                          className="input_txt"
-                        />
-                      </div>
-                      <p
-                        data-v-1ac01578=""
-                        data-v-5ee806c3=""
-                        className="input_error"
-                      >
-                        {" "}
-                        영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-16자){" "}
-                      </p>
-                    </div>
-                    <div
-                      data-v-1ac01578=""
-                      data-v-8b96a82e=""
-                      className="modify_btn_box"
-                    >
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        type="button"
-                        className="btn outlinegrey medium"
-                        slot="button"
-                        data-v-8b96a82e=""
-                      >
-                        {" "}
-                        취소{" "}
-                      </button>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        disabled="disabled"
-                        type="button"
-                        className="btn solid medium disabled"
-                        slot="button"
-                        data-v-8b96a82e=""
-                      >
-                        {" "}
-                        저장{" "}
-                      </button>
-                    </div>
-                  </div>
                 </div>
-                {/* 개인 정보 */}
-                <div
-                  data-v-8b96a82e=""
-                  data-v-1ac01578=""
-                  className="profile_group"
-                >
-                  <h4 data-v-8b96a82e="" className="group_title">
-                    개인 정보
-                  </h4>
-                  <div
-                    data-v-0c9f3f9e=""
-                    data-v-1ac01578=""
-                    className="unit"
-                    data-v-8b96a82e=""
-                  >
-                    <h5 data-v-0c9f3f9e="" className="title">
-                      휴대폰 번호
-                    </h5>
-                    <div data-v-0c9f3f9e="" className="unit_content">
-                      <p
-                        data-v-24a03828=""
-                        data-v-1ac01578=""
-                        className="desc"
-                        data-v-0c9f3f9e=""
-                      >
-                        사용자 phone 넣기
-                      </p>
-                      <button
-                        data-v-420a5cda=""
-                        data-v-1ac01578=""
-                        type="button"
-                        className="btn btn_modify outlinegrey small"
-                        data-v-0c9f3f9e=""
-                      >
-                        {" "}
-                        변경{" "}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <Link
-                  data-v-1ac01578=""
-                  href="/my/withdrawal"
-                  className="btn_withdrawal"
-                >
-                  회원 탈퇴
-                </Link>
               </div>
             </div>
+            {/* <!-- 여기까지 컨텐츠 --> */}
           </section>
         </div>
       </article>

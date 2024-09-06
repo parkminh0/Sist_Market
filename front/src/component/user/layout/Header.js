@@ -1,11 +1,21 @@
 "use client";
+import Cookies from 'js-cookie';
 import Link from "next/link";
 import HeaderItem from "./HeaderItem";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import React from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, TextField } from '@mui/material';
+import axios from 'axios';
+import {signIn, signOut,useSession} from 'next-auth/react';
+
+// 필요한 다른 import들도 여기에 추가
+
 
 export default function Header() {
   const pathname = usePathname();
+  const { data: session } = useSession();  //nextAtuh파일에서 nickname을 세션에 저장해서 받아옴
+  
 
   useEffect(() => {
     const currentPath = pathname || "/";
@@ -45,22 +55,7 @@ export default function Header() {
     false
   );
 
-  // #region 로그인 모달 오픈
-  function show_login_dialog() {
-    document.querySelector("div.modal-overlay").style.display = "block";
-    document.querySelector("#login_dialog").style.display = "block";
-    document.querySelector("body").classList.add("modal-open");
-  }
-  // #endregion
-
-  // #region 로그인 모달 닫기
-  function close_login_dialog() {
-    document.querySelector("div.modal-overlay").style.display = "none";
-    document.querySelector("#login_dialog").style.display = "none";
-    document.querySelector("body").classList.remove("modal-open"); // 스크롤 해제
-  }
-  // #endregion
-
+ 
   // #region 위치 모달 오픈
   function show_location_dialog() {
     document.querySelector("div.modal-overlay").style.display = "block";
@@ -113,7 +108,7 @@ export default function Header() {
 
         const callback = (result, status) => {
           if (status === window.kakao.maps.services.Status.OK) {
-            console.log("결과", result);
+            //console.log("결과", result);
 
             setLocation1(result[0].address.region_1depth_name);
             setLocation2(result[0].address.region_2depth_name);
@@ -158,27 +153,139 @@ export default function Header() {
                       `;
   }
 
-  const [user, setUser] = useState({});
+  
   const router = useRouter();
 
-  function login() {
-    // axios({
-    //   url: "http://localhost:8080/user/login",
-    //   method: "post",
-    //   params: "",
-    //   withCredentials: true,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // }).then((res) => {
-    //   if (res.status == 200) {
-    //     alert("로그인 성공");
-    //     router.push(pathname);
-    //   } else {
-    //     alert("로그인 실패");
-    //   }
-    // });
+  //회원가입 페이지 이동
+  const handleSignUp = () => {
+    setOpen(false);
+    router.push("/SignUp");  
   }
+ 
+
+  //jwt 로그아웃 처리
+  const logout_url = "/user/api/logout";
+  
+  function logout(){
+    axios({
+      url: logout_url,
+      method: "POST",
+    }).then((res)=>{
+      console.log(res);
+      if(res.data.msg== "로그아웃"){
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
+        Cookies.remove("userkey");
+        Cookies.remove("next-auth.session-token");
+        Cookies.remove("next-auth.csrf-token");
+        
+        signOut({ callbackUrl: '/' });
+      }
+  })
+
+  }
+
+  //jwt 로그인 처리
+  const login_url = "/user/api/login";
+  const [user,setUser] = useState({});
+  
+  const c_path = usePathname();
+  //token 저장
+  const [accessToken,setAccessToken] = useState(null);
+  const [refreshToken,setRefreshToken] = useState(null);
+  
+  function jwtLogin() {
+    axios({
+        url: login_url,
+        method: "post",
+        params : user,
+        withCredentials: true,
+        headers :{
+            "Content-Type": "application/json"
+        }
+    }).then((res) => {
+        //console.log(res.data.msg);
+        if(res.data.cnt ===1){
+          window.location.reload(); //현재 경로 재로드 
+          }else{
+            alert(res.data.msg);
+          }
+    });
+ }
+
+ useEffect(() => {
+  const token = Cookies.get('accessToken');
+  if (token) {
+    setAccessToken(token);  // 토큰이 있으면 로그인 상태로 변경
+  } else {
+    setAccessToken(null);   // 토큰이 없으면 로그아웃 상태로 설정
+  }
+}, [session]);  // session이 변경될 때만 실행
+
+ const handleChange = (e) =>{ 
+  
+  const {name, value} = e.target; 
+  
+  setUser({...user,[name]:value});
+  //기존거 복사해서 값을 넣어주는애 name이 키로들어가고 value가 값으로 들어감
+
+
+}
+
+//kakaoLogin
+const kakao_login = async(e)=>{
+  e.preventDefault(); //다른 기본동작을 실행하지 않도록함
+  //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
+  signIn("kakao",{callbackUrl: "http://localhost:8080/user/kakao/login"});
+  //goController();
+} 
+const [chk,setChk] = useState(true);
+useEffect(() => {
+  if(chk){
+  if (session && session.user) {
+    goController(); // session.user.name이 준비된 후 호출
+  }
+  }
+}, [session]);
+
+
+const kakao_url = "/user/kakao/login";
+// kakao controller에 데이터 전달 
+const goController = async () => {
+    if (session && session.user) { 
+      axios({
+        url: kakao_url,
+        method: "post",
+        params: {
+          nickname: session.user.name,
+          email: session.user.email,
+        },
+        withCredentials: true,
+          headers :{
+              "Content-Type": "application/json"
+          }
+      }).then((res) => {
+        if (res.data.cnt === 1) {
+          alert("로그인 성공!");
+        
+        } else {
+          alert("로그인에 실패하였습니다.");
+        }
+      
+      });
+     setChk(false);
+};
+}
+  // 로그인 모달 부분
+  const [open, setOpen] = useState(false);
+  // 로그인 모달 열기
+  const handleClose = () => {
+    setOpen(false);
+  };
+  // 로그인 모달 닫기 
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   return (
     <>
@@ -221,8 +328,10 @@ export default function Header() {
             <div>
               <nav className="_1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9wo">
                 <HeaderItem />
+                {
+                  accessToken == null ? (
                 <button
-                  onClick={show_login_dialog}
+                  onClick={handleOpen}
                   id="show_login"
                   style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
                   className="seed-box-button"
@@ -235,14 +344,30 @@ export default function Header() {
                 >
                   <span className="seed-semantic-typography-label4-bold">
                     <font>로그인</font>
-                    {/* <c:if test="${sessionScope.user_VO eq null }">
-                                <font >로그인</font>				
-                            </c:if>
-                            <c:if test="${sessionScope.user_VO ne null }">
-                                <font >로그아웃</font>				
-                            </c:if> */}
                   </span>
                 </button>
+              ) : (
+                <button
+                  onClick={logout}  // 로그아웃 버튼에는 logout 함수 연결
+                  id="logout"
+                  style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
+                  className="seed-box-button"
+                  data-scope="button"
+                  data-part="root"
+                  type="button"
+                  data-gtm="gnb_app_download"
+                  data-size="xsmall"
+                  data-variant="primaryLow"
+                >
+                  <span className="seed-semantic-typography-label4-bold">
+                    <font>로그아웃</font>
+                  </span>
+                </button>
+                )
+              }
+
+
+
               </nav>
             </div>
           </div>
@@ -531,81 +656,132 @@ export default function Header() {
       {/* 모달 오버레이 */}
       <div className="modal-overlay"></div>
 
+      
       {/* 로그인 모달 */}
-      <div
-        style={{ pointerEvents: "auto", display: "none" }}
-        id="login_dialog"
-        role="dialog"
-        aria-describedby="radix-:R24pH2:"
-        aria-labelledby="radix-:R24pH1:"
-        data-state="open"
-        className="sboh910 sboh912 sboh915"
-        tabIndex="-1"
+      <React.Fragment>
+  <Dialog open={open} onClose={handleClose} PaperProps={{ component: "form", onSubmit: (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const formJson = Object.fromEntries(formData.entries());
+        console.log(formJson);
+
+        // 여기에 로그인 처리를 위한 로직을 추가
+        // 예: axios를 사용한 로그인 요청 보내기
+
+        handleClose();
+      },
+    }}
+  >
+    <DialogTitle style={{ textAlign: 'center', padding: '16px 24px', position: 'relative' }}>
+      {/* X 버튼 추가 */}
+      <Button 
+        onClick={handleClose} 
+        style={{ 
+          position: 'absolute', 
+          top: '7px', 
+          right: '7px', 
+          minWidth: '25px', 
+          minHeight: '25px', 
+          borderRadius: '50%', 
+          backgroundColor: '#FF6F0F', 
+          color: '#fff', 
+          fontSize: '12px', 
+          fontWeight: 'bold',
+          lineHeight: '16px',
+          padding: '0',
+          
+        }}
       >
-        <div className="sboh91e">
-          <h2 id="radix-:R24pH1:" className="sboh91f">
-            쌍용마켙
-          </h2>
-        </div>
-        <div className="_588sy4i8 _588sy4ew _588sy4ne _588sy4k8 _588sy41z _588sy421">
-          <div className="_588sy41z _588sy421 _588sy42q _588sy4172 _588sy415q _588sy413q _588sy418e _588sy4gw">
-            <h2 className="_588sy419q _588sy41y _588sy41ak" level="2">
-              로그인
-            </h2>
-            <form id="login_form" onSubmit={login}>
-              <input type="text" id="id" name="id" placeholder="ID" required />
-              <input
-                type="password"
-                id="pw"
-                name="pw"
-                placeholder="Password"
-                required
-              />
-              <button className="login_btn" type="submit">
-                Log in
-              </button>
-              <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=2d3b46aa6f749ca133dedfb1664a1da7&redirect_uri=http://localhost:8080/login/kakao">
-                <img
-                  src="/resources/img/kakao_login_large_wide.png"
-                  width="222"
-                  alt="카카오 로그인 버튼"
-                />
-              </a>
-            </form>
-            <div className="options _588sy41z _588sy421 _588sy42q _588sy412w _588sy4168 _588sy415q">
-              <Link href="#">아이디 찾기</Link>
-              <Link href="#">비밀번호 찾기</Link>
-              <Link href="#">회원가입</Link>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="sboh91h"
-            onClick={close_login_dialog}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              data-seed-icon="true"
-              data-seed-icon-version="0.4.0-beta.2"
-              width="24"
-              height="24"
-              style={{ width: "100%", height: "100%" }}
-            >
-              <g>
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
-                  fill="currentColor"
-                ></path>
-              </g>
-            </svg>
-            <span className="ar0rax0">Close</span>
-          </button>
-        </div>
+        &times;
+      </Button>
+
+      <img src="/img/karrot.png" alt="당근마켓 로고" style={{marginTop :'20px', width: '100px' }} />
+      <div style={{ fontWeight: 'bold', fontSize: '25px', color: '#FF6F0F' }}>로그인</div>
+    </DialogTitle>
+    <DialogContent style={{ paddingBottom: '0px' }}>
+      <Button 
+        type="button" 
+        onClick={(e) => {
+          e.preventDefault();
+          kakao_login(e);  // 카카오 로그인 함수 호출
+        }}
+        style={{ backgroundColor: '#E0E0E1', color: '#3C1E1E', width: '100%', padding: '10px 0', marginBottom: '12px' }}  // 회색 카카오톡 버튼
+      >
+        <img src="/img/kakao.png" alt="카카오톡 로그인" style={{ marginRight: '8px', height: '24px' }} />
+        카카오톡으로 로그인
+      </Button>
+      <div style={{ textAlign: 'center', margin: '12px 0' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '0' }} />
+        <span style={{ background: '#fff', padding: '0 10px', position: 'relative', top: '-0.6em', color: '#999', fontSize: '12px' }}>
+          or
+        </span>
       </div>
+      <FormControl fullWidth margin="dense" variant="standard" style={{ marginBottom: '4px' }}>
+        <TextField
+          autoFocus
+          required
+          margin="dense"
+          id="id"
+          name="id"
+          label="아이디"
+          type="text"
+          fullWidth
+          size="small"
+          onChange={handleChange}
+          InputProps={{
+            style: {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            disableUnderline: true,
+          }}
+         
+          onFocus={(e) => e.target.style.border = '1px solid #FF6F0F'}
+          onBlur={(e) => e.target.style.border = '1px solid #ccc'}
+        />
+      </FormControl>
+      <FormControl fullWidth margin="dense" variant="standard" style={{ marginBottom: '4px' }}>
+        <TextField
+          required
+          margin="dense"
+          id="pw"
+          name="pw"
+          label="비밀번호"
+          type="password"
+          fullWidth
+          size="small"
+          onChange={handleChange}
+          InputProps={{
+            style: {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            disableUnderline: true,
+          }}
+        />
+      </FormControl>
+    </DialogContent>
+    <DialogActions style={{ justifyContent: 'center', paddingTop: '12px' }}>
+      <Button 
+        type="button" 
+        onClick={jwtLogin}
+        style={{ backgroundColor: '#FF6F0F', color: '#fff', width: '80%', padding: '10px 0' }}
+      >
+        로그인
+      </Button>
+    </DialogActions>
+    <div style={{ textAlign: 'center', paddingBottom: '12px' }}>
+      <p style={{ fontSize: '14px', color: '#999' }}>
+        가입된 계정이 없으신가요? 
+        <Link href="/SignUp" onClick={handleSignUp} style={{ color: '#FF6F0F', textDecoration: 'none', marginLeft: '5px' }}>회원가입</Link>
+      </p>
+    </div>
+  </Dialog>
+</React.Fragment>
+
+
+
+
       {/* 위치설정 */}
       <div
         style={{ pointerEvents: "auto", display: "none" }}

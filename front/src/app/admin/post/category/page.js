@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./modal.css";
 import { Button, TextField } from "@mui/material";
 export default function Page() {
-  const API_URL = "/api/admin/category/list";
+  const API_URL = "/admin/category/list";
   const [categoryname, setCategoryname] = useState([]);
   const [categorykey, setCategorykey] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
@@ -14,7 +14,7 @@ export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [uploadedImage, setUploadedImage] = useState("/img/admin/category/add_image.png");
   const [previewImage, setPreviewImage] = useState("/img/admin/category/add_image.png");
-  const DEL_URL = "/api/admin/category/delete";
+  const DEL_URL = "/admin/category/delete";
   const [allChecked, setAllChecked] = useState(false);
   const [checkedItems, setCheckedItems] = useState([]);
   const [showingData, setShowingData] = useState(true);
@@ -33,7 +33,7 @@ export default function Page() {
     if (uploadedImage instanceof FileList && uploadedImage.length > 0) {
       formData.append("file", uploadedImage[0]); // 선택된 파일 추가
       axios({
-        url: "/api/admin/category/add",
+        url: "/admin/category/add",
         method: "post",
         data: formData,  // FormData 객체를 data로 설정
         headers: {
@@ -50,7 +50,7 @@ export default function Page() {
       });
     } else {
       axios({
-        url: "/api/admin/category/add",
+        url: "/admin/category/add",
         method: "post",
         data: formData,
       }).then((res) => {
@@ -78,7 +78,7 @@ export default function Page() {
     if (uploadedImage instanceof FileList && uploadedImage.length > 0) {
       formData.append("file", uploadedImage[0]); // 선택된 파일 추가
       axios({
-        url: "/api/admin/category/edit",
+        url: "/admin/category/edit",
         method: "post",
         data: formData,  // FormData 객체를 data로 설정
         headers: {
@@ -95,7 +95,7 @@ export default function Page() {
       });
     } else {
       axios({
-        url: "/api/admin/category/edit",
+        url: "/admin/category/edit",
         method: "post",
         data: formData,
       }).then((res) => {
@@ -116,6 +116,7 @@ export default function Page() {
   }, []);
 
   function callData() {
+    console.log("hi");
     axios.get(API_URL).then((response) => {
       setCategoryList(response.data.category_list);
       setShowingData(true);
@@ -123,7 +124,7 @@ export default function Page() {
   }
 
   function callDeletedData() {
-    const API_URL = "/api/admin/category/deleted";
+    const API_URL = "/admin/category/deleted";
     axios.get(API_URL).then((response) => {
       setCategoryList(response.data.category_list);
       setShowingData(false);

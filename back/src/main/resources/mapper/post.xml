@@ -34,11 +34,6 @@
           <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back.vo.ChatImgVO"/>
     </resultMap>
 
-      <resultMap id="userreviewMap" type="com.sist.back.vo.UserReviewVO">
-          <result column="reviewlistkey" property="reviewlistkey" />
-          <association property="rlvo" select="getReviewListByReviewListKey" column="reviewlistkey" javaType="com.sist.back.vo.ReviewListVO"/>
-    </resultMap>
-
     <select id="all" resultType="com.sist.back.vo.PostVO">
       SELECT * FROM post
     </select>
@@ -68,7 +63,6 @@
         SELECT * FROM `post_info`
         WHERE postkey = #{postkey}
     </select>
-
 
 
     <!-- 2. town 관련 데이터 -->
@@ -119,15 +113,322 @@
 
 
 
-    <!-- 4. userreview 관련 데이터 -->
-    <select id="getUserReviewByPostKey" resultMap="userreviewMap" parameterType="int">
-        SELECT * FROM `userreview`
-        WHERE postkey = #{postkey}
-    </select>
+    <!-- 5. userreview 관련 데이터 -->
     <select id="getReviewListByReviewListKey" resultType="com.sist.back.vo.ReviewListVO" parameterType="int">
         SELECT * FROM `reviewlist`
         WHERE reviewlistkey = #{reviewlistkey}
     </select>
+
+
+
+    <insert id="insertRemindPost" parameterType="String">
+        INSERT
+        INTO `post_info`(postkey,isupdate,dtm)
+        VALUES (#{postkey},1,NOW())
+    </insert>
+
+    <update id="remindPostByPostKey" parameterType="String">
+        UPDATE `post`
+        SET update_dtm = NOW(), remind_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+
+    <update id="unhidPostByPostKey" parameterType="String">
+        UPDATE `post`
+        SET poststatus = '1', update_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+
+
+    <delete id="delWishlistByKey" parameterType="String">
+        DELETE
+        FROM `wishlist`
+        WHERE wishlistkey = #{likeKey}
+    </delete>
+    <delete id="delInterestcategoryByKey" parameterType="String">
+        DELETE
+        FROM `interestcategory`
+        WHERE autokey = #{likeKey}
+    </delete>
+    <delete id="delKeywordByKey" parameterType="String">
+        DELETE
+        FROM `keyword`
+        WHERE keywordkey = #{likeKey}
+    </delete>
+
+
+    <!-- 6. searchpost 관련 데이터 -->
+    <!-- <select id="searchpost" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM `post`
+        WHERE 1 = 1
+          <if test="searchCategory != null and searchCategory != ''">
+            <if test="searchCategory == 'title'">
+                AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="categorykey != null and searchCategory != ''">
+                AND categorykey = #{searchCategoryText}
+            </if>
+          </if>
+    </select> -->
+
+    <select id="searchpost" resultType="com.sist.back.vo.PostVO">
+        SELECT *
+        FROM post
+        WHERE 1 = 1
+        <!-- 검색분류 -->
+        <if test="searchCategory != null and searchCategory != '' and searchCategoryText != null and searchCategoryText != ''">
+            <if test="searchCategory == 'title'">
+                AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'postkey'">
+                AND postkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'hope_place'">
+                AND hope_place LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'townkey'">
+                AND townkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'userkey'">
+                AND userkey = #{searchCategoryText}
+            </if>
+        </if>
+        <!-- 게시글 분류 -->
+        <if test="categorykey != null and categorykey != '' and categorykey != '- 분류 선택 -'">
+            AND categorykey = #{categorykey}
+        </if>
+        <!-- 판매상태 -->
+        <if test="poststatus != null and poststatus != ''">
+            AND poststatus = #{poststatus}
+        </if>
+        <!-- 거래방식 -->
+        <if test="method != null and method != ''">
+            AND method = #{method}
+        </if>
+        <!-- 상품 가격 -->
+        <if test="minPrice != null and minPrice != ''">
+            AND price &gt;= #{minPrice}
+        </if>
+        <if test="maxPrice != null and maxPrice != ''">
+            AND price &lt;= #{maxPrice}
+        </if>
+        <!-- 흥정 가능 여부 -->
+        <if test="canbargain != null and canbargain != ''">
+            AND canbargain = #{canbargain}
+        </if>
+        <!-- 게시글 생성일 -->
+        <if test="create_dtm_a != null and create_dtm_a != ''">
+            AND create_dtm &gt;= #{create_dtm_a}
+        </if>
+        <if test="create_dtm_b != null and create_dtm_b != ''">
+            AND create_dtm &lt;= #{create_dtm_b}
+        </if>
+
+        <!-- 게시글 수정일 -->
+        <if test="update_dtm_a != null and update_dtm_a != ''">
+            AND update_dtm &gt;= #{update_dtm_a}
+        </if>
+        <if test="update_dtm_b != null and update_dtm_b != ''">
+            AND update_dtm &lt;= #{update_dtm_b}
+        </if>
+
+        <!-- 게시글 삭제일 -->
+        <if test="delete_dtm_a != null and delete_dtm_a != ''">
+            AND delete_dtm &gt;= #{delete_dtm_a}
+        </if>
+        <if test="delete_dtm_b != null and delete_dtm_b != ''">
+            AND delete_dtm &lt;= #{delete_dtm_b}
+        </if>
+
+        <!-- 끌어올리기 일자 -->
+        <if test="remind_dtm_a != null and remind_dtm_a != ''">
+            AND remind_dtm &gt;= #{remind_dtm_a}
+        </if>
+        <if test="remind_dtm_b != null and remind_dtm_b != ''">
+            AND remind_dtm &lt;= #{remind_dtm_b}
+        </if>
+
+        <!-- 거래 완료 일자 -->
+        <if test="deal_dtm_a != null and deal_dtm_a != ''">
+            AND deal_dtm &gt;= #{deal_dtm_a}
+        </if>
+        <if test="deal_dtm_b != null and deal_dtm_b != ''">
+            AND deal_dtm &lt;= #{deal_dtm_b}
+        </if>
+        
+    </select>
+
+    <insert id="writePost" parameterType="com.sist.back.vo.PostVO" useGeneratedKeys="true" keyProperty="postkey">
+    INSERT INTO `post`
+        (
+        `userkey`,
+        `townkey`,
+        `categorykey`,
+        `title`,
+        `method`,
+        `price`,
+        `lastprice`,
+        `content`,
+        `range`,
+        `hope_place`,
+        `hope_lati`,
+        `hope_long`,
+        `canbargain`,
+        `viewqty`,
+        `create_dtm`,
+        `update_dtm`,
+        `delete_dtm`,
+        `remind_dtm`,
+        `dealuserkey`,
+        `deal_dtm`,
+        `userreview`,
+        `userreviewimg`,
+        `userreview_dtm`,
+        `dealuserreview`,
+        `dealuserreviewimg`,
+        `dealuserreview_dtm`,
+        `poststatus`,
+        `isdeleted`,
+        `iscellvisible`,
+        `isbuyvisible`
+        )
+        VALUES
+        (
+        #{userkey},
+        #{townkey},
+        #{categorykey},
+        #{title},
+        #{method},
+        #{price},
+        #{lastprice},
+        #{content},
+        #{range},
+        #{hope_place},
+        #{hope_lati},
+        #{hope_long},
+        #{canbargain},
+        #{viewqty},
+        <if test="poststatus == 0">
+            #{create_dtm},
+            #{update_dtm},
+        </if>
+        <if test="poststatus == 1">
+            now(),
+            now(),
+        </if>
+        #{delete_dtm},
+        <if test="poststatus == 0">
+            #{remind_dtm},
+        </if>
+        <if test="poststatus == 1">
+            now(),
+        </if>
+        #{dealuserkey},
+        #{deal_dtm},
+        #{userreview},
+        #{userreviewimg},
+        #{userreview_dtm},
+        #{dealuserreview},
+        #{dealuserreviewimg},
+        #{dealuserreview_dtm},
+        #{poststatus},
+        0,
+        #{iscellvisible},
+        #{isbuyvisible}
+        )
+    </insert>
+
+    <delete id="deletePostImg" parameterType="String">
+        DELETE FROM `postimg`
+         WHERE postkey=#{postkey}
+    </delete>
+
+    <update id="editPost" parameterType="com.sist.back.vo.PostVO">
+    UPDATE `post`
+        SET
+        `townkey` = #{townkey},
+        `categorykey` = #{categorykey},
+        `title` = #{title},
+        `method` = #{method},
+        `price` = #{price},
+        `lastprice` = #{lastprice},
+        `content` = #{content},
+        `range` = #{range},
+        `hope_place` = #{hope_place},
+        `hope_lati` = #{hope_lati},
+        `hope_long` = #{hope_long},
+        `canbargain` = #{canbargain},
+        <if test="isPostPage = 1 and poststatus != 0">
+        `create_dtm` = now(),
+        </if>
+        `update_dtm` = now(),
+        <if test="isPostPage = 0">
+        `remind_dtm` = #{remind_dtm},
+        </if>
+        <if test="isPostPage = 1 and poststatus != 0">
+        `remind_dtm` = now(),
+        </if>
+        `dealuserkey` = #{dealuserkey},
+        `deal_dtm` = #{deal_dtm},
+        `userreview` = #{userreview},
+        `userreviewimg` = #{userreviewimg},
+        `userreview_dtm` = #{userreview_dtm},
+        `dealuserreview` = #{dealuserreview},
+        `dealuserreviewimg` = #{dealuserreviewimg},
+        `dealuserreview_dtm` = #{dealuserreview_dtm},
+        `poststatus` = #{poststatus},
+        `iscellvisible` = #{iscellvisible},
+        `isbuyvisible` = #{isbuyvisible}
+        WHERE `postkey` = #{postkey}
+    </update>
+
+    <select id="search" resultMap="postMap" parameterType="map">
+        SELECT * FROM `post`
+         WHERE 1 = 1
+            <if test="category != null and category != ''">
+                AND categorykey = #{category}
+            </if>
+            <if test="minPrice != null and minPrice != ''">
+                AND price <![CDATA[>=]]> #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND price <![CDATA[<=]]> #{maxPrice}
+            </if>
+            <if test="sort != null and sort != ''">
+                    <if test="sort == 'recent'">
+                ORDER BY remind_dtm DESC
+                    </if>
+                    <if test="sort == 'popular'">
+                ORDER BY remind_dtm DESC
+                    </if>
+            </if>
+    </select>
+
+    <select id="main" resultMap="postMap" parameterType="String">
+        select * from `post`
+         where 1 = 1
+          <if test ="param == 'free'">
+            AND method = 1 AND price = 0
+          </if>
+          <if test="param != 'free'">
+            AND categorykey = #{param}
+          </if>
+
+          ORDER BY remind_dtm DESC
+          limit 10
+    </select>
+
+    <!-- 관리자 게시글 현황 정보 카운트 -->
+    <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
+      SELECT COUNT(*) AS all_posts, 
+          COUNT(CASE WHEN poststatus = 0 THEN 1 END) AS sale_posts,
+          COUNT(CASE WHEN poststatus = 1 THEN 1 END) AS unsale_posts
+          COUNT(CASE WHEN poststatus = 2 THEN 1 END) AS saleing_posts
+          COUNT(CASE WHEN poststatus = 3 THEN 1 END) AS hide_posts
+          COUNT(CASE WHEN poststatus = 4 THEN 1 END) AS saled_posts
+          COUNT(CASE WHEN poststatus = 5 THEN 1 END) AS deleted_posts
+        FROM post
+    </select> 
 
 </mapper>
 

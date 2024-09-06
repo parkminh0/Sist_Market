@@ -1,21 +1,98 @@
+'use client'
+
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/likelist.css";
+import "/public/css/paging.css";
 import Link from "next/link";
+import axios from "axios";
+import LikePost from "@/component/user/myPage/likelist/LikePost";
+import LikeCategory from "@/component/user/myPage/likelist/LikeCategory";
+import LikeKeyword from "@/component/user/myPage/likelist/LikeKeyword";
+// import { useSearchParams } from "next/navigation";
 
 export default function Page() {
-  // $(function(){
-  // 	$("button.saved-chip").click(function(){
-  // 		if($(this).hasClass("active"))
-  // 			return;
 
-  // 		$("button.saved-chip").removeClass("active");
-  // 		$(this).addClass("active");
-  // 	});
-  // })
+  // const params = useSearchParams();
+  // const userkey = params.get('userkey');
 
-  return (
+  const [likeWhat, setLikeWhat] = useState('post');
+  const [likeList, setLikeList] = useState([]);
+  const [whatNow, setWhatNow] = useState('post');
+  const [totalCount, setTotalCount] = useState(0);
+  const [display, setDisplay] = useState('게시글');
+  const [page, setPage] = useState({});
+
+  const API_URL = '/user/api/likeLists';
+  const DEL_URL = '/adpost/delLike';
+
+  function changePage(pNum) { 
+    getLikeList(likeWhat,pNum);
+  }
+
+  function getLikeList(likeWhat,cPage){
+      axios({
+        url: API_URL,
+        method: "post",
+        params: {
+          "likewhat": likeWhat,
+          "userkey": 1,
+          "cPage": cPage,
+        },
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        setLikeList(res.data.likeList);
+        setWhatNow(likeWhat);
+        setPage(res.data.page);
+        setTotalCount(res.data.totalCount);
+      });
+  }
+
+  function getDelLike(likeWhat,likeKey){
+    alert(`likeWhat: ${likeWhat} || likeKey: ${likeKey}`);
+      axios({
+        url: DEL_URL,
+        method: "post",
+        params: {
+          "likeWhat": likeWhat,
+          "likeKey": likeKey,
+        },
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if(res.data.result_delete > 0){
+          alert("삭제 성공!");
+          getLikeList(likeWhat,page.nowPage);
+        } else{
+          alert("오류가 발생했습니다");
+        }
+      });
+  }
+
+  useEffect(()=>{
+    getLikeList(likeWhat);
+    switch(likeWhat){
+      case "post":
+        setDisplay("게시글");
+        break;
+      case "category":
+        setDisplay("카테고리");
+        break;
+      case "keyword":
+        setDisplay("키워드");
+        break;
+    }
+    
+  },[likeWhat]);
+
+  
+   return(
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -45,13 +122,6 @@ export default function Page() {
                 </div>
               </a>
             </div>
-            <a href="/myPage/likelist">
-              <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                  <font style={{ verticalAlign: "inherit" }}>관심목록</font>
-                </h1>
-              </div>
-            </a>
           </section>
         </div>
         <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -78,34 +148,20 @@ export default function Page() {
                 data-v-81750584=""
                 className="saved-chips-container"
               >
-                <button data-v-09af5873="" className="saved-chip active">
-                  <a
-                    data-v-09af5873=""
-                    aria-current="page"
-                    className="nuxt-link-exact-active nuxt-link-active"
-                  >
-                    상품
-                  </a>
+                <button data-v-09af5873="" onClick={()=>setLikeWhat('post')} className={likeWhat == 'post' ? "saved-chip active" : "saved-chip"}>
+                  게시글
                 </button>
-                <button data-v-09af5873="" className="saved-chip">
-                  <a data-v-09af5873="" className="">
-                    사용자
-                  </a>
+                <button data-v-09af5873="" onClick={()=>setLikeWhat('category')} className={likeWhat == 'category' ? "saved-chip active" : "saved-chip"}>
+                  카테고리
                 </button>
-                <button data-v-09af5873="" className="saved-chip">
-                  <a data-v-09af5873="" className="">
-                    카테고리
-                  </a>
-                </button>
-                <button data-v-09af5873="" className="saved-chip">
-                  <a data-v-09af5873="" className="">
-                    키워드
-                  </a>
+                <button data-v-09af5873="" onClick={()=>setLikeWhat('keyword')} className={likeWhat == 'keyword' ? "saved-chip active" : "saved-chip"}>
+                  키워드
                 </button>
               </div>
               <div data-v-81750584="" className="saved-product">
                 <div data-v-3d362ce8="">
-                  {/* <!-- 없을 경우 --> */}
+                  { likeList.length == 0 ?
+                  /* <!-- 없을 경우 --> */
                   <div data-v-3d362ce8="" className="content">
                     <div
                       data-v-24868902=""
@@ -113,7 +169,7 @@ export default function Page() {
                       className="empty_area"
                     >
                       <p data-v-24868902="" className="desc">
-                        관심 상품이 없습니다.
+                        관심 {display}이(가) 없습니다.
                       </p>
                       <a
                         data-v-420a5cda=""
@@ -126,11 +182,11 @@ export default function Page() {
                       </a>
                     </div>
                   </div>
-                  {/* <!--  --> */}
+                  : /* 있을 경우 */
                   <div data-v-3d362ce8="" className="my_interest">
                     <div data-v-3d362ce8="" className="content-header">
                       <div data-v-3d362ce8="" className="total-rows">
-                        전체 10
+                        전체 {totalCount}
                       </div>
                       <div
                         data-v-69f3b122=""
@@ -153,245 +209,35 @@ export default function Page() {
                       className="wish_list"
                     >
                       {/* ForEach로 돌리기 */}
-                      <li data-v-6aa963fd="">
-                        <div data-v-6aa963fd="" className="wish_item">
-                          <div data-v-6aa963fd="" className="wish_product">
-                            <div data-v-6aa963fd="" className="product_box">
-                              <div
-                                data-v-16369cf2=""
-                                data-v-6aa963fd=""
-                                className="product"
-                                style={{
-                                  backgroundColor: "rgb(235, 240, 245)",
-                                }}
-                              >
-                                <div
-                                  data-v-17ca498c=""
-                                  data-v-16369cf2=""
-                                  className="display_tag_item product_inner_tag tag--default"
-                                >
-                                  <span
-                                    data-v-17ca498c=""
-                                    className="tag_text"
-                                  ></span>
-                                </div>
-                                <picture
-                                  data-v-82b93d2c=""
-                                  data-v-16369cf2=""
-                                  className="picture product_img"
-                                >
-                                  <source
-                                    data-v-82b93d2c=""
-                                    type="image/webp"
-                                    srcSet="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m_webp"
-                                  />
-                                  <source
-                                    data-v-82b93d2c=""
-                                    srcSet="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
-                                  />
-                                  <img
-                                    data-v-82b93d2c=""
-                                    alt="상품 이미지"
-                                    src="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
-                                    loading="lazy"
-                                    className="image full_width"
-                                  />
-                                </picture>
-                              </div>
-                            </div>
-                            <div data-v-6aa963fd="" className="product_detail">
-                              <div data-v-6aa963fd="" className="brand_link">
-                                <a
-                                  data-v-6aa963fd=""
-                                  href="#"
-                                  className="brand-text"
-                                >
-                                  {" "}
-                                  상품명
-                                </a>
-                              </div>
-                              <p data-v-6aa963fd="" className="name">
-                                카테고리
-                              </p>
-                              <p data-v-6aa963fd="" className="size">
-                                <span data-v-6aa963fd="">위치</span>
-                              </p>
-                            </div>
-                            <div
-                              data-v-9ff60cb2=""
-                              data-v-6aa963fd=""
-                              className="wish_buy"
-                            >
-                              <div data-v-9ff60cb2="">
-                                <div
-                                  data-v-0b6ddb6a=""
-                                  data-v-9ff60cb2=""
-                                  className="division_btn_box lg"
-                                >
-                                  <button
-                                    data-v-0b6ddb6a=""
-                                    className="btn_action"
-                                    style={{
-                                      backgroundColor: "rgb(239, 98, 83)",
-                                    }}
-                                  >
-                                    <strong
-                                      data-v-0b6ddb6a=""
-                                      className="title"
-                                    >
-                                      457,000원
-                                    </strong>
-                                  </button>
-                                </div>
-                                <a
-                                  data-v-9ff60cb2=""
-                                  href="#"
-                                  className="status_link"
-                                >
-                                  {" "}
-                                  삭제{" "}
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      <li data-v-6aa963fd="">
-                        <div data-v-6aa963fd="" className="wish_item">
-                          <div data-v-6aa963fd="" className="wish_product">
-                            <div data-v-6aa963fd="" className="product_box">
-                              <div
-                                data-v-16369cf2=""
-                                data-v-6aa963fd=""
-                                className="product"
-                                style={{
-                                  backgroundColor: "rgb(235, 240, 245)",
-                                }}
-                              >
-                                <div
-                                  data-v-17ca498c=""
-                                  data-v-16369cf2=""
-                                  className="display_tag_item product_inner_tag tag--default"
-                                >
-                                  <span
-                                    data-v-17ca498c=""
-                                    className="tag_text"
-                                  ></span>
-                                </div>
-                                <picture
-                                  data-v-82b93d2c=""
-                                  data-v-16369cf2=""
-                                  className="picture product_img"
-                                >
-                                  <source
-                                    data-v-82b93d2c=""
-                                    type="image/webp"
-                                    srcSet="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m_webp"
-                                  />
-                                  <source
-                                    data-v-82b93d2c=""
-                                    srcSet="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
-                                  />
-                                  <img
-                                    data-v-82b93d2c=""
-                                    alt="상품 이미지"
-                                    src="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
-                                    loading="lazy"
-                                    className="image full_width"
-                                  />
-                                </picture>
-                              </div>
-                            </div>
-                            <div data-v-6aa963fd="" className="product_detail">
-                              <div data-v-6aa963fd="" className="brand_link">
-                                <a
-                                  data-v-6aa963fd=""
-                                  href="#"
-                                  className="brand-text"
-                                >
-                                  {" "}
-                                  상품명
-                                </a>
-                              </div>
-                              <p data-v-6aa963fd="" className="name">
-                                카테고리
-                              </p>
-                              <p data-v-6aa963fd="" className="size">
-                                <span data-v-6aa963fd="">위치</span>
-                              </p>
-                            </div>
-                            <div
-                              data-v-9ff60cb2=""
-                              data-v-6aa963fd=""
-                              className="wish_buy"
-                            >
-                              <div data-v-9ff60cb2="">
-                                <div
-                                  data-v-0b6ddb6a=""
-                                  data-v-9ff60cb2=""
-                                  className="division_btn_box lg"
-                                >
-                                  <button
-                                    data-v-0b6ddb6a=""
-                                    className="btn_action"
-                                    style={{ backgroundColor: "#495057" }}
-                                  >
-                                    <strong
-                                      data-v-0b6ddb6a=""
-                                      className="title"
-                                    >
-                                      거래완료
-                                    </strong>
-                                  </button>
-                                </div>
-                                <a
-                                  data-v-9ff60cb2=""
-                                  href="#"
-                                  className="status_link"
-                                >
-                                  {" "}
-                                  삭제{" "}
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
+                      { whatNow == 'post' ? <LikePost likelist={likeList} getDelLike={getDelLike}/> : whatNow == 'category' ? <LikeCategory likelist={likeList} getDelLike={getDelLike}/>: <LikeKeyword likelist={likeList} getDelLike={getDelLike}/>}
                     </ul>
-                    {/* 페이징 */}
-                    {/* <div data-v-1f9de2f0="" data-v-3d362ce8="" className="pagination">
-                                <div data-v-1f9de2f0="" className="pagination_box first last">
-                                    <div data-v-1f9de2f0="" className="prev_btn_box">
-                                        <a data-v-1f9de2f0="" href="/saved/tab/saved-product?page=1" className="btn_arr" aria-label="첫 페이지">
-                                            <svg data-v-1f9de2f0="" xmlns="http://www.w3.org/2000/svg" className="arr-page-first icon sprite-icons">
-                                                <use data-v-1f9de2f0="" href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-first" xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-first"></use>
-                                            </svg>
-                                        </a>
-                                        <a data-v-1f9de2f0="" href="/saved/tab/saved-product?page=0" className="btn_arr" aria-label="이전 페이지">
-                                            <svg data-v-1f9de2f0="" xmlns="http://www.w3.org/2000/svg" className="arr-page-prev icon sprite-icons">
-                                                <use data-v-1f9de2f0="" href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-prev" xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-prev"></use>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                    <div data-v-1f9de2f0="" className="page_bind">
-                                        <a data-v-1f9de2f0="" href="/saved/tab/saved-product?page=1" className="btn_page active" aria-label="1페이지"> 1 </a>
-                                    </div>
-                                    <div data-v-1f9de2f0="" className="next_btn_box">
-                                        <a data-v-1f9de2f0="" href="/saved/tab/saved-product?page=2" className="btn_arr" aria-label="다음 페이지">
-                                            <svg data-v-1f9de2f0="" xmlns="http://www.w3.org/2000/svg" className="arr-page-next icon sprite-icons">
-                                                <use data-v-1f9de2f0="" href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-next" xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-next"></use>
-                                            </svg>
-                                        </a>
-                                        <a data-v-1f9de2f0="" href="/saved/tab/saved-product?page=1" className="btn_arr" aria-label="마지막 페이지">
-                                            <svg data-v-1f9de2f0="" xmlns="http://www.w3.org/2000/svg" className="arr-page-last icon sprite-icons">
-                                                <use data-v-1f9de2f0="" href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-last" xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-arr-page-last"></use>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div> */}
-                    {/* 페이징 */}
+                    {/* 페이징 시작*/}
+                    <div className="mPaginate">
+                      {page.startPage > 1 && (
+                        <Link href="#" onClick={() => changePage(page.startPage - page.pagePerBlock)} className="prev">
+                          이전 {page.pagePerBlock}페이지
+                        </Link>
+                      )}
+                      <ol>
+                        {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                          <li key={pNum}>
+                            {page.nowPage == pNum ? (
+                              <strong title="현재페이지">{pNum}</strong>
+                            ) : (
+                              <Link href="#" onClick={() => changePage(pNum)}>{pNum}</Link>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                      {page.endPage < page.totalPage && (
+                        <Link href="#" onClick={() => changePage(page.endPage + 1)} className="next">
+                          다음 {page.pagePerBlock}페이지
+                        </Link>
+                      )}
+                    </div>
+                    {/* 페이징 끝*/}
                   </div>
+                }
                 </div>
               </div>
             </div>

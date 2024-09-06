@@ -1,11 +1,73 @@
-import React from "react";
+'use client'
 
+import React, { useEffect, useState } from "react";
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
 import "/public/css/myPage.css";
 import Link from "next/link";
 import MyPageSide from "@/component/user/layout/MyPageSide";
+import axios from "axios";
 
 export default function page() {
-  return (
+
+  const API_URL = '/user/api/admin/userEdit';
+  
+  const [uvo, setUvo] = useState({});
+  const [sell_1, setSell_1] = useState(0);
+  const [sell_2, setSell_2] = useState(0);
+  const [sell_3, setSell_3] = useState(0);
+  const [sell_4, setSell_4] = useState(0);
+
+  function getData(){
+    axios({
+      url: API_URL,
+      method: "post",
+      params: {"userkey":1},
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      console.log(res.data.ar);
+      setUvo(res.data.ar);
+      const cell_list = res.data.ar.cell_list;
+      var sell1=0;
+      var sell2=0;
+      var sell3=0;
+      var sell4=0;
+      for(var i=0;i<cell_list.length;i++){
+        switch(cell_list[i].poststatus){
+          case '1':
+            sell1++;
+            break;
+          case '2':
+            sell2++;
+            break;
+          case '3':
+            sell3++;
+            break;
+          case '4':
+            sell4++;
+            break;
+        }
+      }
+      setSell_1(sell1);
+      setSell_2(sell2);
+      setSell_3(sell3);
+      setSell_4(sell4);
+      console.log([sell1,sell2,sell3,sell4]);
+    });
+  }
+  
+  useEffect(()=>{
+    getData()
+  },[]);
+
+
+
+  return ( 
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -62,7 +124,7 @@ export default function page() {
                   <div data-v-ed683452="" className="user_thumb">
                     <img
                       data-v-ed683452=""
-                      src="https://kream-phinf.pstatic.net/MjAyMDEyMTZfMjk2/MDAxNjA4MDk4NDc4NTU5.HC3x5Quc4dbD5BHHQyYMFNNb9Ak0bvnUCMFzgtHhpJkg.5Pg21oe9j3T-gwX6IUER0htw9IluFG7eFM56cyyPusYg.JPEG/p_7b98e208cbff4b758d6c35f2e41c50eb.jpeg"
+                      src={uvo.imgurl}
                       alt="사용자 이미지"
                       className="thumb_img"
                     />
@@ -70,32 +132,22 @@ export default function page() {
                   <div data-v-ed683452="" className="user_info">
                     <div data-v-ed683452="" className="info_box">
                       <strong data-v-ed683452="" className="name">
-                        사용자 nickname 넣기
+                        {uvo.nickname}
                       </strong>
                       <p data-v-ed683452="" className="email">
-                        사용자 id or email 넣기
+                        {uvo.id} [ {uvo.email} ]
                       </p>
                     </div>
                     <div data-v-ed683452="" className="info-buttons">
                       <Link
                         data-v-420a5cda=""
                         data-v-ed683452=""
-                        href="/my/profile-edit"
+                        href="/myPage/profile"
                         className="btn btn outlinegrey small"
                         type="button"
                       >
                         {" "}
-                        계정 관리{" "}
-                      </Link>
-                      <Link
-                        data-v-420a5cda=""
-                        data-v-ed683452=""
-                        href="/social/users/@xarkxinxo"
-                        className="btn btn btn_my_style outlinegrey small"
-                        type="button"
-                      >
-                        {" "}
-                        프로필 보기{" "}
+                        프로필{" "}
                       </Link>
                     </div>
                   </div>
@@ -108,33 +160,11 @@ export default function page() {
               >
                 <Link
                   data-v-247cd1ce=""
-                  href="/my/seller-tier"
+                  href="/myPage/manner"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <picture
-                      data-v-82b93d2c=""
-                      data-v-247cd1ce=""
-                      className="picture icon"
-                    >
-                      <source
-                        data-v-82b93d2c=""
-                        type="image/webp"
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfNTAg/MDAxNzA5MDc2NDUzNTI2.X3zCyNHZl6ro5zP0CdmhxI-0lHeyALdtOJGsu5fUOk0g.qczzAn4l6p1_IxBGZm0v2eKw0xlXnAr3q38A9F2trkYg.PNG/a_04fab09b01d54fddbe4566369a17cb93.png"
-                      />
-                      <source
-                        data-v-82b93d2c=""
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfNTAg/MDAxNzA5MDc2NDUzNTI2.X3zCyNHZl6ro5zP0CdmhxI-0lHeyALdtOJGsu5fUOk0g.qczzAn4l6p1_IxBGZm0v2eKw0xlXnAr3q38A9F2trkYg.PNG/a_04fab09b01d54fddbe4566369a17cb93.png"
-                      />
-                      <img
-                        data-v-82b93d2c=""
-                        src="https://kream-phinf.pstatic.net/MjAyNDAyMjhfNTAg/MDAxNzA5MDc2NDUzNTI2.X3zCyNHZl6ro5zP0CdmhxI-0lHeyALdtOJGsu5fUOk0g.qczzAn4l6p1_IxBGZm0v2eKw0xlXnAr3q38A9F2trkYg.PNG/a_04fab09b01d54fddbe4566369a17cb93.png"
-                        loading="lazy"
-                        width="28"
-                        height="28"
-                        className="image"
-                      />
-                    </picture>
+                    <ThermostatIcon sx={{width: 28, height: 28}} />
                   </div>
                   <p
                     data-v-09bea70c=""
@@ -143,34 +173,12 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    판매자 등급
+                    매너온도
                   </p>
                 </Link>
-                <Link data-v-247cd1ce="" href="/my/point" className="menu-item">
+                <Link data-v-247cd1ce="" href="/myPage/badge" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <picture
-                      data-v-82b93d2c=""
-                      data-v-247cd1ce=""
-                      className="picture icon"
-                    >
-                      <source
-                        data-v-82b93d2c=""
-                        type="image/webp"
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMjYg/MDAxNzA5MDc2NDYyOTc0.JBaX70NZjkAbhB0v3_hNhBhBdklrf-W-OWzs49i8rq8g.prZSxl_09jQoHiRo5lupiL7wtzrA3ztEldXO7gRKFLsg.PNG/a_c23b8b01de384013b4c317029d2a96dc.png"
-                      />
-                      <source
-                        data-v-82b93d2c=""
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMjYg/MDAxNzA5MDc2NDYyOTc0.JBaX70NZjkAbhB0v3_hNhBhBdklrf-W-OWzs49i8rq8g.prZSxl_09jQoHiRo5lupiL7wtzrA3ztEldXO7gRKFLsg.PNG/a_c23b8b01de384013b4c317029d2a96dc.png"
-                      />
-                      <img
-                        data-v-82b93d2c=""
-                        src="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMjYg/MDAxNzA5MDc2NDYyOTc0.JBaX70NZjkAbhB0v3_hNhBhBdklrf-W-OWzs49i8rq8g.prZSxl_09jQoHiRo5lupiL7wtzrA3ztEldXO7gRKFLsg.PNG/a_c23b8b01de384013b4c317029d2a96dc.png"
-                        loading="lazy"
-                        width="28"
-                        height="28"
-                        className="image"
-                      />
-                    </picture>
+                    <MilitaryTechIcon sx={{width: 28, height: 28}} />
                   </div>
                   <p
                     data-v-09bea70c=""
@@ -179,38 +187,16 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    0P
+                    활동 배지
                   </p>
                 </Link>
                 <Link
                   data-v-247cd1ce=""
-                  href="/event/invitation"
+                  href="/myPage/moneybook"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <picture
-                      data-v-82b93d2c=""
-                      data-v-247cd1ce=""
-                      className="picture icon"
-                    >
-                      <source
-                        data-v-82b93d2c=""
-                        type="image/webp"
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMTc1/MDAxNzA5MDc2NDc0MzY3.lSXseb2mOxPEBiAcNuGFbWHWWzXawxLI51O2zYHsOKEg.OOJs82WWwZywHESLzuJIqFIuElRBs1g3dpswp_xfOx4g.PNG/a_11c460121ca54697a8267807c5a14971.png"
-                      />
-                      <source
-                        data-v-82b93d2c=""
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMTc1/MDAxNzA5MDc2NDc0MzY3.lSXseb2mOxPEBiAcNuGFbWHWWzXawxLI51O2zYHsOKEg.OOJs82WWwZywHESLzuJIqFIuElRBs1g3dpswp_xfOx4g.PNG/a_11c460121ca54697a8267807c5a14971.png"
-                      />
-                      <img
-                        data-v-82b93d2c=""
-                        src="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMTc1/MDAxNzA5MDc2NDc0MzY3.lSXseb2mOxPEBiAcNuGFbWHWWzXawxLI51O2zYHsOKEg.OOJs82WWwZywHESLzuJIqFIuElRBs1g3dpswp_xfOx4g.PNG/a_11c460121ca54697a8267807c5a14971.png"
-                        loading="lazy"
-                        width="28"
-                        height="28"
-                        className="image"
-                      />
-                    </picture>
+                      <AutoStoriesIcon sx={{width: 28, height: 28}} />
                   </div>
                   <p
                     data-v-09bea70c=""
@@ -219,34 +205,12 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    친구 초대
+                    가계부
                   </p>
                 </Link>
                 <Link data-v-247cd1ce="" href="/notice" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <picture
-                      data-v-82b93d2c=""
-                      data-v-247cd1ce=""
-                      className="picture icon"
-                    >
-                      <source
-                        data-v-82b93d2c=""
-                        type="image/webp"
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMjEw/MDAxNzA5MDc2NTAxNTEw.5JpnXqmK3uzsC47kZZkmFx8ntlRmGdt31S7xe5lrnmsg.9KJDo6cuN9195WwaI2NZmlDT8gnLzUUf4M2pPLF24nUg.PNG/a_cbb55424c3ad427c88d2b8327100e5fc.png"
-                      />
-                      <source
-                        data-v-82b93d2c=""
-                        srcSet="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMjEw/MDAxNzA5MDc2NTAxNTEw.5JpnXqmK3uzsC47kZZkmFx8ntlRmGdt31S7xe5lrnmsg.9KJDo6cuN9195WwaI2NZmlDT8gnLzUUf4M2pPLF24nUg.PNG/a_cbb55424c3ad427c88d2b8327100e5fc.png"
-                      />
-                      <img
-                        data-v-82b93d2c=""
-                        src="https://kream-phinf.pstatic.net/MjAyNDAyMjhfMjEw/MDAxNzA5MDc2NTAxNTEw.5JpnXqmK3uzsC47kZZkmFx8ntlRmGdt31S7xe5lrnmsg.9KJDo6cuN9195WwaI2NZmlDT8gnLzUUf4M2pPLF24nUg.PNG/a_cbb55424c3ad427c88d2b8327100e5fc.png"
-                        loading="lazy"
-                        width="28"
-                        height="28"
-                        className="image"
-                      />
-                    </picture>
+                    <CampaignIcon sx={{width: 28, height: 28}} />
                     <span data-v-247cd1ce="" className="badge"></span>
                   </div>
                   <p
@@ -256,7 +220,7 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    공지사항
+                    공지사항/이벤트
                   </p>
                 </Link>
               </div>
@@ -270,7 +234,7 @@ export default function page() {
                   {" "}
                   구매 내역{" "}
                 </h3>
-                <Link data-v-6752ceb2="" href="/my/buying" className="btn_more">
+                <Link data-v-6752ceb2="" href="/myPage/buylist" className="btn_more">
                   <span data-v-6752ceb2="" className="btn_txt">
                     더보기
                   </span>
@@ -295,7 +259,7 @@ export default function page() {
                           전체
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          77
+                          {uvo.buy_list ? uvo.buy_list.length : 0}
                         </dd>
                       </dl>
                     </Link>
@@ -308,7 +272,14 @@ export default function page() {
                     className="purchase_list all bid"
                   >
                     {/* 여기서 FOREACH로 3개만 출력하기 */}
-                    <div data-v-eff62a72="">
+                    {uvo.buy_list ? uvo.buy_list.map((blvo,index)=>{
+                      const price = blvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
+                    
+                      if(index>2){
+                        return;
+                      }
+                      return(
+                    <div key={index} data-v-eff62a72="">
                       <div data-v-53e92c51="" data-v-eff62a72="">
                         <div
                           data-v-53e92c51=""
@@ -326,7 +297,7 @@ export default function page() {
                               <img
                                 data-v-53e92c51=""
                                 alt="product_image"
-                                src="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
+                                src={blvo.pimg_list[0].imgurl}
                                 className="list_item_img"
                                 style={{
                                   backgroundColor: "rgb(235, 240, 245)",
@@ -338,13 +309,13 @@ export default function page() {
                               className="list_item_title_wrap"
                             >
                               <p data-v-53e92c51="" className="list_item_title">
-                                Nike Air Force 1 '07 WB Flax
+                                {blvo.title}
                               </p>
                               <p
                                 data-v-53e92c51=""
                                 className="list_item_description"
                               >
-                                <span data-v-53e92c51="">280</span>
+                                <span data-v-53e92c51="">{price}</span>
                               </p>
                             </div>
                           </div>
@@ -360,13 +331,19 @@ export default function page() {
                                 className="text-lookup secondary_title display_paragraph"
                                 style={{ color: "rgba(34, 34, 34, 0.5)" }}
                               >
-                                23/10/31
+                                {blvo.create_dtm.split(" ")[0]}
                               </p>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                      )}):
+                      <div
+                      data-v-53e92c51=""
+                      className="purchase_list_display_item"
+                      style={{ backgroundColor: "rgb(255, 255, 255)" }}
+                    >구매내역이 없습니다.</div>}
                   </div>
                 </div>
               </div>
@@ -382,7 +359,7 @@ export default function page() {
                 </h3>
                 <Link
                   data-v-6752ceb2=""
-                  href="/my/selling"
+                  href="/myPage/celllist"
                   className="btn_more"
                 >
                   <span data-v-6752ceb2="" className="btn_txt">
@@ -409,7 +386,7 @@ export default function page() {
                           전체
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          2
+                          {uvo.cell_list ? uvo.cell_list.length : 0}
                         </dd>
                       </dl>
                     </Link>
@@ -421,7 +398,19 @@ export default function page() {
                           판매중
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          0
+                          {sell_1}
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
+                  <div data-v-2cbb289b="" className="tab_item tab_on">
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          예약중
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                          {sell_2}
                         </dd>
                       </dl>
                     </Link>
@@ -433,7 +422,7 @@ export default function page() {
                           거래완료
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          0
+                          {sell_3}
                         </dd>
                       </dl>
                     </Link>
@@ -445,7 +434,7 @@ export default function page() {
                           숨김
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          2
+                          {sell_4}
                         </dd>
                       </dl>
                     </Link>
@@ -458,7 +447,14 @@ export default function page() {
                     className="purchase_list all ask"
                   >
                     {/* 여기서 FOREACH로 3개만 뿌리기 */}
-                    <div data-v-eff62a72="">
+                    {uvo.cell_list ? uvo.cell_list.map((clvo,index)=>{
+                      const price = clvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
+                    
+                      if(index>2){
+                        return;
+                      }
+                      return(
+                    <div key={index} data-v-eff62a72="">
                       <div data-v-53e92c51="" data-v-eff62a72="">
                         <div
                           data-v-53e92c51=""
@@ -476,7 +472,7 @@ export default function page() {
                               <img
                                 data-v-53e92c51=""
                                 alt="product_image"
-                                src="https://kream-phinf.pstatic.net/MjAyMzA5MDFfMjY3/MDAxNjkzNTM2ODU3Nzky.cwUz4XPgTJLOf-4_8AZRdBPSIxvHm4-U3SBZxrOpXoAg.GRa1UTxYW5P3E8mDrrS7ICmCYb365fbWdwJxrulz0ikg.JPEG/a_492bb72bcd8c4e888e0a8ba1edc1ad50.jpg?type=m"
+                                src={clvo.pimg_list[0].imgurl}
                                 className="list_item_img"
                                 style={{
                                   backgroundColor: "rgb(244, 244, 244)",
@@ -488,13 +484,13 @@ export default function page() {
                               className="list_item_title_wrap"
                             >
                               <p data-v-53e92c51="" className="list_item_title">
-                                IAB Studio Blocked Pigment Sweatpants Black
+                                {clvo.title}
                               </p>
                               <p
                                 data-v-53e92c51=""
                                 className="list_item_description"
                               >
-                                <span data-v-53e92c51="">M</span>
+                                <span data-v-53e92c51="">{price}</span>
                               </p>
                             </div>
                           </div>
@@ -510,13 +506,19 @@ export default function page() {
                                 className="text-lookup secondary_title display_paragraph"
                                 style={{ color: "rgba(34, 34, 34, 0.5)" }}
                               >
-                                21/05/12
+                                {clvo.create_dtm.split(" ")[0]}
                               </p>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                      )}):
+                      <div
+                      data-v-53e92c51=""
+                      className="purchase_list_display_item"
+                      style={{ backgroundColor: "rgb(255, 255, 255)" }}
+                    >판매내역이 없습니다.</div>}
                   </div>
                 </div>
               </div>
@@ -530,7 +532,7 @@ export default function page() {
                   {" "}
                   관심 상품{" "}
                 </h3>
-                <Link data-v-6752ceb2="" href="/saved" className="btn_more">
+                <Link data-v-6752ceb2="" href='/myPage/likelist' className="btn_more">
                   <span data-v-6752ceb2="" className="btn_txt">
                     더보기
                   </span>
@@ -545,7 +547,14 @@ export default function page() {
               <div data-v-7b7d73d2="" className="interest_product">
                 <div data-v-7b7d73d2="" className="product_list">
                   {/* 여기서 FOREACH로 8개 뿌리기 */}
+                  { uvo.w_list ? uvo.w_list.map((wlvo,index)=>{
+                      if(index>7){
+                        return;
+                      }
+                    const price = wlvo.pvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
+                    return(
                   <div
+                    key={index}
                     data-v-2c8107bc=""
                     data-v-7b7d73d2=""
                     className="product_item"
@@ -587,19 +596,10 @@ export default function page() {
                             data-v-16369cf2=""
                             className="picture product_img"
                           >
-                            <source
-                              data-v-82b93d2c=""
-                              type="image/webp"
-                              srcSet="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m_webp"
-                            />
-                            <source
-                              data-v-82b93d2c=""
-                              srcSet="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
-                            />
                             <img
                               data-v-82b93d2c=""
-                              alt="나이키 에어포스 1 '07 WB 플랙스"
-                              src="https://kream-phinf.pstatic.net/MjAyNDA2MjJfNDUg/MDAxNzE5MDMwMzg4NzUy.Sl-9uwQZMiwX_p1ABfkyg0pWIAR7sjQcv-5sx8n15HUg.HVdHcH-OfAwHNq2OfTKiwzp3nfs4pfjaOSEYVqsyV1Ig.PNG/a_7bd52b94ebf748f9ad7bcc633613ef7b.png?type=m"
+                              alt={wlvo.pvo.title}
+                              src={wlvo.pvo.pimg_list[0].imgurl}
                               loading="lazy"
                               className="image full_width"
                             />
@@ -626,26 +626,28 @@ export default function page() {
                         <div data-v-2c8107bc="" className="brand">
                           <p data-v-2c8107bc="" className="brand-text">
                             {" "}
-                            상품명{" "}
+                            {wlvo.pvo.title}{" "}
                           </p>
                         </div>
                         <p data-v-2c8107bc="" className="name">
-                          카테고리
+                          {wlvo.pvo.cvo.categoryname}
                         </p>
                         <div data-v-2c8107bc="" className="price">
                           <div data-v-2c8107bc="" className="amount lg">
                             <em data-v-2c8107bc="" className="num">
                               {" "}
-                              가격{" "}
+                              {price}{" "}
                             </em>
                           </div>
                           <div data-v-2c8107bc="" className="desc">
-                            <p data-v-2c8107bc="">게시글 위치</p>
+                            <p data-v-2c8107bc="">{wlvo.pvo.hope_place}</p>
                           </div>
                         </div>
                       </div>
                     </Link>
                   </div>
+                  )}) : ''
+                  }
                 </div>
               </div>
             </div>

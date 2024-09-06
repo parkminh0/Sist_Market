@@ -11257,7 +11257,7 @@
 
 ._1miwlnq {
     display: grid;
-    grid-template-columns: repeat(4,1fr);
+    grid-template-columns: repeat(3,1fr);
     overflow-x: scroll;
     scroll-snap-type: x;
     scrollbar-width: none
@@ -12555,7 +12555,7 @@
 @media screen and (min-width: 768px) {
     .vqbuc9e {
         column-gap:20px;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(3,1fr);
         row-gap: 32px
     }
 }
@@ -13225,7 +13225,7 @@
 @media screen and (min-width: 768px) {
     ._1myjg7j8 {
         column-gap:20px;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(3,1fr);
         row-gap: 32px
     }
 }
@@ -13657,7 +13657,7 @@
 @media screen and (min-width: 768px) {
     ._13tpfox0 {
         column-gap:22px;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(3,1fr);
         row-gap: 40px
     }
 
@@ -13685,7 +13685,7 @@
 @media screen and (min-width: 1200px) {
     ._13tpfox0 {
         column-gap:22px;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(3,1fr);
         row-gap: 48px
     }
 }
@@ -14987,7 +14987,7 @@
 
 @media screen and (min-width: 1200px) {
     ._7rxdpi0 {
-        grid-template-columns:repeat(4,1fr)
+        grid-template-columns:repeat(3,1fr)
     }
 }
 

@@ -1,7 +1,40 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import { usePathname } from "next/navigation";
+
+function parentChildPath(link_item,pathname){
+  var parent_path = pathname;
+  var child_path = pathname;
+  var checkParent = false;
+  var checkChild = false;
+  var parentIndex = 0;
+  while(!checkParent){
+    for(var i=0; i<link_item.length; i++){
+      if(link_item[i].path == parent_path){
+        checkParent = true;
+        parentIndex = i;
+        break;
+      }
+    }
+    if(!checkParent){
+      parent_path = parent_path.substring(0, parent_path.lastIndexOf("/"));
+    }
+  }
+  while(!checkChild){
+    for(var j=0; j<link_item[parentIndex].child.length; j++){
+      if(link_item[parentIndex].child[j].path == child_path){
+        checkChild = true;
+        break;
+      }
+    }
+    if(!checkChild){
+      child_path = child_path.substring(0, child_path.lastIndexOf("/"));
+    }
+  }
+  
+  return [parent_path, child_path];
+}
+
 
 export default function SidebarItem(parentItem) {
   const link_item = [
@@ -55,6 +88,11 @@ export default function SidebarItem(parentItem) {
           title: "회원 조회",
           path: "/admin/user",
         },
+        {
+          title: "회원 정보",
+          path: "/admin/user/userEdit",
+        },
+      
       ],
     },
     {
@@ -63,8 +101,12 @@ export default function SidebarItem(parentItem) {
       class: "link board",
       child: [
         {
-          title: "게시판",
-          path: "/",
+          title: "게시판 카테고리 관리",
+          path: "/admin/board",
+        },
+        {
+          title: "게시물 관리",
+          path: "/admin/board/post",
         },
       ],
     },
@@ -95,16 +137,15 @@ export default function SidebarItem(parentItem) {
   const pathname = usePathname();
   const tmp = pathname.split("/").length - 1;
   var parent_path = "";
-  var childpath = "";
-  if (tmp == 2) {
-    parent_path = pathname;
-  } else if(tmp == 4) {
-    parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
-    parent_path = parent_path.substring(0, parent_path.lastIndexOf("/"));
-    childpath = parent_path;
-  } else {
-    parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
-  }
+  var child_path = "";
+
+  [parent_path, child_path] = parentChildPath(link_item, pathname);
+
+  // if (tmp == 2) {
+  //   parent_path = pathname;
+  // } else {
+    // parent_path = pathname.substring(0, pathname.lastIndexOf("/"));
+  // }
 
   return (
     <>
@@ -154,7 +195,7 @@ export default function SidebarItem(parentItem) {
                 <li className="hasChild ">
                   <a
                     id="QA_Lnb_Menu7"
-                    href="Controller?type=adbbs"
+                    href="/admin/board"
                     className="link board"
                     name="게시판"
                   >
@@ -236,10 +277,10 @@ export default function SidebarItem(parentItem) {
                           ? parent.child &&
                             parent.child.map((child, j) => (
                               <li
+                                key={`child - ${j}`}
                                 className={
-                                  child.path == pathname ? "selected" : ""
+                                  child.path == child_path ? "selected" : ""
                                 }
-                                key={j}
                               >
                                 <Link href={child.path} className="link ">
                                   <span className="ellips">{child.title}</span>

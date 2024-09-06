@@ -6,6 +6,8 @@ import com.sist.back.vo.PostImgVO;
 
 @Mapper
 public interface PostimgMapper {
-    
+
     PostImgVO[] all();
+
+    int addPostImg(PostImgVO vo);
 }
