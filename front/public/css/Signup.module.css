@@ -75,4 +75,29 @@
   .link:hover {
     text-decoration: underline;
   }
+  .inputWithButton {
+    display: flex;
+    align-items: center;
+  }
+  
+  .verifyButton {
+    //margin-left: 5px;
+    margin-top: 5px;
+    padding: 6px 10px; /* 버튼 크기 줄이기 */
+    font-size: 14px; /* 글자 크기 줄이기 */
+    background-color: #ff7e36; /* 당근마켓 오렌지 색상 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .verifyButton:hover {
+    background-color: #ff5a00; /* hover 시 더 진한 오렌지 색상 */
+  }
+  
+  .input {
+    flex: 1; /* input이 버튼 옆에서 충분한 공간을 차지하게 */
+  }
   

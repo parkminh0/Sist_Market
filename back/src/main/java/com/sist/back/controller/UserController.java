@@ -23,8 +23,6 @@ import com.sist.back.vo.userVO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -63,15 +61,6 @@ public class UserController {
     public Map<String, Object> searchUserForAdmin(String search_type, String type, String regist_start_date,
             String regist_end_date, String isdeleted, String recent_login_start_date, String recent_login_end_date,
             String isauthorized, String cPage) {
-        //System.out.println("@@@@@@@@@search_type="+search_type);
-        //System.out.println("@@@@@@@@@type="+type);
-        //System.out.println("@@@@@@@@@regist_start_date="+regist_start_date);
-        //System.out.println("@@@@@@@@@isdeleted="+isdeleted);
-        //System.out.println("@@@@@@@@@recent_login_start_date="+recent_login_start_date);
-        //System.out.println("@@@@@@@@@recent_login_end_date="+recent_login_end_date);
-        //System.out.println("@@@@@@@@@isauthorized="+isauthorized);
-        //System.out.println("@@@@@@@@@cPage="+cPage);
-
 
         Map<String, String> iMap = new HashMap<>();
         
@@ -180,7 +169,7 @@ public class UserController {
     //jwt token login 
     @PostMapping("/api/login")
     @ResponseBody
-     public Map<String, Object> login(userVO vo, HttpServletResponse res)
+     public Map<String, Object> login(userVO vo, HttpServletResponse res){
     
     Map<String, Object> map = new HashMap<>();
     int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
@@ -200,7 +189,7 @@ public class UserController {
             .secure(true)
             .build();
             res.addHeader("Set-Cookie", cookie.toString());
-        cookie = ResponseCookie.from("refreshToken",uvo.getRefresh_token())
+            cookie = ResponseCookie.from("refreshToken",uvo.getRefresh_token())
             .path("/")
             .sameSite("None")
             .httpOnly(false)
@@ -271,6 +260,7 @@ public class UserController {
 public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
     System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
     System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@"+nickname);
+    System.out.println("@@@@@@@@@@@@@@이메일@@@@@@@@@@@@@@"+email);
     Map<String, Object> map = new HashMap<>();  // 반환할 맵
     userVO fvo = service.findByemail(email);  // 이메일로 회원 검색
     
@@ -451,6 +441,34 @@ public Map<String, Object> kakaologin(String email, String nickname, HttpServlet
         List<PostVO> cellList = service.getCellList(get_map);
         bl_map.put("celllist", cellList);
         return bl_map;
+    }
+
+    
+    //회원가입 전화번호 중복 검사 
+    @RequestMapping("/api/chkPhone")
+    @ResponseBody
+    public Map<String,Object> chkPhone(String phone){
+        Map<String,Object> map = new HashMap<>();
+        int cnt = 0;
+        userVO vo = service.findByphone(phone);
+        if(vo!=null){   //중복이 된 경우 1 뱉어냄.
+            cnt = 1;
+        }
+        map.put("cnt", cnt);
+        return map;
+    }
+    //회원가입 이메일 중복 검사 
+    @RequestMapping("/api/chkEmail")
+    @ResponseBody
+    public Map<String,Object> chkEmail(String email){
+        Map<String,Object> map = new HashMap<>();
+        int cnt = 0;
+        userVO vo = service.findByemail(email);
+        if(vo!=null){   //중복이 된 경우 1 뱉어냄.
+            cnt = 1;
+        }
+        map.put("cnt", cnt);
+        return map;
     }
 
     
