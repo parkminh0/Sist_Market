@@ -175,6 +175,7 @@ export default function Header() {
       if(res.data.msg== "로그아웃"){
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
+        Cookies.remove("userkey");
         Cookies.remove("next-auth.session-token");
         Cookies.remove("next-auth.csrf-token");
         
@@ -657,7 +658,7 @@ const goController = async () => {
 
       
       {/* 로그인 모달 */}
-  <React.Fragment>
+      <React.Fragment>
   <Dialog open={open} onClose={handleClose} PaperProps={{ component: "form", onSubmit: (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -671,9 +672,51 @@ const goController = async () => {
       },
     }}
   >
-    <DialogTitle>로그인</DialogTitle>
-    <DialogContent>
-      <FormControl fullWidth margin="dense" variant="standard">
+    <DialogTitle style={{ textAlign: 'center', padding: '16px 24px', position: 'relative' }}>
+      {/* X 버튼 추가 */}
+      <Button 
+        onClick={handleClose} 
+        style={{ 
+          position: 'absolute', 
+          top: '7px', 
+          right: '7px', 
+          minWidth: '25px', 
+          minHeight: '25px', 
+          borderRadius: '50%', 
+          backgroundColor: '#FF6F0F', 
+          color: '#fff', 
+          fontSize: '12px', 
+          fontWeight: 'bold',
+          lineHeight: '16px',
+          padding: '0',
+          
+        }}
+      >
+        &times;
+      </Button>
+
+      <img src="/img/karrot.png" alt="당근마켓 로고" style={{marginTop :'20px', width: '100px' }} />
+      <div style={{ fontWeight: 'bold', fontSize: '25px', color: '#FF6F0F' }}>로그인</div>
+    </DialogTitle>
+    <DialogContent style={{ paddingBottom: '0px' }}>
+      <Button 
+        type="button" 
+        onClick={(e) => {
+          e.preventDefault();
+          kakao_login(e);  // 카카오 로그인 함수 호출
+        }}
+        style={{ backgroundColor: '#E0E0E1', color: '#3C1E1E', width: '100%', padding: '10px 0', marginBottom: '12px' }}  // 회색 카카오톡 버튼
+      >
+        <img src="/img/kakao.png" alt="카카오톡 로그인" style={{ marginRight: '8px', height: '24px' }} />
+        카카오톡으로 로그인
+      </Button>
+      <div style={{ textAlign: 'center', margin: '12px 0' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '0' }} />
+        <span style={{ background: '#fff', padding: '0 10px', position: 'relative', top: '-0.6em', color: '#999', fontSize: '12px' }}>
+          or
+        </span>
+      </div>
+      <FormControl fullWidth margin="dense" variant="standard" style={{ marginBottom: '4px' }}>
         <TextField
           autoFocus
           required
@@ -684,11 +727,20 @@ const goController = async () => {
           type="text"
           fullWidth
           size="small"
-         
           onChange={handleChange}
+          InputProps={{
+            style: {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            disableUnderline: true,
+          }}
+         
+          onFocus={(e) => e.target.style.border = '1px solid #FF6F0F'}
+          onBlur={(e) => e.target.style.border = '1px solid #ccc'}
         />
       </FormControl>
-      <FormControl fullWidth margin="dense" variant="standard">
+      <FormControl fullWidth margin="dense" variant="standard" style={{ marginBottom: '4px' }}>
         <TextField
           required
           margin="dense"
@@ -699,22 +751,36 @@ const goController = async () => {
           fullWidth
           size="small"
           onChange={handleChange}
+          InputProps={{
+            style: {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            disableUnderline: true,
+          }}
         />
       </FormControl>
     </DialogContent>
-    <DialogActions>
-      <Button type="button" 
-        onClick={(e) => {
-          e.preventDefault();  // 이벤트 전파 방지
-          kakao_login(e);  // 카카오 로그인 함수 호출
-        }}
-      >카카오 로그인</Button>
-      <Button type="button" onClick={jwtLogin}>로그인</Button>
-      <Button type="button" onClick={handleSignUp}>회원가입</Button>
-      <Button onClick={handleClose}>취소</Button>
+    <DialogActions style={{ justifyContent: 'center', paddingTop: '12px' }}>
+      <Button 
+        type="button" 
+        onClick={jwtLogin}
+        style={{ backgroundColor: '#FF6F0F', color: '#fff', width: '80%', padding: '10px 0' }}
+      >
+        로그인
+      </Button>
     </DialogActions>
+    <div style={{ textAlign: 'center', paddingBottom: '12px' }}>
+      <p style={{ fontSize: '14px', color: '#999' }}>
+        가입된 계정이 없으신가요? 
+        <Link href="/SignUp" onClick={handleSignUp} style={{ color: '#FF6F0F', textDecoration: 'none', marginLeft: '5px' }}>회원가입</Link>
+      </p>
+    </div>
   </Dialog>
 </React.Fragment>
+
+
+
 
       {/* 위치설정 */}
       <div

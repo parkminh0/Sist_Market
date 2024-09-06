@@ -61,7 +61,6 @@ public class UserController {
             String regist_end_date, String isdeleted, String recent_login_start_date, String recent_login_end_date,
             String isauthorized, String cPage) {
 
-
         Map<String, String> iMap = new HashMap<>();
 
         if (type != null && type.length() != 0) {
@@ -173,7 +172,6 @@ public class UserController {
     Map<String, Object> map = new HashMap<>();
     int cnt = 0;  //아무 작업도 못했어 0 한번했어 1 
     String msg = "로그인에 실패하였습니다.";
-
     userVO uvo = null;
     if (vo.getId() != null) {
       
@@ -195,7 +193,13 @@ public class UserController {
             .secure(true)
             .build();
             res.addHeader("Set-Cookie", cookie.toString());
-            //map.put("mvo",m);
+            cookie = ResponseCookie.from("userkey",uvo.getUserkey())
+            .path("/")
+            .sameSite("None")
+            .httpOnly(false)
+            .secure(true)
+            .build();
+            res.addHeader("Set-Cookie", cookie.toString());
             cnt =1; 
             msg="success";
     }
@@ -206,37 +210,47 @@ public class UserController {
     return map;
   }
 
-  //jwt token logout
-  @PostMapping("/api/logout")
-  @ResponseBody
-  public Map<String, Object> logout(HttpServletResponse res) {
-      
-      Map <String, Object> map = new HashMap<>();
-      //쿠키에서 accessToken과 refreshToken을 삭제하여 클라이언트에게 보내야한다. 
-      ResponseCookie cookie = ResponseCookie.from("accessToken",null)
-      .path("/")
-      .sameSite("None")
-      .secure(true)
-      .httpOnly(true)
-      .maxAge(0)
-      .build();
-      res.addHeader("Set-Cookie", cookie.toString());
+    // jwt token logout
+    @PostMapping("/api/logout")
+    @ResponseBody
+    public Map<String, Object> logout(HttpServletResponse res) {
 
-      cookie = ResponseCookie.from("refreshToken",null)
-      .path("/")
-      .sameSite("None")
-      .secure(true)
-      .httpOnly(true)
-      .maxAge(0)
-      .build();
-      res.addHeader("Set-Cookie", cookie.toString());
-    
-    
-      map.put("msg", "로그아웃");
-      map.put("totalCount", 0);
-      
-      return map;
-  }
+        Map<String, Object> map = new HashMap<>();
+        // 쿠키에서 accessToken과 refreshToken, userkey를 삭제하여 클라이언트에게 보내야한다.
+        ResponseCookie cookie = ResponseCookie.from("accessToken", null)
+                .path("/")
+                .sameSite("None")
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        res.addHeader("Set-Cookie", cookie.toString());
+
+        cookie = ResponseCookie.from("refreshToken", null)
+                .path("/")
+                .sameSite("None")
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        res.addHeader("Set-Cookie", cookie.toString());
+
+        cookie = ResponseCookie.from("userkey", null)
+                .path("/")
+                .sameSite("None")
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        res.addHeader("Set-Cookie", cookie.toString());
+
+        map.put("msg", "로그아웃");
+        map.put("totalCount", 0);
+
+        return map;
+    }
+
+
 
   @PostMapping("/api/reg")
   @ResponseBody
@@ -253,14 +267,14 @@ public class UserController {
     return map;
   }
 
-  
+
 
     // kakao_login & reg
     @RequestMapping("/kakao/login")
     @ResponseBody
     public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
-        System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
-        System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
+        //System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
+        //System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
         userVO fvo = service.findByemail(email); // 이메일로 회원 검색
 
@@ -304,6 +318,15 @@ public class UserController {
                         .secure(true)
                         .build();
                 res.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+                ResponseCookie userkeyCookie = ResponseCookie
+                        .from("userkey", uvo.getUserkey())
+                        .path("/")
+                        .sameSite("None")
+                        .httpOnly(false)
+                        .secure(true)
+                        .build();
+                res.addHeader("Set-Cookie", userkeyCookie.toString());
 
                 map.put("msg", "로그인 성공");
                 map.put("uvo", uvo);
@@ -437,6 +460,7 @@ public class UserController {
     }
 
 
+
     
     //회원가입 전화번호 중복 검사 
     @RequestMapping("/api/chkPhone")
@@ -466,6 +490,7 @@ public class UserController {
     }
 
     
+
 
     // 회원정보 수정
     @RequestMapping("/editImage")
@@ -538,6 +563,5 @@ public class UserController {
         map.put("cnt", service.userDelForAdmin(userkey));
         return map;
     }
-
 
 }

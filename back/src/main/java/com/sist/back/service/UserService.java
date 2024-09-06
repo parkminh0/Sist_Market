@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.io.File;
 
-import org.apache.tomcat.util.codec.binary.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,23 +38,17 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
 
-    //jwt reg
+    //jwt reg > refreshToken 생성 
     public userVO reg(userVO vo) {
         
             //패스워드가 일치하는지 확인 
             if (vo.getPw() != null) {
                 vo.setPw(passwordEncoder.encode(vo.getPw()));
-            }
-        
+            } 
             Map<String,Object> map = new HashMap();
             map.put("id", vo.getId());
             map.put("userkey", vo.getUserkey());
             map.put("pw", vo.getPw());
-            map.put("name", vo.getName());
-            map.put("phone", vo.getPhone());
-            map.put("email", vo.getEmail());
-            map.put("imgurl", vo.getImgurl());
-            map.put("isauthorized", vo.getIsauthorized());
        
             String refreshToken = jwtProvider.genRefreshToken(map);
             vo.setRefresh_token(refreshToken);
@@ -67,24 +61,19 @@ public class UserService {
             }
     }
 
-    // jwt login 을 위한 인증
+    // jwt login 을 위한 인증 > refreshToken , accessToken 생성 
     public userVO authAndMakeToken(String id,String pw) {
         userVO uvo = null;
         try {
             uvo = mapper.findByid(id);
-            if (uvo == null) {
+            if (uvo == null) {  // 회원이 없는 경우 > RuntimeException 찍어줌 
             throw new RuntimeException("존재하지 않음");}
             //패스워드가 일치하는지 확인 
-            if(pw == null ||passwordEncoder.matches(pw, uvo.getPw())){
-            Map<String,Object> map = new HashMap();
+            if(pw == null ||passwordEncoder.matches(pw, uvo.getPw())){  //비밀번호가 없을경우 > 소셜로그인 
+            Map<String,Object> map = new HashMap(); // 있을 경우는 패스워드 비교하여 맞는지 확인해줌
             map.put("id", uvo.getId());
             map.put("userkey", uvo.getUserkey());
             map.put("pw", uvo.getPw());
-            map.put("name", uvo.getName());
-            map.put("phone", uvo.getPhone());
-            map.put("email", uvo.getEmail());
-            map.put("imgurl", uvo.getImgurl());
-            map.put("isauthorized", uvo.getIsauthorized());
 
             String accessToken = jwtProvider.genAccessToken(map);
             uvo.setAccess_token(accessToken);

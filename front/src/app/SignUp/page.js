@@ -34,8 +34,17 @@ export default function Page() {
   const emailInputRef = React.useRef(null);
 
   const handlePhoneChange = (e) => {
-    const inputPhone = e.target.value;
-    setPhone(inputPhone);
+
+    let inputPhone = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+
+    if (inputPhone.length <= 3) {
+      setPhone(inputPhone);
+    } else if (inputPhone.length <= 7) {
+      setPhone(inputPhone.slice(0, 3) + '-' + inputPhone.slice(3));
+    } else {
+      setPhone(inputPhone.slice(0, 3) + '-' + inputPhone.slice(3, 7) + '-' + inputPhone.slice(7, 11));
+    }
+
   };
 
   const handleEmailChange = (e) => {

@@ -426,8 +426,6 @@
       SELECT * FROM user 
       WHERE phone = #{phone} LIMIT 1;
     </select>
-
-
       
     <!-- 이미지 변경 -->
     <update id="editImage" parameterType="com.sist.back.vo.userVO">
@@ -498,6 +496,13 @@
           ) AS temp
       )
     </update>
+
+    <!-- 회원가입 전화번호 중복검사-->
+    <select id="findbyPhone" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT * FROM user 
+      WHERE phone = #{phone} LIMIT 1;
+    </select>
+
 
 
 
