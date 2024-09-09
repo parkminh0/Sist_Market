@@ -7,6 +7,7 @@ import "/public/css/buylist.css";
 import "/public/css/paging.css";
 import axios from "axios";
 import BuyList from "@/component/user/myPage/buylist/BuyList";
+import Cookies from "js-cookie";
 
 export default function Page() {
 
@@ -18,6 +19,7 @@ export default function Page() {
   const [page, setPage] = useState({});
 
   const API_URL = '/user/api/buyList';
+  const userkey = Cookies.get("userkey");
 
   function changePage(pNum) { 
     getBuyList(pNum);
@@ -28,7 +30,7 @@ export default function Page() {
       url: API_URL,
       method: 'post',
       params: {
-          userkey: 1,
+          userkey: userkey,
           cPage: cPage,
           start_date: startDate,
           end_date: endDate,

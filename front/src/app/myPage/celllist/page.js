@@ -10,6 +10,7 @@ import "/public/css/paging.css";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import CellList from "@/component/user/myPage/cellList/CellList";
+import Cookies from "js-cookie";
 
 export default function page() {
 
@@ -29,6 +30,7 @@ export default function page() {
 
   var cellCategory = useSearchParams().get("cellCategory");
   const cellCategoryList = ['onSale','Selling','Sold','Hidden'];
+  const userkey = Cookies.get("userkey");
 
   function changePage(pNum) { 
     getCellList(pNum);
@@ -44,7 +46,7 @@ export default function page() {
       url: API_URL,
       method: 'post',
       params: {
-          userkey: 1,
+          userkey: userkey,
           cPage: cPage,
           poststatus: cellStatus,
           start_date: startDate,

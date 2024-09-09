@@ -10,6 +10,7 @@ import "/public/css/paging.css";
 
 import { useSearchParams } from "next/navigation";
 import UserList from "@/component/user/myPage/userList/UserList";
+import Cookies from "js-cookie";
 
 
 export default function page(props) {
@@ -23,6 +24,7 @@ export default function page(props) {
     const [page, setPage] = useState({});
   
     const API_URL = '/user/api/lbiUsers';
+    const userkey = Cookies.get("userkey");
   
     function changePage(pNum) { 
         getUserList(pNum);
@@ -33,7 +35,7 @@ export default function page(props) {
         url: API_URL,
         method: 'post',
         params: {
-            userkey: 1,
+            userkey: userkey,
             cPage: cPage,
             userType: whatNow,
         }

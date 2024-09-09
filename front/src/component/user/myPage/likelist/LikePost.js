@@ -10,7 +10,7 @@ export default function LikePost(props) {
         const price = lvo.pvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
         return(
         <li key={index} data-v-6aa963fd="">
-            <div data-v-6aa963fd="" className="wish_item">
+            <Link href={`/post/detail?postkey=${lvo.pvo.postkey}`} data-v-6aa963fd="" className="wish_item">
             <div data-v-6aa963fd="" className="wish_product">
                 <div data-v-6aa963fd="" className="product_box">
                 <div
@@ -103,7 +103,7 @@ export default function LikePost(props) {
                 </div>
                 </div>
             </div>
-            </div>
+            </Link>
         </li>
         )})
     )
