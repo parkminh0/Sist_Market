@@ -420,15 +420,29 @@
 
     <!-- 관리자 게시글 현황 정보 카운트 -->
     <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
-      SELECT COUNT(*) AS all_posts, 
-          COUNT(CASE WHEN poststatus = 0 THEN 1 END) AS sale_posts,
-          COUNT(CASE WHEN poststatus = 1 THEN 1 END) AS unsale_posts
-          COUNT(CASE WHEN poststatus = 2 THEN 1 END) AS saleing_posts
-          COUNT(CASE WHEN poststatus = 3 THEN 1 END) AS hide_posts
-          COUNT(CASE WHEN poststatus = 4 THEN 1 END) AS saled_posts
-          COUNT(CASE WHEN poststatus = 5 THEN 1 END) AS deleted_posts
-        FROM post
-    </select> 
+    SELECT 
+        COUNT(*) AS all_posts, -- 전체 게시글 수
+        COUNT(CASE WHEN poststatus = 0 THEN 1 END) AS tem_save_posts, 
+        COUNT(CASE WHEN poststatus = 1 THEN 1 END) AS sale_posts, 
+        COUNT(CASE WHEN poststatus = 2 THEN 1 END) AS saleing_posts, 
+        COUNT(CASE WHEN poststatus = 3 THEN 1 END) AS saled_posts, 
+        COUNT(CASE WHEN poststatus = 4 THEN 1 END) AS hide_posts 
+    FROM post;
+    </select>
+
+
+     <!-- 여러 상태를 IN 조건으로 조회 -->
+    <select id="findAllByPoststatusIn" parameterType="list" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM post WHERE poststatus IN
+        <foreach item="status" collection="list" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <!-- 특정 상태를 조회 -->
+    <select id="findByPoststatus" parameterType="int" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM post WHERE poststatus = #{poststatus}
+    </select>
 
 </mapper>
 

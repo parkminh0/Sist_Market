@@ -54,15 +54,43 @@ public class PostController {
         return res;
     }
 
-    // POST 요청을 처리하기 위해 @PostMapping 사용
+    // // POST 요청을 처리하기 위해 @PostMapping 사용
+    // @PostMapping("/searchpost")
+    // public Map<String, Object> searchpost(@RequestBody Map<String, Object>
+    // searchParams) {
+    // // 요청 파라미터 확인 (디버깅용)
+    // System.out.println("Received search parameters: " + searchParams);
+
+    // // 결과를 담을 Map 객체 생성
+    // Map<String, Object> res = new HashMap<>();
+
+    // res.put("post_list", p_service.searchpost(searchParams));
+    // // 결과를 JSON 형태로 반환
+    // return res;
+    // }
+
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
         // 요청 파라미터 확인 (디버깅용)
         System.out.println("Received search parameters: " + searchParams);
 
+        // searchParams에서 poststatus를 추출
+        String poststatus = searchParams.get("poststatus") != null ? searchParams.get("poststatus").toString() : "";
+
         // 결과를 담을 Map 객체 생성
         Map<String, Object> res = new HashMap<>();
-        res.put("post_list", p_service.searchpost(searchParams));
+
+        // "전체"인 경우 1, 2, 3, 4 상태의 게시글 조회
+        if ("all".equals(poststatus)) {
+            res.put("post_list", p_service.findAllByPoststatusIn(Arrays.asList(1, 2, 3, 4)));
+        } else if (!poststatus.isEmpty()) {
+            // 선택한 특정 상태만 조회
+            res.put("post_list", p_service.findByPoststatus(Integer.parseInt(poststatus)));
+        } else {
+            // poststatus 값이 없거나 잘못된 경우 처리
+            res.put("post_list", new ArrayList<>()); // 빈 리스트 반환 또는 기본 처리
+        }
+
         // 결과를 JSON 형태로 반환
         return res;
     }
@@ -255,7 +283,6 @@ public class PostController {
             if (!randomCategories.contains(key)) {
                 randomCategories.add(key); // 중복되지 않는 경우 추가
             }
-            System.out.println(key);
         }
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
@@ -270,21 +297,14 @@ public class PostController {
         return res;
     }
 
-    // 관리자 - 게시글 현황
-    // @GetMapping("/statuscounts")
-    // public Map<String, Integer> getPostStatusCounts() {
-    // Map<String, Integer> res = new HashMap<>();
-    // return res;
-    // }
-
     // 관리자 게시글 현황 확인
-    // @RequestMapping("/postcount")
-    // @ResponseBody
-    // public Map<String, Object> getPostCount() {
-    // Map<String, Object> map = new HashMap<>();
-    // PostCountVO pcvo = p_service.postForAdmin();
-    // map.put("pcvo", pcvo);
-    // return map;
-    // }
+    @RequestMapping("/postcount")
+    @ResponseBody
+    public Map<String, Object> getPostCount() {
+        Map<String, Object> map = new HashMap<>();
+        PostCountVO pcvo = p_service.postForPostAdmin();
+        map.put("pcvo", pcvo);
+        return map;
+    }
 
 }
