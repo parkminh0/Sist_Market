@@ -74,6 +74,16 @@ export default function MyPageSide() {
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
             <li data-v-7a824f04="" className="menu_item">
               <Link
+                data-href="/myPage"
+                data-v-7a824f04=""
+                href="/myPage"
+                className="menu_link"
+              >
+                마이페이지
+              </Link>
+            </li>
+            <li data-v-7a824f04="" className="menu_item">
+              <Link
                 data-href="/myPage/profile"
                 data-v-7a824f04=""
                 href="/myPage/profile"
@@ -83,17 +93,17 @@ export default function MyPageSide() {
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="/myPage/userManage?category=likeuser" className="menu_link">
+              <Link data-v-7a824f04="" href="/myPage/userManage?category=likeUser" className="menu_link">
                 모아보기 사용자 관리
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#/myPage/userManage?category=blockedUser" className="menu_link">
+              <Link data-v-7a824f04="" href="/myPage/userManage?category=blockedUser" className="menu_link">
                 차단 사용자 관리
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="/myPage/userManage?category=ignoreUser" className="menu_link">
+              <Link data-v-7a824f04="" href="/myPage/userManage?category=noseeUser" className="menu_link">
                 게시글 미노출 사용자 관리
               </Link>
             </li>
