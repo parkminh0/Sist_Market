@@ -102,6 +102,36 @@ export default function page() {
   }, [router.query]);
   // #endregion
 
+  // #region 시간표현
+  function timeDifference(postTime) {
+    const now = new Date(); // 현재 시간
+    const postDate = new Date(postTime); // postVO.create_dtm 값을 Date 객체로 변환
+  
+    const timeDiff = now - postDate; // 두 시간의 차이를 밀리초로 계산
+    const diffInSeconds = Math.floor(timeDiff / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYear = Math.floor(diffInDays / 365);
+  
+    // 차이에 따라 적절한 문자열을 반환
+    if (diffInYear > 0) {
+      return `${diffInYear}년 전`;
+    } else if (diffInMonths > 0) {
+      return `${diffInMonths}개월 전`;
+    } else if (diffInDays > 0) {
+      return `${diffInDays}일 전`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours}시간 전`;
+    } else if (diffInMinutes > 0) {
+      return `${diffInMinutes}분 전`;
+    } else {
+      return '방금 전';
+    }
+  }
+  // #endregion
+
   // #region 내 물건 팔기 버튼
   useEffect(() => {
     const container = document.querySelector(
@@ -1083,7 +1113,8 @@ export default function page() {
                           marginTop: '5px',
                         }}
                       >{post.title}</Typography>
-                      <Typography level="body-sm">위치, 동네, 몇분전</Typography>
+                      <Typography level="body-sm">위치 · 동네 · {timeDifference(post.create_dtm)}
+                  </Typography>
                     </div>
                   <AspectRatio minHeight="200px" maxHeight="200px" minWidth="200px" maxwidth="200px" margin="0" padding="0">
                   {post.pimg_list && post.pimg_list.length > 0 ? (
