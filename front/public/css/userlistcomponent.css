@@ -1,5 +1,7 @@
 .userListComponents {
     align-items: center;
-    
-    display: flex;
+}
+
+.list_item_status{
+    margin-left: auto !important;
 }
