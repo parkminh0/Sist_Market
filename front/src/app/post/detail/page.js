@@ -27,6 +27,8 @@ export default function Page() {
     let params = new URLSearchParams(currentUrlObj.search);
     // 'category' 파라미터의 모든 값 가져오기
     let postkey = params.get("postkey");
+    const now = new Date();
+    console.log(now.toLocaleString());
 
     setPostKey(postkey);
 
@@ -59,6 +61,29 @@ export default function Page() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  // #region 시간 표현
+  function timeDifference(postTime) {
+    const now = new Date(); // 현재 시간
+    const postDate = new Date(postTime); // postVO.create_dtm 값을 Date 객체로 변환
+  
+    const timeDiff = now - postDate; // 두 시간의 차이를 밀리초로 계산
+    const diffInSeconds = Math.floor(timeDiff / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+  
+    // 차이에 따라 적절한 문자열을 반환
+    if (diffInDays > 0) {
+      return `${diffInDays}일 전`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours}시간 전`;
+    } else if (diffInMinutes > 0) {
+      return `${diffInMinutes}분 전`;
+    } else {
+      return '방금 전';
+    }
+  }
+  // #endregion
   return (
     <>
       <article className="vqbuc90 _1h4pbgy7zs _1h4pbgy83s _1h4pbgy84b _1h4pbgy84l _1h4pbgy89k _1h4pbgy8eg _1h4pbgy9ug _1h4pbgy9vs _1h4pbgya0o">
@@ -118,7 +143,7 @@ export default function Page() {
                     activeStep={activeStep}
                     nextButton={
                       <Button
-                        size="small"
+                        size="large"
                         onClick={handleNext}
                         disabled={activeStep === postVO.pimg_list.length - 1}
                       >
@@ -131,7 +156,7 @@ export default function Page() {
                       </Button>
                     }
                     backButton={
-                      <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                      <Button size="large" onClick={handleBack} disabled={activeStep === 0}>
                         {theme.direction === 'rtl' ? (
                           <KeyboardArrowRight />
                         ) : (
@@ -240,8 +265,8 @@ export default function Page() {
                     {categoryVO.categoryname}
                   </Link>{" "}
                   ·{" "}
-                  <time dateTime="2024-08-11T23:32:15.393-04:00">
-                    끌올 2시간 전 or 2시간 전
+                  <time>
+                    {timeDifference(postVO.create_dtm)}
                   </time>
                 </h2>
                 {postVO.price == 0 && postVO.method == 1 ? (

@@ -43,7 +43,10 @@ export default function Page() {
       },
     })
       .then((res) => {
-        setList(res.data.post_list); // 검색 결과를 상태로 저장
+        // 검색 결과를 상태로 저장
+        setList(res.data.post_list); 
+        // 검색 후 게시글 목록 업데이트를 위해 fetchPostList 호출
+        fetchPostList();
       })
       .catch((error) => {
         console.error("There was an error with the search request:", error);
@@ -91,10 +94,7 @@ export default function Page() {
     });
   }
 
-
   useEffect(() => {
-    searchpost();
-    fetchPostList();
     getCount();
     callData();
   }, []);
@@ -318,6 +318,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="all"
+                        checked={postStatus === "all"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       전체
                     </label>
@@ -327,6 +329,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="0"
+                        checked={postStatus === "0"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       임시 저장
                     </label>
@@ -336,6 +340,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="1"
+                        checked={postStatus === "1"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       판매중
                     </label>
@@ -345,6 +351,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="2"
+                        checked={postStatus === "2"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       예약중(거래중)
                     </label>
@@ -354,6 +362,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="3"
+                        checked={postStatus === "3"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       거래완료
                     </label>
@@ -363,6 +373,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="4"
+                        checked={postStatus === "4"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       숨김
                     </label>
@@ -378,6 +390,8 @@ export default function Page() {
                         className="method"
                         name="method"
                         value="0"
+                        checked={method === "0"}
+                        onChange={(e) => setMethod(e.target.value)}
                       />{" "}
                       전체
                     </label>
@@ -387,6 +401,8 @@ export default function Page() {
                         className="method"
                         name="method"
                         value="1"
+                        checked={method === "1"}
+                        onChange={(e) => setMethod(e.target.value)}
                       />{" "}
                       직거래
                     </label>
@@ -396,6 +412,8 @@ export default function Page() {
                         className="method"
                         name="method"
                         value="2"
+                        checked={method === "2"}
+                        onChange={(e) => setMethod(e.target.value)}
                       />{" "}
                       택배거래
                     </label>
@@ -440,6 +458,8 @@ export default function Page() {
                         className="canbargain"
                         name="canbargain"
                         value="0"
+                        checked={canBargain === "0"}
+                        onChange={(e) => setCanBargain(e.target.value)}
                       />{" "}
                       전체
                     </label>
@@ -449,6 +469,8 @@ export default function Page() {
                         className="canbargain"
                         name="canbargain"
                         value="1"
+                        checked={canBargain === "1"}
+                        onChange={(e) => setCanBargain(e.target.value)}
                       />{" "}
                       흥정가능
                     </label>
@@ -458,6 +480,8 @@ export default function Page() {
                         className="canbargain"
                         name="canbargain"
                         value="2"
+                        checked={canBargain === "2"}
+                        onChange={(e) => setCanBargain(e.target.value)}
                       />{" "}
                       흥정 불가능
                     </label>
