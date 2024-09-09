@@ -3,22 +3,26 @@
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
 import axios from "axios";
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
+
 
 export default function Page() {
   const [list, setList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
 
-  //게시판 현황 카운트
-  const API_URL = "/adpost/postcount";
-  const [count, setCount] = useState({});
-  const [all, set_all_posts] = useState(0);
-  const [sale, set_sale_posts] = useState(0);
-  const [unsale, set_unsale_posts] = useState(0);
-  const [saleing, set_saleing_posts] = useState(0);
-  const [hide, set_hide_posts] = useState(0);
-  const [saled, set_saled_posts] = useState(0);
-  const [deleted, set_deleted_posts] = useState(0);
+   // 게시판 현황 카운트
+   const API_URL = "/adpost/postcount";
+   const [all, set_all_posts] = useState(0); // 전체 게시글 수
+   const [tem_save, set_tem_save_posts] = useState(0); // 임시 저장 게시글 수
+   const [sale, set_sale_posts] = useState(0); // 판매중 게시글 수
+   const [saleing, set_saleing_posts] = useState(0); // 예약중(거래중) 게시글 수
+   const [saled, set_saled_posts] = useState(0); // 거래완료 게시글 수
+   const [hide, set_hide_posts] = useState(0); // 숨김 게시글 수
 
+   // 상태 관리 추가
+  const [postStatus, setPostStatus] = useState("all");
+  const [method, setMethod] = useState("0");
+  const [canBargain, setCanBargain] = useState("0");
   
 
   function searchpost() {
@@ -45,26 +49,41 @@ export default function Page() {
         console.error("There was an error with the search request:", error);
       });
   }
-    function getCount() {
-      axios.get(API_URL).then((response) =>{
-        setCount(response.data.pcvo);
-        set_all_posts(response.data.pcvo.all_posts);
-        set_sale_posts(response.data.pcvo.sale_posts);
-        set_unsale_posts(response.data.pcvo.unsale_posts);
-        set_saleing_posts(response.data.pcvo.saleing_posts);
-        set_hide_posts(response.data.pcvo.hide_posts);
-        set_saled_posts(response.data.pcvo.saled_posts);
-        set_deleted_posts(response.data.pcvo.deleted_posts);
-      }).catch((error) => {
+
+  // 백엔드에서 pimg_list를 포함한 데이터를 받아오는 함수
+  function fetchPostList() {
+    axios({
+      url: "/adpost/main", // 예시로 "/adpost/main" 사용. 실제 pimg_list를 포함한 엔드포인트로 수정 필요.
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        setList(res.data.free_list); // 백엔드에서 받은 free_list를 상태로 저장
+        console.log(res.data.free_list); // pimg_list를 포함한 데이터 확인
+      })
+      .catch((error) => {
+        console.error("Error fetching post list:", error);
+      });
+  }
+
+  function getCount() {
+    axios.get(API_URL)
+      .then((response) => {
+        // 받아온 데이터를 각 상태에 맞게 설정
+        const data = response.data.pcvo;
+        set_all_posts(data.all_posts); // 전체 게시글 수
+        set_tem_save_posts(data.tem_save_posts); // 임시 저장 게시글 수
+        set_sale_posts(data.sale_posts); // 판매중 게시글 수
+        set_saleing_posts(data.saleing_posts); // 예약중(거래중) 게시글 수
+        set_saled_posts(data.saled_posts); // 거래완료 게시글 수
+        set_hide_posts(data.hide_posts); // 숨김 게시글 수
+      })
+      .catch((error) => {
         console.error("Error fetching post counts:", error);
       });
-    }
-
-  useEffect(() => {
-    searchpost();
-    getCount();
-    callData();
-  }, []);
+  }
 
   function callData() {
     axios.get("/category/all").then((response) => {
@@ -72,6 +91,15 @@ export default function Page() {
     });
   }
 
+
+  useEffect(() => {
+    searchpost();
+    fetchPostList();
+    getCount();
+    callData();
+  }, []);
+
+  
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -109,12 +137,11 @@ export default function Page() {
                   <div className="MuiStack-root css-1itc13n">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        전체 등록 게시글
+                        전체 게시글
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                        {/* ${requestScope.pcvo.all_posts} */}
                         {all}       
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
@@ -124,15 +151,51 @@ export default function Page() {
                   </div>
                 </div>
                 <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
-                  <div className="MuiStack-root css-1ima9n7">
+                  <div className="MuiStack-root css-1itc13n">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        판매함 게시물
+                        임시 저장 게시글
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{sale}</strong>
+                        {tem_save}       
+                      </a>
+                      <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
+                        개
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
+                  <div className="MuiStack-root css-1ima9n7">
+                    <div className="MuiStack-root css-1bew4d0">
+                      <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
+                        판매중 게시물
+                      </span>
+                    </div>
+                    <div className="MuiStack-root css-1h3carr">
+                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
+                        {sale}
+                      </a>
+                      <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
+                        개
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
+                  <div className="MuiStack-root css-1ima9n7">
+                    <div className="MuiStack-root css-1bew4d0">
+                      <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
+                        예약중(거래중) 게시물
+                      </span>
+                    </div>
+                    <div className="MuiStack-root css-1h3carr">
+                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
+                        {saleing}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -144,29 +207,12 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        판매안함 게시물
+                        거래완료 게시물
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{unsale}</strong> 
-                      </a>
-                      <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
-                        개
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
-                  <div className="MuiStack-root css-1ima9n7">
-                    <div className="MuiStack-root css-1bew4d0">
-                      <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        판매중(예약중) 게시물
-                      </span>
-                    </div>
-                    <div className="MuiStack-root css-1h3carr">
-                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{saleing}</strong> 
+                      {saled}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -183,7 +229,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{hide}</strong> 
+                      {hide}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -191,40 +237,8 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
-                  <div className="MuiStack-root css-1ima9n7">
-                    <div className="MuiStack-root css-1bew4d0">
-                      <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        거래완료 게시물
-                      </span>
-                    </div>
-                    <div className="MuiStack-root css-1h3carr">
-                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{saled}</strong> 
-                      </a>
-                      <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
-                        개
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
-                  <div className="MuiStack-root css-1ima9n7">
-                    <div className="MuiStack-root css-1bew4d0">
-                      <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        삭제 게시물
-                      </span>
-                    </div>
-                    <div className="MuiStack-root css-1h3carr">
-                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{deleted}</strong> 
-                      </a>
-                      <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
-                        개
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                
+                
               </div>
             </div>
           </div>
@@ -262,7 +276,7 @@ export default function Page() {
                           <option value="postkey">게시글 번호</option>
                           <option value="hope_place">거래 장소명</option>
                           <option value="townkey">동네명</option>
-                          <option value="userkey">판매자명</option>
+                          <option value="userkey">회원번호</option>
                         </select>
                         <input
                           id="searchCategoryText"
@@ -303,7 +317,7 @@ export default function Page() {
                         type="radio"
                         className="poststatus"
                         name="poststatus"
-                        value="0"
+                        value="all"
                       />{" "}
                       전체
                     </label>
@@ -312,9 +326,18 @@ export default function Page() {
                         type="radio"
                         className="poststatus"
                         name="poststatus"
+                        value="0"
+                      />{" "}
+                      임시 저장
+                    </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="poststatus"
+                        name="poststatus"
                         value="1"
                       />{" "}
-                      판매함
+                      판매중
                     </label>
                     <label className="gSingleLabel">
                       <input
@@ -323,7 +346,7 @@ export default function Page() {
                         name="poststatus"
                         value="2"
                       />{" "}
-                      판매안함
+                      예약중(거래중)
                     </label>
                     <label className="gSingleLabel">
                       <input
@@ -332,7 +355,7 @@ export default function Page() {
                         name="poststatus"
                         value="3"
                       />{" "}
-                      예약중
+                      거래완료
                     </label>
                     <label className="gSingleLabel">
                       <input
@@ -341,25 +364,7 @@ export default function Page() {
                         name="poststatus"
                         value="4"
                       />{" "}
-                      거래중
-                    </label>
-                    <label className="gSingleLabel">
-                      <input
-                        type="radio"
-                        className="poststatus"
-                        name="poststatus"
-                        value="5"
-                      />{" "}
-                      거래완료
-                    </label>
-                    <label className="gSingleLabel">
-                      <input
-                        type="radio"
-                        className="poststatus"
-                        name="poststatus"
-                        value="6"
-                      />{" "}
-                      삭제
+                      숨김
                     </label>
                   </td>
                 </tr>
@@ -580,7 +585,22 @@ export default function Page() {
                       <td>{prod.userkey}</td>
                       <td>{prod.townkey}</td>
                       <td>{prod.categorykey}</td>
-                      <td>{prod.title}</td>
+                      <td>
+                        <div style={{ textAlign: "left", display: "flex", alignItems: "center" }}>
+                          {/* 이미지 출력 */}
+                          {prod.pimg_list && prod.pimg_list.length > 0 ? (
+                            <img
+                              src={prod.pimg_list[0].imgurl} // 첫 번째 이미지를 사용
+                              alt="썸네일"
+                              style={{ width: "50px", height: "50px", marginRight: "10px" }} // 이미지와 텍스트 사이에 간격 추가
+                            />
+                          ) : (
+                            <ImageNotSupportedRoundedIcon style={{ marginRight: "10px" }} /> // 이미지가 없을 경우 대체 아이콘 표시
+                          )}
+                          {/* 제목 출력 */}
+                          <p style={{ margin: 0 }}>{prod.title}</p>
+                        </div>
+                      </td>
                       <td>{prod.method}</td>
                       <td>{prod.price}</td>
                       <td>{prod.lastprice}</td>

@@ -115,4 +115,15 @@ public class PostService {
     public PostCountVO postForPostAdmin() {
         return p_mapper.countpostForAdmin();
     }
+
+    // 전체 상태를 조회하는 메서드 (1, 2, 3, 4 상태를 모두 조회)
+    public List<PostVO> findAllByPoststatusIn(List<Integer> statuses) {
+        return p_mapper.findAllByPoststatusIn(statuses);
+    }
+
+    // 특정 상태를 조회하는 메서드
+    public List<PostVO> findByPoststatus(int poststatus) {
+        return p_mapper.findByPoststatus(poststatus);
+    }
+
 }

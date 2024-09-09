@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
         
 const nextConfig = {
-
+    reactStrictMode: false,
     async rewrites(){
         return [
             {
@@ -21,8 +21,8 @@ const nextConfig = {
             destination: "http://localhost:8080/user/:path*",
           },
           {
-            source: "/admin/category/:path*",
-            destination: "http://localhost:8080/admin/category/:path*",
+            source: "/admin/:path*",
+            destination: "http://localhost:8080/admin/:path*",
           },
         ]
     }
