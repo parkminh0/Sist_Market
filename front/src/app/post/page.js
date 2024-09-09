@@ -285,7 +285,6 @@ export default function page() {
   }
   // #endregion
 
-  // # region 내 물건 팔기
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -308,6 +307,7 @@ export default function page() {
     setPreviewImages([]);
   };
 
+  // #region 이미지업로드
   const fileInputRef = useRef(null);
   const [previewImages, setPreviewImages] = useState([]);
 
@@ -332,7 +332,8 @@ export default function page() {
     files.forEach((file, index) => {
       let fileReader = new FileReader();
       fileReader.onload = function () {
-        newPreviewImages.push({ id: index, src: fileReader.result, file });
+        const newId = previewImages.length + index;
+        newPreviewImages.push({ id: newId, src: fileReader.result, file });
         if (newPreviewImages.length === files.length) {
           setPreviewImages((prevImages) => [
             ...prevImages,
@@ -347,8 +348,9 @@ export default function page() {
   const handleDelete = (index) => {
     setPreviewImages(previewImages.filter((_, i) => i !== index));
   };
+  // #endregion
 
-  // 내 물건 팔기(작성)
+  // #region 내 물건 팔기(작성)
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -400,19 +402,106 @@ export default function page() {
           window.location.reload();
         } else {
           setSavePostKey(response.data.savePostKey);
+          alert("게시글이 저장되었습니다.");
         }
       })
       .catch((error) => {
         console.error("게시글 작성 오류", error);
       });
   };
+  // #endregion
+
+  // #region 이미지 드래그
+  let dragIdx = null;
+  const containerRef = useRef(null); // ref로 container 관리
 
   useEffect(() => {
-    if (savePostKey !== "") {
-      alert("게시글이 저장되었습니다.");
+    const container = containerRef.current;
+  
+    // 드래그 시작 시 실행될 함수
+    const handleDragStart = (e) => {
+      const draggable = e.target;
+      draggable.classList.add("dragging");
+      dragIdx = Array.prototype.indexOf.call(container.children, draggable) - 1;
+    };
+  
+    // 드래그 종료 시 실행될 함수
+    const handleDragEnd = (e) => {
+      const draggable = e.target;
+      draggable.classList.remove("dragging");
+  
+      const afterElement = getDragAfterElement(container, e.clientX);
+      let toIndex;
+      if (afterElement == null || afterElement == undefined) {
+        toIndex = container.children.length - 2;
+      } else {
+        toIndex = Array.prototype.indexOf.call(container.children, afterElement);
+        if (dragIdx >= toIndex) toIndex -= 1;
+        else toIndex -= 2;
+      }
+  
+      if (toIndex !== -1) {
+        setPreviewImages((prevPreviewImages) => {
+          const tmpImages = [...prevPreviewImages]; // 얕은 복사
+  
+          // 순서 변경 로직
+          const [movedItem] = tmpImages.splice(dragIdx, 1);
+          tmpImages.splice(toIndex, 0, movedItem);
+  
+          // 각 이미지의 id 값을 다시 설정
+          tmpImages.forEach((img, index) => {
+            img.id = index;
+          });
+  
+          return [...tmpImages]; // 깊은 복사하여 새로운 배열로 반환
+        });
+      }
+    };
+  
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      // DOM 조작을 하지 않고 드래그 위치 계산만 수행
+    };
+  
+    if (container) {
+      container.addEventListener("dragover", handleDragOver);
+  
+      const draggables = container.querySelectorAll(".draggable");
+      draggables.forEach((draggable) => {
+        draggable.addEventListener("dragstart", handleDragStart);
+        draggable.addEventListener("dragend", handleDragEnd);
+      });
+  
+      return () => {
+        container.removeEventListener("dragover", handleDragOver);
+        draggables.forEach((draggable) => {
+          draggable.removeEventListener("dragstart", handleDragStart);
+          draggable.removeEventListener("dragend", handleDragEnd);
+        });
+      };
     }
-  }, [savePostKey]);
-  // # endregion
+  }, [previewImages]);
+  
+  // 드래그 위치를 계산하는 함수
+  function getDragAfterElement(container, x) {
+    const draggableElements = [
+      ...container.querySelectorAll(".draggable:not(.dragging)"),
+    ];
+  
+    return draggableElements.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      },
+      { offset: Number.NEGATIVE_INFINITY }
+    ).element;
+  }
+  // #endregion
 
   return (
     <>
@@ -1053,126 +1142,6 @@ export default function page() {
                   </CardContent>
                 </Card>
                 </Link>
-                  // <Link
-                  //   key={i}
-                  //   data-gtm="search_article"
-                  //   className="_1h4pbgy9ug"
-                  //   href={`/post/detail?postkey=${post.postkey}`}
-                  // >
-                  //   <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                  //     <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  //       {post.pimg_list && post.pimg_list.length > 0 ? (
-                  //         <span
-                  //         className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                  //         style={{
-                  //           color: "transparent",
-                  //           display: "inlineBlock",
-                  //         }}
-                  //       >
-                  //         <img
-                  //           className="_1b153uwe _1h4pbgya3k"
-                  //           src={post.pimg_list[0].imgurl}
-                  //           alt="썸네일"
-                  //         />
-                  //       </span>
-
-                  //       ) : <ImageNotSupportedRoundedIcon style={{
-                  //         width: '100%',  // 아이콘의 너비를 100%로 설정
-                  //         height: '100%', // 아이콘의 높이를 100%로 설정
-                  //         zIndex: 1      // 필요하면 z-index로 가시성을 확보
-                  //       }}/>}
-                  //       {post.poststatus == 2 ? (
-                  //         <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
-                  //           예약중
-                  //         </span>
-                  //       ) : post.poststatus == 3 ? (
-                  //         <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
-                  //           거래완료
-                  //         </span>
-                  //       ) : (
-                  //         ""
-                  //       )}
-                  //     </div>
-                  //     <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  //       <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                  //         <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                  //           <font style={{ verticalAlign: "inherit" }}>
-                  //             <font style={{ verticalAlign: "inherit" }}>
-                  //               {post.title}
-                  //             </font>
-                  //           </font>
-                  //         </div>
-                  //         <div className="_1b153uwh _1h4pbgy8jc">
-                  //           <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                  //             <font style={{ verticalAlign: "inherit" }}>
-                  //               <font style={{ verticalAlign: "inherit" }}>
-                  //                 위치 · (끌올) 몇분 전(몇시간 전, 몇일 전)
-                  //               </font>
-                  //             </font>
-                  //           </h2>
-                  //         </div>
-                  //         <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                  //           <font style={{ verticalAlign: "inherit" }}>
-                  //             <font style={{ verticalAlign: "inherit" }}>
-                  //               {post.price == 0
-                  //                 ? "나눔♥"
-                  //                 : new Intl.NumberFormat("ko-KR").format(
-                  //                     post.price
-                  //                   ) + "원"}
-                  //             </font>
-                  //           </font>
-                  //         </div>
-                  //       </div>
-                  //     </div>
-                  //     <div
-                  //       style={{
-                  //         display: "flex",
-                  //         justifyContent: "flex-end",
-                  //         gap: "4px", // 아이콘 사이의 간격 조정
-                  //         marginTop: "0", // 상단과의 간격 조정
-                  //       }}
-                  //     >
-                  //       <div
-                  //         style={{
-                  //           display: "flex",
-                  //           alignItems: "center",
-                  //           gap: "2px",
-                  //         }}
-                  //       >
-                  //         <IconButton
-                  //           aria-label="share"
-                  //           size="small"
-                  //           style={{ padding: "2px" }} // 아이콘 버튼의 패딩을 줄여서 더 작게
-                  //         >
-                  //           <QuestionAnswerOutlinedIcon
-                  //             style={{ fontSize: "16px" }}
-                  //           />
-                  //           {/* 아이콘 크기를 16px로 */}
-                  //         </IconButton>
-                  //         <span style={{ fontSize: "14px" }}>5</span>
-                  //         {/* 공유 수 */}
-                  //       </div>
-                  //       <div
-                  //         style={{
-                  //           display: "flex",
-                  //           alignItems: "center",
-                  //           gap: "2px",
-                  //         }}
-                  //       >
-                  //         <IconButton
-                  //           aria-label="add to favorites"
-                  //           size="small"
-                  //           style={{ padding: "2px" }} // 아이콘 버튼의 패딩을 줄여서 더 작게
-                  //         >
-                  //           <FavoriteIcon style={{ fontSize: "16px" }} />
-                  //           {/* 아이콘 크기를 16px로 */}
-                  //         </IconButton>
-                  //         <span style={{ fontSize: "14px" }}>10</span>
-                  //         {/* 좋아요 수 */}
-                  //       </div>
-                  //     </div>
-                  //   </article>
-                  // </Link>
                 ))}
               </div>
               <div data-gtm="search_show_more_articles" className="_1h4pbgy7y8">
@@ -1352,7 +1321,7 @@ export default function page() {
           </DialogTitle>
           <DialogContent>
             <FormControl fullWidth margin="dense">
-              <ImageList cols={11} gap={8}>
+            <ImageList cols={11} gap={8} id="dragImageList" ref={containerRef}>
                 <ImageListItem
                   style={{
                     width: 100,
@@ -1396,13 +1365,15 @@ export default function page() {
                 </ImageListItem>
                 {previewImages.map((img, i) => (
                   <ImageListItem
-                    key={i}
+                    key={img.id}
                     style={{
                       width: 100,
                       height: 100,
                       border: "2px solid #ccc", // 이미지에 보더 추가
                       position: "relative",
                     }}
+                    draggable="true"
+                    className="draggable"
                   >
                     <IconButton
                       aria-label="delete"
