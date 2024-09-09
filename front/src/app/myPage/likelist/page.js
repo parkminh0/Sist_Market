@@ -10,6 +10,7 @@ import axios from "axios";
 import LikePost from "@/component/user/myPage/likelist/LikePost";
 import LikeCategory from "@/component/user/myPage/likelist/LikeCategory";
 import LikeKeyword from "@/component/user/myPage/likelist/LikeKeyword";
+import Cookies from "js-cookie";
 // import { useSearchParams } from "next/navigation";
 
 export default function Page() {
@@ -27,6 +28,8 @@ export default function Page() {
   const API_URL = '/user/api/likeLists';
   const DEL_URL = '/adpost/delLike';
 
+  const userkey = Cookies.get("userkey");
+
   function changePage(pNum) { 
     getLikeList(likeWhat,pNum);
   }
@@ -37,7 +40,7 @@ export default function Page() {
         method: "post",
         params: {
           "likewhat": likeWhat,
-          "userkey": 1,
+          "userkey": userkey,
           "cPage": cPage,
         },
         withCredentials: true,
@@ -169,7 +172,7 @@ export default function Page() {
                       className="empty_area"
                     >
                       <p data-v-24868902="" className="desc">
-                        관심 {display}이(가) 없습니다.
+                        관심 {display}{display=="게시글"?'이':'가'} 없습니다.
                       </p>
                       <a
                         data-v-420a5cda=""
