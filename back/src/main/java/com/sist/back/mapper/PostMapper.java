@@ -48,4 +48,10 @@ public interface PostMapper {
 
     int deletePostImg(String postkey);
 
+    // 여러 상태 값에 따른 조회 / search
+    List<PostVO> findAllByPoststatusIn(List<Integer> statuses);
+
+    // 특정 상태 값에 따른 조회 / search
+    List<PostVO> findByPoststatus(int poststatus);
+
 }

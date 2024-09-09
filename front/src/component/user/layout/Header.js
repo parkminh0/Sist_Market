@@ -30,30 +30,30 @@ export default function Header() {
     }
   }, [pathname]);
 
-  let lastScrollTop = 0;
-  window.addEventListener(
-    "scroll",
-    function () {
-      let st = window.pageYOffset || document.documentElement.scrollTop;
-      if (st > lastScrollTop) {
-        if (
-          !document
-            .querySelector("div._1a7kymoh")
-            .classList.contains("_1a7kymoi")
-        )
-          document.querySelector("div._1a7kymoh").classList.add("_1a7kymoi");
-      } else {
-        if (
-          document
-            .querySelector("div._1a7kymoh")
-            .classList.contains("_1a7kymoi")
-        )
-          document.querySelector("div._1a7kymoh").classList.remove("_1a7kymoi");
-      }
-      lastScrollTop = st <= 0 ? 0 : st;
-    },
-    false
-  );
+  // let lastScrollTop = 0;
+  // window.addEventListener(
+  //   "scroll",
+  //   function () {
+  //     let st = window.pageYOffset || document.documentElement.scrollTop;
+  //     if (st > lastScrollTop) {
+  //       if (
+  //         !document
+  //           .querySelector("div._1a7kymoh")
+  //           .classList.contains("_1a7kymoi")
+  //       )
+  //         document.querySelector("div._1a7kymoh").classList.add("_1a7kymoi");
+  //     } else {
+  //       if (
+  //         document
+  //           .querySelector("div._1a7kymoh")
+  //           .classList.contains("_1a7kymoi")
+  //       )
+  //         document.querySelector("div._1a7kymoh").classList.remove("_1a7kymoi");
+  //     }
+  //     lastScrollTop = st <= 0 ? 0 : st;
+  //   },
+  //   false
+  // );
 
  
   // #region 위치 모달 오픈
