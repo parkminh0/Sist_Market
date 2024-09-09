@@ -1,9 +1,11 @@
 import axios from 'axios';
 import Link from 'next/link';
-import latestRemindsplitLink from 'next/link';
 import React from 'react'
+import "/public/css/celllist.css";
 
 export default function CellList(props) {
+    // const param = useSearchParams();
+    // alert(param.get("edit"));
     const celllist = props.celllist;
     const whatNow = props.whatNow;
     const getCellList = props.getCellList;
@@ -13,7 +15,35 @@ export default function CellList(props) {
     function getLatestRemind(clvo){
         
         var remindDate = clvo.remind_dtm ? clvo.remind_dtm : clvo.create_dtm;
-        return clvo.create_dtm;
+        return remindDate;
+    }
+    function getRemainRemind(clvo){
+        var latestRemind = clvo.remind_dtm ? clvo.remind_dtm : clvo.create_dtm;
+        var timeDiff = new Date() - new Date(latestRemind);
+        const target_time = 24*60*60*1000;
+
+        
+        var flownHours = Math.floor(timeDiff / (1000 * 60 * 60));
+        timeDiff = timeDiff - (flownHours * 1000 * 60 * 60 );
+        
+        var flownMinutes = Math.floor(timeDiff / (1000 * 60));
+        timeDiff = timeDiff - (flownMinutes * 1000 * 60  );
+        
+        var flownSeconds = Math.floor(timeDiff / (1000));
+        
+        var remainTimes = target_time - (flownSeconds*1000)
+        - (flownMinutes*1000*60)
+        - (flownHours*1000*60*60);
+        
+        const remainHours = Math.floor(remainTimes / (1000 * 60 * 60));
+        remainTimes = remainTimes - (remainHours * 1000 * 60 * 60 );
+        const remainMinutes = Math.floor(remainTimes / (1000 * 60));
+        remainTimes = remainTimes - (remainMinutes * 1000 * 60 );
+        const remainSeconds = Math.floor(remainTimes / (1000));
+
+
+        var remindDate = `${remainHours}시간 ${remainMinutes}분 ${remainSeconds}초`
+        return remindDate;
     }
 
     function canRemindFunc(latestRemind){
@@ -33,6 +63,7 @@ export default function CellList(props) {
             'postkey': postkey,
           }
         }).then((res) => {
+            console.log(res);
             getCellList(cPage);
         });
     }
@@ -55,12 +86,13 @@ export default function CellList(props) {
         celllist ? celllist.map((clvo,index)=>{
         var price = clvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+"원";
         var latestRemind = getLatestRemind(clvo);
+        var remainRemind = getRemainRemind(clvo);
         var canRemind = canRemindFunc(latestRemind);
         const detailLink = `/myPage/celllist/detail/${clvo.postkey}`;
         return(
         <div key={index} data-v-eff62a72="">
             {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-            <div data-v-53e92c51="" data-v-eff62a72="">
+            <Link href={`/post/detail?postkey=${clvo.postkey}`}  data-v-53e92c51="" data-v-eff62a72="">
             <div
                 className="purchase_list_display_item"
                 style={{ backgroundColor: "#FFFFFF" }}
@@ -97,9 +129,9 @@ export default function CellList(props) {
                     </p>
                 </div>
                 </div>
-                <div className="list_item_status" data-v-53e92c51="">
+                <div className="list_item_status_CL" data-v-53e92c51="">
                 <div
-                    className="list_item_column column_secondary"
+                    className="list_item_column_CL column_secondary"
                     data-v-53e92c51=""
                 >
                     <p
@@ -113,7 +145,7 @@ export default function CellList(props) {
                     </p>
                 </div>
                 <div
-                    className="list_item_column column_secondary"
+                    className="list_item_column_CL column_secondary"
                     data-v-53e92c51=""
                 >
                     <p
@@ -127,7 +159,7 @@ export default function CellList(props) {
                     </p>
                 </div>
                 <div
-                    className="list_item_column column_secondary"
+                    className="list_item_column_CL column_secondary"
                     data-v-53e92c51=""
                     style={{textAlign:'right'}}
                 >
@@ -145,11 +177,11 @@ export default function CellList(props) {
                                 backgroundColor:  "rgb(100, 100, 100)",
                                 cursor: 'default',
                             }}
-                            onClick={canRemind ? ()=>{remindPost(clvo.postkey)} : ()=>{alert("가장 최근 끌어올리기로부터 2주(14일)이 지나야 다시 끌어올리기를 하실 수 있습니다. ")}} 
+                            onClick={canRemind ? (e)=>{remindPost(clvo.postkey); e.preventDefault();} : (e)=>{remainRemind=getRemainRemind(clvo);alert(`가장 최근 끌어올리기로부터 1일(24시간)이 지나야 다시 끌어올리기를 하실 수 있습니다.\n남은 시간: [${remainRemind}]`);e.preventDefault();}} 
                         >
                             <strong
                             data-v-0b6ddb6a=""
-                            className="title"
+                            className="button_name"
                             >
                             끌어올리기
                             </strong>
@@ -158,14 +190,14 @@ export default function CellList(props) {
                         <div style={{fontSize:10, textAlign:'right'}}>최근일자: <br/>{latestRemind}</div>
                 </div>
                 <div
-                    className="list_item_column column_last"
+                    className="list_item_column_CL column_last"
                     data-v-53e92c51=""
                 >
                     {whatNow == "Hidden" ? 
                     <Link
                     href="#"
                     onClick={()=>{unhidPost(clvo.postkey)}}
-                    className="text-lookup last_description display_paragraph action_named_action"
+                    className="last_item_txt text-lookup last_description display_paragraph action_named_action"
                     style={{ color: "#222222CC" }}
                     >
                     해제
@@ -173,15 +205,15 @@ export default function CellList(props) {
                      : whatNow == "Sold" ? 
                     <Link
                     href={detailLink}
-                    className="text-lookup last_description display_paragraph action_named_action"
+                    className="last_item_txt text-lookup last_description display_paragraph action_named_action"
                     style={{ color: "#222222CC" }}
                     >
                     확인
                     </Link>
                     :
                     <Link
-                    href="/"
-                    className="text-lookup last_description display_paragraph action_named_action"
+                    href={`/post/detail?postkey=${clvo.postkey}&edit`}
+                    className="last_item_txt text-lookup last_description display_paragraph action_named_action"
                     style={{ color: "#222222CC" }}
                     >
                     수정
@@ -190,7 +222,7 @@ export default function CellList(props) {
                 </div>
                 </div>
             </div>
-            </div>
+            </Link>
             {/* <!-- 여기까지 FOREACH --> */}
         </div>
     )})

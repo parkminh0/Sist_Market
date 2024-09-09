@@ -1,14 +1,28 @@
+'use client'
 import axios from 'axios';
 import Link from 'next/link';
 import latestRemindsplitLink from 'next/link';
-import React from 'react'
+import React, { useState } from 'react'
 import "/public/css/userlistcomponent.css";
+import UserModal from './UserModal';
 
 export default function UserList(props) {
     const userlist = props.userlist;
     const whatNow = props.changeNow;
     const getUserList = props.getUserList;
     const cPage = props.cPage;
+
+
+    const [open, setOpen] = useState(false);
+    const [uvo, setUvo] = useState({});
+
+    function handleOpen(uvo) {
+        setUvo(uvo);
+        setOpen(true);
+    }
+
+    const handleClose = () => setOpen(false);
+
 
     function uncheckUser(userkey){
         const API_URL = '/user/api/uncheck';
@@ -26,11 +40,12 @@ export default function UserList(props) {
     }
 
     return (
-        userlist ? userlist.map((ulvo,index)=>{
+        <>
+        {userlist ? userlist.map((ulvo,index)=>{
         return(
         <div key={index}>
             {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-            <div className="userListComponents">
+            <div onDoubleClick={()=>handleOpen(ulvo.uvo)} className="userListComponents">
             <div
                 className="purchase_list_display_item"
                 style={{ backgroundColor: "#FFFFFF" }}
@@ -103,6 +118,7 @@ export default function UserList(props) {
             </div>
             {/* <!-- 여기까지 FOREACH --> */}
         </div>
+        
     )})
     :
         <div
@@ -112,7 +128,7 @@ export default function UserList(props) {
             >
             {/* <!-- 없을 경우 --> */}
             <p data-v-24868902="" className="desc">
-                구매 내역이 없습니다.
+                {whatNow=="likeUser" ? '모아보기': whatNow=="blockedUser" ? '차단':'게시글 미노출'} 사용자가 없습니다.
             </p>
             <Link
                 data-v-420a5cda=""
@@ -124,6 +140,9 @@ export default function UserList(props) {
                 SHOP 바로가기{" "}
             </Link>
             {/* <!--  --> */}
-        </div>
+        </div>}
+        <UserModal open={open} handleClose={handleClose} uvo={uvo} whatNow={whatNow}/>
+    </>
     )
+    
 }

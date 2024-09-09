@@ -366,8 +366,20 @@
       FROM `post`
       WHERE userkey = #{userkey}
       AND poststatus = #{poststatus}
-      <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
-          AND create_dtm BETWEEN #{start_date} AND #{end_date}
+      <if test="poststatus == 1 or poststatus == 2">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND create_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 3">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 4">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND update_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
       </if>
     </select>
 
