@@ -91,26 +91,44 @@ const ReactEditor = () => {
     }
   };
 
+  const preventGoBack = () => {
+    const shouldCancel = window.confirm("변경 사항이 저장되지 않을 수 있습니다.");
+    if (shouldCancel) {
+        navigator.sendBeacon(deleteLatest_URL, userkey);
+        router.push('/admin/bbs/post');
+    } else {
+        history.pushState(null, "", location.href);
+    }
+  };
+
   useEffect(() => {
     let reaction = true;
+    history.pushState(null, "", location.href);
+    window.addEventListener("popstate", preventGoBack);
+
     const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      event.returnValue = '변경 사항이 저장되지 않을 수 있습니다.';
-      navigator.sendBeacon(deleteLatest_URL, userkey);
-    };
-    const multiFunction = async () => {
-      const res = await axios.get(BC_URL);
-      setBc_list(res.data.bc_list);
-      if (reaction) {
-        emptyAdd();
-      };
+        event.preventDefault();
+        event.returnValue = '변경 사항이 저장되지 않을 수 있습니다.';
+        navigator.sendBeacon(deleteLatest_URL, userkey);
     };
 
+    const multiFunction = async () => {
+        try {
+            const res = await axios.get(BC_URL);
+            setBc_list(res.data.bc_list || []);
+            if (reaction) {
+                emptyAdd();
+            }
+        } catch (error) {
+            setBc_list([]);
+        }
+    };
     multiFunction();
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
-      reaction = false;
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+        reaction = false;
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener("popstate", preventGoBack);
     }
   }, []);
 
@@ -156,12 +174,13 @@ const ReactEditor = () => {
       },
     },
   }), []);
+  
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <select className="fSelect" id="sel_board_no" name="sel_board_no" onChange={(e) => setCategoryName(e.target.value)}
-            style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginRight: '10px' }}>
+            style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginRight: '10px', marginTop: '30px' }}>
             <option value="" disabled selected hidden>:::카테고리 선택:::</option>
             {bc_list && bc_list.map((bc, i) => (<option key={i} value={bc.value}>{bc.value}</option>))}
           </select>
@@ -184,14 +203,7 @@ const ReactEditor = () => {
         </div>
       </div>
       <div>
-        <ReactQuill
-          theme="snow"
-          ref={quillRef}
-          modules={modules}
-          formats={formats}
-          onChange={setContent}
-          style={{ height: '800px', width: '1000px' }}
-        />
+        <ReactQuill theme="snow" ref={quillRef} modules={modules} formats={formats} onChange={setContent} style={{ height: '800px', width: '1000px' }}/>
       </div>
     </>
   );
