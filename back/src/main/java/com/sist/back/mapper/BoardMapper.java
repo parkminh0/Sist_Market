@@ -16,7 +16,10 @@ public interface BoardMapper {
 
     int boardAdd(BoardVO bvo);
 
-    List<BoardVO> edit(String boardkey);
+    int edit(BoardVO bvo);
+
+    String changeCategoryname(String categoryname);
+
 
     int emptyAdd(BoardVO bvo);
 
@@ -24,7 +27,6 @@ public interface BoardMapper {
 
     BoardVO getBbs(String boardkey);
 
-    // int edit(BoardVO bvo);
 
     int del(String boardkey);
 
@@ -32,6 +34,8 @@ public interface BoardMapper {
 
     // 게시판 카테고리
     List<KeyTableVO> getAllBcList();
+
+    String getBc(String boardkey);
 
     int addBoardCategory(String value);
 

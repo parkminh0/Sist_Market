@@ -4,10 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
+import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
+import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.UserCountVO;
 import com.sist.back.vo.WishlistVO;
@@ -38,6 +45,9 @@ public class UserController {
 
     @Autowired
     UserService service;
+
+    @Value("${server.upload.user.image}")
+    private String userImgPath;
 
     @RequestMapping("/login/kakao")
     public ModelAndView login(String code) {
@@ -564,11 +574,32 @@ public class UserController {
         if (image.isEmpty()) {
             throw new IllegalArgumentException("이미지가 업로드되지 않았습니다.");
         }
-        String imagePath = service.saveImage(image);
+        String realPath = "/img/user/";
+        String fname = image.getOriginalFilename();
+
+        String ext = fname.substring(fname.lastIndexOf(".") + 1).toLowerCase();
+        if (!(ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif")
+                || ext.equals("psd") || ext.equals("bmp") || ext.equals("tif") || ext.equals("tiff"))) {
+            throw new IllegalArgumentException("지원하지 않는 파일 형식입니다.");
+        }
+
+        Path path = Paths.get(userImgPath);
+        if (path.toString().contains("back")) {
+            String pathString = path.toString();
+            String changedPath = pathString.replace("back\\", "");
+            path = Paths.get(changedPath);
+        }
+        String filePath = path.resolve(fname).toString();
+        fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0, filePath.lastIndexOf("\\")));
 
         userVO uvo = new userVO();
         uvo.setUserkey(userkey);
-        uvo.setImgurl(imagePath);
+        uvo.setImgurl(realPath + fname);
+
+        try {
+            image.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) + fname));
+        } catch (Exception e) {
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("cnt", service.editImage(uvo));
@@ -578,25 +609,19 @@ public class UserController {
     @RequestMapping("/delImage")
     @ResponseBody
     public Map<String, Object> delImage(String userkey) {
+        String realPath = "/img/user/";
+        userVO uvo = new userVO();
+        uvo.setUserkey(userkey);
+        uvo.setImgurl(realPath + "default_img.png");
+
         Map<String, Object> map = new HashMap<>();
-        map.put("cnt", service.delImage(userkey));
+        int cnt = service.delImage(userkey);
+        if (cnt > 0) {
+            service.editImage(uvo);
+        }
+        map.put("cnt", cnt);
         return map;
     }
-
-    // @PostMapping("/api/reg")
-    // @ResponseBody
-    // public Map<String, Object> reg(userVO vo) {
-    //     Map<String, Object> map = new HashMap<>();
-
-    //     if (vo.getId() != null) {
-    //         // 사용자가 입력한 비밀번호를 암호화 시킨다.
-    //         // String pw = passwordEncoder.encode(vo.getMPw());
-
-    //         userVO uvo = service.reg(vo);
-    //         map.put("uvo", uvo);
-    //     }
-    //     return map;
-    // }
 
     @RequestMapping("/editUser")
     @ResponseBody
