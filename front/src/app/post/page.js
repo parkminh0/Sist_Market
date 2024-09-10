@@ -10,11 +10,13 @@ import IconButton from '@mui/joy/IconButton';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Typography from '@mui/joy/Typography';
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
+
 import {
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   FormControl,
   FormControlLabel,
@@ -323,8 +325,11 @@ export default function page() {
   const [price, setPrice] = useState("");
   const [canBargain, setCanBargain] = useState(0);
   const [content, setContent] = useState("");
+  const [hope_place, setHope_place] = useState("");
+  const [hope_lati, setHope_lati] = useState("");
+  const [hope_long, setHope_long] = useState("");
   const [savePostKey, setSavePostKey] = useState("");
-
+  
   const handleClose = () => {
     setTitle("");
     setCategory("");
@@ -332,32 +337,35 @@ export default function page() {
     setPrice("");
     setCanBargain(0);
     setContent("");
+    setHope_place("");
+    setHope_lati("");
+    setHope_long("");
     setIsFree(false);
     setOpen(false);
     setPreviewImages([]);
   };
-
+  
   // #region 이미지업로드
   const fileInputRef = useRef(null);
   const [previewImages, setPreviewImages] = useState([]);
-
+  
   // 파일 업로드 버튼 클릭 시 파일 입력 요소 클릭 이벤트 발생
   const uploadImg = (e) => {
     fileInputRef.current.click();
   };
-
+  
   // 파일 입력 요소의 값이 변경되면 호출되는 함수
   const handleChange = (e) => {
     // 선택한 파일들을 배열로 가져옴
     let files = Array.from(e.target.files);
-
+    
     if (previewImages.length + files.length > 10) {
       alert("10개를 초과할 수 없습니다.");
       return; // 10개를 초과할 경우 추가하지 않고 함수 종료
     }
-
+    
     const newPreviewImages = [];
-
+    
     // 파일들을 미리보기 이미지로 변환하여 저장
     files.forEach((file, index) => {
       let fileReader = new FileReader();
@@ -374,18 +382,18 @@ export default function page() {
       fileReader.readAsDataURL(file);
     });
   };
-
+  
   const handleDelete = (index) => {
     setPreviewImages(previewImages.filter((_, i) => i !== index));
   };
   // #endregion
-
+  
   // #region 내 물건 팔기(작성)
   const handleSubmit = (event) => {
     event.preventDefault();
-
+    
     const formData = new FormData(event.currentTarget);
-
+    
     // 유저 토큰 확인
     let tmpUserKey = Cookies.get('userkey');
     if (tmpUserKey == null || tmpUserKey == ''){
@@ -393,7 +401,7 @@ export default function page() {
       return;
     }
     formData.append("userkey", tmpUserKey);
-
+    
     // 이미지 파일 FormData에 추가
     previewImages.forEach((image, index) => {
       const fileName = image.file.name;
@@ -407,6 +415,10 @@ export default function page() {
     // price가 공백("")이면 null 또는 0으로 변환
     formData.set("price", price === "" ? 0 : price);
 
+    // 거래희망장소 위도, 경도
+    formData.append("hope_lati", hope_lati);
+    formData.append("hope_long", hope_long);
+    
     // 임시저장 후 작성완료 누를 경우 수정해야 함
     if (savePostKey != null && savePostKey != "") {
       formData.append("postkey", savePostKey);
@@ -414,47 +426,47 @@ export default function page() {
     formData.set("canBargain", canBargain);
     formData.append("isPostPage", 1);
     axios
-      .post(
-        savePostKey == null || savePostKey == ""
-          ? "/adpost/write"
-          : "/adpost/edit",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((response) => {
-        if (mode === "write") {
-          setSavePostKey("");
-          alert("게시글이 작성되었습니다.");
-          window.location.reload();
-        } else {
-          setSavePostKey(response.data.savePostKey);
-          alert("게시글이 저장되었습니다.");
-        }
-      })
-      .catch((error) => {
-        console.error("게시글 작성 오류", error);
-      });
+    .post(
+      savePostKey == null || savePostKey == ""
+      ? "/adpost/write"
+      : "/adpost/edit",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    )
+    .then((response) => {
+      if (mode === "write") {
+        setSavePostKey("");
+        alert("게시글이 작성되었습니다.");
+        window.location.reload();
+      } else {
+        setSavePostKey(response.data.savePostKey);
+        alert("게시글이 저장되었습니다.");
+      }
+    })
+    .catch((error) => {
+      console.error("게시글 작성 오류", error);
+    });
   };
   // #endregion
-
+  
   // #region 이미지 드래그
   let dragIdx = null;
   const containerRef = useRef(null); // ref로 container 관리
-
+  
   useEffect(() => {
     const container = containerRef.current;
-  
+    
     // 드래그 시작 시 실행될 함수
     const handleDragStart = (e) => {
       const draggable = e.target;
       draggable.classList.add("dragging");
       dragIdx = Array.prototype.indexOf.call(container.children, draggable) - 1;
     };
-  
+    
     // 드래그 종료 시 실행될 함수
     const handleDragEnd = (e) => {
       const draggable = e.target;
@@ -469,39 +481,39 @@ export default function page() {
         if (dragIdx >= toIndex) toIndex -= 1;
         else toIndex -= 2;
       }
-  
+      
       if (toIndex !== -1) {
         setPreviewImages((prevPreviewImages) => {
           const tmpImages = [...prevPreviewImages]; // 얕은 복사
-  
+          
           // 순서 변경 로직
           const [movedItem] = tmpImages.splice(dragIdx, 1);
           tmpImages.splice(toIndex, 0, movedItem);
-  
+          
           // 각 이미지의 id 값을 다시 설정
           tmpImages.forEach((img, index) => {
             img.id = index;
           });
-  
+          
           return [...tmpImages]; // 깊은 복사하여 새로운 배열로 반환
         });
       }
     };
-  
+    
     const handleDragOver = (e) => {
       e.preventDefault();
       // DOM 조작을 하지 않고 드래그 위치 계산만 수행
     };
-  
+    
     if (container) {
       container.addEventListener("dragover", handleDragOver);
-  
+      
       const draggables = container.querySelectorAll(".draggable");
       draggables.forEach((draggable) => {
         draggable.addEventListener("dragstart", handleDragStart);
         draggable.addEventListener("dragend", handleDragEnd);
       });
-  
+      
       return () => {
         container.removeEventListener("dragover", handleDragOver);
         draggables.forEach((draggable) => {
@@ -517,7 +529,7 @@ export default function page() {
     const draggableElements = [
       ...container.querySelectorAll(".draggable:not(.dragging)"),
     ];
-  
+    
     return draggableElements.reduce(
       (closest, child) => {
         const box = child.getBoundingClientRect();
@@ -532,6 +544,120 @@ export default function page() {
     ).element;
   }
   // #endregion
+  
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [tmpHope_place, setTmpHope_place] = useState("");
+  const [tmpHope_lati, setTmpHope_lati] = useState("");
+  const [tmpHope_long, setTmpHope_long] = useState("");
+
+  const locationHandleSubmit = (event) => {
+    event.preventDefault();
+    setHope_place(tmpHope_place);
+    setHope_lati(tmpHope_lati);
+    setHope_long(tmpHope_long);
+    locationClose();
+  }
+
+  const locationClose = () => {
+    setTmpHope_place("");
+    setTmpHope_lati("");
+    setTmpHope_long("");
+    setLocationOpen(false);
+  };
+  
+  function getLocation(e) {
+    const kakaoMapScript = document.createElement("script");
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.async = false;
+    document.head.appendChild(kakaoMapScript);
+
+    kakaoMapScript.onload = () => {
+      // Kakao Maps API가 완전히 초기화된 후에 실행
+      window.kakao.maps.load(() => {
+        if (!window.kakao.maps.services) {
+          return;
+        }
+        setMap(e); // API 로드 후에 함수 호출
+      });
+    };
+  }
+
+  function setMap(e){
+    // Geolocation API 지원 여부 확인
+    if ("geolocation" in navigator) {
+      try {
+        navigator.geolocation.getCurrentPosition((position) => {
+          let latitude = position.coords.latitude;
+          let longitude = position.coords.longitude;
+          if (hope_lati != null && hope_lati != ''){
+            latitude = hope_lati;
+          }
+          if (hope_long != null && hope_long != ''){
+            longitude = hope_long;
+          }
+          if (hope_place != null && hope_place != ''){
+            setTmpHope_place(hope_place);
+          }
+  
+          // 주소-좌표 변환 객체를 생성합니다
+          let locPosition = new kakao.maps.LatLng(latitude, longitude);
+          const message="지도를 움직여서 선택해보세요.";
+  
+          let mapContainer = document.getElementById('map'); // 지도를 표시할 div 
+          let mapOption = { 
+            center: locPosition, // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+          };
+          let map = new kakao.maps.Map(mapContainer, mapOption);
+  
+          // 마커를 생성합니다
+          let marker = new kakao.maps.Marker({  
+            position: new kakao.maps.LatLng(latitude, longitude)
+          }); 
+  
+          setTmpHope_lati(latitude);
+          setTmpHope_long(longitude);
+          marker.setMap(map);     
+  
+          // 마우스 드래그로 지도 이동이 완료되었을 때 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
+          kakao.maps.event.addListener(map, 'center_changed', function() {        
+            try{
+              // 지도 중심좌표를 얻어옵니다 
+              let latlng = map.getCenter(); 
+              marker.setPosition(latlng);
+            } catch (Exception) {
+              alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+              return;
+            }
+          });
+
+          kakao.maps.event.addListener(map, 'dragend', function() {        
+            try{
+              // 지도 중심좌표를 얻어옵니다 
+              let latlng = map.getCenter(); 
+              setTmpHope_lati(latlng.getLat());
+              setTmpHope_long(latlng.getLng());
+            } catch (Exception) {
+              setTmpHope_lati("");
+              setTmpHope_long("");
+              alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+              return;
+            }
+          });
+        });
+      } catch (Exception){
+        setTmpHope_lati("");
+        setTmpHope_long("");
+        alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+        return;
+      }
+    } else {
+      setTmpHope_lati("");
+      setTmpHope_long("");
+      alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+      return;
+    }
+  }
 
   return (
     <>
@@ -1327,6 +1453,7 @@ export default function page() {
             component: "form",
             onSubmit: handleSubmit,
           }}
+          scroll='paper'
         >
           <DialogTitle
             style={{
@@ -1338,7 +1465,6 @@ export default function page() {
             내 물건 팔기
             <Button
               variant="outlined"
-              size="small"
               type="submit"
               onClick={(e) =>
                 (e.currentTarget.closest("form").dataset.mode = "save")
@@ -1350,7 +1476,7 @@ export default function page() {
               임시저장
             </Button>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent dividers='paper'>
             <FormControl fullWidth margin="dense">
             <ImageList cols={11} gap={8} id="dragImageList" ref={containerRef}>
                 <ImageListItem
@@ -1453,7 +1579,6 @@ export default function page() {
             </FormControl>
             <FormControl fullWidth margin="dense">
               <TextField
-                autoFocus
                 required
                 margin="dense"
                 id="title"
@@ -1468,7 +1593,6 @@ export default function page() {
             </FormControl>
             <FormControl fullWidth margin="dense">
               <TextField
-                autoFocus
                 required
                 margin="dense"
                 id="categorykey"
@@ -1558,6 +1682,40 @@ export default function page() {
                 onChange={(e) => setContent(e.target.value)}
               />
             </FormControl>
+            <FormControl fullWidth margin="dense"  sx={{ display: 'flex', alignItems: 'center' }}>
+              <Link
+              href="#"
+              component="button"
+              variant="body2"
+              onClick={() => {
+                setHope_place("");
+                setHope_lati("");
+                setHope_long("");
+              }}
+              style={{
+                marginLeft: "auto",
+              }}
+              >
+              삭제
+              </Link>
+              <TextField
+                  margin="dense"
+                  id="hope_place"
+                  name="hope_place"
+                  label="거래 희망 장소"
+                  type="text"
+                  fullWidth
+                  size="small"
+                  value={hope_place}
+                  onClick={(e) => {
+                            getLocation();
+                            setLocationOpen(true); 
+                          }}
+                  InputProps={{
+                    readOnly: true,  // readonly 설정
+                  }}  
+                />
+            </FormControl>
           </DialogContent>
           <DialogActions>
             <Button
@@ -1569,6 +1727,74 @@ export default function page() {
               작성완료
             </Button>
             <Button onClick={handleClose}>취소</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+      {/* 거래 희망 장소 모달 */}
+      <React.Fragment>
+        <Dialog
+          open={locationOpen}
+          onClose={locationClose}
+          id="hopeDialog"
+          PaperProps={{
+            component: "form",
+            onSubmit: locationHandleSubmit
+          }}
+        >
+          <DialogTitle
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            위치 추가
+          </DialogTitle>
+          <IconButton
+          aria-label="close"
+          onClick={locationClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+          <DialogContent dividers>
+            <Typography gutterBottom>
+              이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
+            </Typography>
+            <DialogContentText style={{marginBottom: '20px'}} sx={{ fontSize: '0.875rem' }} >
+              만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
+            </DialogContentText>
+            <FormLabel
+                required
+                id="demo-simple-row-radio-buttons-group-label"
+              >
+                거래 희망 장소명
+              </FormLabel>
+            <TextField
+                required
+                margin="dense"
+                id="tmpHope_place"
+                name="tmpHope_place"
+                placeholder='예) 강남역 1번 출구, 교보타워 앞'
+                type="text"
+                fullWidth
+                size="small"
+                value={tmpHope_place}
+                onChange={(e) => setTmpHope_place(e.target.value)}
+              />
+            <div id="map" style={{border:'0.5px solid black', marginTop: '10px', width:'100%', height: '350px'}}></div>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              type="submit"
+            >
+              선택 완료
+            </Button>
+            <Button onClick={locationClose}>취소</Button>
           </DialogActions>
         </Dialog>
       </React.Fragment>
