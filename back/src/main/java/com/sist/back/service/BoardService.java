@@ -30,32 +30,18 @@ public class BoardService {
         return new BoardVO[0];
     }
 
-    // public int boardAdd(Map addMap) {
-    // return b_mapper.boardAdd(addMap);
-    // }
-
-    // public BoardVO[] boardEdit(String boardkey){
-    // List<BoardVO> list = mapper.boardedit(boardkey);
-    // BoardVO[] ar = null;
-    // if(list != null & list.size() > 0){
-    // ar = new BoardVO[list.size()];
-    // list.toArray(ar);
-    // }
-    // return ar;
-    // }
-
     public int boardAdd(BoardVO bvo) {
         return b_mapper.boardAdd(bvo);
     }
 
-    public BoardVO[] boardEdit(String boardkey) {
-        List<BoardVO> list = b_mapper.boardedit(boardkey);
-        BoardVO[] ar = null;
-        if (list != null & list.size() > 0) {
-            ar = new BoardVO[list.size()];
-            list.toArray(ar);
+    public BoardVO[] edit(String boardkey) {
+        List<BoardVO> b_list = b_mapper.edit(boardkey);
+        BoardVO[] b_ar = null;
+        if (b_list != null & b_list.size() > 0) {
+            b_ar = new BoardVO[b_list.size()];
+            b_list.toArray(b_ar);
         }
-        return ar;
+        return b_ar;
     }
 
     public int emptyAdd(BoardVO bvo) {
@@ -71,9 +57,9 @@ public class BoardService {
         return b_mapper.getBbs(boardkey);
     }
 
-    public int edit(BoardVO bvo) {
-        return b_mapper.edit(bvo);
-    }
+    // public int edit(BoardVO bvo) {
+    //     return b_mapper.edit(bvo);
+    // }
 
     public int del(String boardkey) {
         return b_mapper.del(boardkey);

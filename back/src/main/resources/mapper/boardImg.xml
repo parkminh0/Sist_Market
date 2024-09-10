@@ -5,15 +5,18 @@
 <mapper namespace="com.sist.back.mapper.BoardImgMapper">
 	<insert id="BoardImgSave">
 		INSERT INTO boardimg(boardkey, f_name, imgweburl)
-        VALUES(#{boardkey},#{fname},#{imgweburl})
+        VALUES(#{boardkey}, #{fname}, #{imgweburl})
 	</insert>
 
   <delete id="BoardImgDelete">
-    DELETE FROM boardimg
-    WHERE boardkey = #{boardkey}
-      AND imgweburl NOT IN
-      <foreach item="url" collection="imgweburl" open="(" separator="," close=")">
-          #{url}
-      </foreach>
-</delete>
+      DELETE FROM boardimg
+      WHERE boardkey = #{boardkey}
+      <if test="imgweburl != null and imgweburl.size() > 0">
+        AND imgweburl NOT IN
+        <foreach item="url" collection="imgweburl" open="(" separator="," close=")">
+            #{url}
+        </foreach>
+      </if>
+  </delete>
+
 </mapper>

@@ -300,8 +300,17 @@ public class UserService {
         return mapper.editPw(uvo);
     }
 
+    public String encodePw(String pw) {
+        return passwordEncoder.encode(pw);
+    }
+
     public int editPhone(userVO uvo) {
         return mapper.editPhone(uvo);
     }
+
+    public boolean chkPw(String chkPw, String encodedPw) {
+        return passwordEncoder.matches(chkPw, encodedPw);
+    }
+
 
 }
