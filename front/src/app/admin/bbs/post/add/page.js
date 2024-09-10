@@ -7,14 +7,16 @@ import 'react-quill/dist/quill.snow.css';
 import { ImageActions } from '@xeger/quill-image-actions';
 import { ImageFormats } from '@xeger/quill-image-formats';
 import { Button, TextField } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 // formats로 사용자가 넣을 수 있는 데이터를 제한함
 const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
-const BC_URL = "/api/admin/board/getAllBc";
-const AddImage_URL = "/api/admin/board/addImage";
-const Add_URL = "/api/admin/board/add";
-const EmptyAdd_URL = "/api/admin/board/";
-const deleteLatest_URL="/api/admin/board/deleteLatest";
+const BC_URL = "/admin/board/getAllBc";
+const AddImage_URL = "/admin/board/addImage";
+const Add_URL = "/admin/board/add";
+const EmptyAdd_URL = "/admin/board/empty";
+const deleteLatest_URL="/admin/board/deleteLatest";
+
 // 이미지 사이즈 조절을 위한 모듈
 Quill.register('modules/imageActions', ImageActions);
 Quill.register('modules/imageFormats', ImageFormats);
@@ -26,6 +28,7 @@ const ReactEditor = () => {
   const [categoryname, setCategoryName] = useState();
   const [userkey, setUserkey] = useState("1");
   const boardkey = useRef(1);
+  const router = useRouter();
   console.log(content);
 
   const quillRef = useRef(); // 레퍼런스 객체로서 DOM 요소 접근 조작 가능
@@ -81,6 +84,7 @@ const ReactEditor = () => {
     });
     if (response.data.chk === 1) {
       alert("저장 성공");
+      router.push('/admin/bbs/post');
       return response.data.filePath;
     } else {
       throw new Error('업로드 실패');
@@ -110,10 +114,9 @@ const ReactEditor = () => {
     }
   }, []);
 
-
   const modules = useMemo(() => ({
-    imageActions: {}, //추가
-    imageFormats: {}, //추가,
+    imageActions: {},
+    imageFormats: {},
     toolbar: {
       container: [
         ["link", "image", "video"],
@@ -162,21 +165,24 @@ const ReactEditor = () => {
             <option value="" disabled selected hidden>:::카테고리 선택:::</option>
             {bc_list && bc_list.map((bc, i) => (<option key={i} value={bc.value}>{bc.value}</option>))}
           </select>
-
           <div className="button-group" style={{ display: 'flex', gap: '10px' }}>
-            <Button variant='contained' color="warning">임시 저장</Button>
             <Button variant="contained" color="success" onClick={uploadContent}>저장</Button>
-            <Button variant="contained" color="error">취소</Button>
+            <Button variant="contained" color="error" onClick={() => {
+                    const shouldCancel = window.confirm('변경 사항이 저장되지 않을 수 있습니다. 정말 취소하시겠습니까?');
+                        if (shouldCancel) {
+                        navigator.sendBeacon(deleteLatest_URL, userkey);
+                        router.push('/admin/bbs/post');
+                        }}}>
+                취소
+            </Button>
           </div>
         </div>
-
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <input type="text" id="title" name="title" placeholder="제목" required className="input-field"
             value={title} onChange={(e) => setTitle(e.target.value)}
             style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginBottom: '10px' }} />
         </div>
       </div>
-
       <div>
         <ReactQuill
           theme="snow"

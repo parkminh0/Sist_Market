@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Avatar, Divider, Tabs, Tab, Modal } from '@mui/material';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default function Review({ onReviewCountChange }) {
   const BUY_URL = "/user/buyingReview";
@@ -13,6 +14,7 @@ export default function Review({ onReviewCountChange }) {
   const [sellingList, setSellingList] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const userkey = Cookies.get("userkey");
 
   useEffect(() => {
     getData();
@@ -20,8 +22,8 @@ export default function Review({ onReviewCountChange }) {
 
   function getData() {
     Promise.all([
-      axios.get(BUY_URL, { params: { userkey: 45} }),
-      axios.get(SELL_URL, { params: { userkey: 45} })
+      axios.get(BUY_URL, { params: { userkey: userkey} }),
+      axios.get(SELL_URL, { params: { userkey: userkey} })
     ]).then(([res1, res2]) => {
         console.log(res2.data.selling_ar);
         setBuyingList(res1.data.buying_ar);

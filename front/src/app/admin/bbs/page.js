@@ -6,10 +6,10 @@ import axios from 'axios';
 import { Modal, Box, Typography, TextField, Button } from '@mui/material';
 
 export default function Page() {
-  const API_URL = "/api/admin/board/getAllBc";
-  const ADD_URL = "/api/admin/board/addBc";
-  const EDIT_URL = "/api/admin/board/editBc";
-  const DEL_URL = "/api/admin/board/chkDelBc";
+  const API_URL = "/admin/board/getAllBc";
+  const ADD_URL = "/admin/board/addBc";
+  const EDIT_URL = "/admin/board/editBc";
+  const DEL_URL = "/admin/board/chkDelBc";
 
   const [list, setList] = useState([]);
   const [allChecked, setAllChecked] = useState(false);

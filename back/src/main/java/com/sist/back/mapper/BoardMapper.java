@@ -14,11 +14,9 @@ public interface BoardMapper {
 
     List<BoardVO> search(Map<String, Object> b_map);
 
-    // int boardAdd(Map<String, Object> add_map);
-
     int boardAdd(BoardVO bvo);
 
-    List<BoardVO> boardedit(String boardkey);
+    List<BoardVO> edit(String boardkey);
 
     int emptyAdd(BoardVO bvo);
 
@@ -26,8 +24,7 @@ public interface BoardMapper {
 
     BoardVO getBbs(String boardkey);
 
-    int edit(BoardVO bvo);
-    // List<BoardVO> boardedit(String boardkey);
+    // int edit(BoardVO bvo);
 
     int del(String boardkey);
 
