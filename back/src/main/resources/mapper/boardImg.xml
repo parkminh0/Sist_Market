@@ -19,4 +19,8 @@
       </if>
   </delete>
 
+  <select id="getImgurl" resultType="String">
+    SELECT imgweburl FROM boardimg WHERE boardkey = #{boardkey}
+  </select>
+
 </mapper>
