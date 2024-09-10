@@ -211,4 +211,21 @@
         WHERE categorykey = (SELECT `key` FROM key_table WHERE `value` = #{value})
         AND isdeleted = 0;
     </update>
+
+    <!-- 사용자 게시글 목록 -->
+   <select id="userBbsList" resultType="com.sist.back.vo.BoardVO" parameterType="map">
+        SELECT * FROM board
+        WHERE isdeleted = 0
+        AND categorykey = #{categorykey}
+        ORDER BY boardkey DESC
+        LIMIT #{begin}, #{numPerPage}
+   </select>
+
+   <!-- 사용자 게시글 갯수 반환 -->
+   <select id="userBbsCount" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM board
+        WHERE isdeleted = 0
+   </select>
+
+
 </mapper>
