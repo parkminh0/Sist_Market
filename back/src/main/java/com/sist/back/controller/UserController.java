@@ -583,6 +583,21 @@ public class UserController {
         return map;
     }
 
+    // @PostMapping("/api/reg")
+    // @ResponseBody
+    // public Map<String, Object> reg(userVO vo) {
+    //     Map<String, Object> map = new HashMap<>();
+
+    //     if (vo.getId() != null) {
+    //         // 사용자가 입력한 비밀번호를 암호화 시킨다.
+    //         // String pw = passwordEncoder.encode(vo.getMPw());
+
+    //         userVO uvo = service.reg(vo);
+    //         map.put("uvo", uvo);
+    //     }
+    //     return map;
+    // }
+
     @RequestMapping("/editUser")
     @ResponseBody
     public Map<String, Object> editUser(String userkey, String key, String value) {
@@ -602,7 +617,8 @@ public class UserController {
                 cnt = service.editEmail(uvo);
                 break;
             case "pw":
-                uvo.setPw(value);
+                String encodedPw = service.encodePw(value);
+                uvo.setPw(encodedPw);
                 cnt = service.editPw(uvo);
                 break;
             case "phone":
@@ -623,9 +639,33 @@ public class UserController {
 
     @RequestMapping("/delUser")
     @ResponseBody
-    public Map<String, Object> delUser(String userkey) {
+    public Map<String, Object> delUser(String userkey, HttpServletResponse res) {
         Map<String, Object> map = new HashMap<>();
-        map.put("cnt", service.userDelForAdmin(userkey));
+        int cnt = service.userDelForAdmin(userkey);
+        if (cnt > 0) {
+            logout(res);
+            map.put("cnt", cnt);
+            // map.put("msg", "회원 탈퇴 및 로그아웃이 완료되었습니다.");
+        } else {
+            map.put("cnt", cnt);
+            // map.put("msg", "회원 탈퇴에 실패했습니다.");
+        }
+        return map;
+    }
+
+    @RequestMapping("/chkPw")
+    @ResponseBody
+    public Map<String, Object> chkPw(@RequestBody Map<String, String> data) {
+        String userkey = data.get("userkey");
+        String chkPw = data.get("chkPw");
+        Map<String, Object> map = new HashMap<>();
+
+        userVO uvo = service.getUserForAdmin(userkey);
+        if (uvo != null && service.chkPw(chkPw, uvo.getPw())) {
+            map.put("msg", true);
+        } else {
+            map.put("msg", false);
+        }
         return map;
     }
 
