@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/api/admin/board")
+@RequestMapping("/admin/board")
 public class BoardController {
 
     @Value("${server.upload.admin.board.image}")
@@ -89,75 +89,6 @@ public class BoardController {
         return map;
     }
 
-    // @RequestMapping("/add")
-    // @ResponseBody
-    // public Map<String, Object> boardAdd(String userkey, String title, String
-    // content, String categoryName, String boardkey) {
-    // Map<String, Object> addMap = new HashMap<>();
-    // addMap.put("userkey", userkey);
-    // addMap.put("title", title);
-    // addMap.put("content", content);
-    // addMap.put("categoryName", categoryName);
-
-    // //여기서 저장 후 다시 DB에서 가서 b_idx값을 받아오면 그 사이에 다른 글이 작성되었을 수 있으므로 bbs.xml에 속성을
-    // 추가해주자.
-    // int cnt = b_service.boardAdd(addMap);
-
-    // Map<String, Object> map = new HashMap<>();
-    // BoardVO bvo = new BoardVO();
-    // bvo.setUserkey(userkey);
-    // bvo.setTitle(title);
-    // bvo.setContent(content);
-    // bvo.setBoardkey(boardkey);
-
-    // List<String> list = new ArrayList<>();
-
-    // String regex = "<img[^>]+src=\"([^\"]+)\"";
-    // Pattern pattern = Pattern.compile(regex);
-    // Matcher matcher = pattern.matcher(bvo.getContent());
-    // while(matcher.find()){
-    // list.add(matcher.group(1));
-    // }
-    // bi_service.BoardImgDelete(list, bvo.getBoardkey());
-    // map.put("bvo", bvo);
-    // return map;
-    // }
-
-    // @RequestMapping("/addImage")
-    // @ResponseBody
-    // public Map<String, Object> add(MultipartFile file, HttpServletRequest
-    // request) {
-    // Map<String, Object> map = new HashMap<>();
-    // try{
-    // MultipartFile f = file;
-    // String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(),
-    // upload);
-    // String webPath = "http://localhost:3000/img/admin/board/";
-    // String sendFname = java.net.URLEncoder.encode(fname,
-    // StandardCharsets.UTF_8.toString()).replace("+", "%20");
-
-    // StringBuffer sb = new StringBuffer();
-    // sb.append(upload);
-    // sb.append("/");
-    // sb.append(fname);
-    // String imglocalPath = sb.toString();
-
-    // sb = new StringBuffer();
-    // sb.append(webPath);
-    // sb.append(sendFname);
-    // String imgWebPath = sb.toString();
-
-    // f.transferTo(new File(imglocalPath));
-
-    // map.put("chk",1);
-    // map.put("filePath",imgWebPath);
-    // bi_service.BoardImgSave("1",fname,imgWebPath);
-    // }catch(Exception e) {
-    // e.printStackTrace();
-    // }
-    // return map;
-    // }
-
     @RequestMapping("/add")
     @ResponseBody
     public Map<String, Object> boardAdd(BoardVO bvo, String categoryname) {
@@ -201,6 +132,8 @@ public class BoardController {
             sb.append(sendFname);
             String imgWebPath = sb.toString();
 
+            System.out.println(imglocalPath);
+
             f.transferTo(new File(imglocalPath));
 
             map.put("chk", 1);
@@ -212,7 +145,7 @@ public class BoardController {
         return map;
     }
 
-    @RequestMapping("")
+    @RequestMapping("/empty")
     @ResponseBody
     public Map<String, Object> addEmpty(BoardVO bvo) {
         Map<String, Object> map = new HashMap<>();
@@ -241,24 +174,24 @@ public class BoardController {
         return map;
     }
 
-    @RequestMapping("/edit")
-    @ResponseBody
-    public Map<String, Object> edit(BoardVO vo, String cPage) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("cnt", b_service.edit(vo));
-        return map;
-    }
-
     // @RequestMapping("/edit")
     // @ResponseBody
-    // public Map<String, Object> boardEdit(String boardkey) {
-    // Map<String, Object> map = new HashMap<>();
-    // // 추후에 userkey, townkey 기입해줘야함
-    // BoardVO[] ar = b_Service.boardEdit(boardkey);
-
-    // map.put("ar", ar);
-    // return map;
+    // public Map<String, Object> edit(BoardVO vo, String cPage) {
+    //     Map<String, Object> map = new HashMap<>();
+    //     map.put("cnt", b_service.edit(vo));
+    //     return map;
     // }
+
+    @RequestMapping("/edit")
+    @ResponseBody
+    public Map<String, Object> edit(String boardkey) {
+    Map<String, Object> map = new HashMap<>();
+    // 추후에 userkey, townkey 기입해줘야함
+    BoardVO[] b_ar = b_service.edit(boardkey);
+
+    map.put("b_ar", b_ar);
+    return map;
+    }
 
     @RequestMapping("del")
     @ResponseBody
