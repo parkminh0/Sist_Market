@@ -10,8 +10,8 @@ export default function Page() {
   //detail, edit 뒤에 [id]는 동적(Dynamic) 라우팅으로 내가 받아오는 값이 아니다. 그러므로 properties의 개념으로 {}없이 그냥 props라고 쓴 것 
 
   const params = useParams();
-  const API_URL = `/api/admin/board/getBbs?boardkey=${params.id}`;
-  const DEL_URL = `/api/admin/board/del?boardkey=${params.id}`;
+  const API_URL = `/admin/board/getBbs?boardkey=${params.id}`;
+  const DEL_URL = `/admin/board/del?boardkey=${params.id}`;
   const [vo, setVo] = useState({});
   const router = useRouter();
 
@@ -33,7 +33,7 @@ export default function Page() {
       DEL_URL,
     ).then(res => {
         alert("삭제 완료");
-        router.push('/admin/board/post');
+        router.push('/admin/bbs/post');
       })
       .catch(error => {
         console.error("삭제 중 오류가 발생했습니다.", error);
@@ -80,8 +80,8 @@ export default function Page() {
           </table>
         </div>
         <div className="button-group">
-          <button type="button" className="btn btn-list" onClick={() => router.push('/admin/board/post')}>목록</button>
-          <button type="button" className="btn btn-primary" onClick={() => router.push(`/admin/board/post/edit/${params.id}`)}>수정</button>
+          <button type="button" className="btn btn-list" onClick={() => router.push('/admin/bbs/post')}>목록</button>
+          <button type="button" className="btn btn-primary" onClick={() => router.push(`/admin/bbs/post/edit/${params.id}`)}>수정</button>
           <button type="button" className="btn btn-error" onClick={del}>삭제</button>
         </div>
       </div>
