@@ -26,7 +26,7 @@ export default function EditPostModal(props) {
 
     function getCategory() {
         axios({
-          url: "http://localhost:8080/category/all",
+          url: "/category/all",
           method: "get",
           headers: {
             "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export default function EditPostModal(props) {
         formData.append("isPostPage", 1);
         axios
         .post(
-            "http://localhost:8080/adpost/edit",
+            "/adpost/edit",
             formData,
             {
                 headers: {

@@ -56,7 +56,7 @@ export default function page() {
   // #region 비동기-카테고리 리스트
   function getCategory() {
     axios({
-      url: "http://localhost:8080/category/all",
+      url: "/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export default function page() {
     setMaxPriceParam(maxParam);
 
     axios({
-      url: "http://localhost:8080/adpost/search",
+      url: "/adpost/search",
       method: "get",
       params: {
         category: cateParam,
@@ -416,8 +416,8 @@ export default function page() {
     axios
       .post(
         savePostKey == null || savePostKey == ""
-          ? "http://localhost:8080/adpost/write"
-          : "http://localhost:8080/adpost/edit",
+          ? "/adpost/write"
+          : "/adpost/edit",
         formData,
         {
           headers: {

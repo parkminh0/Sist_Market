@@ -40,7 +40,7 @@ export default function Page() {
     setPostKey(postkey);
 
     axios({
-      url: "http://localhost:8080/adpost/detail",
+      url: "/adpost/detail",
       method: "get",
       params: {
         postkey: postkey,
