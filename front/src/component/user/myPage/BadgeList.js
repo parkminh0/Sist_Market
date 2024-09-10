@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid, Card, CardContent, Typography, Avatar, Box, Button, Modal, Divider } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default function BadgeList({ onBadgeCountChange }) {
     const ALL_URL = "/user/badge/getAllBadge";
@@ -17,6 +18,7 @@ export default function BadgeList({ onBadgeCountChange }) {
     const [selectedBadge, setSelectedBadge] = useState('');
     const [badgekey, setBadgekey] = useState('');
     const [open, setOpen] = useState('');
+    const userkey = Cookies.get("userkey");
 
     useEffect(() => {
         getAllData();
@@ -31,7 +33,7 @@ export default function BadgeList({ onBadgeCountChange }) {
 
     function getData() {
         axios.get(API_URL, {
-            params: { userkey: 45 }
+            params: { userkey: userkey }
         }).then((res) => {
             console.log(res.data.b_ar);
             const badges = res.data.b_ar;
@@ -47,7 +49,7 @@ export default function BadgeList({ onBadgeCountChange }) {
     
     function setRepresentBadge() {
         axios.get(REP_URL, {
-            params: { userkey: 45, badgekey: badgekey }
+            params: { userkey: userkey, badgekey: badgekey }
         }).then((res) => {
             setRepBadge(list.find(badge => badge.badgekey == badgekey));
         });
@@ -55,7 +57,7 @@ export default function BadgeList({ onBadgeCountChange }) {
 
     function cancelRep() {
         axios.get(CAN_URL, {
-            params: { userkey: 45, badgekey: badgekey }
+            params: { userkey: userkey, badgekey: badgekey }
         }).then((res) => {
             setRepBadge(null);
         });
