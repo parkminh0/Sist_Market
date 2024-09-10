@@ -4,11 +4,11 @@ export default async function handler(req,res){
     const {query} =req;
     const code = query.code;
 
-    const API_URL = "http://localhost:8080";
+    const API_URL = "/api/member/kakao";
 
     if(code != undefined){
         axios({
-            url: `${API_URL}/api/member/kakao`,
+            url: `${API_URL}`,
             method: 'POST',
             params: {code: code},
             headers:{
