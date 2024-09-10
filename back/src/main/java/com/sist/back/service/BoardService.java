@@ -96,4 +96,18 @@ public class BoardService {
     public int delBoardCategory2(String value) {
         return b_mapper.delBoardCategory2(value);
     }
+
+    public BoardVO[] userBbsList(Map<String, Object> b_map){
+        BoardVO[] ar = null;
+        List<BoardVO> list = b_mapper.userBbsList(b_map);
+        if(list!=null&&list.size()>0){
+            ar = new BoardVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public int userBbsCount(String categorykey){
+        return b_mapper.userBbsCount(categorykey);
+    }
 }

@@ -253,4 +253,38 @@ public class BoardController {
         map.put("cnt", cnt);
         return map;
     }
+    @RequestMapping("/userBbsList")
+    @ResponseBody
+    public Map<String, Object> userBbsList(String categorykey, String cPage) {
+        Map<String, Object> map = new HashMap<>();
+
+        int totalRecord = b_service.userBbsCount(categorykey);
+
+        Paging p = new Paging(5, 3); // 페이징 객체 생성
+        p.setTotalRecord(totalRecord);
+        
+        if (cPage != null) {
+            p.setNowPage(Integer.parseInt(cPage));
+        } else {
+            p.setNowPage(1);
+        }
+
+        int nowPage = p.getNowPage();
+        int begin = p.getBegin(); // 시작 레코드
+        int numPerPage = p.getNumPerPage(); // 페이지당 게시물 수
+
+
+        Map<String, Object> b_map = new HashMap<>();
+        b_map.put("categorykey", categorykey);
+        b_map.put("begin", begin);
+        b_map.put("numPerPage", numPerPage);
+
+        BoardVO[] ar = b_service.userBbsList(b_map);
+        map.put("ar", ar);
+        map.put("nowPage", nowPage);
+        map.put("totalPage", p.getTotalPage());
+        map.put("totalRecord", p.getTotalRecord());
+        map.put("numPerPage", p.getNumPerPage());
+        return map;
+    }
 }

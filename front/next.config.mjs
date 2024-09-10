@@ -16,6 +16,7 @@ const nextConfig = {
               source: "/adpost/:path*",
               destination: "http://localhost:8080/adpost/:path*",
             },
+
             {
               source: "/user/:path*",
               destination: "http://localhost:8080/user/:path*",
@@ -28,6 +29,7 @@ const nextConfig = {
               source: "/admin/board/:path*",
               destination: "http://localhost:8080/admin/board/:path*",
             },
+
         ]
     }
 };

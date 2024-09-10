@@ -40,4 +40,9 @@ public interface BoardMapper {
     int delBoardCategory1(String value);
 
     int delBoardCategory2(String value);
+
+    //사용자 게시판 가져오기
+    List<BoardVO> userBbsList(Map<String, Object> b_map);
+
+    int userBbsCount(String categorykey);
 }
