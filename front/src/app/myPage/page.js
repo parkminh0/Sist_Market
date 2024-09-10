@@ -9,11 +9,12 @@ import "/public/css/myPage.css";
 import Link from "next/link";
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function page() {
 
   const API_URL = '/user/api/admin/userEdit';
-  
+  const userkey = Cookies.get("userkey");
   const [uvo, setUvo] = useState({});
   const [sell_1, setSell_1] = useState(0);
   const [sell_2, setSell_2] = useState(0);
@@ -24,7 +25,7 @@ export default function page() {
     axios({
       url: API_URL,
       method: "post",
-      params: {"userkey":1},
+      params: {"userkey":userkey},
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -280,7 +281,7 @@ export default function page() {
                       }
                       return(
                     <div key={index} data-v-eff62a72="">
-                      <div data-v-53e92c51="" data-v-eff62a72="">
+                      <Link href={`/post/detail?postkey=${blvo.postkey}`} data-v-53e92c51="" data-v-eff62a72="">
                         <div
                           data-v-53e92c51=""
                           className="purchase_list_display_item"
@@ -336,7 +337,7 @@ export default function page() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                       )}):
                       <div
@@ -455,7 +456,7 @@ export default function page() {
                       }
                       return(
                     <div key={index} data-v-eff62a72="">
-                      <div data-v-53e92c51="" data-v-eff62a72="">
+                      <Link href={`/post/detail?postkey=${clvo.postkey}`} data-v-53e92c51="" data-v-eff62a72="">
                         <div
                           data-v-53e92c51=""
                           className="purchase_list_display_item"
@@ -511,7 +512,7 @@ export default function page() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                       )}):
                       <div
@@ -547,7 +548,7 @@ export default function page() {
               <div data-v-7b7d73d2="" className="interest_product">
                 <div data-v-7b7d73d2="" className="product_list">
                   {/* 여기서 FOREACH로 8개 뿌리기 */}
-                  { uvo.w_list ? uvo.w_list.map((wlvo,index)=>{
+                  { uvo.w_list ? uvo.w_list.length>0 ? uvo.w_list.map((wlvo,index)=>{
                       if(index>7){
                         return;
                       }
@@ -561,7 +562,7 @@ export default function page() {
                   >
                     <Link
                       data-v-2c8107bc=""
-                      href="/products/21935"
+                      href={`/post/detail?postkey=${wlvo.pvo.postkey}`}
                       className="item_inner"
                     >
                       <div data-v-2c8107bc="" className="thumb_box">
@@ -646,7 +647,7 @@ export default function page() {
                       </div>
                     </Link>
                   </div>
-                  )}) : ''
+                  )}) : <p style={{margin:"0 10%"}}>등록된 관심 상품이 없습니다.</p> : <p style={{margin:"0 10%"}}>등록된 관심 상품이 없습니다.</p>
                   }
                 </div>
               </div>
