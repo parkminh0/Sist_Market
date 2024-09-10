@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.BoardImgMapper;
+import com.sist.back.vo.BoardImgVO;
 
 @Service
 public class BoardImgService {
@@ -19,4 +20,10 @@ public class BoardImgService {
     public int BoardImgDelete(List<String> imgweburl, String boardkey){
         return mapper.BoardImgDelete(imgweburl, boardkey);
     }
+
+    public List<String> getImgurl(String boardkey) {
+        List<String> bi_list = mapper.getImgurl(boardkey);
+        return bi_list;
+    }
 }
+

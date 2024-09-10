@@ -20,14 +20,17 @@ export default function Page() {
   const [key, setKey] = useState('');
 
   function getData() {
-    axios.get(
-        API_URL,
-    ).then((res) => {
-      console.log(res.data);
-      setList(res.data.bc_list);
-      setCheckedItems([]);
-      setAllChecked(false);
-    })
+    axios.get(API_URL)
+      .then((res) => {
+        console.log(res.data);
+        setList(res.data.bc_list);
+        setCheckedItems([]);
+        setAllChecked(false);
+      }).catch((error) => {
+        if (error.response && error.response.status === 404) {
+          setList([]);
+        }
+      });
   }
 
   useEffect(() => {
@@ -124,16 +127,22 @@ export default function Page() {
             <div className="mBoard">
               <table border="1" summary="">
                 <colgroup>
-                  <col style={{ width: '125px'}} />
-                  <col style={{ width: 'auto'}} />
+                  <col style={{ width: '125px' }} />
+                  <col style={{ width: 'auto' }} />
                 </colgroup>
                 <tbody className="right">
-                  {list.map((ar, i) => (
-                    <tr key={i}>
-                        <th scope="row" style={{fontWeight: 'bold'}}>{ar.value}</th>
+                  {list && list.length > 0 ? (
+                    list.map((ar, i) => (
+                      <tr key={i}>
+                        <th scope="row" style={{ fontWeight: 'bold' }}>{ar.value}</th>
                         <td><strong className="txtEm">{ar.count}</strong><span className="txtLight">개</span></td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: 'center' }}>게시글 작성 현황이 없습니다.</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -162,7 +171,7 @@ export default function Page() {
             </colgroup>
             <thead>
               <tr>
-                <th scope="col"><input type="checkbox" className="allChk" checked={allChecked} onChange={(e) => handleAllCheck(e)} /></th>
+                <th scope="col" col><input type="checkbox" className="allChk" checked={allChecked} onChange={(e) => handleAllCheck(e)} /></th>
                 <th scope="col" style={{fontWeight: 'bold'}}>게사판 카테고리 번호</th>
                 <th scope="col" style={{fontWeight: 'bold'}}>게시판 카테고리명</th>
               </tr>
@@ -181,7 +190,7 @@ export default function Page() {
                   ))
               ) : (
                   <tr>
-                      <td colSpan="7">게시판 카테고리가 없습니다.</td>
+                      <td colSpan="3">게시판 카테고리가 없습니다.</td>
                   </tr>
               )}
             </tbody>

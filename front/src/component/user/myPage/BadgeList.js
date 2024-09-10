@@ -36,7 +36,7 @@ export default function BadgeList({ onBadgeCountChange }) {
             params: { userkey: userkey }
         }).then((res) => {
             console.log(res.data.b_ar);
-            const badges = res.data.b_ar;
+            const badges = res.data.b_ar || [];
             const representBadge = badges.find((item) => item.isrepresent == "1");
             if (representBadge) {
                 setRepBadge(representBadge);
@@ -136,7 +136,7 @@ export default function BadgeList({ onBadgeCountChange }) {
                                 {unlockedBadgeKeys.includes(selectedBadge.badgekey) ? selectedBadge.postcontent : selectedBadge.precontent}
                             </Typography>
                             {/* 대표 배지 설정 O */}
-                            {selectedBadge && repBadge && selectedBadge.badgekey === repBadge.badgekey ? (
+                            {selectedBadge && repBadge && selectedBadge.badgekey == repBadge.badgekey ? (
                                 <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { cancelRep(); modalClose(); }}>
                                     대표 배지 해제
                                 </Button>

@@ -18,6 +18,7 @@ import com.sist.back.service.BoardImgService;
 import com.sist.back.service.BoardService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
+import com.sist.back.vo.BoardImgVO;
 import com.sist.back.vo.BoardVO;
 import com.sist.back.vo.KeyTableVO;
 
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 
 @Controller
 @RequestMapping("/admin/board")
@@ -132,8 +135,6 @@ public class BoardController {
             sb.append(sendFname);
             String imgWebPath = sb.toString();
 
-            System.out.println(imglocalPath);
-
             f.transferTo(new File(imglocalPath));
 
             map.put("chk", 1);
@@ -174,23 +175,16 @@ public class BoardController {
         return map;
     }
 
-    // @RequestMapping("/edit")
-    // @ResponseBody
-    // public Map<String, Object> edit(BoardVO vo, String cPage) {
-    //     Map<String, Object> map = new HashMap<>();
-    //     map.put("cnt", b_service.edit(vo));
-    //     return map;
-    // }
-
     @RequestMapping("/edit")
     @ResponseBody
-    public Map<String, Object> edit(String boardkey) {
-    Map<String, Object> map = new HashMap<>();
-    // 추후에 userkey, townkey 기입해줘야함
-    BoardVO[] b_ar = b_service.edit(boardkey);
+    public Map<String, Object> edit(BoardVO bvo, String categoryname) {
+        Map<String, Object> map = new HashMap<>();
+        bvo.setCategorykey(b_service.changeCategoryname(categoryname));
+        // 추후에 userkey, townkey 기입해줘야함
+        int cnt = b_service.edit(bvo);
 
-    map.put("b_ar", b_ar);
-    return map;
+        map.put("cnt", cnt);
+        return map;
     }
 
     @RequestMapping("del")
@@ -213,12 +207,21 @@ public class BoardController {
     }
 
     // 게시판 카테고리 관리
-    @ResponseBody
     @RequestMapping("/getAllBc")
+    @ResponseBody
     public Map<String, Object> getAllBc() {
         Map<String, Object> map = new HashMap<>();
         KeyTableVO[] bc_list = b_service.getAllBcList();
         map.put("bc_list", bc_list);
+        return map;
+    }
+
+    @RequestMapping("/getBc")
+    @ResponseBody
+    public Map<String, Object> getBc(String boardkey) {
+        Map<String, Object> map = new HashMap<>();
+        String categoryname = b_service.getBc(boardkey);
+        map.put("categoryname", categoryname);
         return map;
     }
 
@@ -253,6 +256,7 @@ public class BoardController {
         map.put("cnt", cnt);
         return map;
     }
+
     @RequestMapping("/userBbsList")
     @ResponseBody
     public Map<String, Object> userBbsList(String categorykey, String cPage) {

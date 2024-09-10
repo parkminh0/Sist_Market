@@ -70,12 +70,12 @@ export default function page() {
     axios.get("/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
-      const totalCount = res.data.m_ar.reduce((sum, item) => sum + item.count, 0);
+      const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
-      const goodTemps = res.data.m_ar.filter(item => item.preference === 1 || item.preference === 2)
-        .reduce((sum, item) => sum + item.count, 0);
-      const badTemps = res.data.m_ar.filter(item => item.preference === 0)
-        .reduce((sum, item) => sum + item.count, 0);
+      const goodTemps = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2)
+      .reduce((sum, item) => sum + item.count, 0);
+      const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
+      .reduce((sum, item) => sum + item.count, 0);
       const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
       setMannerTemp(updatedTemp);
     });
@@ -83,7 +83,7 @@ export default function page() {
       axios.get("/user/buyingReview", { params: { userkey: userkey} }),
       axios.get("/user/sellingReview", { params: { userkey: userkey} })
     ]).then(([res1, res2]) => {
-        setReviewCount([...res1.data.buying_ar, ...res2.data.selling_ar].length);
+        setReviewCount([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
     });
     getData();
   }, []);
@@ -128,7 +128,7 @@ export default function page() {
         </Box>
         <Box sx={{ position: 'absolute', right: 0, top: -25, display: 'flex', alignItems: 'center' }}>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>{`${temp}℃`}</Typography>
-          <Typography variant="body2" sx={{ marginLeft: 1 }}>{getTemperatureEmoji(temp)}</Typography>
+          <Typography variant="body2" sx={{ marginLeft: 0.2, fontSize: '1.2rem' }}>{getTemperatureEmoji(temp)}</Typography>
         </Box>
         <Box sx={{ width: '100%', mr: 1 }}>
           <LinearProgress variant="determinate" value={temp} 
@@ -250,9 +250,9 @@ export default function page() {
                 </div>
                 <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
                     <div data-v-24868902="" data-v-eff62a72="" className="empty_area" style={{paddingTop: '50px'}}>
-                        {selectedTab === '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
-                        {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner onMannerCountChange={handleMannerCount} /></p>)}
-                        {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review onReviewCountChange={handleReviewCount}/></p>)}
+                        {selectedTab == '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
+                        {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><Manner onMannerCountChange={handleMannerCount} /></p>)}
+                        {selectedTab == '3' && ( <p data-v-24868902="" className="desc"><Review onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
                 </div>
               </div>
