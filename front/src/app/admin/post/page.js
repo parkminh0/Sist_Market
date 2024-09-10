@@ -3,35 +3,27 @@
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
 import axios from "axios";
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
+
 
 export default function Page() {
   const [list, setList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const [totalPosts, setTotalPosts] = useState(0); // 전체 게시글 수
-  const [salePosts, setSalePosts] = useState(0); // 판매 중 게시글 수
-  const [notForSalePosts, setNotForSalePosts] = useState(0); // 판매 안하는 게시글 수
-  const [reservedPosts, setReservedPosts] = useState(0); // 예약 중 게시글 수
-  const [dealingPosts, setDealingPosts] = useState(0); // 거래 중 게시글 수
-  const [soldOutPosts, setSoldOutPosts] = useState(0); // 거래 완료 게시글 수
-  const [deletedPosts, setDeletedPosts] = useState(0); // 삭제된 게시글 수
 
+   // 게시판 현황 카운트
+   const API_URL = "/adpost/postcount";
+   const [all, set_all_posts] = useState(0); // 전체 게시글 수
+   const [tem_save, set_tem_save_posts] = useState(0); // 임시 저장 게시글 수
+   const [sale, set_sale_posts] = useState(0); // 판매중 게시글 수
+   const [saleing, set_saleing_posts] = useState(0); // 예약중(거래중) 게시글 수
+   const [saled, set_saled_posts] = useState(0); // 거래완료 게시글 수
+   const [hide, set_hide_posts] = useState(0); // 숨김 게시글 수
 
- // 전체 게시글 수를 가져오는 함수
- function getTotalPosts() {
-  axios({
-    url: "/adpost/totalposts", // 전체 게시글 수를 가져오는 백엔드 API 엔드포인트
-    method: "get",
-  })
-    .then((res) => {
-      console.log("전체 게시글 수 응답 데이터:", res.data); // 응답 데이터 확인
-      setTotalPosts(res.data); // 응답 데이터가 숫자이므로 바로 상태로 저장
-    })
-    .catch((error) => {
-      console.error("There was an error fetching total posts:", error);
-    });
-}
-
-
+   // 상태 관리 추가
+  const [postStatus, setPostStatus] = useState("all");
+  const [method, setMethod] = useState("0");
+  const [canBargain, setCanBargain] = useState("0");
+  
 
   function searchpost() {
     let frm = document.getElementById("frmSearch");
@@ -51,38 +43,50 @@ export default function Page() {
       },
     })
       .then((res) => {
-        setList(res.data.post_list); // 검색 결과를 상태로 저장
+        // 검색 결과를 상태로 저장
+        setList(res.data.post_list); 
+        // 검색 후 게시글 목록 업데이트를 위해 fetchPostList 호출
+        fetchPostList();
       })
       .catch((error) => {
         console.error("There was an error with the search request:", error);
       });
   }
 
-    const fetchPostStatusCounts = () => {
-      axios.get("/adpost/statuscounts")
-        .then((response) => {
-          console.log("게시글 상태별 카운트:", response.data); // 서버에서 반환된 데이터 로그
-          // 받아온 데이터를 상태로 저장하거나 처리
-          setTotalPosts(response.data.total_posts);
-          setSalePosts(response.data.sale_posts);
-          setNotForSalePosts(response.data.not_for_sale_posts);
-          setReservedPosts(response.data.reserved_posts);
-          setDealingPosts(response.data.dealing_posts);
-          setSoldOutPosts(response.data.sold_out_posts);
-          setDeletedPosts(response.data.deleted_posts);
-        })
-        .catch((error) => {
-          console.error("게시글 상태별 카운트 조회 실패:", error);
-        });
-    };
-  
+  // 백엔드에서 pimg_list를 포함한 데이터를 받아오는 함수
+  function fetchPostList() {
+    axios({
+      url: "/adpost/main", // 예시로 "/adpost/main" 사용. 실제 pimg_list를 포함한 엔드포인트로 수정 필요.
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        setList(res.data.free_list); // 백엔드에서 받은 free_list를 상태로 저장
+        console.log(res.data.free_list); // pimg_list를 포함한 데이터 확인
+      })
+      .catch((error) => {
+        console.error("Error fetching post list:", error);
+      });
+  }
 
-
-  useEffect(() => {
-    searchpost();
-    fetchPostStatusCounts();
-    callData();
-  }, []);
+  function getCount() {
+    axios.get(API_URL)
+      .then((response) => {
+        // 받아온 데이터를 각 상태에 맞게 설정
+        const data = response.data.pcvo;
+        set_all_posts(data.all_posts); // 전체 게시글 수
+        set_tem_save_posts(data.tem_save_posts); // 임시 저장 게시글 수
+        set_sale_posts(data.sale_posts); // 판매중 게시글 수
+        set_saleing_posts(data.saleing_posts); // 예약중(거래중) 게시글 수
+        set_saled_posts(data.saled_posts); // 거래완료 게시글 수
+        set_hide_posts(data.hide_posts); // 숨김 게시글 수
+      })
+      .catch((error) => {
+        console.error("Error fetching post counts:", error);
+      });
+  }
 
   function callData() {
     axios.get("/category/all").then((response) => {
@@ -90,6 +94,12 @@ export default function Page() {
     });
   }
 
+  useEffect(() => {
+    getCount();
+    callData();
+  }, []);
+
+  
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -127,28 +137,12 @@ export default function Page() {
                   <div className="MuiStack-root css-1itc13n">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        전체 등록 게시글
+                        전체 게시글
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{totalPosts}</strong> {/*전체 게시글 수 출력*/}                      </a>
-                      <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
-                        개
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
-                  <div className="MuiStack-root css-1ima9n7">
-                    <div className="MuiStack-root css-1bew4d0">
-                      <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        판매함 게시물
-                      </span>
-                    </div>
-                    <div className="MuiStack-root css-1h3carr">
-                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{salePosts}</strong>
+                        {all}       
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -157,15 +151,15 @@ export default function Page() {
                   </div>
                 </div>
                 <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
-                  <div className="MuiStack-root css-1ima9n7">
+                  <div className="MuiStack-root css-1itc13n">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        판매안함 게시물
+                        임시 저장 게시글
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{notForSalePosts}</strong> 
+                        {tem_save}       
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -173,16 +167,17 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
+
                 <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        예약중 게시물
+                        판매중 게시물
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      <strong>{reservedPosts}</strong> 
+                        {sale}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -190,16 +185,17 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
+                
                 <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        거래중 게시물
+                        예약중(거래중) 게시물
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
-                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{dealingPosts}</strong> 
+                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
+                        {saleing}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -215,8 +211,8 @@ export default function Page() {
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
-                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{soldOutPosts}</strong> 
+                      <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
+                      {saled}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -228,12 +224,12 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        삭제 게시물
+                        숨김 게시물
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      <strong>{deletedPosts}</strong> 
+                      {hide}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -241,6 +237,8 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
+                
+                
               </div>
             </div>
           </div>
@@ -278,7 +276,7 @@ export default function Page() {
                           <option value="postkey">게시글 번호</option>
                           <option value="hope_place">거래 장소명</option>
                           <option value="townkey">동네명</option>
-                          <option value="userkey">판매자명</option>
+                          <option value="userkey">회원번호</option>
                         </select>
                         <input
                           id="searchCategoryText"
@@ -319,7 +317,9 @@ export default function Page() {
                         type="radio"
                         className="poststatus"
                         name="poststatus"
-                        value="0"
+                        value="all"
+                        checked={postStatus === "all"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       전체
                     </label>
@@ -328,9 +328,22 @@ export default function Page() {
                         type="radio"
                         className="poststatus"
                         name="poststatus"
-                        value="1"
+                        value="0"
+                        checked={postStatus === "0"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
-                      판매함
+                      임시 저장
+                    </label>
+                    <label className="gSingleLabel">
+                      <input
+                        type="radio"
+                        className="poststatus"
+                        name="poststatus"
+                        value="1"
+                        checked={postStatus === "1"}
+                        onChange={(e) => setPostStatus(e.target.value)}
+                      />{" "}
+                      판매중
                     </label>
                     <label className="gSingleLabel">
                       <input
@@ -338,8 +351,10 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="2"
+                        checked={postStatus === "2"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
-                      판매안함
+                      예약중(거래중)
                     </label>
                     <label className="gSingleLabel">
                       <input
@@ -347,24 +362,8 @@ export default function Page() {
                         className="poststatus"
                         name="poststatus"
                         value="3"
-                      />{" "}
-                      예약중
-                    </label>
-                    <label className="gSingleLabel">
-                      <input
-                        type="radio"
-                        className="poststatus"
-                        name="poststatus"
-                        value="4"
-                      />{" "}
-                      거래중
-                    </label>
-                    <label className="gSingleLabel">
-                      <input
-                        type="radio"
-                        className="poststatus"
-                        name="poststatus"
-                        value="5"
+                        checked={postStatus === "3"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
                       거래완료
                     </label>
@@ -373,9 +372,11 @@ export default function Page() {
                         type="radio"
                         className="poststatus"
                         name="poststatus"
-                        value="6"
+                        value="4"
+                        checked={postStatus === "4"}
+                        onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
-                      삭제
+                      숨김
                     </label>
                   </td>
                 </tr>
@@ -389,6 +390,8 @@ export default function Page() {
                         className="method"
                         name="method"
                         value="0"
+                        checked={method === "0"}
+                        onChange={(e) => setMethod(e.target.value)}
                       />{" "}
                       전체
                     </label>
@@ -398,6 +401,8 @@ export default function Page() {
                         className="method"
                         name="method"
                         value="1"
+                        checked={method === "1"}
+                        onChange={(e) => setMethod(e.target.value)}
                       />{" "}
                       직거래
                     </label>
@@ -407,6 +412,8 @@ export default function Page() {
                         className="method"
                         name="method"
                         value="2"
+                        checked={method === "2"}
+                        onChange={(e) => setMethod(e.target.value)}
                       />{" "}
                       택배거래
                     </label>
@@ -451,6 +458,8 @@ export default function Page() {
                         className="canbargain"
                         name="canbargain"
                         value="0"
+                        checked={canBargain === "0"}
+                        onChange={(e) => setCanBargain(e.target.value)}
                       />{" "}
                       전체
                     </label>
@@ -460,6 +469,8 @@ export default function Page() {
                         className="canbargain"
                         name="canbargain"
                         value="1"
+                        checked={canBargain === "1"}
+                        onChange={(e) => setCanBargain(e.target.value)}
                       />{" "}
                       흥정가능
                     </label>
@@ -469,6 +480,8 @@ export default function Page() {
                         className="canbargain"
                         name="canbargain"
                         value="2"
+                        checked={canBargain === "2"}
+                        onChange={(e) => setCanBargain(e.target.value)}
                       />{" "}
                       흥정 불가능
                     </label>
@@ -596,7 +609,22 @@ export default function Page() {
                       <td>{prod.userkey}</td>
                       <td>{prod.townkey}</td>
                       <td>{prod.categorykey}</td>
-                      <td>{prod.title}</td>
+                      <td>
+                        <div style={{ textAlign: "left", display: "flex", alignItems: "center" }}>
+                          {/* 이미지 출력 */}
+                          {prod.pimg_list && prod.pimg_list.length > 0 ? (
+                            <img
+                              src={prod.pimg_list[0].imgurl} // 첫 번째 이미지를 사용
+                              alt="썸네일"
+                              style={{ width: "50px", height: "50px", marginRight: "10px" }} // 이미지와 텍스트 사이에 간격 추가
+                            />
+                          ) : (
+                            <ImageNotSupportedRoundedIcon style={{ marginRight: "10px" }} /> // 이미지가 없을 경우 대체 아이콘 표시
+                          )}
+                          {/* 제목 출력 */}
+                          <p style={{ margin: 0 }}>{prod.title}</p>
+                        </div>
+                      </td>
                       <td>{prod.method}</td>
                       <td>{prod.price}</td>
                       <td>{prod.lastprice}</td>

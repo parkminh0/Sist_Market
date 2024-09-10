@@ -13,7 +13,7 @@ export default function Home() {
 
   function getCategory() {
     axios({
-      url: "http://localhost:8080/category/all",
+      url: "/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export default function Home() {
 
   function getMain() {
     axios({
-      url: "http://localhost:8080/adpost/main",
+      url: "/adpost/main",
       method: "get",
       headers: {
         "Content-Type": "application/json",

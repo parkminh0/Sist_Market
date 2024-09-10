@@ -30,30 +30,30 @@ export default function Header() {
     }
   }, [pathname]);
 
-  let lastScrollTop = 0;
-  window.addEventListener(
-    "scroll",
-    function () {
-      let st = window.pageYOffset || document.documentElement.scrollTop;
-      if (st > lastScrollTop) {
-        if (
-          !document
-            .querySelector("div._1a7kymoh")
-            .classList.contains("_1a7kymoi")
-        )
-          document.querySelector("div._1a7kymoh").classList.add("_1a7kymoi");
-      } else {
-        if (
-          document
-            .querySelector("div._1a7kymoh")
-            .classList.contains("_1a7kymoi")
-        )
-          document.querySelector("div._1a7kymoh").classList.remove("_1a7kymoi");
-      }
-      lastScrollTop = st <= 0 ? 0 : st;
-    },
-    false
-  );
+  // let lastScrollTop = 0;
+  // window.addEventListener(
+  //   "scroll",
+  //   function () {
+  //     let st = window.pageYOffset || document.documentElement.scrollTop;
+  //     if (st > lastScrollTop) {
+  //       if (
+  //         !document
+  //           .querySelector("div._1a7kymoh")
+  //           .classList.contains("_1a7kymoi")
+  //       )
+  //         document.querySelector("div._1a7kymoh").classList.add("_1a7kymoi");
+  //     } else {
+  //       if (
+  //         document
+  //           .querySelector("div._1a7kymoh")
+  //           .classList.contains("_1a7kymoi")
+  //       )
+  //         document.querySelector("div._1a7kymoh").classList.remove("_1a7kymoi");
+  //     }
+  //     lastScrollTop = st <= 0 ? 0 : st;
+  //   },
+  //   false
+  // );
 
  
   // #region 위치 모달 오픈
@@ -236,7 +236,7 @@ export default function Header() {
 const kakao_login = async(e)=>{
   e.preventDefault(); //다른 기본동작을 실행하지 않도록함
   //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
-  signIn("kakao",{callbackUrl: "http://localhost:8080/user/kakao/login"});
+  signIn("kakao",{callbackUrl: "/user/kakao/login"});
   //goController();
 } 
 const [chk,setChk] = useState(true);

@@ -7,10 +7,12 @@ import { Box, Breadcrumbs, Button, IconButton, MobileStepper, Paper, Typography 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import "/public/css/post_detail.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useTheme } from "@emotion/react";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import Cookies from 'js-cookie';
+import EditPostModal from '@/component/user/post/detail/EditPostModal';
 
 export default function Page() {
   // postkey 파라미터 값
@@ -19,7 +21,12 @@ export default function Page() {
   const [userVO, setUserVO] = useState({});
   const [categoryVO, setCategoryVO] = useState({});
   const [chatroomVO, setChatroomVO] = useState({});
+  const [canEdit, setCanEdit] = useState(false);
   const router = useRouter();
+
+  const userkey = Cookies.get("userkey");
+  
+  const param = useSearchParams();
 
   useEffect(() => {
     let currentUrl = window.location.href;
@@ -27,11 +34,13 @@ export default function Page() {
     let params = new URLSearchParams(currentUrlObj.search);
     // 'category' 파라미터의 모든 값 가져오기
     let postkey = params.get("postkey");
+    const now = new Date();
+    console.log(now.toLocaleString());
 
     setPostKey(postkey);
 
     axios({
-      url: "http://localhost:8080/adpost/detail",
+      url: "/adpost/detail",
       method: "get",
       params: {
         postkey: postkey,
@@ -44,7 +53,11 @@ export default function Page() {
       setCategoryVO(res.data.pvo.cvo);
       setUserVO(res.data.pvo.uvo);
       setChatroomVO(res.data.cr_list);
-      console.log(res.data.pvo.uvo);
+      setCanEdit(res.data.pvo.userkey == userkey);
+      if(param.get("edit")!=null){
+        editPost();
+      }
+
     });
   }, [router.query]);
 
@@ -59,8 +72,46 @@ export default function Page() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+
+  // #region 시간 표현
+  function timeDifference(postTime) {
+    const now = new Date(); // 현재 시간
+    const postDate = new Date(postTime); // postVO.create_dtm 값을 Date 객체로 변환
+  
+    const timeDiff = now - postDate; // 두 시간의 차이를 밀리초로 계산
+    const diffInSeconds = Math.floor(timeDiff / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+  
+    // 차이에 따라 적절한 문자열을 반환
+    if (diffInDays > 0) {
+      return `${diffInDays}일 전`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours}시간 전`;
+    } else if (diffInMinutes > 0) {
+      return `${diffInMinutes}분 전`;
+    } else {
+      return '방금 전';
+    }
+  }
+  // #endregion
+
+  function editPost(){
+    if(postVO.userkey == userkey){
+      alert("수정 권한이 없습니다.");
+    } else{
+      setOpen(true);
+    }
+  }
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+      setOpen(false);
+  };
+
   return (
     <>
+      <EditPostModal open={open} handleClose={handleClose} pvo={postVO}/>
       <article className="vqbuc90 _1h4pbgy7zs _1h4pbgy83s _1h4pbgy84b _1h4pbgy84l _1h4pbgy89k _1h4pbgy8eg _1h4pbgy9ug _1h4pbgy9vs _1h4pbgya0o">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <div className="_588sy41z _588sy421 vqbuc9j _588sy422 _588sy42b _588sy4qe _588sy4r5">
@@ -118,7 +169,7 @@ export default function Page() {
                     activeStep={activeStep}
                     nextButton={
                       <Button
-                        size="small"
+                        size="large"
                         onClick={handleNext}
                         disabled={activeStep === postVO.pimg_list.length - 1}
                       >
@@ -131,7 +182,7 @@ export default function Page() {
                       </Button>
                     }
                     backButton={
-                      <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                      <Button size="large" onClick={handleBack} disabled={activeStep === 0}>
                         {theme.direction === 'rtl' ? (
                           <KeyboardArrowRight />
                         ) : (
@@ -240,8 +291,8 @@ export default function Page() {
                     {categoryVO.categoryname}
                   </Link>{" "}
                   ·{" "}
-                  <time dateTime="2024-08-11T23:32:15.393-04:00">
-                    끌올 2시간 전 or 2시간 전
+                  <time>
+                    {timeDifference(postVO.create_dtm)}
                   </time>
                 </h2>
                 {postVO.price == 0 && postVO.method == 1 ? (
@@ -297,9 +348,12 @@ export default function Page() {
                 이 게시글 신고하기
               </Link>
               <div className="nfm9bo0 _1h4pbgy7e8 _1h4pbgy7cj _1h4pbgy7iw _1h4pbgy7h7 _1h4pbgy7nk _1h4pbgy7lv _1h4pbgy7s8 _1h4pbgy7qj _1h4pbgy9u8 _1h4pbgya14 _1h4pbgya0r _1h4pbgy9e0 _1h4pbgy9jc _1h4pbgy9oo _1h4pbgy1u0">
-                <button className="nfm9bo3 _1h4pbgy8jc _1h4pbgy9yw _1h4pbgy768 _1h4pbgya28 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy94w _1h4pbgy1uw _1h4pbgy1va _1h4pbgyqo _1h4pbgyqu _1h4pbgy78g _1h4pbgy76r _1h4pbgy7c8 _1h4pbgy7ag">
+                {canEdit?<Button onClick={()=>{editPost()}} color='success' variant='contained' style={{width:"100%", marginBottom:10}}>
+                  수정하기
+                </Button>:''}
+                <Button variant='contained' style={{width:"100%", backgroundColor:"#fa5050"}}>
                   채팅하기
-                </button>
+                </Button>
               </div>
             </section>
           </div>

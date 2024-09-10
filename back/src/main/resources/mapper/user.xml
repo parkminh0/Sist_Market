@@ -65,6 +65,19 @@
         <association property="cvo" javaType="com.sist.back.vo.categoryVO" select="getCategoryByCategoryKey" column="categorykey"/>
     </resultMap>
 
+    <resultMap id="likeuserMap" type="com.sist.back.vo.LikeUserVO">
+        <result column="likeuserkey" property="likeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="likeuserkey"/>
+    </resultMap>
+    <resultMap id="blockedMap" type="com.sist.back.vo.BlockedVO">
+        <result column="blockeduserkey" property="blockeduserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="blockeduserkey"/>
+    </resultMap>
+    <resultMap id="noseeMap" type="com.sist.back.vo.NoseeVO">
+        <result column="noseeuserkey" property="noseeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="noseeuserkey"/>
+    </resultMap>
+
     <!-- 관리자 유저 정보 가져오기 -->
     <select id="getUserForAdmin" parameterType="String" resultMap="userResultMap">
       SELECT * FROM user
@@ -353,8 +366,20 @@
       FROM `post`
       WHERE userkey = #{userkey}
       AND poststatus = #{poststatus}
-      <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
-          AND create_dtm BETWEEN #{start_date} AND #{end_date}
+      <if test="poststatus == 1 or poststatus == 2">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND create_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 3">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 4">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND update_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
       </if>
     </select>
 
@@ -388,6 +413,76 @@
         WHERE c.rnum BETWEEN #{begin} AND #{end}
     </select>
 
+    <!-- another user list -->
+
+    <select id="getlikeuserCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `likeuser`
+      WHERE userkey = #{userkey}
+    </select>
+    <select id="getblockeduserCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `blocked`
+      WHERE userkey = #{userkey}
+    </select>
+    <select id="getnoseeuserCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `nosee`
+      WHERE userkey = #{userkey}
+    </select>
+
+
+    <select id="getlikeuserByMap" resultMap="likeuserMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `likeuser`
+                WHERE userkey = #{userkey}
+                ORDER BY likekey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getblockeduserByMap" resultMap="blockedMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `blocked`
+                WHERE userkey = #{userkey}
+                ORDER BY blockedkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getnoseeuserByMap" resultMap="noseeMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `nosee`
+                WHERE userkey = #{userkey}
+                ORDER BY noseekey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    <delete id="uncheckLikeuser" parameterType="String">
+      DELETE
+      FROM `likeuser`
+      WHERE likeuserkey = #{userkey}
+    </delete>
+    <delete id="uncheckBlockeduser" parameterType="String">
+      DELETE
+      FROM `blocked`
+      WHERE blockeduser = #{userkey}
+    </delete>
+    <delete id="uncheckNoseeuser" parameterType="String">
+      DELETE
+      FROM `nosee`
+      WHERE noseeuserkey = #{userkey}
+    </delete>
+
+
     <!-- 관리자 회원 탈퇴 -->
     <update id="userDelForAdmin" parameterType="String">
         UPDATE user
@@ -417,14 +512,14 @@
     <!-- 카카오_이메일로 유저 확인-->
     <select id="findbyEmail" parameterType="String" resultType="com.sist.back.vo.userVO">
       SELECT * FROM user 
-      WHERE email = #{email} LIMIT 1;
+      WHERE email = #{email} LIMIT 1
     </select>
 
 
     <!-- 회원가입 전화번호 중복검사-->
     <select id="findbyPhone" parameterType="String" resultType="com.sist.back.vo.userVO">
       SELECT * FROM user 
-      WHERE phone = #{phone} LIMIT 1;
+      WHERE phone = #{phone} LIMIT 1
     </select>
       
     <!-- 이미지 변경 -->
