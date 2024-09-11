@@ -13,15 +13,15 @@
 
     <insert id="addLike" parameterType="Map">
       INSERT
-      INTO `wishlist`(postkey,userkey,create_dtm).
+      INTO `wishlist`(postkey,userkey,create_dtm)
       VALUES (#{postkey},#{userkey},NOW())
     </insert>
     
     <delete id="delLike" parameterType="Map">
-    DELETE 
-    FROM `wishlist`
-    WHERE postkey=#{postkey}
-    AND userkey=#{userkey}
+      DELETE 
+      FROM `wishlist`
+      WHERE postkey=#{postkey}
+      AND userkey=#{userkey}
     </delete>
 
 </mapper>

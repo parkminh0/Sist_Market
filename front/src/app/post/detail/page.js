@@ -53,9 +53,7 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log("isLike:::");
-      console.log(res.data);
-      if (res.data.result == 1) {
+      if (res.data.result > 0) {
         setLike(true);
       }
     });
@@ -74,7 +72,7 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      if (res.data.result == 1) {
+      if (res.data.result > 0) {
         if (like) {
           alert("해당 게시물에 대한 관심을 취소하였습니다.");
         } else {
@@ -150,7 +148,6 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data);
       if (Cookies.get("userkey") != undefined) {
         isLike(res.data.pvo.postkey);
       }
@@ -180,7 +177,6 @@ export default function Page() {
           "Content-Type": "application/json",
         },
       }).then((res) => {
-        console.log(res.data);
         setCellList(res.data.cellList);
       });
 
@@ -194,7 +190,6 @@ export default function Page() {
           "Content-Type": "application/json",
         },
       }).then((res) => {
-        console.log(res.data);
         setPopCate(res.data.popCateList);
       });
     });
