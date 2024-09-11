@@ -58,9 +58,9 @@ export default function page() {
   // 쿠키 - 현재위치
   const cookie_latitude = Cookies.get("latitude");
   const cookie_longitude = Cookies.get("longitude");
-  const cookie_region1 = decodeURIComponent(Cookies.get("region1"));
-  const cookie_region2 = decodeURIComponent(Cookies.get("region2"));
-  const cookie_region3 = decodeURIComponent(Cookies.get("region3"));
+  const [cookie_region1, setCookie_region1] = useState("");
+  const [cookie_region2, setCookie_region2] = useState("");
+  const [cookie_region3, setCookie_region3] = useState("");
 
   // #region 비동기-카테고리 리스트
   function getCategory() {
@@ -78,6 +78,9 @@ export default function page() {
 
   // #region useEffect-카테고리, 파라미터 초기화
   useEffect(() => {
+    setCookie_region1(decodeURIComponent(Cookies.get("region1")));
+    setCookie_region2(decodeURIComponent(Cookies.get("region2")));
+    setCookie_region3(decodeURIComponent(Cookies.get("region3")));
     getCategory();
     let currentUrl = window.location.href;
     let currentUrlObj = new URL(currentUrl);
@@ -157,8 +160,14 @@ export default function page() {
         Math.sin(dLon / 2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c; // Distance in km
-    console.log(d);
-    return d;
+
+    if (d < 1) {
+      // 1km보다 작으면 미터로 표시
+      return `${Math.round(d * 1000)}m`;
+    } else {
+      // 1km 이상이면 소수점 첫째 자리까지 km로 표시
+      return `${d.toFixed(1)}km`;
+    }
   }
   // #endregion
 
@@ -774,29 +783,25 @@ export default function page() {
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
-            <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">
-              <Breadcrumbs separator="›" aria-label="breadcrumb">
-                <Link
-                  className="xzyefz5"
-                  underline="hover"
-                  color="inherit"
-                  href="/"
-                >
-                  홈
-                </Link>
-                <Typography
-                  className="xzyefz2 xzyefz3"
-                  sx={{ color: "text.primary" }}
-                >
-                  중고거래
-                </Typography>
-              </Breadcrumbs>
-            </div>
+            <Breadcrumbs separator="›" aria-label="breadcrumb">
+              <Link
+                className="xzyefz5"
+                underline="hover"
+                color="inherit"
+                href="/"
+              >
+                홈
+              </Link>
+              <Typography
+                className="xzyefz2 xzyefz3"
+                sx={{ color: "text.primary" }}
+              >
+                중고거래
+              </Typography>
+            </Breadcrumbs>
             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
               <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                <font style={{ verticalAlign: "inherit" }}>
-                  맨해튼의 새제품과 중고품
-                </font>
+                맨해튼의 새제품과 중고품
               </h1>
             </div>
           </section>
@@ -805,9 +810,7 @@ export default function page() {
           <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
             <aside className="_1d991sp0 _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9vs">
               <header className="_1h4pbgy9ug _1h4pbgy9xs _1h4pbgy9wo">
-                <h2 className="_588sy419e _588sy41y _588sy41a8">
-                  <font style={{ verticalAlign: "inherit" }}>분류</font>
-                </h2>
+                <h2 className="_588sy419e _588sy41y _588sy41a8">분류</h2>
                 <button
                   className="seed-text-button seed-semantic-typography-label3-regular"
                   data-scope="button"
@@ -820,23 +823,15 @@ export default function page() {
                   data-deltype="all"
                   onClick={(e) => deleteSearch(e.currentTarget)}
                 >
-                  <span>
-                    <font style={{ verticalAlign: "inherit" }}>
-                      모두 지우기
-                    </font>
-                  </span>
+                  모두 지우기
                 </button>
               </header>
               <section>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
-                  <div className="_1h4pbgy9ug _1h4pbgy9xs _1h4pbgy9wo">
-                    <h3 className="_588sy4198 _588sy41y _588sy41a2">
-                      <font style={{ verticalAlign: "inherit" }}>동네</font>
-                    </h3>
-                  </div>
+                  <h3 className="_588sy4198 _588sy41y _588sy41a2">동네</h3>
                   <div className="_1d991sp2 _1h4pbgya08">
                     <div className="_1h4pbgy7wo _1h4pbgy76o _1h4pbgy7ao _1h4pbgy7c0">
-                      <font style={{ verticalAlign: "inherit" }}>뉴욕</font>
+                      {cookie_region1}
                     </div>
                     <div className="_1h4pbgy7w8">
                       <div
@@ -1378,9 +1373,9 @@ export default function page() {
                                 post.hope_lati,
                                 post.hope_long
                               ); // 거리 계산
-                              return ` · 거리: ${distance.toFixed(2)} km`; // 계산된 거리를 렌더링
-                            })}
-                          {post.townVO && `${post.townVO.region3}`} ·{" "}
+                              return `${distance} ·`; // 계산된 거리를 렌더링
+                            })()}
+                          {post.townVO && ` ${post.townVO.region3} · `}
                           {timeDifference(post.create_dtm)}
                         </Typography>
                       </div>

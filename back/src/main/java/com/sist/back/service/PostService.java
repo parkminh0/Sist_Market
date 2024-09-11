@@ -24,6 +24,14 @@ public class PostService {
         return p_mapper.all();
     }
 
+    public int getViewqty(int postkey) {
+        return p_mapper.getViewqty(postkey);
+    }
+
+    public int incViewqty(int postkey) {
+        return p_mapper.incViewqty(postkey);
+    }
+
     public PostVO getPostByPostKey(int postkey) {
         return p_mapper.getPostByPostKey(postkey);
     }
