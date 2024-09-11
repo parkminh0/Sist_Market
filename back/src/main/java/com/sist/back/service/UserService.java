@@ -266,24 +266,6 @@ public class UserService {
         return mapper.editImage(uvo);
     }
 
-    public String saveImage(MultipartFile image) {
-        String uploadDir = context.getRealPath("/public/img/user/");
-        String fileName = image.getOriginalFilename();
-        String filePath = uploadDir + "/" + fileName;
-
-        File directory = new File(uploadDir);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        try {
-            File f = new File(filePath);
-            image.transferTo(f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "/img/user/" + fileName;
-    }
-
     public int delImage(String userkey) {
         return mapper.delImage(userkey);
     }

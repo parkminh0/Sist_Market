@@ -19,4 +19,10 @@ public class BoardImgService {
     public int BoardImgDelete(List<String> imgweburl, String boardkey){
         return mapper.BoardImgDelete(imgweburl, boardkey);
     }
+
+    public List<String> getImgurl(String boardkey) {
+        List<String> bi_list = mapper.getImgurl(boardkey);
+        return bi_list;
+    }
 }
+

@@ -3,76 +3,75 @@
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
 import axios from "axios";
-import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
-
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 
 export default function Page() {
   const [list, setList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]); // 필터링된 게시글 리스트
 
-   // 게시판 현황 카운트
-   const API_URL = "/adpost/postcount";
-   const [all, set_all_posts] = useState(0); // 전체 게시글 수
-   const [tem_save, set_tem_save_posts] = useState(0); // 임시 저장 게시글 수
-   const [sale, set_sale_posts] = useState(0); // 판매중 게시글 수
-   const [saleing, set_saleing_posts] = useState(0); // 예약중(거래중) 게시글 수
-   const [saled, set_saled_posts] = useState(0); // 거래완료 게시글 수
-   const [hide, set_hide_posts] = useState(0); // 숨김 게시글 수
+  // 게시판 현황 카운트
+  const API_URL = "/adpost/postcount";
+  const [all, set_all_posts] = useState(0); // 전체 게시글 수
+  const [tem_save, set_tem_save_posts] = useState(0); // 임시 저장 게시글 수
+  const [sale, set_sale_posts] = useState(0); // 판매중 게시글 수
+  const [saleing, set_saleing_posts] = useState(0); // 예약중(거래중) 게시글 수
+  const [saled, set_saled_posts] = useState(0); // 거래완료 게시글 수
+  const [hide, set_hide_posts] = useState(0); // 숨김 게시글 수
 
-   // 상태 관리 추가
+  // 상태 관리 추가
   const [postStatus, setPostStatus] = useState("all");
   const [method, setMethod] = useState("0");
   const [canBargain, setCanBargain] = useState("0");
-  
 
   function searchpost() {
     let frm = document.getElementById("frmSearch");
     let formData = new FormData(frm);
 
-    // URLSearchParams를 사용하여 FormData를 직렬화합니다.
-    let formJson = Object.fromEntries(new URLSearchParams(formData));
+    // 검색 조건을 URLSearchParams로 변환
+    let searchParams = Object.fromEntries(new URLSearchParams(formData));
 
-    // 데이터 확인용 로그 출력
-    console.log("전송 데이터:", formJson);
+    // 서버 API로 검색을 요청하지 않고, 미리 받아온 데이터에서 필터링
+    const filtered = list.filter((post) => {});
+
+    // 검색 조건을 처리하여 서버에 데이터를 요청
     axios({
-      url: "/adpost/searchpost", // 백엔드 API 엔드포인트
+      url: "/adpost/searchpost", // 실제 검색 API
       method: "post",
-      data: formJson,
+      data: searchParams,
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((res) => {
-        // 검색 결과를 상태로 저장
-        setList(res.data.post_list); 
-        // 검색 후 게시글 목록 업데이트를 위해 fetchPostList 호출
-        fetchPostList();
+        setList(res.data.post_list); // 검색된 데이터를 화면에 업데이트
       })
       .catch((error) => {
         console.error("There was an error with the search request:", error);
       });
   }
 
-  // 백엔드에서 pimg_list를 포함한 데이터를 받아오는 함수
-  function fetchPostList() {
-    axios({
-      url: "/adpost/main", // 예시로 "/adpost/main" 사용. 실제 pimg_list를 포함한 엔드포인트로 수정 필요.
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        setList(res.data.free_list); // 백엔드에서 받은 free_list를 상태로 저장
-        console.log(res.data.free_list); // pimg_list를 포함한 데이터 확인
-      })
-      .catch((error) => {
-        console.error("Error fetching post list:", error);
-      });
-  }
+  // // 상품 이미지 로드 백엔드에서 pimg_list를 포함한 데이터를 받아오는 함수
+  // function fetchPostList() {
+  //   axios({
+  //     url: "/adpost/main", // 예시로 "/adpost/main" 사용. 실제 pimg_list를 포함한 엔드포인트로 수정 필요.
+  //     method: "get",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((res) => {
+  //       setList(res.data.free_list); // 게시글 목록을 받아와 저장
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching post list:", error);
+  //     });
+  // }
 
+  // 게시글 현황
   function getCount() {
-    axios.get(API_URL)
+    axios
+      .get(API_URL)
       .then((response) => {
         // 받아온 데이터를 각 상태에 맞게 설정
         const data = response.data.pcvo;
@@ -97,9 +96,9 @@ export default function Page() {
   useEffect(() => {
     getCount();
     callData();
+    // fetchPostList();
   }, []);
 
-  
   return (
     <>
       <div className="MuiStack-root css-tfkmr0">
@@ -142,7 +141,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                        {all}       
+                        {all}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -159,7 +158,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                        {tem_save}       
+                        {tem_save}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -185,7 +184,7 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true css-r3xjrv">
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
@@ -212,7 +211,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                      {saled}
+                        {saled}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -229,7 +228,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                      {hide}
+                        {hide}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -237,8 +236,6 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                
-                
               </div>
             </div>
           </div>
@@ -604,22 +601,34 @@ export default function Page() {
                       onDoubleClick={() =>
                         window.open(`/admin/post/detail/${prod.postkey}`)
                       }
-                      >
+                    >
                       <td>{prod.postkey}</td>
                       <td>{prod.userkey}</td>
                       <td>{prod.townkey}</td>
                       <td>{prod.categorykey}</td>
                       <td>
-                        <div style={{ textAlign: "left", display: "flex", alignItems: "center" }}>
+                        <div
+                          style={{
+                            textAlign: "left",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
                           {/* 이미지 출력 */}
                           {prod.pimg_list && prod.pimg_list.length > 0 ? (
                             <img
                               src={prod.pimg_list[0].imgurl} // 첫 번째 이미지를 사용
                               alt="썸네일"
-                              style={{ width: "50px", height: "50px", marginRight: "10px" }} // 이미지와 텍스트 사이에 간격 추가
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                marginRight: "10px",
+                              }} // 이미지와 텍스트 사이에 간격 추가
                             />
                           ) : (
-                            <ImageNotSupportedRoundedIcon style={{ marginRight: "10px" }} /> // 이미지가 없을 경우 대체 아이콘 표시
+                            <ImageNotSupportedRoundedIcon
+                              style={{ marginRight: "10px" }}
+                            /> // 이미지가 없을 경우 대체 아이콘 표시
                           )}
                           {/* 제목 출력 */}
                           <p style={{ margin: 0 }}>{prod.title}</p>

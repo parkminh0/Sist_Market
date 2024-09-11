@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+
 @Controller
 @RequestMapping("/admin/board")
 public class BoardController {
@@ -99,7 +100,6 @@ public class BoardController {
         int chk = b_service.boardAdd(bvo);
 
         List<String> list = new ArrayList<>();
-
         String regex = "<img[^>]+src=\"([^\"]+)\"";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(bvo.getContent());
@@ -117,6 +117,7 @@ public class BoardController {
         Map<String, Object> map = new HashMap<>();
         try {
             MultipartFile f = file;
+
             String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
             String webPath = "http://localhost:3000/img/admin/board/";
             String sendFname = URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
@@ -131,19 +132,80 @@ public class BoardController {
             sb.append(webPath);
             sb.append(sendFname);
             String imgWebPath = sb.toString();
-
-            System.out.println(imglocalPath);
-
             f.transferTo(new File(imglocalPath));
 
             map.put("chk", 1);
             map.put("filePath", imgWebPath);
+
             int chk = bi_service.BoardImgSave(boardkey, fname, imgWebPath);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return map;
     }
+
+    @RequestMapping("/deleteImage")
+    @ResponseBody
+    public Map<String, Object> deleteImage(@RequestBody Map<String, String> data) {
+        Map<String, Object> map = new HashMap<>();
+        String imageUrl = data.get("imageUrl");
+
+        try {
+            String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            String filePath = upload + "/" + fileName;
+            
+            File file = new File(filePath);
+            if (file.exists()) {
+                file.delete();
+                map.put("chk", 1);
+            } else {
+                map.put("chk", 0);
+                map.put("msg", "이미지 파일을 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("chk", 0);
+            map.put("msg", "이미지 삭제 중 오류 발생");
+        }
+        return map;
+    }
+
+    @RequestMapping("/edit")
+    @ResponseBody
+    public Map<String, Object> edit(BoardVO bvo, String categoryname) {
+        Map<String, Object> map = new HashMap<>();
+        
+        bvo.setCategorykey(b_service.changeCategoryname(categoryname));
+        
+        List<String> list = new ArrayList<>();
+        String regex = "<img[^>]+src=\"([^\"]+)\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(bvo.getContent());
+        while (matcher.find()) {
+            list.add(matcher.group(1));
+        }
+        bi_service.BoardImgDelete(list, bvo.getBoardkey());
+
+        int cnt = b_service.edit(bvo);
+    
+        if (bvo.getContent() != null) {
+            matcher = pattern.matcher(bvo.getContent());
+            List<String> newImgList = new ArrayList<>();
+            while (matcher.find()) {
+                String imgUrl = matcher.group(1);
+                newImgList.add(imgUrl);
+                String fname = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);
+                bi_service.BoardImgSave(bvo.getBoardkey(), fname, imgUrl);
+            }
+        }
+        if (cnt > 0) {
+            map.put("chk", 1);
+        } else {
+            map.put("chk", 0);
+        }
+            map.put("cnt", cnt);
+            return map;
+        }
 
     @RequestMapping("/empty")
     @ResponseBody
@@ -174,25 +236,6 @@ public class BoardController {
         return map;
     }
 
-    // @RequestMapping("/edit")
-    // @ResponseBody
-    // public Map<String, Object> edit(BoardVO vo, String cPage) {
-    //     Map<String, Object> map = new HashMap<>();
-    //     map.put("cnt", b_service.edit(vo));
-    //     return map;
-    // }
-
-    @RequestMapping("/edit")
-    @ResponseBody
-    public Map<String, Object> edit(String boardkey) {
-    Map<String, Object> map = new HashMap<>();
-    // 추후에 userkey, townkey 기입해줘야함
-    BoardVO[] b_ar = b_service.edit(boardkey);
-
-    map.put("b_ar", b_ar);
-    return map;
-    }
-
     @RequestMapping("del")
     @ResponseBody
     public Map<String, Object> del(String boardkey) {
@@ -213,12 +256,21 @@ public class BoardController {
     }
 
     // 게시판 카테고리 관리
-    @ResponseBody
     @RequestMapping("/getAllBc")
+    @ResponseBody
     public Map<String, Object> getAllBc() {
         Map<String, Object> map = new HashMap<>();
         KeyTableVO[] bc_list = b_service.getAllBcList();
         map.put("bc_list", bc_list);
+        return map;
+    }
+
+    @RequestMapping("/getBc")
+    @ResponseBody
+    public Map<String, Object> getBc(String boardkey) {
+        Map<String, Object> map = new HashMap<>();
+        String categoryname = b_service.getBc(boardkey);
+        map.put("categoryname", categoryname);
         return map;
     }
 
@@ -253,6 +305,7 @@ public class BoardController {
         map.put("cnt", cnt);
         return map;
     }
+
     @RequestMapping("/userBbsList")
     @ResponseBody
     public Map<String, Object> userBbsList(String categorykey, String cPage) {
