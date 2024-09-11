@@ -42,7 +42,6 @@ public class BoardService {
         return b_mapper.edit(bvo);
     }
     
-
     public int emptyAdd(BoardVO bvo) {
         b_mapper.emptyAdd(bvo);
         return Integer.parseInt(bvo.getBoardkey());
@@ -65,6 +64,7 @@ public class BoardService {
         return b_mapper.hit(boardkey);
     }
 
+    
     // 게시판 카테고리
     public KeyTableVO[] getAllBcList() {
         List<KeyTableVO> bc_list = b_mapper.getAllBcList();
@@ -73,7 +73,6 @@ public class BoardService {
             bc_ar = new KeyTableVO[bc_list.size()];
             bc_list.toArray(bc_ar);
         }
-
         return bc_ar;
     }
 

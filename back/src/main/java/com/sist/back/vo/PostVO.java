@@ -27,7 +27,7 @@ public class PostVO {
         private categoryVO cvo;
         TownVO townVO;
 
-        private String nickname, imgurl, city, district, name, reviewType;
+        private String nickname, imgurl, region1, region2, region3, reviewType;
 
         String isPostPage;
 }

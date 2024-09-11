@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.BoardImgMapper;
-import com.sist.back.vo.BoardImgVO;
 
 @Service
 public class BoardImgService {
