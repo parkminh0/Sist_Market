@@ -105,6 +105,19 @@ public class PostController {
         return e_map;
     }
 
+    @RequestMapping("/cellList")
+    public Map<String, Object> cellList(int userkey, int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("cellList", p_service.getCellListByUserPostKey(userkey, postkey));
+        return e_map;
+    }
+    @RequestMapping("/pop_cate")
+    public Map<String, Object> popCate(int categorykey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey));
+        return e_map;
+    }
+
     @RequestMapping("/remind")
     @ResponseBody
     public Map<String, Object> remind(String postkey) {
@@ -140,6 +153,48 @@ public class PostController {
         return map;
     }
 
+    // 이미지 파일 객체 가져오기
+    @RequestMapping("/imageFile")
+    public Map<String, Object> imageFile(List<MultipartFile> post_img) {
+        Map<String, Object> fileList = new HashMap<>();
+        // System.out.println(post_img);
+        // System.out.println(post_img!=null);
+        if (post_img != null) {
+            int a = 0;
+            for (MultipartFile f : post_img) {
+                System.out.println(f);
+                Map<String, Object> image = new HashMap<>();
+                
+                
+                System.out.println(f.getName());
+                String realPath = "/img/postimg/";
+                String fname = f.getName();
+
+                Path path = Paths.get(postImgPath);
+                if (path.toString().contains("back")) {
+                    String pathString = path.toString();
+                    String changedPath = pathString.replace("back\\", "");
+                    path = Paths.get(changedPath);
+                }
+                String filePath = path.resolve(fname).toString();
+
+                // 파일 업로드
+                try {
+                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +
+                            fname));
+                } catch (Exception e) {
+                }
+                image.put("name",fname);
+                image.put("imgurl",filePath);
+                image.put("file",f);
+                fileList.put(String.valueOf(a), image);
+                a++;
+            }
+        }
+        Map<String, Object> res = new HashMap<>();
+        res.put("fileList", fileList);
+        return res;
+    }
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {

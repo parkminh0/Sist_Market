@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react'
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
 
 export default function LikePost(props) {
     const likelist = props.likelist;
@@ -36,14 +37,18 @@ export default function LikePost(props) {
                     data-v-16369cf2=""
                     className="picture product_img"
                     >
+                    {(lvo.pvo.pimg_list[0].imgurl!=undefined) ? (
                     <img
-                        data-v-82b93d2c=""
-                        alt="게시글 이미지"
-                        src={lvo.pvo.pimg_list[0].imgurl}
-                        style={{height:80}}
-                        loading="lazy"
-                        className="image full_width"
+                    alt="product_image"
+                    src={lvo.pvo.pimg_list[0].imgurl}
+                    className="list_item_img"
+                    style={{ backgroundColor: "#ebf0f5" }}
+                    data-v-53e92c51=""
                     />
+                    ) : <ImageNotSupportedRoundedIcon style={{
+                        width: '80px',  // 아이콘의 너비를 100%로 설정
+                        height: '80px', // 아이콘의 높이를 100%로 설정
+                    }}/>}
                     </picture>
                 </div>
                 </div>

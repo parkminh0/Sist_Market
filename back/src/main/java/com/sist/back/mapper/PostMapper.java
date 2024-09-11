@@ -16,6 +16,10 @@ public interface PostMapper {
 
     PostVO getPostByPostKey(int postkey);
 
+    List<PostVO> getPostByCategoryKey(int categorykey);
+
+    List<PostVO> getCellListByUserPostKey(int userkey, int postkey);
+
     TownVO getTownByPostKey(int postkey);
 
     List<OfferVO> getOfferByPostKey(int postkey);
