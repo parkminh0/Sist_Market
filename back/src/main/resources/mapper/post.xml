@@ -15,6 +15,7 @@
           <result column="userkey" property="userkey" />
           <result column="dealuserkey" property="dealuserkey" />
           <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+          <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
           <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
           <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
         <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
@@ -138,7 +139,7 @@
         FROM `post`
         WHERE categorykey = #{categorykey}
         ORDER BY viewqty DESC
-        LIMIT 18
+        LIMIT 15
     </select>
     <select id="getCellListByUserKey" resultMap="post_image_map" parameterType="int">
         SELECT *
