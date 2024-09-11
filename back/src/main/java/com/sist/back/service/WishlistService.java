@@ -20,9 +20,9 @@ public class WishlistService {
     public int toggleLike(boolean isLike, Map<String, Object> w_map) {
         int result = 0;
         if (isLike) {
-            w_mapper.delLike(w_map);
+            result = w_mapper.delLike(w_map);
         } else {
-            w_mapper.addLike(w_map);
+            result = w_mapper.addLike(w_map);
         }
         return result;
     }
