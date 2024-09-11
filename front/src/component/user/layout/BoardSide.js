@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect } from "react";
-
+import React, { useEffect,useState } from "react";
+import axios from 'axios';
 export default function MyPageSide() {
   const pathname = usePathname();
 
@@ -18,6 +18,24 @@ export default function MyPageSide() {
     }
   }, [pathname]);
 
+  const bcUrl = "/admin/board/getAllBc";
+  const [bclist, setBclist] = useState([]);
+  const [categorykey,setCategorykey] = useState(0);
+
+  function getData() {  
+    axios.get(bcUrl)
+    .then((json) => {
+        setBclist(json.data.bc_list);
+        setCategorykey(json.data.bc_list.key);
+    })
+    .catch((error) => {
+        console.error("데이터 로딩 오류:", error);  
+    });
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <div
       data-v-0adb81cc=""
@@ -28,26 +46,24 @@ export default function MyPageSide() {
         <div data-v-7bcac446="" className="snb_list">
        
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
-            <li data-v-7a824f04="" className="menu_item">
-              <Link
-                data-href="/Board/notice"
-                data-v-7a824f04=""
-                href="/Board/notice"
-                className="menu_link"
-              >
-                공지사항
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link
-                data-href="/Board/event"
-                data-v-7a824f04=""
-                href="/Board/event"
-                className="menu_link"
-              >
-                이벤트
-              </Link>
-            </li>
+          {bclist.length > 0 ? (
+              bclist.map((bc, index) => (
+                <li key={index} data-v-7a824f04="" className="menu_item">
+                  <Link
+                    data-href={`/Board/${categorykey}`}
+                    data-v-7a824f04=""
+                    href={`/Board/${bc.value}`}
+                    className="menu_link"
+                  >
+                    {bc.name} {/* 카테고리 이름 표시 */}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <li data-v-7a824f04="" className="menu_item">
+                <font>준비 중...</font>
+              </li>
+            )}
           </ul>
         </div>
       </nav>
