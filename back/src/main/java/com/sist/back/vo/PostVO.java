@@ -30,4 +30,9 @@ public class PostVO {
         private String nickname, imgurl, city, district, name, reviewType;
 
         String isPostPage;
+
+        // 관심받은 횟수
+        private int likedqty;
+        // 채팅방 갯수
+        private int chatroomqty;
 }

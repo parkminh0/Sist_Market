@@ -1,21 +1,27 @@
 "use client";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import Link from "next/link";
 import HeaderItem from "./HeaderItem";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, TextField } from '@mui/material';
-import axios from 'axios';
-import {signIn, signOut,useSession} from 'next-auth/react';
+import React from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  FormControl,
+  TextField,
+} from "@mui/material";
+import axios from "axios";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 // 필요한 다른 import들도 여기에 추가
 
-
 export default function Header() {
   const pathname = usePathname();
-  const { data: session } = useSession();  //nextAtuh파일에서 nickname을 세션에 저장해서 받아옴
-  
+  const { data: session } = useSession(); //nextAtuh파일에서 nickname을 세션에 저장해서 받아옴
 
   useEffect(() => {
     const currentPath = pathname || "/";
@@ -55,7 +61,6 @@ export default function Header() {
   //   false
   // );
 
- 
   // #region 위치 모달 오픈
   function show_location_dialog() {
     document.querySelector("div.modal-overlay").style.display = "block";
@@ -73,9 +78,9 @@ export default function Header() {
   }
   // #endregion
 
-  const [location1, setLocation1] = useState("");
-  const [location2, setLocation2] = useState("");
-  const [location3, setLocation3] = useState("");
+  const [region1, setRegion1] = useState("");
+  const [region2, setRegion2] = useState("");
+  const [region3, setRegion3] = useState("");
 
   useEffect(() => {
     const kakaoMapScript = document.createElement("script");
@@ -110,9 +115,23 @@ export default function Header() {
           if (status === window.kakao.maps.services.Status.OK) {
             //console.log("결과", result);
 
-            setLocation1(result[0].address.region_1depth_name);
-            setLocation2(result[0].address.region_2depth_name);
-            setLocation3(result[0].address.region_3depth_name);
+            setRegion1(result[0].address.region_1depth_name);
+            setRegion2(result[0].address.region_2depth_name);
+            setRegion3(result[0].address.region_3depth_name);
+            Cookies.set(
+              "region1",
+              encodeURIComponent(result[0].address.region_1depth_name)
+            );
+            Cookies.set(
+              "region2",
+              encodeURIComponent(result[0].address.region_2depth_name)
+            );
+            Cookies.set(
+              "region3",
+              encodeURIComponent(result[0].address.region_3depth_name)
+            );
+            Cookies.set("latitude", latitude);
+            Cookies.set("longitude", longitude);
           }
         };
 
@@ -138,121 +157,114 @@ export default function Header() {
     // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
     let newUrl = url.pathname + "?" + params.toString() + url.hash;
     if (e.dataset.selected !== "true") {
-      newUrl += "&loc1=" + location1;
-      newUrl += "&loc2=" + location2;
-      newUrl += "&loc3=" + location3;
+      newUrl += "&loc1=" + region1;
+      newUrl += "&loc2=" + region2;
+      newUrl += "&loc3=" + region3;
     }
 
     // 3. 새로운 li 요소 추가 (innerHTML 사용)
     ul_tag.innerHTML = `
                         <li class="_1h4pbgy3q8">
                           <a class="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc" href="${newUrl}">
-                            ${location3}
+                            ${region3}
                           </a>
                         </li>
                       `;
   }
 
-  
   const router = useRouter();
 
   //회원가입 페이지 이동
   const handleSignUp = () => {
     setOpen(false);
-    router.push("/SignUp");  
-  }
- 
+    router.push("/SignUp");
+  };
 
   //jwt 로그아웃 처리
   const logout_url = "/user/api/logout";
-  
-  function logout(){
+
+  function logout() {
     axios({
       url: logout_url,
       method: "POST",
-    }).then((res)=>{
+    }).then((res) => {
       console.log(res);
-      if(res.data.msg== "로그아웃"){
+      if (res.data.msg == "로그아웃") {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
         Cookies.remove("userkey");
         Cookies.remove("next-auth.session-token");
         Cookies.remove("next-auth.csrf-token");
-        
-        signOut({ callbackUrl: '/' });
-      }
-  })
 
+        signOut({ callbackUrl: "/" });
+      }
+    });
   }
 
   //jwt 로그인 처리
   const login_url = "/user/api/login";
-  const [user,setUser] = useState({});
-  
+  const [user, setUser] = useState({});
+
   const c_path = usePathname();
   //token 저장
-  const [accessToken,setAccessToken] = useState(null);
-  const [refreshToken,setRefreshToken] = useState(null);
-  
+  const [accessToken, setAccessToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+
   function jwtLogin() {
     axios({
-        url: login_url,
-        method: "post",
-        params : user,
-        withCredentials: true,
-        headers :{
-            "Content-Type": "application/json"
-        }
+      url: login_url,
+      method: "post",
+      params: user,
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
     }).then((res) => {
-        //console.log(res.data.msg);
-        if(res.data.cnt ===1){
-          window.location.reload(); //현재 경로 재로드 
-          }else{
-            alert(res.data.msg);
-          }
+      //console.log(res.data.msg);
+      if (res.data.cnt === 1) {
+        window.location.reload(); //현재 경로 재로드
+      } else {
+        alert(res.data.msg);
+      }
     });
- }
-
- useEffect(() => {
-  const token = Cookies.get('accessToken');
-  if (token) {
-    setAccessToken(token);  // 토큰이 있으면 로그인 상태로 변경
-  } else {
-    setAccessToken(null);   // 토큰이 없으면 로그아웃 상태로 설정
   }
-}, [session]);  // session이 변경될 때만 실행
 
- const handleChange = (e) =>{ 
-  
-  const {name, value} = e.target; 
-  
-  setUser({...user,[name]:value});
-  //기존거 복사해서 값을 넣어주는애 name이 키로들어가고 value가 값으로 들어감
+  useEffect(() => {
+    const token = Cookies.get("accessToken");
+    if (token) {
+      setAccessToken(token); // 토큰이 있으면 로그인 상태로 변경
+    } else {
+      setAccessToken(null); // 토큰이 없으면 로그아웃 상태로 설정
+    }
+  }, [session]); // session이 변경될 때만 실행
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-}
+    setUser({ ...user, [name]: value });
+    //기존거 복사해서 값을 넣어주는애 name이 키로들어가고 value가 값으로 들어감
+  };
 
-//kakaoLogin
-const kakao_login = async(e)=>{
-  e.preventDefault(); //다른 기본동작을 실행하지 않도록함
-  //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
-  signIn("kakao",{callbackUrl: "/user/kakao/login"});
-  //goController();
-} 
-const [chk,setChk] = useState(true);
-useEffect(() => {
-  if(chk){
-  if (session && session.user) {
-    goController(); // session.user.name이 준비된 후 호출
-  }
-  }
-}, [session]);
+  //kakaoLogin
+  const kakao_login = async (e) => {
+    e.preventDefault(); //다른 기본동작을 실행하지 않도록함
+    //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
+    signIn("kakao", { callbackUrl: "/user/kakao/login" });
+    //goController();
+  };
+  const [chk, setChk] = useState(true);
+  useEffect(() => {
+    if (chk) {
+      if (session && session.user) {
+        goController(); // session.user.name이 준비된 후 호출
+      }
+    }
+  }, [session]);
 
-
-const kakao_url = "/user/kakao/login";
-// kakao controller에 데이터 전달 
-const goController = async () => {
-    if (session && session.user) { 
+  const kakao_url = "/user/kakao/login";
+  // kakao controller에 데이터 전달
+  const goController = async () => {
+    if (session && session.user) {
       axios({
         url: kakao_url,
         method: "post",
@@ -261,28 +273,26 @@ const goController = async () => {
           email: session.user.email,
         },
         withCredentials: true,
-          headers :{
-              "Content-Type": "application/json"
-          }
+        headers: {
+          "Content-Type": "application/json",
+        },
       }).then((res) => {
         if (res.data.cnt === 1) {
           alert("로그인 성공!");
-        
         } else {
           alert("로그인에 실패하였습니다.");
         }
-      
       });
-     setChk(false);
-};
-}
+      setChk(false);
+    }
+  };
   // 로그인 모달 부분
   const [open, setOpen] = useState(false);
   // 로그인 모달 열기
   const handleClose = () => {
     setOpen(false);
   };
-  // 로그인 모달 닫기 
+  // 로그인 모달 닫기
   const handleOpen = () => {
     setOpen(true);
   };
@@ -328,46 +338,41 @@ const goController = async () => {
             <div>
               <nav className="_1h4pbgy9u0 _1h4pbgy9uj _1h4pbgy9wo">
                 <HeaderItem />
-                {
-                  accessToken == null ? (
-                <button
-                  onClick={handleOpen}
-                  id="show_login"
-                  style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
-                  className="seed-box-button"
-                  data-scope="button"
-                  data-part="root"
-                  type="button"
-                  data-gtm="gnb_app_download"
-                  data-size="xsmall"
-                  data-variant="primaryLow"
-                >
-                  <span className="seed-semantic-typography-label4-bold">
-                    <font>로그인</font>
-                  </span>
-                </button>
-              ) : (
-                <button
-                  onClick={logout}  // 로그아웃 버튼에는 logout 함수 연결
-                  id="logout"
-                  style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
-                  className="seed-box-button"
-                  data-scope="button"
-                  data-part="root"
-                  type="button"
-                  data-gtm="gnb_app_download"
-                  data-size="xsmall"
-                  data-variant="primaryLow"
-                >
-                  <span className="seed-semantic-typography-label4-bold">
-                    <font>로그아웃</font>
-                  </span>
-                </button>
-                )
-              }
-
-
-
+                {accessToken == null ? (
+                  <button
+                    onClick={handleOpen}
+                    id="show_login"
+                    style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
+                    className="seed-box-button"
+                    data-scope="button"
+                    data-part="root"
+                    type="button"
+                    data-gtm="gnb_app_download"
+                    data-size="xsmall"
+                    data-variant="primaryLow"
+                  >
+                    <span className="seed-semantic-typography-label4-bold">
+                      <font>로그인</font>
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={logout} // 로그아웃 버튼에는 logout 함수 연결
+                    id="logout"
+                    style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
+                    className="seed-box-button"
+                    data-scope="button"
+                    data-part="root"
+                    type="button"
+                    data-gtm="gnb_app_download"
+                    data-size="xsmall"
+                    data-variant="primaryLow"
+                  >
+                    <span className="seed-semantic-typography-label4-bold">
+                      <font>로그아웃</font>
+                    </span>
+                  </button>
+                )}
               </nav>
             </div>
           </div>
@@ -407,7 +412,7 @@ const goController = async () => {
                   </svg>
                 </span>
                 <font>
-                  <font>{location3}</font>
+                  <font>{region3}</font>
                 </font>
                 <span
                   style={{ display: "inline-flex" }}
@@ -656,131 +661,196 @@ const goController = async () => {
       {/* 모달 오버레이 */}
       <div className="modal-overlay"></div>
 
-      
       {/* 로그인 모달 */}
       <React.Fragment>
-  <Dialog open={open} onClose={handleClose} PaperProps={{ component: "form", onSubmit: (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const formJson = Object.fromEntries(formData.entries());
-        console.log(formJson);
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries(formData.entries());
+              console.log(formJson);
 
-        // 여기에 로그인 처리를 위한 로직을 추가
-        // 예: axios를 사용한 로그인 요청 보내기
+              // 여기에 로그인 처리를 위한 로직을 추가
+              // 예: axios를 사용한 로그인 요청 보내기
 
-        handleClose();
-      },
-    }}
-  >
-    <DialogTitle style={{ textAlign: 'center', padding: '16px 24px', position: 'relative' }}>
-      {/* X 버튼 추가 */}
-      <Button 
-        onClick={handleClose} 
-        style={{ 
-          position: 'absolute', 
-          top: '7px', 
-          right: '7px', 
-          minWidth: '25px', 
-          minHeight: '25px', 
-          borderRadius: '50%', 
-          backgroundColor: '#FF6F0F', 
-          color: '#fff', 
-          fontSize: '12px', 
-          fontWeight: 'bold',
-          lineHeight: '16px',
-          padding: '0',
-          
-        }}
-      >
-        &times;
-      </Button>
-
-      <img src="/img/karrot.png" alt="당근마켓 로고" style={{marginTop :'20px', width: '100px' }} />
-      <div style={{ fontWeight: 'bold', fontSize: '25px', color: '#FF6F0F' }}>로그인</div>
-    </DialogTitle>
-    <DialogContent style={{ paddingBottom: '0px' }}>
-      <Button 
-        type="button" 
-        onClick={(e) => {
-          e.preventDefault();
-          kakao_login(e);  // 카카오 로그인 함수 호출
-        }}
-        style={{ backgroundColor: '#E0E0E1', color: '#3C1E1E', width: '100%', padding: '10px 0', marginBottom: '12px' }}  // 회색 카카오톡 버튼
-      >
-        <img src="/img/kakao.png" alt="카카오톡 로그인" style={{ marginRight: '8px', height: '24px' }} />
-        카카오톡으로 로그인
-      </Button>
-      <div style={{ textAlign: 'center', margin: '12px 0' }}>
-        <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '0' }} />
-        <span style={{ background: '#fff', padding: '0 10px', position: 'relative', top: '-0.6em', color: '#999', fontSize: '12px' }}>
-          or
-        </span>
-      </div>
-      <FormControl fullWidth margin="dense" variant="standard" style={{ marginBottom: '4px' }}>
-        <TextField
-          autoFocus
-          required
-          margin="dense"
-          id="id"
-          name="id"
-          label="아이디"
-          type="text"
-          fullWidth
-          size="small"
-          onChange={handleChange}
-          InputProps={{
-            style: {
-              outline: 'none',
-              boxShadow: 'none',
+              handleClose();
             },
-            disableUnderline: true,
           }}
-         
-          onFocus={(e) => e.target.style.border = '1px solid #FF6F0F'}
-          onBlur={(e) => e.target.style.border = '1px solid #ccc'}
-        />
-      </FormControl>
-      <FormControl fullWidth margin="dense" variant="standard" style={{ marginBottom: '4px' }}>
-        <TextField
-          required
-          margin="dense"
-          id="pw"
-          name="pw"
-          label="비밀번호"
-          type="password"
-          fullWidth
-          size="small"
-          onChange={handleChange}
-          InputProps={{
-            style: {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-            disableUnderline: true,
-          }}
-        />
-      </FormControl>
-    </DialogContent>
-    <DialogActions style={{ justifyContent: 'center', paddingTop: '12px' }}>
-      <Button 
-        type="button" 
-        onClick={jwtLogin}
-        style={{ backgroundColor: '#FF6F0F', color: '#fff', width: '80%', padding: '10px 0' }}
-      >
-        로그인
-      </Button>
-    </DialogActions>
-    <div style={{ textAlign: 'center', paddingBottom: '12px' }}>
-      <p style={{ fontSize: '14px', color: '#999' }}>
-        가입된 계정이 없으신가요? 
-        <Link href="/SignUp" onClick={handleSignUp} style={{ color: '#FF6F0F', textDecoration: 'none', marginLeft: '5px' }}>회원가입</Link>
-      </p>
-    </div>
-  </Dialog>
-</React.Fragment>
+        >
+          <DialogTitle
+            style={{
+              textAlign: "center",
+              padding: "16px 24px",
+              position: "relative",
+            }}
+          >
+            {/* X 버튼 추가 */}
+            <Button
+              onClick={handleClose}
+              style={{
+                position: "absolute",
+                top: "7px",
+                right: "7px",
+                minWidth: "25px",
+                minHeight: "25px",
+                borderRadius: "50%",
+                backgroundColor: "#FF6F0F",
+                color: "#fff",
+                fontSize: "12px",
+                fontWeight: "bold",
+                lineHeight: "16px",
+                padding: "0",
+              }}
+            >
+              &times;
+            </Button>
 
-
-
+            <img
+              src="/img/karrot.png"
+              alt="당근마켓 로고"
+              style={{ marginTop: "20px", width: "100px" }}
+            />
+            <div
+              style={{ fontWeight: "bold", fontSize: "25px", color: "#FF6F0F" }}
+            >
+              로그인
+            </div>
+          </DialogTitle>
+          <DialogContent style={{ paddingBottom: "0px" }}>
+            <Button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                kakao_login(e); // 카카오 로그인 함수 호출
+              }}
+              style={{
+                backgroundColor: "#E0E0E1",
+                color: "#3C1E1E",
+                width: "100%",
+                padding: "10px 0",
+                marginBottom: "12px",
+              }} // 회색 카카오톡 버튼
+            >
+              <img
+                src="/img/kakao.png"
+                alt="카카오톡 로그인"
+                style={{ marginRight: "8px", height: "24px" }}
+              />
+              카카오톡으로 로그인
+            </Button>
+            <div style={{ textAlign: "center", margin: "12px 0" }}>
+              <hr
+                style={{
+                  border: "none",
+                  borderTop: "1px solid #ccc",
+                  margin: "0",
+                }}
+              />
+              <span
+                style={{
+                  background: "#fff",
+                  padding: "0 10px",
+                  position: "relative",
+                  top: "-0.6em",
+                  color: "#999",
+                  fontSize: "12px",
+                }}
+              >
+                or
+              </span>
+            </div>
+            <FormControl
+              fullWidth
+              margin="dense"
+              variant="standard"
+              style={{ marginBottom: "4px" }}
+            >
+              <TextField
+                autoFocus
+                required
+                margin="dense"
+                id="id"
+                name="id"
+                label="아이디"
+                type="text"
+                fullWidth
+                size="small"
+                onChange={handleChange}
+                InputProps={{
+                  style: {
+                    outline: "none",
+                    boxShadow: "none",
+                  },
+                  disableUnderline: true,
+                }}
+                onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
+                onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
+              />
+            </FormControl>
+            <FormControl
+              fullWidth
+              margin="dense"
+              variant="standard"
+              style={{ marginBottom: "4px" }}
+            >
+              <TextField
+                required
+                margin="dense"
+                id="pw"
+                name="pw"
+                label="비밀번호"
+                type="password"
+                fullWidth
+                size="small"
+                onChange={handleChange}
+                InputProps={{
+                  style: {
+                    outline: "none",
+                    boxShadow: "none",
+                  },
+                  disableUnderline: true,
+                }}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions
+            style={{ justifyContent: "center", paddingTop: "12px" }}
+          >
+            <Button
+              type="button"
+              onClick={jwtLogin}
+              style={{
+                backgroundColor: "#FF6F0F",
+                color: "#fff",
+                width: "80%",
+                padding: "10px 0",
+              }}
+            >
+              로그인
+            </Button>
+          </DialogActions>
+          <div style={{ textAlign: "center", paddingBottom: "12px" }}>
+            <p style={{ fontSize: "14px", color: "#999" }}>
+              가입된 계정이 없으신가요?
+              <Link
+                href="/SignUp"
+                onClick={handleSignUp}
+                style={{
+                  color: "#FF6F0F",
+                  textDecoration: "none",
+                  marginLeft: "5px",
+                }}
+              >
+                회원가입
+              </Link>
+            </p>
+          </div>
+        </Dialog>
+      </React.Fragment>
 
       {/* 위치설정 */}
       <div

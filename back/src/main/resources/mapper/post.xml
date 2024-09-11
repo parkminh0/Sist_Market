@@ -6,18 +6,22 @@
 
     <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey" />
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
         <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
     </resultMap>
 
     <resultMap id="postMap" type="com.sist.back.vo.PostVO">
-      <id column="postkey" property="postkey" />
-          <result column="categorykey" property="categorykey" />
-          <result column="userkey" property="userkey" />
-          <result column="dealuserkey" property="dealuserkey" />
-          <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
-          <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
-          <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
-          <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="dealuserkey" property="dealuserkey" />
+        <result column="townkey" property="townkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
         <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
         <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
     </resultMap>
@@ -177,6 +181,17 @@
         WHERE reviewlistkey = #{reviewlistkey}
     </select>
 
+    <!-- post 관련 채팅방 갯수, 관심받은 횟수 -->
+    <select id="getLikedQty" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM `wishlist`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getChatroomQty" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM `chatroom`
+        WHERE postkey = #{postkey}
+    </select>
 
 
     <insert id="insertRemindPost" parameterType="String">
@@ -328,9 +343,15 @@
         `lastprice`,
         `content`,
         `range`,
-        `hope_place`,
-        `hope_lati`,
-        `hope_long`,
+        <if test="hope_place != null and hope_place != ''">
+            `hope_place`,
+        </if>
+        <if test="hope_lati != null and hope_lati != ''">
+            `hope_lati`,
+        </if>
+        <if test="hope_long != null and hope_long != ''">
+            `hope_long`,
+        </if>
         `canbargain`,
         `viewqty`,
         `create_dtm`,
@@ -361,9 +382,15 @@
         #{lastprice},
         #{content},
         #{range},
-        #{hope_place},
-        #{hope_lati},
-        #{hope_long},
+        <if test="hope_place != null and hope_place != ''">
+            #{hope_place},
+        </if>
+        <if test="hope_lati != null and hope_lati != ''">
+            #{hope_lati},
+        </if>
+        <if test="hope_long != null and hope_long != ''">
+            #{hope_long},
+        </if>
         #{canbargain},
         #{viewqty},
         <if test="poststatus == 0">

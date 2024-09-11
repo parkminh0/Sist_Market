@@ -154,7 +154,10 @@ public class PostController {
     @RequestMapping("/toggleLike")
     public Map<String, Object> toggleLike(boolean isLike, int userkey, int postkey) {
         Map<String, Object> e_map = new HashMap<>();
-        // e_map.put("result", o_service.makePriceOffer());
+        Map<String, Object> w_map = new HashMap<>();
+        w_map.put("userkey", userkey);
+        w_map.put("postkey", postkey);
+        e_map.put("result", w_service.toggleLike(isLike, w_map));
         return e_map;
     }
 
@@ -239,7 +242,7 @@ public class PostController {
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
             String region2, String region3) {
-
+        System.out.println("거래희망!!" + vo.getHope_place() + "까찌");
         if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
                 && !region3.equals("")) {
             Map<String, String> searchTown = new HashMap<>();

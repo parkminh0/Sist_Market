@@ -618,7 +618,8 @@ export default function Page() {
                 </ul>
               )}
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
-                <span>채팅 {chatroomVO.length}</span> · <span>관심 1</span> ·{" "}
+                <span>채팅 {chatroomVO.length}</span> ·{" "}
+                <span>관심 {postVO.likedqty}</span> ·{" "}
                 <span>조회 {postVO.viewqty}</span>
               </div>
               <Link
