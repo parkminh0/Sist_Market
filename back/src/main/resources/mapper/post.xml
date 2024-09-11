@@ -22,6 +22,7 @@
         <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
         <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
         <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
         <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
         <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
     </resultMap>
