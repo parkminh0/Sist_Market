@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react'
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
 
 export default function BuyList(props) {
     const buylist = props.buylist;
@@ -23,6 +24,7 @@ export default function BuyList(props) {
                     className="list_item_img_wrap"
                     data-v-53e92c51=""
                 >
+                {(blvo.pimg_list[0].imgurl!=undefined) ? (
                     <img
                     alt="product_image"
                     src={blvo.pimg_list[0].imgurl}
@@ -30,6 +32,10 @@ export default function BuyList(props) {
                     style={{ backgroundColor: "#ebf0f5" }}
                     data-v-53e92c51=""
                     />
+                  ) : <ImageNotSupportedRoundedIcon style={{
+                    width: '80px',  // 아이콘의 너비를 100%로 설정
+                    height: '80px', // 아이콘의 높이를 100%로 설정
+                  }}/>}
                 </div>
                 <div
                     className="list_item_title_wrap"

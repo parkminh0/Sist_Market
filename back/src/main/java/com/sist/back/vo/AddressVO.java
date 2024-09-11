@@ -10,4 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AddressVO {
     String addresskey,townkey,isselected,iscertified,range,isalarm,userkey;
+    TownVO tvo;
 }
