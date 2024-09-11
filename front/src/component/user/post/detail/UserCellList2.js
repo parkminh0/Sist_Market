@@ -161,7 +161,9 @@ export default function UcerCellList2(props) {
               <ChatBubbleOutlineOutlinedIcon
                 style={{ fontSize: "14px", marginRight: "15px" }}
               />
-              <span style={{ fontSize: "12px", marginLeft: "auto" }}>5</span>
+              <span style={{ fontSize: "12px", marginLeft: "auto" }}>
+                {pvo.chatroomqty}
+              </span>
             </div>
             <div
               style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
@@ -169,7 +171,9 @@ export default function UcerCellList2(props) {
               <FavoriteBorderOutlinedIcon
                 style={{ fontSize: "14px", marginRight: "15px" }}
               />
-              <span style={{ fontSize: "12px", marginLeft: "auto" }}>10</span>
+              <span style={{ fontSize: "12px", marginLeft: "auto" }}>
+                {pvo.likedqty}
+              </span>
             </div>
           </div>
         </CardContent>
