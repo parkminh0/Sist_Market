@@ -141,6 +141,27 @@ export default function page() {
   }
   // #endregion
 
+  // #region 거리 구하기
+  function calDistance(post_lati, post_long) {
+    function deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    }
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(post_lati - cookie_latitude); // deg2rad below
+    var dLon = deg2rad(post_long - cookie_longitude);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(post_lati)) *
+        Math.cos(deg2rad(cookie_latitude)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    console.log(d);
+    return d;
+  }
+  // #endregion
+
   // #region 내 물건 팔기 버튼
   useEffect(() => {
     const container = document.querySelector(
@@ -678,6 +699,7 @@ export default function page() {
 
           setTmpHope_lati(latitude);
           setTmpHope_long(longitude);
+
           marker.setMap(map);
 
           // 마우스 드래그로 지도 이동이 완료되었을 때 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
@@ -1347,7 +1369,18 @@ export default function page() {
                           {post.title}
                         </Typography>
                         <Typography level="body-sm">
-                          위치 {post.townVO && `· ${post.townVO.region3}`} ·{" "}
+                          {post.hope_place != null &&
+                            post.hope_place != "" &&
+                            post.hope_lati != null &&
+                            post.hope_long != null &&
+                            (() => {
+                              const distance = calDistance(
+                                post.hope_lati,
+                                post.hope_long
+                              ); // 거리 계산
+                              return ` · 거리: ${distance.toFixed(2)} km`; // 계산된 거리를 렌더링
+                            })}
+                          {post.townVO && `${post.townVO.region3}`} ·{" "}
                           {timeDifference(post.create_dtm)}
                         </Typography>
                       </div>
