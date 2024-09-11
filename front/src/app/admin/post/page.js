@@ -44,6 +44,7 @@ export default function Page() {
       },
     })
       .then((res) => {
+        console.log(res.data); // 서버 응답 확인
         setList(res.data.post_list); // 검색된 데이터를 화면에 업데이트
       })
       .catch((error) => {
