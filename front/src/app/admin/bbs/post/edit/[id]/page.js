@@ -9,9 +9,7 @@ import { ImageFormats } from '@xeger/quill-image-formats';
 import { Button, TextField } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 
-
 export default function Page() {
-  const params = useParams();
   // formats로 사용자가 넣을 수 있는 데이터를 제한함
   const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
   const API_URL = `/admin/board/getBbs?boardkey=${params.id}`;
@@ -19,22 +17,19 @@ export default function Page() {
   const BC_URL = "/admin/board/getBc";
   const EDIT_URL = "/admin/board/edit";
   const AddImage_URL = "/admin/board/addImage";
-  const Add_URL = "/admin/board/add";
-  // const EmptyAdd_URL = "/admin/board/empty";
-  // const deleteLatest_URL="/admin/board/deleteLatest";
   
   // 이미지 사이즈 조절을 위한 모듈
   Quill.register('modules/imageActions', ImageActions);
   Quill.register('modules/imageFormats', ImageFormats);
-
+  
+  const params = useParams();
   const [vo, setVo] = useState({});
-
   const [bc_list, setBc_list] = useState([]);
   const [content, setContent] = useState(); // 에디터에 적히는 값 콘솔에 출력
   const [title, setTitle] = useState();
   const [categoryname, setCategoryname] = useState();
   const [userkey, setUserkey] = useState("1");
-  const boardkey = useRef(1);
+  const boardkey = params.id;
   const router = useRouter();
   console.log(content);
 
@@ -44,7 +39,6 @@ export default function Page() {
     axios.get(
         API_URL
     ).then((res) => {
-        console.log(res);
         setVo(res.data.bvo);
         getCategoryname(params.id)
     });
@@ -53,17 +47,15 @@ export default function Page() {
   function getCategoryname(boardkey) {
     axios.get(BC_URL, { params: { boardkey } })
         .then((res) => {
-            console.log(res);
             setCategoryname(res.data.categoryname);
         });
   };
-
 
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('userkey', userkey);
-    formData.append('boardkey', boardkey.current);
+    formData.append('boardkey', params.id);
     const response = await axios({
       url: AddImage_URL,
       method: "post",
@@ -79,48 +71,51 @@ export default function Page() {
     }
   };
 
-
   const uploadContent = async () => {
     const formData = new FormData();
-    formData.append('boardkey', boardkey.current);
+    formData.append('boardkey', params.id);
     formData.append('content', content);
     formData.append('title', title);
     formData.append('userkey', userkey);
     formData.append('categoryname', categoryname);
-    const response = await axios({
-      url: Add_URL,
-      method: "post",
-      data: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
+    console.log(content);
+  
+    try {
+      const response = await axios({
+        url: EDIT_URL,
+        method: "post",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      });
+      if (response.data.chk === 1) {
+        alert("수정 성공");
+        router.push('/admin/bbs/post');
+        return response.data.filePath;
+      } else {
+        throw new Error('업로드 실패');
       }
-    });
-    if (response.data.chk === 1) {
-      alert("저장 성공");
-      router.push('/admin/bbs/post');
-      return response.data.filePath;
-    } else {
-      throw new Error('업로드 실패');
+    } catch (error) {
+      console.error("업로드 중 에러 발생:", error);
     }
   };
-
+  
   useEffect(() => {
     getData();
-    let reaction = true;
-
     const multiFunction = async () => {
-        try {
-            const res = await axios.get(ALL_BC_URL);
-            setBc_list(res.data.bc_list || []);
-            if (reaction) {
-                // emptyAdd();
-            }
-        } catch (error) {
-            setBc_list([]);
-        }
+        const res = await axios.get(ALL_BC_URL);
+        setBc_list(res.data.bc_list || []);
     };
     multiFunction();
   }, []);
+
+  const replaceImage = async (file, oldImageUrl) => {
+    if (oldImageUrl) {
+      await axios.post('/admin/board/deleteImage', { imageUrl: oldImageUrl });
+    }
+    return await uploadImage(file);
+  };
 
   const modules = useMemo(() => ({
     imageActions: {},
@@ -140,22 +135,22 @@ export default function Page() {
           const input = document.createElement('input');
           input.setAttribute('type', 'file');
           input.setAttribute('accept', 'image/*');
-          input.setAttribute('multiple', '');
           input.addEventListener('change', async () => {
             const editor = quillRef.current.getEditor(); // quill 에디터 인스턴스
             const range = editor.getSelection(true);
-            const file2 = input.files && input.files[0];
-            const files = input.files;
-            if (file2) {
-              for (const file of files) {
-                try {
-                  const filePath = `/img/admin/post/`;
-                  const url = await uploadImage(file, filePath);
-                  editor.insertEmbed(range.index, "image", url);
-                  editor.setSelection(range.index + 1);
-                } catch (error) {
-                  console.error("이미지 삽입 오류", error);
+            const file = input.files[0];
+            if (file) {
+              try {
+                const leaf = editor.getLeaf(range.index - 1);
+                const oldImageUrl = leaf && leaf[0]?.domNode?.tagName === 'IMG' ? leaf[0].domNode.src : null;
+                const newImageUrl = await replaceImage(file, oldImageUrl);
+                if (oldImageUrl) {
+                  editor.deleteText(range.index, 1);
                 }
+                editor.insertEmbed(range.index, 'image', newImageUrl);
+                editor.setSelection(range.index + 1);
+              } catch (error) {
+                console.error("이미지 교체 오류", error);
               }
             }
           });
