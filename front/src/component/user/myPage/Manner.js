@@ -24,13 +24,13 @@ export default function Manner({ onMannerCountChange }) {
     axios.get(API_URL, {
       params: { userkey: userkey }
     }).then((res) => {
-      setList(res.data.m_ar);
+      setList(res.data.m_ar || []);
       console.log(res.data.m_ar);
-      const goodList = res.data.m_ar.filter(item => item.preference === 1 || item.preference === 2);
-      const badList = res.data.m_ar.filter(item => item.preference === 0);
+      const goodList = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2);
+      const badList = (res.data.m_ar || []).filter(item => item.preference == 0);
       setGoods(goodList);
       setBads(badList);
-      const totalCount = res.data.m_ar.reduce((sum, item) => sum + item.count, 0);
+      const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       onMannerCountChange(totalCount);
     });
   }

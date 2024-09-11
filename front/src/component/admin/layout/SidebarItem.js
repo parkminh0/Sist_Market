@@ -99,7 +99,7 @@ export default function SidebarItem(parentItem) {
     {
       title: "게시판",
       path: "/admin/bbs",
-      class: "link bbs",
+      class: "link board",
       child: [
         {
           title: "게시판 카테고리 관리",
@@ -199,7 +199,7 @@ export default function SidebarItem(parentItem) {
                   <a
                     id="QA_Lnb_Menu7"
                     href="/admin/bbs"
-                    className="link bbs"
+                    className="link board"
                     name="게시판"
                   >
                     게시판

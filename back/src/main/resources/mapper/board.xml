@@ -92,8 +92,8 @@
     </update>
 
     <insert id="emptyAdd" useGeneratedKeys="true" keyProperty="boardkey">
-        INSERT INTO board(userkey, townkey, viewqty, likeqty, isdeleted)
-        VALUES(#{userkey}, #{townkey}, 0, 0, 0)
+        INSERT INTO board(userkey, townkey, viewqty, likeqty, create_dtm, isdeleted)
+        VALUES(#{userkey}, #{townkey}, 0, 0, NOW(), 0)
     </insert>
 
     <delete id="deleteLatest" parameterType="String">
@@ -102,6 +102,7 @@
         AS subquery ON b.boardkey = subquery.boardkey
     </delete>
 
+
 	<!-- 원글보기 -->
 	<select id="getBbs" parameterType="String" resultMap="map1">
 		SELECT * FROM board
@@ -109,11 +110,17 @@
 	</select>
 	
 	<!-- 원글 수정 -->
-	<update id="edit" parameterType="com.sist.back.vo.BoardVO">
-		UPDATE board
-		SET title = #{title}, content = #{content}, update_dtm = NOW()
-		WHERE boardkey = #{boardkey}
-	</update>
+    <update id="edit" parameterType="com.sist.back.vo.BoardVO">
+        UPDATE board
+        SET title = #{title}, content = #{content}, categorykey = #{categorykey}, update_dtm = NOW()
+        WHERE boardkey = #{boardkey}
+    </update>
+
+    <!-- 특정 categoryname으로 key 값을 조회 -->
+    <select id="changeCategoryname" parameterType="String" resultType="String">
+        SELECT `key` FROM key_table
+        WHERE `value` = #{categoryname} AND `table` = 'board' AND `column` = 'categorykey'
+    </select>
 	
 	<!-- 원글 삭제 -->
 	<update id="del" parameterType="String">
@@ -144,6 +151,14 @@
         FROM `key_table` k LEFT JOIN `board` b ON k.`key` = b.`categorykey`
         WHERE k.`table` = 'board' AND k.`column` = 'categorykey' AND k.isdeleted = 0
         GROUP BY k.`key`, k.`value`
+    </select>
+
+    <!-- 특정 게시판 카테고리 추출 -->
+    <select id="getBc" parameterType="String" resultType="String">
+        SELECT k.value
+        FROM board b
+        JOIN key_table k ON b.categorykey = k.key
+        WHERE b.boardkey = #{boardkey}
     </select>
 
     <!-- 게시판 카테고리 추가 -->

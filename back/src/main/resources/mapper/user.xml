@@ -505,8 +505,10 @@
 
     <!-- 회원가입 -->
     <insert id="saveUser" parameterType="com.sist.back.vo.userVO">
-      INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm,  isdeleted)
-      VALUES (#{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, #{imgurl}, now(), #{isauthorized}, now(),  0)
+      INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm, isdeleted)
+      VALUES (
+        #{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, IFNULL(#{imgurl}, '/img/user/default_img.png'),now(), #{isauthorized}, now(), 0
+      )
     </insert>
 
     <!-- 카카오_이메일로 유저 확인-->

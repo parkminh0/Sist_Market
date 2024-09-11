@@ -325,8 +325,7 @@ export default function Page() {
                       이름
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <TextField id="standard-basic2" defaultValue={uvo.name} variant="standard" placeholder={uvo.name ? `${uvo.name}` : ''} style={{ flex: '0 0 90%' }} 
-                              InputProps={{ readOnly: true }} />
+                    <TextField id="standard-basic2" defaultValue={uvo.name} variant="standard" placeholder={uvo.name ? `${uvo.name}` : ''} style={{ flex: '0 0 90%' }} disabled />
                       <div style={{ flex: '0 0 10%' }}></div>
                     </div>
                   </div>
@@ -364,7 +363,7 @@ export default function Page() {
                       아이디
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <TextField id="standard-basic3" defaultValue={uvo.id} variant="standard" placeholder={uvo.id ? `${uvo.id}` : ''} style={{ flex: '0 0 90%' }} InputProps={{ readOnly: true }}/>
+                    <TextField id="standard-basic3" defaultValue={uvo.id} variant="standard" placeholder={uvo.id ? `${uvo.id}` : ''} style={{ flex: '0 0 90%' }} disabled/>
                       <div style={{ flex: '0 0 10%' }}></div>
                     </div>
                   </div>

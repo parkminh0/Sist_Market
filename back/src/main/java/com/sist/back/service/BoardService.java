@@ -34,16 +34,14 @@ public class BoardService {
         return b_mapper.boardAdd(bvo);
     }
 
-    public BoardVO[] edit(String boardkey) {
-        List<BoardVO> b_list = b_mapper.edit(boardkey);
-        BoardVO[] b_ar = null;
-        if (b_list != null & b_list.size() > 0) {
-            b_ar = new BoardVO[b_list.size()];
-            b_list.toArray(b_ar);
-        }
-        return b_ar;
+    public String changeCategoryname(String categoryname) {
+        return b_mapper.changeCategoryname(categoryname);
     }
 
+    public int edit(BoardVO bvo) {
+        return b_mapper.edit(bvo);
+    }
+    
     public int emptyAdd(BoardVO bvo) {
         b_mapper.emptyAdd(bvo);
         return Integer.parseInt(bvo.getBoardkey());
@@ -57,9 +55,6 @@ public class BoardService {
         return b_mapper.getBbs(boardkey);
     }
 
-    // public int edit(BoardVO bvo) {
-    //     return b_mapper.edit(bvo);
-    // }
 
     public int del(String boardkey) {
         return b_mapper.del(boardkey);
@@ -69,6 +64,7 @@ public class BoardService {
         return b_mapper.hit(boardkey);
     }
 
+    
     // 게시판 카테고리
     public KeyTableVO[] getAllBcList() {
         List<KeyTableVO> bc_list = b_mapper.getAllBcList();
@@ -77,8 +73,11 @@ public class BoardService {
             bc_ar = new KeyTableVO[bc_list.size()];
             bc_list.toArray(bc_ar);
         }
-
         return bc_ar;
+    }
+
+    public String getBc(String boardkey) {
+        return b_mapper.getBc(boardkey);
     }
 
     public int addBoardCategory(String value) {

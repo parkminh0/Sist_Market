@@ -41,14 +41,12 @@ a { text-decoration:none; color:#1b1e26; }
 a:hover { text-decoration:underline; }
 select:disabled { color:#aeb4c6; border:solid 1px #d6dae1; background-color:#f4f5f8; }
 select::-ms-expand { display:none; }
-input[type=text], textarea { outline:2px solid purple; }
 :-ms-input-placeholder { color:#aeb4c6; }
 ::-moz-placeholder { color:#aeb4c6; }
 ::-webkit-input-placeholder { color:#aeb4c6; }
 
   /* Debug */
     label label,
-    label a { outline:2px solid purple; }
     [uidev-case], [uidev-mode-display] { position:relative; }
     [uidev-mode-display="IF"] { display:none; }
     [uidev-case]:before { z-index:100; display:block !important; content:"" !important; position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(217, 218, 220, 0.6) !important; }

@@ -2,6 +2,7 @@
 
 import "/public/css/admin/board.css";
 import axios from 'axios';
+import { Table, TableBody, TableCell, TableContainer, TableRow, Paper, Typography, Box, Button, CircularProgress } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
@@ -12,7 +13,9 @@ export default function Page() {
   const params = useParams();
   const API_URL = `/admin/board/getBbs?boardkey=${params.id}`;
   const DEL_URL = `/admin/board/del?boardkey=${params.id}`;
+  const BC_URL = "/admin/board/getBc";
   const [vo, setVo] = useState({});
+  const [categoryname, setCategoryname] = useState('');
   const router = useRouter();
 
   function getData() {
@@ -21,11 +24,12 @@ export default function Page() {
       ).then((res) => {
           console.log(res);
           setVo(res.data.bvo);
+          getCategoryname(params.id)
       });
   }
 
   useEffect(() => {
-      getData();
+    getData();
   }, []); 
 
   function del() {
@@ -34,57 +38,84 @@ export default function Page() {
     ).then(res => {
         alert("삭제 완료");
         router.push('/admin/bbs/post');
-      })
-      .catch(error => {
-        console.error("삭제 중 오류가 발생했습니다.", error);
       });
     }
 
+  function getCategoryname(boardkey) {
+    axios.get(BC_URL, { params: { boardkey } })
+        .then((res) => {
+            console.log(res);
+            setCategoryname(res.data.categoryname);
+        });
+  };
+
   return (
-    <div className="container">
-      <div className="card">
-        <header>
-            <h2>게시글 상세보기</h2>
-        </header>
-        <hr className="divider"/>
-        <div>
-          <table className="styled-table">
-            <tbody>
-              <tr>
-                <td className="table-cell header-cell">게시글 번호</td>
-                <td className="table-cell table-cell-regular" colSpan={4}>{vo.boardkey}</td>
-                <td className="table-cell header-cell">첨부파일</td>
-                <td className="table-cell table-cell-regular" colSpan={4}>{vo.file_name}</td>
-              </tr>
-              <tr>
-                <td className="table-cell header-cell">제목</td>
-                <td className="table-cell table-cell-regular" colSpan={8}>{vo.title}</td>
-              </tr>
-              <tr>
-                <td className="table-cell header-cell date-cell">등록일</td>
-                <td className="table-cell table-cell-regular date-cell" colSpan={4}>{vo.create_dtm}</td>
-                <td className="table-cell header-cell date-cell">수정일</td>
-                <td className="table-cell table-cell-regular date-cell" colSpan={4}>{vo.update_dtm}</td>
-              </tr>
-              <tr>
-                <td className="table-cell header-cell">조회수</td>
-                <td className="table-cell table-cell-regular" colSpan={4}>{vo.viewqty}</td>
-                <td className="table-cell header-cell">좋아요수</td>
-                <td className="table-cell table-cell-regular" colSpan={4}>{vo.likeqty}</td>
-              </tr>
-              <tr>
-                <td className="table-cell header-cell">내용</td>
-                <td className="table-cell table-cell-regular" colSpan={8} dangerouslySetInnerHTML={{__html: vo.content}}/>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="button-group">
-          <button type="button" className="btn btn-list" onClick={() => router.push('/admin/bbs/post')}>목록</button>
-          <button type="button" className="btn btn-primary" onClick={() => router.push(`/admin/bbs/post/edit/${params.id}`)}>수정</button>
-          <button type="button" className="btn btn-error" onClick={del}>삭제</button>
-        </div>
-      </div>
-    </div>
+    <Box sx={{ padding: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', marginLeft: '0px' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '10px' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>게시글 상세보기</Typography>
+          <Box>
+            <Button variant="contained" color="success" sx={{ marginRight: '10px', fontSize: '12px' }} onClick={() => router.push(`/admin/bbs/post/edit/${params.id}`)}>
+              수정
+            </Button>
+            <Button variant="contained" sx={{ marginRight: '10px', fontSize: '12px' }} onClick={() => router.push('/admin/bbs/post')}>
+              목록
+            </Button>
+            <Button variant="contained" color="error" sx={{ fontSize: '12px' }} onClick={del}>
+              삭제
+            </Button>
+          </Box>
+        </Box>
+        <TableContainer component={Paper} sx={{ minWidth: 200, borderRadius: 2, boxShadow: 3, width: '100%', overflowX: 'auto' }}>
+          <Table sx={{ border: '1px solid lightgray' }} aria-label="공지사항 표">
+            <TableBody>
+              <TableRow>
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.4rem', border: '1px solid lightgray' }}>
+                  게시글 번호
+                </TableCell>
+                <TableCell align="center" sx={{ fontSize: '1.3rem', borderRight: '1px solid lightgray', borderBottom: '1px solid lightgray' }}>
+                  {vo.boardkey}
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.4rem', border: '1px solid lightgray' }}>
+                  카테고리
+                </TableCell>
+                <TableCell align="center" sx={{ fontSize: '1.3rem', borderBottom: '1px solid lightgray' }}>
+                  {categoryname}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.4rem', border: '1px solid lightgray' }}>
+                  작성일
+                </TableCell>
+                <TableCell align="center" sx={{ fontSize: '1.3rem', borderRight: '1px solid lightgray', borderBottom: '1px solid lightgray' }}>
+                  {vo.create_dtm}
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.4rem', border: '1px solid lightgray' }}>
+                  수정일
+                </TableCell>
+                <TableCell align="center" sx={{ fontSize: '1.3rem', borderBottom: '1px solid lightgray' }}>
+                  {vo.update_dtm}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.4rem', border: '1px solid lightgray' }}>
+                  제목
+                </TableCell>
+                <TableCell align="center" colSpan={3} sx={{ fontSize: '1.3rem', borderBottom: '1px solid lightgray' }}>
+                  {vo.title}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.4rem', border: '1px solid lightgray' }}>
+                  내용
+                </TableCell>
+                <TableCell align="left" colSpan={3} dangerouslySetInnerHTML={{ __html: vo.content }}
+                          sx={{ fontSize: '1.3rem', borderBottom: '1px solid lightgray', minHeight: '200px', display: 'block', padding: '20px' }} />
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Box>
   )
 }

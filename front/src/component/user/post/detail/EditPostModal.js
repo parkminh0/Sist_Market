@@ -22,7 +22,36 @@ export default function EditPostModal(props) {
     const [price, setPrice] = useState();
     const [canBargain, setCanBargain] = useState();
     const [content, setContent] = useState();
+    const [savePostKey, setSavePostKey] = useState();
 
+    function getPrevImages(){
+      const formData = new FormData();
+
+      // 이미지 파일 FormData에 추가
+      previewImages.forEach((image, index) => {
+        console.log("!!!!!![IMAGE]!!!!!!!");
+        console.log(image.imgurl);
+        const imgurlList = image.imgurl.split("/");
+        console.log(imgurlList);
+        const fileName = imgurlList[imgurlList.length-1];
+        console.log(fileName);
+        formData.append("post_img", fileName);
+        axios
+        .post(
+            "/adpost/imageFile",
+            formData,
+            {
+              headers: {
+                  "Content-Type": "multipart/form-data",
+              },
+            }
+        )
+        .then((response) => {
+          console.log("response");
+          console.log(response);
+        });
+    });
+    }
 
     function getCategory() {
         axios({
@@ -89,8 +118,6 @@ export default function EditPostModal(props) {
         
         // 이미지 파일 FormData에 추가
         previewImages.forEach((image, index) => {
-            console.log("!!!!!![IMAGE]!!!!!!!");
-            console.log(image);
             if(image.file != undefined){
                 const fileName = image.file.name;
                 formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
@@ -99,7 +126,6 @@ export default function EditPostModal(props) {
                 const fileName = imgurlList[imgurlList.length-1];
                 formData.append("post_img", `${tmpUserKey}-${fileName}`);
             }
-
         });
 
         
@@ -138,7 +164,7 @@ export default function EditPostModal(props) {
 
     useEffect(() => {
         getCategory();
-        console.log(props.pvo);
+        // console.log(props.pvo);
         var pvo = props.pvo;
         setPvo(props.pvo);
         setTitle(pvo.title);
@@ -149,7 +175,8 @@ export default function EditPostModal(props) {
         setCanBargain(pvo.canbargain);
         setContent(pvo.content);
         setPreviewImages(pvo.pimg_list?pvo.pimg_list:[]);
-        console.log(category_list.indexOf(category)+1);
+        // console.log(previewImages);
+        // getPrevImages();
     },[open]);
 
 

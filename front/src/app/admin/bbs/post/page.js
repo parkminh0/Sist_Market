@@ -25,26 +25,36 @@ export default function page() {
 
   function getData(cPage) {
     axios({
-      url: `${API_URL}?cPage=${cPage}`,
-      method: 'post',
-      params: {
-          title: title,
-          categoryName: categoryName,
-          create_start_date: create_start_date,
-          create_end_date: create_end_date,
-      }
-  }).then((res) => {
+        url: `${API_URL}?cPage=${cPage}`,
+        method: 'post',
+        params: {
+            title: title,
+            categoryName: categoryName,
+            create_start_date: create_start_date,
+            create_end_date: create_end_date,
+        }
+    }).then((res) => {
         setList(res.data.b_ar);
         setPage(res.data.page);
-      });
-  }
+    }).catch((error) => {
+        if (error.response && error.response.status === 404) {
+            setList([]);
+            setPage({});
+        }
+    });
+}
 
-  useEffect(() => {
+useEffect(() => {
     axios.get(BC_URL)
-      .then((res) => {
-        setBc_list(res.data.bc_list);
-      })
-  }, []);
+        .then((res) => {
+            setBc_list(res.data.bc_list);
+        })
+        .catch((error) => {
+            if (error.response && error.response.status === 404) {
+                setBc_list([]);
+            }
+        });
+}, []);
 
   function changePage(pNum) { 
     getData(pNum);
