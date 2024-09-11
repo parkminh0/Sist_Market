@@ -78,7 +78,7 @@ export default function Review({ onReviewCountChange }) {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.district} {review.city} {review.name}
+                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
                   </Box>
@@ -108,7 +108,7 @@ export default function Review({ onReviewCountChange }) {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.district} {review.city} {review.name}
+                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
                   </Box>
@@ -138,7 +138,7 @@ export default function Review({ onReviewCountChange }) {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.district} {review.city} {review.name}
+                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
                   </Box>
