@@ -1,0 +1,39 @@
+.popCateArticle{
+    background-color: #fafafa;
+    border: 5px ridge #ef7373;
+    width: 200px;
+    height: auto;
+    margin: 5px 15px;
+}
+
+.popCateArticle .thumbnail{
+    width: 100%;
+    height: 150px;
+}
+
+.popCateArticle .firstRow{
+    text-align: center;
+}
+
+.popCateArticle .firstRow .title{
+    padding: 5px;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popCateArticle .secondRow{
+    display: flex;
+    justify-content: space-around;
+}
+
+.popCateArticle .secondRow .price{
+    color: #229922;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.popCateArticle .secondRow .place{
+    font-size: 13px;
+}

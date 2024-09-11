@@ -5,6 +5,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
 import "/public/css/myPage.css";
 import Link from "next/link";
 import MyPageSide from "@/component/user/layout/MyPageSide";
@@ -295,15 +296,18 @@ export default function page() {
                               data-v-53e92c51=""
                               className="list_item_img_wrap"
                             >
-                              <img
-                                data-v-53e92c51=""
-                                alt="product_image"
-                                src={blvo.pimg_list[0].imgurl}
-                                className="list_item_img"
-                                style={{
-                                  backgroundColor: "rgb(235, 240, 245)",
-                                }}
-                              />
+                              {(blvo.pimg_list[0].imgurl!=undefined) ? (
+                                  <img
+                                  alt="product_image"
+                                  src={blvo.pimg_list[0].imgurl}
+                                  className="list_item_img"
+                                  style={{ backgroundColor: "#ebf0f5" }}
+                                  data-v-53e92c51=""
+                                  />
+                                ) : <ImageNotSupportedRoundedIcon style={{
+                                  width: '80px',  // 아이콘의 너비를 100%로 설정
+                                  height: '80px', // 아이콘의 높이를 100%로 설정
+                                }}/>}
                             </div>
                             <div
                               data-v-53e92c51=""
@@ -470,15 +474,18 @@ export default function page() {
                               data-v-53e92c51=""
                               className="list_item_img_wrap"
                             >
-                              <img
-                                data-v-53e92c51=""
-                                alt="product_image"
-                                src={clvo.pimg_list[0].imgurl}
-                                className="list_item_img"
-                                style={{
-                                  backgroundColor: "rgb(244, 244, 244)",
-                                }}
-                              />
+                              {(clvo.pimg_list[0].imgurl!=undefined) ? (
+                                  <img
+                                  alt="product_image"
+                                  src={clvo.pimg_list[0].imgurl}
+                                  className="list_item_img"
+                                  style={{ backgroundColor: "#ebf0f5" }}
+                                  data-v-53e92c51=""
+                                  />
+                                ) : <ImageNotSupportedRoundedIcon style={{
+                                  width: '80px',  // 아이콘의 너비를 100%로 설정
+                                  height: '80px', // 아이콘의 높이를 100%로 설정
+                                }}/>}
                             </div>
                             <div
                               data-v-53e92c51=""
@@ -597,13 +604,19 @@ export default function page() {
                             data-v-16369cf2=""
                             className="picture product_img"
                           >
-                            <img
-                              data-v-82b93d2c=""
-                              alt={wlvo.pvo.title}
-                              src={wlvo.pvo.pimg_list[0].imgurl}
-                              loading="lazy"
-                              className="image full_width"
-                            />
+                            {(wlvo.pvo.pimg_list[0].imgurl!=undefined) ? (
+                                <img
+                                alt={wlvo.pvo.title}
+                                src={wlvo.pvo.pimg_list[0].imgurl}
+                                loading="lazy"
+                                style={{ backgroundColor: "#ebf0f5", width: '100%', height:'100%' }}
+                                data-v-53e92c51=""
+                                />
+                              ) : <ImageNotSupportedRoundedIcon style={{
+                                backgroundColor: "#ebf0f5",
+                                width: '100%',  // 아이콘의 너비를 100%로 설정
+                                height: '100%', // 아이콘의 높이를 100%로 설정
+                              }}/>}
                           </picture>
                           <span
                             data-v-4382eb99=""

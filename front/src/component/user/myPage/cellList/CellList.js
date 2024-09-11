@@ -2,6 +2,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import React from 'react'
 import "/public/css/celllist.css";
+import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
 
 export default function CellList(props) {
     // const param = useSearchParams();
@@ -106,6 +107,7 @@ export default function CellList(props) {
                     className="list_item_img_wrap"
                     data-v-53e92c51=""
                 >
+                    {(clvo.pimg_list[0].imgurl!=undefined) ? (
                     <img
                     alt="product_image"
                     src={clvo.pimg_list[0].imgurl}
@@ -113,6 +115,10 @@ export default function CellList(props) {
                     style={{ backgroundColor: "#ebf0f5" }}
                     data-v-53e92c51=""
                     />
+                  ) : <ImageNotSupportedRoundedIcon style={{
+                    width: '80px',  // 아이콘의 너비를 100%로 설정
+                    height: '80px', // 아이콘의 높이를 100%로 설정
+                  }}/>}
                 </div>
                 <div
                     className="list_item_title_wrap"

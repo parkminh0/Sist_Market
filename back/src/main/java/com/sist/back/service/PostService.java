@@ -28,6 +28,14 @@ public class PostService {
         return p_mapper.getPostByPostKey(postkey);
     }
 
+    public List<PostVO> getPostByCategoryKey(int categorykey) {
+        return p_mapper.getPostByCategoryKey(categorykey);
+    }
+
+    public List<PostVO> getCellListByUserPostKey(int userkey, int postkey) {
+        return p_mapper.getCellListByUserPostKey(userkey, postkey);
+    }
+
     public TownVO getTownByPostKey(int postkey) {
         return p_mapper.getTownByPostKey(postkey);
     }
