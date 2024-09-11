@@ -1,17 +1,18 @@
 "use client";
 
-import Button from '@mui/joy/Button';
-import Card from '@mui/joy/Card';
-import CardContent from '@mui/joy/CardContent';
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import IconButton from '@mui/joy/IconButton';
-import AspectRatio from '@mui/joy/AspectRatio';
-import Typography from '@mui/joy/Typography';
-import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
+import Button from "@mui/joy/Button";
+import Card from "@mui/joy/Card";
+import CardContent from "@mui/joy/CardContent";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import IconButton from "@mui/joy/IconButton";
+import AspectRatio from "@mui/joy/AspectRatio";
+import Typography from "@mui/joy/Typography";
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 
 import {
+  Breadcrumbs,
   Checkbox,
   Dialog,
   DialogActions,
@@ -39,7 +40,7 @@ import { useRouter } from "next/navigation";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export default function page() {
   const [category_list, setCategory_list] = useState([]);
@@ -108,7 +109,7 @@ export default function page() {
   function timeDifference(postTime) {
     const now = new Date(); // 현재 시간
     const postDate = new Date(postTime); // postVO.create_dtm 값을 Date 객체로 변환
-  
+
     const timeDiff = now - postDate; // 두 시간의 차이를 밀리초로 계산
     const diffInSeconds = Math.floor(timeDiff / 1000);
     const diffInMinutes = Math.floor(diffInSeconds / 60);
@@ -116,8 +117,8 @@ export default function page() {
     const diffInDays = Math.floor(diffInHours / 24);
     const diffInMonths = Math.floor(diffInDays / 30);
     const diffInYear = Math.floor(diffInDays / 365);
-  
-    // 차이에 따라 적절한 문자열을 반환
+
+    // #regin 차이에 따라 적절한 문자열을 반환
     if (diffInYear > 0) {
       return `${diffInYear}년 전`;
     } else if (diffInMonths > 0) {
@@ -129,7 +130,7 @@ export default function page() {
     } else if (diffInMinutes > 0) {
       return `${diffInMinutes}분 전`;
     } else {
-      return '방금 전';
+      return "방금 전";
     }
   }
   // #endregion
@@ -328,8 +329,11 @@ export default function page() {
   const [hope_place, setHope_place] = useState("");
   const [hope_lati, setHope_lati] = useState("");
   const [hope_long, setHope_long] = useState("");
+  const [region1, setRegion1] = useState("");
+  const [region2, setRegion2] = useState("");
+  const [region3, setRegion3] = useState("");
   const [savePostKey, setSavePostKey] = useState("");
-  
+
   const handleClose = () => {
     setTitle("");
     setCategory("");
@@ -340,32 +344,35 @@ export default function page() {
     setHope_place("");
     setHope_lati("");
     setHope_long("");
+    setRegion1("");
+    setRegion2("");
+    setRegion3("");
     setIsFree(false);
     setOpen(false);
     setPreviewImages([]);
   };
-  
+
   // #region 이미지업로드
   const fileInputRef = useRef(null);
   const [previewImages, setPreviewImages] = useState([]);
-  
+
   // 파일 업로드 버튼 클릭 시 파일 입력 요소 클릭 이벤트 발생
   const uploadImg = (e) => {
     fileInputRef.current.click();
   };
-  
+
   // 파일 입력 요소의 값이 변경되면 호출되는 함수
   const handleChange = (e) => {
     // 선택한 파일들을 배열로 가져옴
     let files = Array.from(e.target.files);
-    
+
     if (previewImages.length + files.length > 10) {
       alert("10개를 초과할 수 없습니다.");
       return; // 10개를 초과할 경우 추가하지 않고 함수 종료
     }
-    
+
     const newPreviewImages = [];
-    
+
     // 파일들을 미리보기 이미지로 변환하여 저장
     files.forEach((file, index) => {
       let fileReader = new FileReader();
@@ -382,43 +389,48 @@ export default function page() {
       fileReader.readAsDataURL(file);
     });
   };
-  
+
   const handleDelete = (index) => {
     setPreviewImages(previewImages.filter((_, i) => i !== index));
   };
   // #endregion
-  
+
   // #region 내 물건 팔기(작성)
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+
     const formData = new FormData(event.currentTarget);
-    
+
     // 유저 토큰 확인
-    let tmpUserKey = Cookies.get('userkey');
-    if (tmpUserKey == null || tmpUserKey == ''){
+    let tmpUserKey = Cookies.get("userkey");
+    if (tmpUserKey == null || tmpUserKey == "") {
       alert("로그인 후 이용해주세요.");
       return;
     }
     formData.append("userkey", tmpUserKey);
-    
+
     // 이미지 파일 FormData에 추가
     previewImages.forEach((image, index) => {
       const fileName = image.file.name;
       formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
     });
-    
+
     // 0: 임시저장  1: 판매중(작성완료)
     const mode = event.currentTarget.dataset.mode;
     formData.append("poststatus", mode === "save" ? 0 : 1);
-    
+
     // price가 공백("")이면 null 또는 0으로 변환
     formData.set("price", price === "" ? 0 : price);
 
     // 거래희망장소 위도, 경도
     formData.append("hope_lati", hope_lati);
     formData.append("hope_long", hope_long);
-    
+
+    // town 정보
+    formData.append("region1", region1);
+    formData.append("region2", region2);
+    formData.append("region3", region3);
+
     // 임시저장 후 작성완료 누를 경우 수정해야 함
     if (savePostKey != null && savePostKey != "") {
       formData.append("postkey", savePostKey);
@@ -426,94 +438,97 @@ export default function page() {
     formData.set("canBargain", canBargain);
     formData.append("isPostPage", 1);
     axios
-    .post(
-      savePostKey == null || savePostKey == ""
-      ? "/adpost/write"
-      : "/adpost/edit",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    )
-    .then((response) => {
-      if (mode === "write") {
-        setSavePostKey("");
-        alert("게시글이 작성되었습니다.");
-        window.location.reload();
-      } else {
-        setSavePostKey(response.data.savePostKey);
-        alert("게시글이 저장되었습니다.");
-      }
-    })
-    .catch((error) => {
-      console.error("게시글 작성 오류", error);
-    });
+      .post(
+        savePostKey == null || savePostKey == ""
+          ? "/adpost/write"
+          : "/adpost/edit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        if (mode === "write") {
+          setSavePostKey("");
+          alert("게시글이 작성되었습니다.");
+          window.location.reload();
+        } else {
+          setSavePostKey(response.data.savePostKey);
+          alert("게시글이 저장되었습니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("게시글 작성 오류", error);
+      });
   };
   // #endregion
-  
+
   // #region 이미지 드래그
   let dragIdx = null;
   const containerRef = useRef(null); // ref로 container 관리
-  
+
   useEffect(() => {
     const container = containerRef.current;
-    
+
     // 드래그 시작 시 실행될 함수
     const handleDragStart = (e) => {
       const draggable = e.target;
       draggable.classList.add("dragging");
       dragIdx = Array.prototype.indexOf.call(container.children, draggable) - 1;
     };
-    
+
     // 드래그 종료 시 실행될 함수
     const handleDragEnd = (e) => {
       const draggable = e.target;
       draggable.classList.remove("dragging");
-  
+
       const afterElement = getDragAfterElement(container, e.clientX);
       let toIndex;
       if (afterElement == null || afterElement == undefined) {
         toIndex = container.children.length - 2;
       } else {
-        toIndex = Array.prototype.indexOf.call(container.children, afterElement);
+        toIndex = Array.prototype.indexOf.call(
+          container.children,
+          afterElement
+        );
         if (dragIdx >= toIndex) toIndex -= 1;
         else toIndex -= 2;
       }
-      
+
       if (toIndex !== -1) {
         setPreviewImages((prevPreviewImages) => {
           const tmpImages = [...prevPreviewImages]; // 얕은 복사
-          
+
           // 순서 변경 로직
           const [movedItem] = tmpImages.splice(dragIdx, 1);
           tmpImages.splice(toIndex, 0, movedItem);
-          
+
           // 각 이미지의 id 값을 다시 설정
           tmpImages.forEach((img, index) => {
             img.id = index;
           });
-          
+
           return [...tmpImages]; // 깊은 복사하여 새로운 배열로 반환
         });
       }
     };
-    
+
     const handleDragOver = (e) => {
       e.preventDefault();
       // DOM 조작을 하지 않고 드래그 위치 계산만 수행
     };
-    
+
     if (container) {
       container.addEventListener("dragover", handleDragOver);
-      
+
       const draggables = container.querySelectorAll(".draggable");
       draggables.forEach((draggable) => {
         draggable.addEventListener("dragstart", handleDragStart);
         draggable.addEventListener("dragend", handleDragEnd);
       });
-      
+
       return () => {
         container.removeEventListener("dragover", handleDragOver);
         draggables.forEach((draggable) => {
@@ -523,13 +538,13 @@ export default function page() {
       };
     }
   }, [previewImages]);
-  
+
   // 드래그 위치를 계산하는 함수
   function getDragAfterElement(container, x) {
     const draggableElements = [
       ...container.querySelectorAll(".draggable:not(.dragging)"),
     ];
-    
+
     return draggableElements.reduce(
       (closest, child) => {
         const box = child.getBoundingClientRect();
@@ -544,28 +559,37 @@ export default function page() {
     ).element;
   }
   // #endregion
-  
+
   const [locationOpen, setLocationOpen] = useState(false);
   const [tmpHope_place, setTmpHope_place] = useState("");
   const [tmpHope_lati, setTmpHope_lati] = useState("");
   const [tmpHope_long, setTmpHope_long] = useState("");
+  const [tmpRegion1, setTmpRegion1] = useState("");
+  const [tmpRegion2, setTmpRegion2] = useState("");
+  const [tmpRegion3, setTmpRegion3] = useState("");
 
   const locationHandleSubmit = (event) => {
     event.preventDefault();
     setHope_place(tmpHope_place);
     setHope_lati(tmpHope_lati);
     setHope_long(tmpHope_long);
+    setRegion1(tmpRegion1);
+    setRegion2(tmpRegion2);
+    setRegion3(tmpRegion3);
     locationClose();
-  }
+  };
 
   const locationClose = () => {
     setTmpHope_place("");
     setTmpHope_lati("");
     setTmpHope_long("");
+    setTmpRegion1("");
+    setTmpRegion2("");
+    setTmpRegion3("");
     setLocationOpen(false);
   };
-  
-  function getLocation(e) {
+
+  function getLocation() {
     const kakaoMapScript = document.createElement("script");
     kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
@@ -577,83 +601,133 @@ export default function page() {
         if (!window.kakao.maps.services) {
           return;
         }
-        setMap(e); // API 로드 후에 함수 호출
+        setMap(); // API 로드 후에 함수 호출
       });
     };
   }
 
-  function setMap(e){
+  function setMap() {
     // Geolocation API 지원 여부 확인
     if ("geolocation" in navigator) {
       try {
         navigator.geolocation.getCurrentPosition((position) => {
           let latitude = position.coords.latitude;
           let longitude = position.coords.longitude;
-          if (hope_lati != null && hope_lati != ''){
+          if (hope_lati != null && hope_lati != "") {
             latitude = hope_lati;
           }
-          if (hope_long != null && hope_long != ''){
+          if (hope_long != null && hope_long != "") {
             longitude = hope_long;
           }
-          if (hope_place != null && hope_place != ''){
+          if (hope_place != null && hope_place != "") {
             setTmpHope_place(hope_place);
           }
-  
+
+          const geocoder = new window.kakao.maps.services.Geocoder();
+          const coord = new kakao.maps.LatLng(latitude, longitude);
+          const callback = (result, status) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+              setTmpRegion1(result[0].address.region_1depth_name);
+              setTmpRegion2(result[0].address.region_2depth_name);
+              setTmpRegion3(result[0].address.region_3depth_name);
+            }
+          };
+          geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+
           // 주소-좌표 변환 객체를 생성합니다
           let locPosition = new kakao.maps.LatLng(latitude, longitude);
-          const message="지도를 움직여서 선택해보세요.";
-  
-          let mapContainer = document.getElementById('map'); // 지도를 표시할 div 
-          let mapOption = { 
+
+          let message =
+            '<div style="padding:5px; font-size:11px; text-align:center; display:inline-block;">지도를 움직여 선택하세요.</div>';
+          let mapContainer = document.getElementById("map"); // 지도를 표시할 div
+          let mapOption = {
             center: locPosition, // 지도의 중심좌표
-            level: 3 // 지도의 확대 레벨
+            level: 3, // 지도의 확대 레벨
           };
           let map = new kakao.maps.Map(mapContainer, mapOption);
-  
+
           // 마커를 생성합니다
-          let marker = new kakao.maps.Marker({  
-            position: new kakao.maps.LatLng(latitude, longitude)
-          }); 
-  
+          let marker = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(latitude, longitude),
+          });
+
+          let iwContent = message; // 인포윈도우에 표시할 내용
+
+          // 인포윈도우를 생성합니다
+          let infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
+          });
+
+          // 인포윈도우를 마커위에 표시합니다
+          infowindow.open(map, marker);
+
           setTmpHope_lati(latitude);
           setTmpHope_long(longitude);
-          marker.setMap(map);     
-  
+
+          marker.setMap(map);
+
           // 마우스 드래그로 지도 이동이 완료되었을 때 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
-          kakao.maps.event.addListener(map, 'center_changed', function() {        
-            try{
-              // 지도 중심좌표를 얻어옵니다 
-              let latlng = map.getCenter(); 
+          kakao.maps.event.addListener(map, "center_changed", function () {
+            try {
+              // 지도 중심좌표를 얻어옵니다
+              let latlng = map.getCenter();
               marker.setPosition(latlng);
+              infowindow.close();
             } catch (Exception) {
               alert("브라우저가 위치 서비스를 지원하지 않습니다.");
               return;
             }
           });
 
-          kakao.maps.event.addListener(map, 'dragend', function() {        
-            try{
-              // 지도 중심좌표를 얻어옵니다 
-              let latlng = map.getCenter(); 
+          kakao.maps.event.addListener(map, "dragend", function () {
+            try {
+              // 지도 중심좌표를 얻어옵니다
+              let latlng = map.getCenter();
               setTmpHope_lati(latlng.getLat());
               setTmpHope_long(latlng.getLng());
+
+              const geocoder = new window.kakao.maps.services.Geocoder();
+              const callback = (result, status) => {
+                if (status === window.kakao.maps.services.Status.OK) {
+                  setTmpRegion1(result[0].address.region_1depth_name);
+                  setTmpRegion2(result[0].address.region_2depth_name);
+                  setTmpRegion3(result[0].address.region_3depth_name);
+                }
+              };
+              geocoder.coord2Address(
+                latlng.getLng(),
+                latlng.getLat(),
+                callback
+              );
             } catch (Exception) {
+              setTmpHope_place("");
               setTmpHope_lati("");
               setTmpHope_long("");
+              setTmpRegion1("");
+              setTmpRegion2("");
+              setTmpRegion3("");
               alert("브라우저가 위치 서비스를 지원하지 않습니다.");
               return;
             }
           });
         });
-      } catch (Exception){
+      } catch (Exception) {
+        setTmpHope_place("");
         setTmpHope_lati("");
         setTmpHope_long("");
+        setTmpRegion1("");
+        setTmpRegion2("");
+        setTmpRegion3("");
         alert("브라우저가 위치 서비스를 지원하지 않습니다.");
         return;
       }
     } else {
+      setTmpHope_place("");
       setTmpHope_lati("");
       setTmpHope_long("");
+      setTmpRegion1("");
+      setTmpRegion2("");
+      setTmpRegion3("");
       alert("브라우저가 위치 서비스를 지원하지 않습니다.");
       return;
     }
@@ -665,25 +739,22 @@ export default function page() {
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
             <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">
-              <nav className="iq86zf0">
-                <ol className="iq86zf1 _588sy42q _588sy415q">
-                  <li>
-                    <Link href="/">
-                      <span className="_588sy4192 _588sy41w _588sy41b2 _588sy43 iq86zf3 iq86zf2 _588sy41n">
-                        <font style={{ verticalAlign: "inherit" }}>홈</font>
-                      </span>
-                    </Link>
-                    <span className="_588sy4192 _588sy41w _588sy41b2 _588sy43 iq86zf4 _588sy4ze _588sy4w8">
-                      <font style={{ verticalAlign: "inherit" }}> &gt;</font>
-                    </span>
-                  </li>
-                </ol>
-              </nav>
-              <div className="_588sy41z _588sy421 _588sy42q _588sy415q">
-                <span className="_588sy4192 _588sy41x _588sy41b2 _588sy43">
-                  <font style={{ verticalAlign: "inherit" }}>중고거래</font>
-                </span>
-              </div>
+              <Breadcrumbs separator="›" aria-label="breadcrumb">
+                <Link
+                  className="xzyefz5"
+                  underline="hover"
+                  color="inherit"
+                  href="/"
+                >
+                  홈
+                </Link>
+                <Typography
+                  className="xzyefz2 xzyefz3"
+                  sx={{ color: "text.primary" }}
+                >
+                  중고거래
+                </Typography>
+              </Breadcrumbs>
             </div>
             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
               <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
@@ -1213,92 +1284,170 @@ export default function page() {
                   </ul>
                 </div>
               </div>
-
+              {/* 게시글 진열 */}
               <div
                 data-gtm="search_article"
                 className="_13tpfox0 _1h4pbgy9vc _1h4pbgy8jc _13tpfox1"
-                style={{ minWidth: '0' }}
+                style={{ minWidth: "0" }}
               >
                 {post_list.map((post, i) => (
                   <Link
-                  key={i}
-                  data-gtm="search_article"
-                  className="_1h4pbgy9ug"
-                  href={`/post/detail?postkey=${post.postkey}`}
-                  style={{ minWidth: '0' }}
-                >
-                  <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', minWidth: '0', padding:'5px', gap: '0.5rem', backgroundColor:'white'}}>
-                    <div style={{ width: '100%',  minWidth: '0', marginLeft: '5px'}}>
-                      <Typography component="span" level="title-lg" sx={{
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          maxWidth: '100%', // 제목이 있는 부모 요소의 너비에 맞춰서 제한
-                          display: 'block',   
-                          minWidth: '0',              // 텍스트가 줄어들지 않도록 설정
-                          marginTop: '5px',
+                    key={i}
+                    data-gtm="search_article"
+                    className="_1h4pbgy9ug"
+                    href={`/post/detail?postkey=${post.postkey}`}
+                    style={{ minWidth: "0" }}
+                  >
+                    <Card
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        minWidth: "0",
+                        padding: "5px",
+                        gap: "0.5rem",
+                        backgroundColor: "white",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          minWidth: "0",
+                          marginLeft: "5px",
                         }}
-                      >{post.title}</Typography>
-                      <Typography level="body-sm">위치 · 동네 · {timeDifference(post.create_dtm)}
-                  </Typography>
-                    </div>
-                  <AspectRatio minHeight="200px" maxHeight="200px" minWidth="200px" maxwidth="200px" margin="0" padding="0">
-                  {post.pimg_list && post.pimg_list.length > 0 ? (
-                    <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{
-                      color: "transparent",
-                      display: "inlineBlock",
-                    }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src={post.pimg_list[0].imgurl}
-                    />
-                  </span>
-                  ) : <ImageNotSupportedRoundedIcon style={{
-                    width: '100%',  // 아이콘의 너비를 100%로 설정
-                    height: '100%', // 아이콘의 높이를 100%로 설정
-                    zIndex: 1      // 필요하면 z-index로 가시성을 확보
-                  }}/>}
-                  {post.poststatus == 2 ? (
-                    <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
-                      예약중
-                    </span>
-                  ) : post.poststatus == 3 ? (
-                    <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
-                      거래완료
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                  </AspectRatio>
-                  <CardContent
-                    orientation="horizontal"
-                    sx={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}
-                  >
-                    <Typography sx={{ fontSize: 'lg', fontWeight: 'lg', flexGrow: 1, marginLeft: '5px', }}>
-                      {post.price == 0
-                        ? '나눔♥'
-                        : new Intl.NumberFormat('ko-KR').format(post.price) + '원'}
-                    </Typography>
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0' }}>
-                      <IconButton variant="plain" size="sm" sx={{ padding: '4px' }}>
-                        <RemoveRedEyeOutlinedIcon style={{ fontSize: '14px' }} />
-                      </IconButton>
-                      <span style={{ fontSize: '12px', marginLeft: '0' }}>{post.viewqty}</span>
-                      <IconButton variant="plain" size="sm" sx={{ padding: '4px' }}>
-                        <ChatBubbleOutlineOutlinedIcon style={{ fontSize: '14px' }} />
-                      </IconButton>
-                      <span style={{ fontSize: '12px', marginLeft: '0' }}>5</span>
-                      <IconButton variant="plain" size="sm" sx={{ padding: '4px' }}>
-                        <FavoriteBorderOutlinedIcon style={{ fontSize: '14px' }} />
-                      </IconButton>
-                      <span style={{ fontSize: '12px', marginLeft: '0' }}>10</span>
-                    </div>
-                  </CardContent>
-                </Card>
-                </Link>
+                      >
+                        <Typography
+                          component="span"
+                          level="title-lg"
+                          sx={{
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: "100%", // 제목이 있는 부모 요소의 너비에 맞춰서 제한
+                            display: "block",
+                            minWidth: "0", // 텍스트가 줄어들지 않도록 설정
+                            marginTop: "5px",
+                          }}
+                        >
+                          {post.title}
+                        </Typography>
+                        <Typography level="body-sm">
+                          위치 {post.townVO && `· ${post.townVO.region3}`} ·{" "}
+                          {timeDifference(post.create_dtm)}
+                        </Typography>
+                      </div>
+                      <AspectRatio
+                        minHeight="200px"
+                        maxHeight="200px"
+                        minWidth="200px"
+                        maxwidth="200px"
+                        margin="0"
+                        padding="0"
+                      >
+                        {post.pimg_list && post.pimg_list.length > 0 ? (
+                          <span
+                            className=" lazy-load-image-background opacity lazy-load-image-loaded"
+                            style={{
+                              color: "transparent",
+                              display: "inlineBlock",
+                            }}
+                          >
+                            <img
+                              className="_1b153uwe _1h4pbgya3k"
+                              src={post.pimg_list[0].imgurl}
+                            />
+                          </span>
+                        ) : (
+                          <ImageNotSupportedRoundedIcon
+                            style={{
+                              width: "100%", // 아이콘의 너비를 100%로 설정
+                              height: "100%", // 아이콘의 높이를 100%로 설정
+                              zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                            }}
+                          />
+                        )}
+                        {post.poststatus == 2 ? (
+                          <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
+                            예약중
+                          </span>
+                        ) : post.poststatus == 3 ? (
+                          <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
+                            거래완료
+                          </span>
+                        ) : (
+                          ""
+                        )}
+                      </AspectRatio>
+                      <CardContent
+                        orientation="horizontal"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "lg",
+                            fontWeight: "lg",
+                            flexGrow: 1,
+                            marginLeft: "5px",
+                          }}
+                        >
+                          {post.price == 0
+                            ? "나눔♥"
+                            : new Intl.NumberFormat("ko-KR").format(
+                                post.price
+                              ) + "원"}
+                        </Typography>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginLeft: "0",
+                          }}
+                        >
+                          <IconButton
+                            variant="plain"
+                            size="sm"
+                            sx={{ padding: "4px" }}
+                          >
+                            <RemoveRedEyeOutlinedIcon
+                              style={{ fontSize: "14px" }}
+                            />
+                          </IconButton>
+                          <span style={{ fontSize: "12px", marginLeft: "0" }}>
+                            {post.viewqty}
+                          </span>
+                          <IconButton
+                            variant="plain"
+                            size="sm"
+                            sx={{ padding: "4px" }}
+                          >
+                            <ChatBubbleOutlineOutlinedIcon
+                              style={{ fontSize: "14px" }}
+                            />
+                          </IconButton>
+                          <span style={{ fontSize: "12px", marginLeft: "0" }}>
+                            5
+                          </span>
+                          <IconButton
+                            variant="plain"
+                            size="sm"
+                            sx={{ padding: "4px" }}
+                          >
+                            <FavoriteBorderOutlinedIcon
+                              style={{ fontSize: "14px" }}
+                            />
+                          </IconButton>
+                          <span style={{ fontSize: "12px", marginLeft: "0" }}>
+                            10
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 ))}
               </div>
               <div data-gtm="search_show_more_articles" className="_1h4pbgy7y8">
@@ -1453,7 +1602,7 @@ export default function page() {
             component: "form",
             onSubmit: handleSubmit,
           }}
-          scroll='paper'
+          scroll="paper"
         >
           <DialogTitle
             style={{
@@ -1476,9 +1625,14 @@ export default function page() {
               임시저장
             </Button>
           </DialogTitle>
-          <DialogContent dividers='paper'>
+          <DialogContent dividers="paper">
             <FormControl fullWidth margin="dense">
-            <ImageList cols={11} gap={8} id="dragImageList" ref={containerRef}>
+              <ImageList
+                cols={11}
+                gap={8}
+                id="dragImageList"
+                ref={containerRef}
+              >
                 <ImageListItem
                   style={{
                     width: 100,
@@ -1682,39 +1836,43 @@ export default function page() {
                 onChange={(e) => setContent(e.target.value)}
               />
             </FormControl>
-            <FormControl fullWidth margin="dense"  sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl
+              fullWidth
+              margin="dense"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
               <Link
-              href="#"
-              component="button"
-              variant="body2"
-              onClick={() => {
-                setHope_place("");
-                setHope_lati("");
-                setHope_long("");
-              }}
-              style={{
-                marginLeft: "auto",
-              }}
+                href="#"
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  setHope_place("");
+                  setHope_lati("");
+                  setHope_long("");
+                }}
+                style={{
+                  marginLeft: "auto",
+                }}
               >
-              삭제
+                삭제
               </Link>
               <TextField
-                  margin="dense"
-                  id="hope_place"
-                  name="hope_place"
-                  label="거래 희망 장소"
-                  type="text"
-                  fullWidth
-                  size="small"
-                  value={hope_place}
-                  onClick={(e) => {
-                            getLocation();
-                            setLocationOpen(true); 
-                          }}
-                  InputProps={{
-                    readOnly: true,  // readonly 설정
-                  }}  
-                />
+                margin="dense"
+                id="hope_place"
+                name="hope_place"
+                label="거래 희망 장소"
+                type="text"
+                fullWidth
+                size="small"
+                value={hope_place}
+                onClick={() => {
+                  getLocation();
+                  setLocationOpen(true);
+                }}
+                InputProps={{
+                  readOnly: true, // readonly 설정
+                }}
+              />
             </FormControl>
           </DialogContent>
           <DialogActions>
@@ -1738,7 +1896,7 @@ export default function page() {
           id="hopeDialog"
           PaperProps={{
             component: "form",
-            onSubmit: locationHandleSubmit
+            onSubmit: locationHandleSubmit,
           }}
         >
           <DialogTitle
@@ -1751,49 +1909,53 @@ export default function page() {
             위치 추가
           </DialogTitle>
           <IconButton
-          aria-label="close"
-          onClick={locationClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
+            aria-label="close"
+            onClick={locationClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
           <DialogContent dividers>
             <Typography gutterBottom>
               이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
             </Typography>
-            <DialogContentText style={{marginBottom: '20px'}} sx={{ fontSize: '0.875rem' }} >
+            <DialogContentText
+              style={{ marginBottom: "20px" }}
+              sx={{ fontSize: "0.875rem" }}
+            >
               만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
             </DialogContentText>
-            <FormLabel
-                required
-                id="demo-simple-row-radio-buttons-group-label"
-              >
-                거래 희망 장소명
-              </FormLabel>
+            <FormLabel required id="demo-simple-row-radio-buttons-group-label">
+              거래 희망 장소명
+            </FormLabel>
             <TextField
-                required
-                margin="dense"
-                id="tmpHope_place"
-                name="tmpHope_place"
-                placeholder='예) 강남역 1번 출구, 교보타워 앞'
-                type="text"
-                fullWidth
-                size="small"
-                value={tmpHope_place}
-                onChange={(e) => setTmpHope_place(e.target.value)}
-              />
-            <div id="map" style={{border:'0.5px solid black', marginTop: '10px', width:'100%', height: '350px'}}></div>
+              required
+              margin="dense"
+              id="tmpHope_place"
+              name="tmpHope_place"
+              placeholder="예) 강남역 1번 출구, 교보타워 앞"
+              type="text"
+              fullWidth
+              size="small"
+              value={tmpHope_place}
+              onChange={(e) => setTmpHope_place(e.target.value)}
+            />
+            <div
+              id="map"
+              style={{
+                border: "0.5px solid black",
+                marginTop: "10px",
+                width: "100%",
+                height: "350px",
+              }}
+            ></div>
           </DialogContent>
           <DialogActions>
-            <Button
-              type="submit"
-            >
-              선택 완료
-            </Button>
+            <Button type="submit">선택 완료</Button>
             <Button onClick={locationClose}>취소</Button>
           </DialogActions>
         </Dialog>
