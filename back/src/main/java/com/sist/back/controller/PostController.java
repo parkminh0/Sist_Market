@@ -23,9 +23,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
+import com.sist.back.service.TownService;
+import com.sist.back.service.OfferService;
+import com.sist.back.service.WishlistService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
+import com.sist.back.vo.TownVO;
+import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 
@@ -43,6 +48,15 @@ public class PostController {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    TownService townService;
+
+    @Autowired
+    OfferService o_service;
+
+    @Autowired
+    WishlistService w_service;
 
     @Value("${server.upload.post.image}")
     private String postImgPath;
@@ -111,10 +125,36 @@ public class PostController {
         e_map.put("cellList", p_service.getCellListByUserPostKey(userkey, postkey));
         return e_map;
     }
+
     @RequestMapping("/pop_cate")
     public Map<String, Object> popCate(int categorykey) {
         Map<String, Object> e_map = new HashMap<>();
         e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey));
+        return e_map;
+    }
+
+    @RequestMapping("/priceOffer")
+    public Map<String, Object> priceOffer(OfferVO ovo) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("result", o_service.makePriceOffer(ovo));
+        return e_map;
+    }
+
+    @RequestMapping("/isLike")
+    public Map<String, Object> isLike(int userkey, int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        Map<String, Object> w_map = new HashMap<>();
+        w_map.put("userkey", userkey);
+        w_map.put("postkey", postkey);
+        int result = w_service.isLike(w_map);
+        e_map.put("result", result);
+        return e_map;
+    }
+
+    @RequestMapping("/toggleLike")
+    public Map<String, Object> toggleLike(boolean isLike, int userkey, int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        // e_map.put("result", o_service.makePriceOffer());
         return e_map;
     }
 
@@ -164,8 +204,7 @@ public class PostController {
             for (MultipartFile f : post_img) {
                 System.out.println(f);
                 Map<String, Object> image = new HashMap<>();
-                
-                
+
                 System.out.println(f.getName());
                 String realPath = "/img/postimg/";
                 String fname = f.getName();
@@ -184,9 +223,9 @@ public class PostController {
                             fname));
                 } catch (Exception e) {
                 }
-                image.put("name",fname);
-                image.put("imgurl",filePath);
-                image.put("file",f);
+                image.put("name", fname);
+                image.put("imgurl", filePath);
+                image.put("file", f);
                 fileList.put(String.valueOf(a), image);
                 a++;
             }
@@ -195,16 +234,33 @@ public class PostController {
         res.put("fileList", fileList);
         return res;
     }
+
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
-    public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {
-        // townkey
+    public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
+            String region2, String region3) {
+
+        if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
+                && !region3.equals("")) {
+            Map<String, String> searchTown = new HashMap<>();
+            TownVO tvo = new TownVO();
+            tvo.setRegion1(region1);
+            tvo.setRegion2(region2);
+            tvo.setRegion3(region3);
+            searchTown.put("region1", region1);
+            searchTown.put("region2", region2);
+            searchTown.put("region3", region3);
+            TownVO townVO = townService.searchKeyByRegion(tvo);
+            if (townVO == null) {
+                vo.setTownkey(String.valueOf(townService.insertTown(tvo)));
+            } else {
+                vo.setTownkey(townVO.getTownkey());
+            }
+        }
+
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
         // range
-        // hope_place
-        // hope_lati
-        // hope_long
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
@@ -253,25 +309,36 @@ public class PostController {
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
-    public Map<String, Object> edit(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {
-        // townkey
+    public Map<String, Object> edit(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
+            String region2, String region3) {
+
+        if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
+                && !region3.equals("")) {
+            Map<String, String> searchTown = new HashMap<>();
+            TownVO tvo = new TownVO();
+            tvo.setRegion1(region1);
+            tvo.setRegion2(region2);
+            tvo.setRegion3(region3);
+            searchTown.put("region1", region1);
+            searchTown.put("region2", region2);
+            searchTown.put("region3", region3);
+            TownVO townVO = townService.searchKeyByRegion(tvo);
+            if (townVO == null) {
+                vo.setTownkey(String.valueOf(townService.insertTown(tvo)));
+            } else {
+                vo.setTownkey(townVO.getTownkey());
+            }
+        }
+
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
         // range
-        // hope_place
-        // hope_lati
-        // hope_long
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
             vo.setCanbargain("0");
         }
-        // create_dtm
-        // update_dtm
-        // delete_dtm
-        // remind_dtm
-        // dealuserkey
 
         // 파일 데이터 처리
         // 1) 기존 존재하던 이미지 삭제
