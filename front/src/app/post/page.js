@@ -55,6 +55,12 @@ export default function page() {
   // 가격 파라미터 값
   const [minPriceParam, setMinPriceParam] = useState(null);
   const [maxPriceParam, setMaxPriceParam] = useState(null);
+  // 쿠키 - 현재위치
+  const cookie_latitude = Cookies.get("latitude");
+  const cookie_longitude = Cookies.get("longitude");
+  const cookie_region1 = decodeURIComponent(Cookies.get("region1"));
+  const cookie_region2 = decodeURIComponent(Cookies.get("region2"));
+  const cookie_region3 = decodeURIComponent(Cookies.get("region3"));
 
   // #region 비동기-카테고리 리스트
   function getCategory() {
@@ -427,9 +433,18 @@ export default function page() {
     formData.append("hope_long", hope_long);
 
     // town 정보
-    formData.append("region1", region1);
-    formData.append("region2", region2);
-    formData.append("region3", region3);
+    formData.append(
+      "region1",
+      region1 != null && region1 != "" ? region1 : cookie_region1
+    );
+    formData.append(
+      "region2",
+      region2 != null && region2 != "" ? region2 : cookie_region2
+    );
+    formData.append(
+      "region3",
+      region3 != null && region3 != "" ? region3 : cookie_region3
+    );
 
     // 임시저장 후 작성완료 누를 경우 수정해야 함
     if (savePostKey != null && savePostKey != "") {

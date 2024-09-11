@@ -17,4 +17,14 @@ public class WishlistService {
         return w_mapper.isLike(w_map);
     }
 
+    public int toggleLike(boolean isLike, Map<String, Object> w_map) {
+        int result = 0;
+        if (isLike) {
+            w_mapper.delLike(w_map);
+        } else {
+            w_mapper.addLike(w_map);
+        }
+        return result;
+    }
+
 }

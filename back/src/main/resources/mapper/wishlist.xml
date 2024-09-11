@@ -10,4 +10,18 @@
         WHERE userkey=#{userkey}
         AND postkey=#{postkey}
     </select>
+
+    <insert id="addLike" parameterType="Map">
+      INSERT
+      INTO `wishlist`(postkey,userkey,create_dtm).
+      VALUES (#{postkey},#{userkey},NOW())
+    </insert>
+    
+    <delete id="delLike" parameterType="Map">
+    DELETE 
+    FROM `wishlist`
+    WHERE postkey=#{postkey}
+    AND userkey=#{userkey}
+    </delete>
+
 </mapper>
