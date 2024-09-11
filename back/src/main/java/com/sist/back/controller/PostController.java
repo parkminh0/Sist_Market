@@ -161,6 +161,18 @@ public class PostController {
         return e_map;
     }
 
+    // 조회수 증가
+    @RequestMapping("/incViewqty")
+    public Map<String, Object> incViewqty(int postkey) {
+        System.out.println("!!!!!!!!!!!!!!!!!!!!  " + postkey + "  !!!!!!!!!!!");
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("postkey", postkey);
+        e_map.put("result", p_service.incViewqty(postkey));
+        e_map.put("viewqty", p_service.getViewqty(postkey));
+
+        return e_map;
+    }
+
     @RequestMapping("/remind")
     @ResponseBody
     public Map<String, Object> remind(String postkey) {

@@ -194,6 +194,19 @@
         WHERE postkey = #{postkey}
     </select>
 
+    <!-- 조회수 증가 -->
+    <select id="getViewqty" resultType="int" parameterType="int">
+        SELECT viewqty
+        FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+
+    <update id="incViewqty" parameterType="int">
+        UPDATE `post`
+        SET viewqty = viewqty+1
+        WHERE postkey = #{postkey}
+    </update>
+
 
     <insert id="insertRemindPost" parameterType="String">
         INSERT
@@ -231,25 +244,24 @@
     </delete>
 
 
-    <!-- 6. searchpost 관련 데이터 -->
-    <!-- <select id="searchpost" resultType="com.sist.back.vo.PostVO">
-        SELECT * FROM `post`
-        WHERE 1 = 1
-          <if test="searchCategory != null and searchCategory != ''">
-            <if test="searchCategory == 'title'">
-                AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
-            </if>
-            <if test="categorykey != null and searchCategory != ''">
-                AND categorykey = #{searchCategoryText}
-            </if>
-          </if>
-    </select> -->
+    <!-- PostVO와 PostImgVO를 매핑하는 resultMap -->
+    <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey"/>
+        <result column="title" property="title"/>
+        <!-- 게시글의 다른 컬럼들 -->
+        <collection property="pImg_list" ofType="com.sist.back.vo.PostImgVO">
+            <id column="postimgkey" property="postimgkey"/>
+            <result column="imgurl" property="imgurl"/>
+            <!-- PostImgVO의 다른 필드들 -->
+        </collection>
+    </resultMap>
 
-    <select id="searchpost" resultType="com.sist.back.vo.PostVO">
+    <select id="searchpost" resultMap="postMap">
         SELECT *
-        FROM post
+        FROM post p        
         WHERE 1 = 1
         <!-- 검색분류 -->
+        
         <if test="searchCategory != null and searchCategory != '' and searchCategoryText != null and searchCategoryText != ''">
             <if test="searchCategory == 'title'">
                 AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
@@ -471,23 +483,23 @@
     <select id="search" resultMap="postMap" parameterType="map">
         SELECT * FROM `post`
          WHERE 1 = 1
-            <if test="category != null and category != ''">
-                AND categorykey = #{category}
-            </if>
-            <if test="minPrice != null and minPrice != ''">
-                AND price <![CDATA[>=]]> #{minPrice}
-            </if>
-            <if test="maxPrice != null and maxPrice != ''">
-                AND price <![CDATA[<=]]> #{maxPrice}
-            </if>
-            <if test="sort != null and sort != ''">
-                    <if test="sort == 'recent'">
+        <if test="category != null and category != ''">
+            AND categorykey = #{category}
+        </if>
+        <if test="minPrice != null and minPrice != ''">
+            AND price <![CDATA[>=]]> #{minPrice}
+        </if>
+        <if test="maxPrice != null and maxPrice != ''">
+            AND price <![CDATA[<=]]> #{maxPrice}
+        </if>
+        <if test="sort != null and sort != ''">
+            <if test="sort == 'recent'">
                 ORDER BY remind_dtm DESC
-                    </if>
-                    <if test="sort == 'popular'">
-                ORDER BY remind_dtm DESC
-                    </if>
             </if>
+            <if test="sort == 'popular'">
+                ORDER BY viewqty DESC
+            </if>
+        </if>
     </select>
 
     <select id="main" resultMap="postMap" parameterType="String">
