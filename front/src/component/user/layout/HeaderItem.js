@@ -10,7 +10,7 @@ export default function HeaderItem() {
     { title: "카테고리", path: "/category", data_href: "/category" },
     { title: "동네생활", path: "/#", data_href: "/#" },
     { title: "채팅하기", path: "/chat", data_href: "/chat" },
-    (userkey==undefined)?'':{ title: "마이페이지", path: "/myPage", data_href: "/myPage" },
+    { title: "마이페이지", path: "/myPage", data_href: "/myPage" },
     { title: "회사 소개", path: "/about_us", data_href: "/about_us" },
     {
       title: "개발자 소개",
@@ -37,6 +37,20 @@ export default function HeaderItem() {
       <ul className="_1a7kymoc _588sy42q _588sy415q _588sy412w _588sy4wq">
         {link_item.map((items) => {
           if(items) {
+            if(items.title=="마이페이지"&&userkey==undefined){
+              return(
+                <li key={items.title}>
+                  <Link
+                    className="_1a7kymoe _1a7kymod _588sy4fw _588sy4j2 _588sy4mw _588sy4jq _588sy41"
+                    data-href={items.data_href}
+                    href={items.path}
+                    onClick={(e)=>{alert("로그인이 필요한 서비스입니다."); e.preventDefault();}}
+                  >
+                    {items.title}
+                  </Link>
+                </li>
+              );
+            }
             return(
               <li key={items.title}>
                 <Link
