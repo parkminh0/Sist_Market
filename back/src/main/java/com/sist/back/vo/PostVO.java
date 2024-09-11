@@ -25,6 +25,7 @@ public class PostVO {
         private userVO uvo;
         private userVO duvo;
         private categoryVO cvo;
+        TownVO townVO;
 
         private String nickname, imgurl, city, district, name, reviewType;
 
