@@ -9,10 +9,15 @@ import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.TownVO;
+import com.sist.back.vo.PostImgVO;
 
 @Mapper
 public interface PostMapper {
     PostVO[] all();
+
+    int getViewqty(int postkey);
+
+    int incViewqty(int postkey);
 
     PostVO getPostByPostKey(int postkey);
 
@@ -58,4 +63,5 @@ public interface PostMapper {
     // 특정 상태 값에 따른 조회 / search
     List<PostVO> findByPoststatus(int poststatus);
 
+    List<PostImgVO> pImg_list();
 }

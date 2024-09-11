@@ -29,7 +29,8 @@ public class TownService {
     }
 
     public int insertTown(TownVO tvo) {
-        return townMapper.insertTown(tvo);
+        townMapper.insertTown(tvo);
+        return Integer.parseInt(tvo.getTownkey());
     }
 
     public TownVO searchTownByKey(int key) {

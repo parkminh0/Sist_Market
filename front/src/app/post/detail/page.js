@@ -83,6 +83,64 @@ export default function Page() {
     });
   }
 
+  // 조회수
+
+  const [viewqty, setViewqty] = useState(0);
+
+  function updateViewqty(postkey) {
+    axios({
+      url: "/adpost/incViewqty",
+      method: "get",
+      params: {
+        postkey: postkey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      console.log(res.data);
+      if (res.data.result > 0) {
+        setViewqty(res.data.viewqty);
+      }
+    });
+  }
+
+  function incViewqty(postkey) {
+    var userkey = Cookies.get("userkey");
+    if (userkey == undefined) {
+      userkey = 0;
+    }
+    var cookie = Cookies.get("viewedPost");
+    if (cookie != undefined) {
+      if (cookie.includes(`/${userkey}`)) {
+        // 유저가 있을 때
+        var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
+        var userCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
+        alert(userCookie);
+        if (!userCookie.includes(`[${postkey}]`)) {
+          // 새로운 페이지 일 때
+          updateViewqty(postkey);
+          Cookies.remove("viewedPost");
+          Cookies.set("viewedPost", `${cookie}_[${postkey}]`, {
+            expires: 1000 * 60 * 60 * 24, // 24시간
+          });
+        } // 이미 본 페이지 일 때는 다른 작업없음
+      } else {
+        // 새로운 유저
+        updateViewqty(postkey);
+        Cookies.set("viewedPost", `/${userkey}_[${postkey}]`, {
+          expires: 1000 * 60 * 60 * 24, // 24시간
+        });
+      }
+    } else {
+      // 쿠키가 아예 없을 때
+      // updateViewqty(postkey);
+      Cookies.set("viewedPost", `/${userkey}_[${postkey}]`, {
+        expires: 1000 * 60 * 60 * 24, // 24시간
+      });
+    }
+  }
+
   // postkey 파라미터 값
   const [postKey, setPostKey] = useState(null);
   const [userTown, setUserTown] = useState("");
@@ -151,6 +209,9 @@ export default function Page() {
       if (Cookies.get("userkey") != undefined) {
         isLike(res.data.pvo.postkey);
       }
+      console.log(res.data);
+      setViewqty(res.data.pvo.viewqty);
+      incViewqty(res.data.pvo.postkey);
       setPostVO(res.data.pvo);
       setCategoryVO(res.data.pvo.cvo);
       setUserVO(res.data.pvo.uvo);
@@ -216,9 +277,15 @@ export default function Page() {
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     const diffInHours = Math.floor(diffInMinutes / 60);
     const diffInDays = Math.floor(diffInHours / 24);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYear = Math.floor(diffInDays / 365);
 
-    // 차이에 따라 적절한 문자열을 반환
-    if (diffInDays > 0) {
+    // #regin 차이에 따라 적절한 문자열을 반환
+    if (diffInYear > 0) {
+      return `${diffInYear}년 전`;
+    } else if (diffInMonths > 0) {
+      return `${diffInMonths}개월 전`;
+    } else if (diffInDays > 0) {
       return `${diffInDays}일 전`;
     } else if (diffInHours > 0) {
       return `${diffInHours}시간 전`;
@@ -258,7 +325,7 @@ export default function Page() {
       });
     };
   }
-
+  // #region 지도
   function setMap(pvo) {
     // Geolocation API 지원 여부 확인
     try {
@@ -279,10 +346,11 @@ export default function Page() {
       let mapContainer = document.getElementById("map"); // 지도를 표시할 div
       let mapOption = {
         center: locPosition, // 지도의 중심좌표
-        level: 3, // 지도의 확대 레벨
+        level: 5, // 지도의 확대 레벨
       };
       let map = new kakao.maps.Map(mapContainer, mapOption);
       map.setDraggable(false);
+      map.setZoomable(false);
 
       // 마커를 생성합니다
       let marker = new kakao.maps.Marker({
@@ -316,7 +384,7 @@ export default function Page() {
       return;
     }
   }
-
+  // #endregion
   return (
     <>
       {postVO ? (
@@ -615,7 +683,7 @@ export default function Page() {
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
                 <span>채팅 {chatroomVO.length}</span> ·{" "}
                 <span>관심 {postVO.likedqty}</span> ·{" "}
-                <span>조회 {postVO.viewqty}</span>
+                <span>조회 {viewqty}</span>
               </div>
               <Link
                 href="#"
@@ -630,7 +698,7 @@ export default function Page() {
                 {canEdit ? (
                   <Button
                     onClick={() => {
-                      editPost();
+                      editPost(postVO.userkey);
                     }}
                     color="success"
                     variant="contained"
