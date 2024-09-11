@@ -310,10 +310,10 @@ public class BoardController {
     @ResponseBody
     public Map<String, Object> userBbsList(String categorykey, String cPage) {
         Map<String, Object> map = new HashMap<>();
-
-        int totalRecord = b_service.userBbsCount(categorykey);
-
+        
         Paging p = new Paging(5, 3); // 페이징 객체 생성
+        int totalRecord = b_service.userBbsCount(categorykey);
+        System.out.println("토탈레코드@@@@@@@@@@@@@@@@"+totalRecord);
         p.setTotalRecord(totalRecord);
         
         if (cPage != null) {
@@ -321,23 +321,56 @@ public class BoardController {
         } else {
             p.setNowPage(1);
         }
-
-        int nowPage = p.getNowPage();
-        int begin = p.getBegin(); // 시작 레코드
-        int numPerPage = p.getNumPerPage(); // 페이지당 게시물 수
-
-
         Map<String, Object> b_map = new HashMap<>();
         b_map.put("categorykey", categorykey);
-        b_map.put("begin", begin);
-        b_map.put("numPerPage", numPerPage);
+        b_map.put("begin", String.valueOf(p.getBegin()));
+        b_map.put("end",String.valueOf(p.getEnd()));
+       
 
         BoardVO[] ar = b_service.userBbsList(b_map);
         map.put("ar", ar);
-        map.put("nowPage", nowPage);
+        map.put("page",p);
         map.put("totalPage", p.getTotalPage());
         map.put("totalRecord", p.getTotalRecord());
         map.put("numPerPage", p.getNumPerPage());
         return map;
     }
+
+    // 사용자 공지사항 검색 
+    @RequestMapping("/searchForNotice")
+    @ResponseBody
+    public Map<String, Object> searchForNotice(String title, String categorykey, String cPage) {
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> b_map = new HashMap<>();
+        b_map.put("title", title);
+        b_map.put("categorykey", categorykey);
+
+        Paging p = new Paging(5, 3); // 페이징 객체 생성
+        int totalRecord = b_service.searchForNoticeCount(b_map);
+        System.out.println("토탈레코드@@@@@@@@@@@@@@@@"+totalRecord);
+        p.setTotalRecord(totalRecord);
+
+        // cPage가 null이거나 변환이 안될 경우 기본값 1을 사용
+        try {
+            p.setNowPage(Integer.parseInt(cPage));
+        } catch (NumberFormatException | NullPointerException e) {
+            p.setNowPage(1);
+        }
+
+        b_map.put("categorykey", categorykey);
+        b_map.put("begin", String.valueOf(p.getBegin()));
+        b_map.put("end", String.valueOf(p.getEnd()));
+
+        BoardVO[] ar = b_service.searchForNotice(b_map);
+        if (ar != null) {
+            map.put("ar", ar);
+            map.put("page", p);
+            map.put("totalPage", p.getTotalPage());
+            map.put("totalRecord", p.getTotalRecord());
+            map.put("numPerPage", p.getNumPerPage());
+        }
+        return map;
+    }
+
+
 }
