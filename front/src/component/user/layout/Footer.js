@@ -140,7 +140,6 @@ export default function Footer() {
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
                     href="/Board/notice"
-                    target="_blank"
                     rel="noreferrer noopener"
                   >
                     <font>공지사항</font>

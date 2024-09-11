@@ -109,4 +109,20 @@ public class BoardService {
     public int userBbsCount(String categorykey){
         return b_mapper.userBbsCount(categorykey);
     }
+
+    public BoardVO[] searchForNotice(Map<String, Object> map){
+        BoardVO[] ar = null;
+        List<BoardVO> list = b_mapper.searchForNotice(map);
+        if(list!=null&& list.size()>0){
+            ar = new BoardVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public int searchForNoticeCount(Map<String, Object> map){
+        Integer count = b_mapper.searchForNoticeCount(map);
+        return count != null ? count : 0;
+    }
+    
 }
