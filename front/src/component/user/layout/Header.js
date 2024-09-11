@@ -732,6 +732,7 @@ const goController = async () => {
             style: {
               outline: 'none',
               boxShadow: 'none',
+              color:"orange",
             },
             disableUnderline: true,
           }}
@@ -752,9 +753,12 @@ const goController = async () => {
           size="small"
           onChange={handleChange}
           InputProps={{
-            style: {
+            sx: {
               outline: 'none',
               boxShadow: 'none',
+              '&.Mui-focused': {
+                border: '1px solid #FF6F0F', // 포커스 시 주황색 테두리
+              },
             },
             disableUnderline: true,
           }}

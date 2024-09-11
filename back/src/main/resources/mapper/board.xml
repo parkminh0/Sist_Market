@@ -181,18 +181,64 @@
 
     <!-- 사용자 게시글 목록 -->
    <select id="userBbsList" resultType="com.sist.back.vo.BoardVO" parameterType="map">
-        SELECT * FROM board
-        WHERE isdeleted = 0
-        AND categorykey = #{categorykey}
-        ORDER BY boardkey DESC
-        LIMIT #{begin}, #{numPerPage}
+        SELECT x.*
+        FROM (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY boardkey DESC) rnum
+            FROM board
+            <where>
+                isdeleted = 0
+                <if test="categorykey != null">
+                    AND categorykey = #{categorykey}
+                </if>
+            </where>
+        ) x
+        WHERE x.rnum BETWEEN #{begin} AND #{end}
    </select>
 
    <!-- 사용자 게시글 갯수 반환 -->
    <select id="userBbsCount" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM board
-        WHERE isdeleted = 0
+        <where>
+                isdeleted = 0
+                <if test="categorykey != null">
+                    AND categorykey = #{categorykey}
+                </if>
+        </where>
    </select>
+
+   <!-- 사용자 공지사항,이벤트 검색 -->
+   <select id="searchForNotice" parameterType="map" resultType="com.sist.back.vo.BoardVO">
+        SELECT x.*
+        FROM (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY boardkey DESC) rnum
+            FROM board
+            <where>
+                isdeleted = 0
+                <if test="categorykey != null">
+                    AND categorykey = #{categorykey}
+                </if>
+                <if test="title != null">
+                    AND title LIKE CONCAT('%', #{title}, '%')
+                </if>
+            </where>
+        ) x
+        WHERE x.rnum BETWEEN #{begin} AND #{end}
+   </select>
+
+    <!-- 사용자 공지사항, 이벤트 카운트 -->
+    <select id="searchForNoticeCount" parameterType="map" >
+        SELECT COALESCE(COUNT(*), 0) FROM board
+        <where>
+            isdeleted = 0
+            <if test="categorykey != null">
+                AND categorykey = #{categorykey}
+            </if>
+            <if test="title != null">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+    </select>
+
 
 
 </mapper>

@@ -45,4 +45,9 @@ public interface BoardMapper {
     List<BoardVO> userBbsList(Map<String, Object> b_map);
 
     int userBbsCount(String categorykey);
+
+    List<BoardVO> searchForNotice(Map<String,Object> map);
+
+    int searchForNoticeCount(Map<String,Object> map);
+
 }

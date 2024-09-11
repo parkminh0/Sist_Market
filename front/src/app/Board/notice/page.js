@@ -16,27 +16,63 @@ import axios from "axios";
 
 export default function () {
     const [ar, setAr] = useState([]);
-    const listUrl = "/api/admin/board/userBbsList";
+    const listUrl = "/admin/board/userBbsList";
     const [categorykey, setCategorykey] = useState(0);
     const [nowPage, setNowPage] = useState(1);
+    const [page, setPage] = useState({});
+    const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
 
-    function getData() {
-        axios.get(
-            listUrl,
-            {
-                params: {
-                    cPage: nowPage,
-                    categorykey: 1,
-                }
-            }
-        ).then((json) => {
-            setAr(json.data.ar);
-        })
+    // 페이지 변경시 모든 공지사항 로드
+    function getData(cPage) {  
+      axios.get(listUrl, {
+        params: {
+          cPage: cPage,
+          categorykey: 1
+        }
+      })
+      .then((json) => {
+          setAr(json.data.ar);
+          setPage(json.data.page);
+      })
+      .catch((error) => {
+          console.error("데이터 로딩 오류:", error);  // 에러 콘솔에 출력
+      });
     }
 
+    function changePage(cPage) { 
+      setNowPage(cPage); 
+      if (title) {
+        searchNotice(cPage.toString());  // cPage를 문자열로 변환
+      } else {
+        getData(cPage.toString());  // cPage를 문자열로 변환
+      }
+    }
+    
+    
+
     useEffect(() => {
-        getData();
-    }, []);
+        getData(nowPage);
+    }, [nowPage]);
+
+    
+    // 공지사항 검색
+    const sUrl = "/admin/board/searchForNotice";
+    function searchNotice(cPage = 1){  // cPage 인자 추가
+      axios.get(sUrl, {
+        params: {
+          title: title,
+          categorykey: 1,
+          cPage: cPage,
+        }
+      })
+      .then((json) => {
+          setAr(json.data.ar);
+          setPage(json.data.page);
+      })
+      .catch((error) => {
+          console.error("검색 데이터 로딩 오류:", error);  // 에러 콘솔에 출력
+      });
+    }
 
     return (
         <div>
@@ -98,14 +134,21 @@ export default function () {
                                 
                                     <Paper 
                                         component="form"
-                                        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 780 ,margin: "5px" }}
+                                        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '99%' ,margin: "5px" }}
                                     >
                                         <InputBase
-                                            sx={{ ml: 1, flex: 1 }}
-                                            placeholder="검색"
-                                            inputProps={{ 'aria-label': 'search google maps' }}
+                                          sx={{ ml: 1, flex: 1 }}
+                                          placeholder="검색"
+                                          inputProps={{ 'aria-label': 'search google maps' }}
+                                          onChange={(e) => setTitle(e.target.value)}
+                                          onKeyPress={(e) => {
+                                            if (e.key === 'Enter') {
+                                              e.preventDefault();  // 기본 Enter 동작 방지
+                                              searchNotice();  // 검색 함수 호출
+                                            }
+                                          }}
                                         />
-                                        <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                        <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={searchNotice}>
                                             <SearchIcon />
                                         </IconButton>
                                     </Paper>
@@ -113,23 +156,58 @@ export default function () {
                                 {/* 테이블 */}
                                 <div style={{ flex: '1' }} className="tableDiv">
                                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                    <TableBody>
-                                    {ar.map((ar,i) => (
-                                        <TableRow
-                                        key={i}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                        >
-                                            <TableCell align="center">{ar.writer}</TableCell>
-                                            <TableCell align="center">
-                                                <Link href={`/Board/view/${ar.boardkey}`}>
-                                                    {ar.title}
-                                                </Link>
+                                  <TableBody>
+                                      {/* 삼항 연산자를 사용하여 데이터가 없을 경우 메시지 표시 */}
+                                      {ar && ar.length > 0 ? (
+                                        ar.map((ar, i) => (
+                                          <TableRow
+                                            key={i}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                          >
+                                            <TableCell align="left" sx={{ width: '20%', fontWeight: 'bold' }}>
+                                              {ar.categorykey == 1 ? '공지사항' : '이벤트'}
                                             </TableCell>
-                                            
+                                            <TableCell align="left" sx={{ width: '80%' }}>
+                                              <Link href={`/Board/view/${ar.boardkey}`}>
+                                                {ar.title}
+                                              </Link>
+                                            </TableCell>
+                                          </TableRow>
+                                        ))
+                                      ) : (
+                                        <TableRow>
+                                          <TableCell colSpan={2} align="center">
+                                            검색된 게시글이 없습니다.
+                                          </TableCell>
                                         </TableRow>
-                                    ))}
+                                      )}
                                     </TableBody>
                                   </Table>
+                                </div>
+
+                                {/* 페이징 */}
+                                <div className="mPaginate" style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }} >
+                                  {page && page.startPage > 1 && (
+                                    <a href="#" onClick={() => changePage(page.startPage - page.pagePerBlock)} className="prev">
+                                      이전 {page.pagePerBlock}페이지
+                                    </a>
+                                  )}
+                                  <ol style={{ display: 'flex', listStyle: 'none', padding: 0 }}>
+                                    {page && Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                                      <li key={pNum} style={{ margin: '0 5px' }}>
+                                        {page.nowPage === pNum ? (
+                                          <strong title="현재페이지">{pNum}</strong>
+                                        ) : (
+                                          <a href="#" onClick={() => changePage(pNum)}>{pNum}</a>
+                                        )}
+                                      </li>
+                                    ))}
+                                  </ol>
+                                  {page && page.endPage < page.totalPage && (
+                                    <a href="#" onClick={() => changePage(page.endPage + 1)} className="next">
+                                      다음 {page.pagePerBlock}페이지
+                                    </a>
+                                  )}
                                 </div>
                             </div>
                         </section>
