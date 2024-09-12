@@ -258,12 +258,26 @@ export default function page() {
     params.delete("loc2");
 
     let newUrl = url.pathname + "?" + params.toString() + url.hash;
-    Array.from(document.getElementsByClassName("locationlink")).forEach(
-      (item) => {
-        if (item.dataset.selected == "true")
-          newUrl += "&loc2=" + item.dataset.loc;
+    if (e.dataset.loc == "all") {
+      newUrl += "&loc2=all";
+    } else {
+      let tmpCnt = 0;
+      let tmpNewUrl = "";
+      Array.from(document.getElementsByClassName("locationlink")).forEach(
+        (item) => {
+          if (item.dataset.selected == "true") {
+            tmpNewUrl += "&loc2=" + item.dataset.loc;
+            tmpCnt++;
+          }
+        }
+      );
+
+      if (tmpCnt == region2_list.length) {
+        newUrl += "&loc2=all";
+      } else {
+        newUrl += tmpNewUrl;
       }
-    );
+    }
 
     // 페이지 이동
     router.push(newUrl);
@@ -455,7 +469,9 @@ export default function page() {
   // 파일 입력 요소의 값이 변경되면 호출되는 함수
   const handleChange = (e) => {
     // 선택한 파일들을 배열로 가져옴
-    let files = Array.from(e.target.files);
+    let files = Array.from(e.target.files).filter((file) =>
+      file.type.startsWith("image/")
+    );
 
     if (previewImages.length + files.length > 10) {
       alert("10개를 초과할 수 없습니다.");
@@ -501,7 +517,7 @@ export default function page() {
     formData.append("userkey", tmpUserKey);
 
     // 이미지 파일 FormData에 추가
-    previewImages.forEach((image, index) => {
+    previewImages.forEach((image) => {
       const fileName = image.file.name;
       formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
     });
@@ -660,6 +676,7 @@ export default function page() {
   }
   // #endregion
 
+  // #region 내 물건 팔기 - 지도
   const [locationOpen, setLocationOpen] = useState(false);
   const [tmpHope_place, setTmpHope_place] = useState("");
   const [tmpHope_lati, setTmpHope_lati] = useState("");
@@ -734,7 +751,7 @@ export default function page() {
           };
           geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
 
-          // 주소-좌표 변환 객체를 생성합니다
+          // 주소-좌표 변환 객체 생성
           let locPosition = new kakao.maps.LatLng(latitude, longitude);
 
           let message =
@@ -832,6 +849,7 @@ export default function page() {
       return;
     }
   }
+  // #endregion
 
   return (
     <>
@@ -899,10 +917,21 @@ export default function page() {
                         <Link
                           className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
                           data-part="radio"
-                          data-selected="false"
+                          data-selected={
+                            loc2Param &&
+                            loc2Param.length > 0 &&
+                            loc2Param[0] === "all"
+                              ? "true"
+                              : "false"
+                          }
                           data-gtm="search_filter"
+                          data-loc="all"
                           href="#"
                           style={{ marginInlineStart: "8px" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            goLocPage(e.currentTarget);
+                          }}
                         >
                           <input
                             type="radio"
@@ -914,7 +943,13 @@ export default function page() {
                           />
                           <div
                             data-part="radio-control"
-                            data-selected="false"
+                            data-selected={
+                              loc2Param &&
+                              loc2Param.length > 0 &&
+                              loc2Param[0] === "all"
+                                ? "true"
+                                : "false"
+                            }
                             className="_1vqth4d4"
                           ></div>
                           <span className="_1vqth4d5" data-part="radio-label">
@@ -928,7 +963,7 @@ export default function page() {
                             let chk = false;
 
                             loc2Param.forEach((loc) => {
-                              if (loc === region) {
+                              if (loc === region || loc === "all") {
                                 chk = true;
                               }
                             });
@@ -1263,54 +1298,49 @@ export default function page() {
                     </li>
                     {loc2Param != null &&
                       loc2Param.length > 0 &&
-                      loc2Param
-                        .slice()
-                        .reverse()
-                        .map((loc, i) => (
-                          <li
-                            key={i}
-                            className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68"
+                      loc2Param.sort().map((loc, i) => (
+                        <li
+                          key={i}
+                          className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68"
+                        >
+                          {loc == "all" ? `${cookie_region1} 전체` : loc}
+                          <span
+                            data-deltype="loc2"
+                            data-loc2={loc}
+                            onClick={(e) => deleteSearch(e.currentTarget)}
+                            className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
                           >
-                            <font style={{ verticalAlign: "inherit" }}>
-                              {loc}
-                            </font>
                             <span
-                              data-deltype="loc2"
-                              data-loc2={loc}
-                              onClick={(e) => deleteSearch(e.currentTarget)}
-                              className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
+                              style={{
+                                display: "inline-flex",
+                                width: "14px",
+                                height: "14px",
+                              }}
+                              data-seed-icon="icon_close_regular"
+                              data-seed-icon-version="0.2.1"
                             >
-                              <span
-                                style={{
-                                  display: "inline-flex",
-                                  width: "14px",
-                                  height: "14px",
-                                }}
-                                data-seed-icon="icon_close_regular"
-                                data-seed-icon-version="0.2.1"
+                              <svg
+                                id="icon_close_regular"
+                                width="100%"
+                                height="100%"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                data-karrot-ui-icon="true"
                               >
-                                <svg
-                                  id="icon_close_regular"
-                                  width="100%"
-                                  height="100%"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  data-karrot-ui-icon="true"
-                                >
-                                  <g>
-                                    <path
-                                      fillRule="evenodd"
-                                      clipRule="evenodd"
-                                      d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
-                                      fill="currentColor"
-                                    ></path>
-                                  </g>
-                                </svg>
-                              </span>
+                                <g>
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                                    fill="currentColor"
+                                  ></path>
+                                </g>
+                              </svg>
                             </span>
-                          </li>
-                        ))}
+                          </span>
+                        </li>
+                      ))}
                     {categoryParam != null && (
                       <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
                         {category_list.map((category) =>
@@ -1621,7 +1651,16 @@ export default function page() {
                 }}
                 variant="contained"
                 starticon={<AddIcon />}
-                onClick={setOpen}
+                onClick={() => {
+                  if (
+                    Cookies.get("userkey") == null ||
+                    Cookies.get("userkey") == ""
+                  ) {
+                    alert("로그인 후 이용해주세요.");
+                    return;
+                  }
+                  setOpen(true);
+                }}
               >
                 내 물건 팔기
               </Button>
@@ -1789,6 +1828,7 @@ export default function page() {
                     ref={fileInputRef}
                     name="file"
                     onChange={handleChange}
+                    accept="image/*" // 이미지 파일만 허용
                     style={{ display: "none" }}
                     multiple
                   />
@@ -2019,16 +2059,28 @@ export default function page() {
               />
             </FormControl>
           </DialogContent>
-          <DialogActions>
-            <Button
-              type="submit"
-              onClick={(e) =>
-                (e.currentTarget.closest("form").dataset.mode = "write")
-              }
-            >
-              작성완료
-            </Button>
-            <Button onClick={handleClose}>취소</Button>
+          <DialogActions
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
+              거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
+            </span>
+            <div>
+              <Button
+                type="submit"
+                onClick={(e) =>
+                  (e.currentTarget.closest("form").dataset.mode = "write")
+                }
+                style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
+              >
+                작성완료
+              </Button>
+              <Button onClick={handleClose}>취소</Button>
+            </div>
           </DialogActions>
         </Dialog>
       </React.Fragment>

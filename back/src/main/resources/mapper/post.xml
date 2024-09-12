@@ -475,7 +475,7 @@
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
         </if>
-        <if test="loc2 != null and loc2.length > 0">
+        <if test="loc2 != null and loc2.length > 0 and loc2[0] != 'all'">
             AND (
                 <foreach item="item" collection="loc2" separator=" OR ">
                 t.region2 = #{item}
