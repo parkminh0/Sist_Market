@@ -24,6 +24,8 @@ export default function Page() {
   const [method, setMethod] = useState("0");
   const [canBargain, setCanBargain] = useState("0");
 
+  const baseUrl = "https://dtxw8q4qct0d4.cloudfront.net"; // 서버의 기본 URL
+
   function searchpost() {
     let frm = document.getElementById("frmSearch");
     let formData = new FormData(frm);
@@ -31,43 +33,23 @@ export default function Page() {
     // 검색 조건을 URLSearchParams로 변환
     let searchParams = Object.fromEntries(new URLSearchParams(formData));
 
-    // 서버 API로 검색을 요청하지 않고, 미리 받아온 데이터에서 필터링
-    const filtered = list.filter((post) => {});
-
     // 검색 조건을 처리하여 서버에 데이터를 요청
     axios({
       url: "/adpost/searchpost", // 실제 검색 API
       method: "post",
-      data: searchParams,
+      data: JSON.stringify(searchParams), // JSON 문자열로 변환
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((res) => {
         console.log(res.data); // 서버 응답 확인
-        setList(res.data.post_list); // 검색된 데이터를 화면에 업데이트
+        setList(res.data.post_list); // 데이터 업데이트
       })
       .catch((error) => {
         console.error("There was an error with the search request:", error);
       });
   }
-
-  // // 상품 이미지 로드 백엔드에서 pimg_list를 포함한 데이터를 받아오는 함수
-  // function fetchPostList() {
-  //   axios({
-  //     url: "/adpost/main", // 예시로 "/adpost/main" 사용. 실제 pimg_list를 포함한 엔드포인트로 수정 필요.
-  //     method: "get",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then((res) => {
-  //       setList(res.data.free_list); // 게시글 목록을 받아와 저장
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching post list:", error);
-  //     });
-  // }
 
   // 게시글 현황
   function getCount() {
@@ -616,20 +598,30 @@ export default function Page() {
                           }}
                         >
                           {/* 이미지 출력 */}
-                          {prod.pimg_list && prod.pimg_list.length > 0 ? (
-                            <img
-                              src={prod.pimg_list[0].imgurl} // 첫 번째 이미지를 사용
-                              alt="썸네일"
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                marginRight: "10px",
-                              }} // 이미지와 텍스트 사이에 간격 추가
-                            />
+                          {console.log("Product Data:", prod)}
+                          {/* // 이미지 리스트 전체 출력 */}
+                          {prod.pImg_list && prod.pImg_list.length > 0 ? (
+                            <>
+                              {" "}
+                              {console.log(
+                                "Image URL:",
+                                prod.pImg_list[0]?.imgurl
+                              )}
+                              <img
+                                src={`${baseUrl}/img/postimg/${prod.pImg_list[0].imgurl}`} // baseUrl을 사용하여 절대 경로로 변환
+                                alt="썸네일"
+                                style={{
+                                  width: "50px",
+                                  height: "50px",
+                                  marginRight: "10px",
+                                  objectFit: "cover", // 이미지 비율 유지
+                                }}
+                              />
+                            </>
                           ) : (
                             <ImageNotSupportedRoundedIcon
                               style={{ marginRight: "10px" }}
-                            /> // 이미지가 없을 경우 대체 아이콘 표시
+                            />
                           )}
                           {/* 제목 출력 */}
                           <p style={{ margin: 0 }}>{prod.title}</p>

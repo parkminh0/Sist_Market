@@ -49,7 +49,7 @@ public interface PostMapper {
 
     int delKeywordByKey(String likeKey);
 
-    List<PostVO> search(Map<String, String> map);
+    List<PostVO> search(Map<String, Object> map);
 
     PostVO[] main(String param);
 
@@ -63,5 +63,5 @@ public interface PostMapper {
     // 특정 상태 값에 따른 조회 / search
     List<PostVO> findByPoststatus(int poststatus);
 
-    List<PostImgVO> pImg_list();
+    List<PostImgVO> pImg_list(int postkey);
 }

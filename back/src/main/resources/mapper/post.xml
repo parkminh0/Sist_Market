@@ -244,21 +244,9 @@
     </delete>
 
 
-    <!-- PostVO와 PostImgVO를 매핑하는 resultMap -->
-    <resultMap id="post_image_map_2" type="com.sist.back.vo.PostVO">
-        <id column="postkey" property="postkey"/>
-        <result column="title" property="title"/>
-        <!-- 게시글의 다른 컬럼들 -->
-        <collection property="pImg_list" ofType="com.sist.back.vo.PostImgVO">
-            <id column="postimgkey" property="postimgkey"/>
-            <result column="imgurl" property="imgurl"/>
-            <!-- PostImgVO의 다른 필드들 -->
-        </collection>
-    </resultMap>
-
     <select id="searchpost" resultMap="postMap">
         SELECT *
-        FROM post p        
+        FROM post
         WHERE 1 = 1
         <!-- 검색분류 -->
         
@@ -481,23 +469,39 @@
     </update>
 
     <select id="search" resultMap="postMap" parameterType="map">
-        SELECT * FROM `post`
+        SELECT p.* FROM `post` p
+          JOIN `town` t ON t.townkey = p.townkey
          WHERE 1 = 1
+         <if test="loc1 != null and loc1 != ''">
+           AND t.region1 = #{loc1}
+        </if>
+        <if test="loc2 != null and loc2.length > 0">
+            AND (
+                <foreach item="item" collection="loc2" separator=" OR ">
+                t.region2 = #{item}
+                </foreach>
+            )
+        </if>
         <if test="category != null and category != ''">
-            AND categorykey = #{category}
+            AND p.categorykey = #{category}
         </if>
         <if test="minPrice != null and minPrice != ''">
-            AND price <![CDATA[>=]]> #{minPrice}
+            AND p.price <![CDATA[>=]]> #{minPrice}
         </if>
         <if test="maxPrice != null and maxPrice != ''">
-            AND price <![CDATA[<=]]> #{maxPrice}
+            AND p.price <![CDATA[<=]]> #{maxPrice}
         </if>
         <if test="sort != null and sort != ''">
             <if test="sort == 'recent'">
-                ORDER BY remind_dtm DESC
+                ORDER BY 
+                 CASE WHEN p.remind_dtm IS NULL 
+                      THEN p.create_dtm 
+                      ELSE p.remind_dtm
+                  END DESC,
+                p.create_dtm DESC
             </if>
             <if test="sort == 'popular'">
-                ORDER BY viewqty DESC
+                ORDER BY p.viewqty DESC
             </if>
         </if>
     </select>
