@@ -115,28 +115,40 @@ export default function Page() {
       if (cookie.includes(`/${userkey}`)) {
         // 유저가 있을 때
         var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
-        var userCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
-        alert(userCookie);
+        // console.log(`userCookieTmp: ${userCookieTmp}`);
+        var beforeCookie = cookie.substring(0,cookie.indexOf(`/${userkey}`));
+        // console.log(`beforeCookie: ${beforeCookie}`);
+        var userCookie = userCookieTmp;
+        var afterCookie = "";
+        if(userCookieTmp.indexOf("/")>0){
+          userCookie = userCookieTmp.substring(0,userCookieTmp.indexOf("/"));
+          afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
+        }
+        // console.log(`userCookie: ${userCookie}`);
+        // console.log(`afterCookie: ${afterCookie}`);
         if (!userCookie.includes(`[${postkey}]`)) {
           // 새로운 페이지 일 때
           updateViewqty(postkey);
           Cookies.remove("viewedPost");
-          Cookies.set("viewedPost", `${cookie}_[${postkey}]`, {
-            expires: 1000 * 60 * 60 * 24, // 24시간
+          Cookies.set("viewedPost", `${beforeCookie}${userCookie}_[${postkey}]${afterCookie}`, {
+            expires: 1/(24*60) , // 1분
+            // expires: 1, // 하루(24시간)
           });
         } // 이미 본 페이지 일 때는 다른 작업없음
       } else {
         // 새로운 유저
         updateViewqty(postkey);
-        Cookies.set("viewedPost", `/${userkey}_[${postkey}]`, {
-          expires: 1000 * 60 * 60 * 24, // 24시간
+        Cookies.set("viewedPost", `${cookie}/${userkey}_[${postkey}]`, {
+          expires: 1/(24*60) , // 1분
+          // expires: 1, // 하루(24시간)
         });
       }
     } else {
       // 쿠키가 아예 없을 때
-      // updateViewqty(postkey);
+      updateViewqty(postkey);
       Cookies.set("viewedPost", `/${userkey}_[${postkey}]`, {
-        expires: 1000 * 60 * 60 * 24, // 24시간
+        expires: 1/(24*60) , // 1분
+        // expires: 1, // 하루(24시간)
       });
     }
   }
@@ -209,7 +221,7 @@ export default function Page() {
       if (Cookies.get("userkey") != undefined) {
         isLike(res.data.pvo.postkey);
       }
-      console.log(res.data);
+      
       setViewqty(res.data.pvo.viewqty);
       incViewqty(res.data.pvo.postkey);
       setPostVO(res.data.pvo);
