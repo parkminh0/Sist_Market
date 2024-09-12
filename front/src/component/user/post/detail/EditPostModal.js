@@ -24,33 +24,43 @@ export default function EditPostModal(props) {
     const [content, setContent] = useState();
     const [savePostKey, setSavePostKey] = useState();
 
-    function getPrevImages(){
-      const formData = new FormData();
 
+    async function getBlob(imgurl){
+      var imgBlob = null;
+      let blob = await fetch(imgurl)
+                      .then(r => r.blob()
+                      .then((thisBlob)=>{
+                        imgBlob = thisBlob;
+                      }));
+      return imgBlob;
+    }
+
+    function getPrevImages(index, length, previousImages, previewImages){
+      if(index>=length){
+        return;
+      }
+      const formData = new FormData();
+      setPreviewImages([]);
       // 이미지 파일 FormData에 추가
-      previewImages.forEach((image, index) => {
-        console.log("!!!!!![IMAGE]!!!!!!!");
-        console.log(image.imgurl);
-        const imgurlList = image.imgurl.split("/");
-        console.log(imgurlList);
-        const fileName = imgurlList[imgurlList.length-1];
-        console.log(fileName);
-        formData.append("post_img", fileName);
-        axios
-        .post(
-            "/adpost/imageFile",
-            formData,
-            {
-              headers: {
-                  "Content-Type": "multipart/form-data",
-              },
-            }
-        )
-        .then((response) => {
-          console.log("response");
-          console.log(response);
+      const imgurl = previewImages[index].imgurl;
+      const imgurlList = imgurl.split("/");
+      const fileName = imgurlList[imgurlList.length-1];
+      var blob = getBlob(imgurl);
+      blob.then((imageBlob)=>{
+        const file = new File([imageBlob],fileName, {
+          type: imageBlob.type,
         });
-    });
+        const imageFile = {
+          name: fileName,
+          imgurl: imgurl,
+          file: file
+        };
+        previousImages = [...previousImages,imageFile];
+        getPrevImages(index+1, length, previousImages, previewImages);
+      }).finally(()=>{
+        setPreviewImages(previousImages);
+      });
+      
     }
 
     function getCategory() {
@@ -127,7 +137,6 @@ export default function EditPostModal(props) {
                 formData.append("post_img", `${tmpUserKey}-${fileName}`);
             }
         });
-
         
         // 1: 수정
         const mode = event.currentTarget.dataset.mode;
@@ -164,7 +173,6 @@ export default function EditPostModal(props) {
 
     useEffect(() => {
         getCategory();
-        // console.log(props.pvo);
         var pvo = props.pvo;
         setPvo(props.pvo);
         setTitle(pvo.title);
@@ -174,9 +182,10 @@ export default function EditPostModal(props) {
         setPrice(pvo.price);
         setCanBargain(pvo.canbargain);
         setContent(pvo.content);
-        setPreviewImages(pvo.pimg_list?pvo.pimg_list:[]);
-        // console.log(previewImages);
-        // getPrevImages();
+        getPrevImages(0,
+                      pvo.pimg_list?pvo.pimg_list.length:0,
+                      [],
+                      pvo.pimg_list?pvo.pimg_list:[]);
     },[open]);
 
 

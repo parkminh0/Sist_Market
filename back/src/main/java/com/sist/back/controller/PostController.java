@@ -209,51 +209,35 @@ public class PostController {
 
     // 이미지 파일 객체 가져오기
     @RequestMapping("/imageFile")
-    public Map<String, Object> imageFile(List<MultipartFile> post_img) {
-        Map<String, Object> fileList = new HashMap<>();
-        // System.out.println(post_img);
-        // System.out.println(post_img!=null);
+    public Map<String, Object> imageFile(String post_img) {
+        Map<String, Object> imageFile = new HashMap<>();
+        imageFile.put("post_img", post_img);
+        Map<String, Object> image = new HashMap<>();
         if (post_img != null) {
-            int a = 0;
-            for (MultipartFile f : post_img) {
-                System.out.println(f);
-                Map<String, Object> image = new HashMap<>();
-
-                System.out.println(f.getName());
-                String realPath = "/img/postimg/";
-                String fname = f.getName();
-
-                Path path = Paths.get(postImgPath);
+            Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
                     String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
-                String filePath = path.resolve(fname).toString();
-
-                // 파일 업로드
-                try {
-                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +
-                            fname));
-                } catch (Exception e) {
-                }
+            String filePath = path.resolve(post_img).toString();
+            File f = new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +post_img);
+            String fname = f.getName();
+            if(f.exists()){
                 image.put("name", fname);
-                image.put("imgurl", filePath);
+                image.put("imgurl", "/img/postimg/"+post_img);
                 image.put("file", f);
-                fileList.put(String.valueOf(a), image);
-                a++;
             }
         }
-        Map<String, Object> res = new HashMap<>();
-        res.put("fileList", fileList);
-        return res;
+        imageFile.put("imageFile", image);
+        return imageFile;
     }
 
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
             String region2, String region3) {
-        System.out.println("거래희망!!" + vo.getHope_place() + "까찌");
+        System.out.println("거래희망!!" + vo.getHope_place() + "까지");
         if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
                 && !region3.equals("")) {
             Map<String, String> searchTown = new HashMap<>();

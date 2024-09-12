@@ -47,11 +47,11 @@ export default function PopCateList2(props) {
       data-gtm="search_article"
       className="_1h4pbgy9ug"
       href={`/post/detail?postkey=${pvo.postkey}`}
-      style={{ minwidth: "0", margin: "5px 10px" }}
+      style={{margin: "5px 10px" }}
     >
       <Card
         sx={{
-          width: "200px",
+          width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -61,117 +61,121 @@ export default function PopCateList2(props) {
           backgroundColor: "white",
         }}
       >
-        <div style={{ width: "100%", minwidth: "0", marginLeft: "5px" }}>
-          <Typography
-            component="span"
-            level="title-lg"
-            sx={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: "100%", // 제목이 있는 부모 요소의 너비에 맞춰서 제한
-              display: "block",
-              minwidth: "0", // 텍스트가 줄어들지 않도록 설정
-              marginTop: "5px",
-            }}
-          >
-            {pvo.title}
-          </Typography>
-          <Typography level="body-sm">
-            위치 · 동네 · {timeDifference(pvo.create_dtm)}
-          </Typography>
-        </div>
-        <AspectRatio
-          minHeight="200px"
-          maxHeight="200px"
-          minwidth="200px"
-          maxwidth="200px"
-          margin="0"
-          padding="0"
-        >
-          {pvo.pimg_list && pvo.pimg_list.length > 0 ? (
-            <span
-              className=" lazy-load-image-background opacity lazy-load-image-loaded"
-              style={{
-                color: "transparent",
-                display: "inlineBlock",
+        <div style={{width:"100%"}}>
+          <div style={{ width: "100%", minwidth: "0", marginLeft: "5px" }}>
+            <Typography
+              component="span"
+              level="title-lg"
+              sx={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: "100%", // 제목이 있는 부모 요소의 너비에 맞춰서 제한
+                display: "block",
+                minwidth: "0", // 텍스트가 줄어들지 않도록 설정
+                marginTop: "5px",
               }}
             >
-              <img
-                className="_1b153uwe _1h4pbgya3k"
-                src={pvo.pimg_list[0].imgurl}
-              />
-            </span>
-          ) : (
-            <ImageNotSupportedRoundedIcon
-              style={{
-                width: "100%", // 아이콘의 너비를 100%로 설정
-                height: "100%", // 아이콘의 높이를 100%로 설정
-                zIndex: 1, // 필요하면 z-index로 가시성을 확보
-              }}
-            />
-          )}
-          {pvo.poststatus == 2 ? (
-            <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
-              예약중
-            </span>
-          ) : pvo.poststatus == 3 ? (
-            <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
-              거래완료
-            </span>
-          ) : (
-            ""
-          )}
-        </AspectRatio>
-        <CardContent
-          orientation="horizontal"
-          sx={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
-        >
-          <Typography
-            sx={{
-              fontSize: "lg",
-              fontWeight: "lg",
-              flexGrow: 1,
-              marginLeft: "5px",
-            }}
-          >
-            {pvo.price == 0
-              ? "나눔♥"
-              : new Intl.NumberFormat("ko-KR").format(pvo.price) + "원"}
-          </Typography>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div
-              style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
-            >
-              <RemoveRedEyeOutlinedIcon
-                style={{ fontSize: "14px", marginRight: "15px" }}
-              />
-              <span style={{ fontSize: "12px", marginLeft: "auto" }}>
-                {pvo.viewqty}
-              </span>
-            </div>
-            <div
-              style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
-            >
-              <ChatBubbleOutlineOutlinedIcon
-                style={{ fontSize: "14px", marginRight: "15px" }}
-              />
-              <span style={{ fontSize: "12px", marginLeft: "auto" }}>
-                {pvo.chatroomqty}
-              </span>
-            </div>
-            <div
-              style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
-            >
-              <FavoriteBorderOutlinedIcon
-                style={{ fontSize: "14px", marginRight: "15px" }}
-              />
-              <span style={{ fontSize: "12px", marginLeft: "auto" }}>
-                {pvo.likedqty}
-              </span>
-            </div>
+              {pvo.title}
+            </Typography>
+            <Typography level="body-sm">
+              위치 · 동네 · {timeDifference(pvo.create_dtm)}
+            </Typography>
           </div>
-        </CardContent>
+          <AspectRatio
+            minHeight="100%"
+            maxHeight="100%"
+            sx={{
+              minWidth:"100%",
+              maxWidth:"100%"
+            }}
+            margin="0"
+            padding="0"
+          >
+            {pvo.pimg_list && pvo.pimg_list.length > 0 ? (
+              <span
+                className=" lazy-load-image-background opacity lazy-load-image-loaded"
+                style={{
+                  color: "transparent",
+                  display: "inlineBlock",
+                }}
+              >
+                <img
+                  className="_1b153uwe _1h4pbgya3k"
+                  src={pvo.pimg_list[0].imgurl}
+                />
+              </span>
+            ) : (
+              <ImageNotSupportedRoundedIcon
+                style={{
+                  width: "100%", // 아이콘의 너비를 100%로 설정
+                  height: "100%", // 아이콘의 높이를 100%로 설정
+                  zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                }}
+              />
+            )}
+            {pvo.poststatus == 2 ? (
+              <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
+                예약중
+              </span>
+            ) : pvo.poststatus == 3 ? (
+              <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
+                거래완료
+              </span>
+            ) : (
+              ""
+            )}
+          </AspectRatio>
+          <CardContent
+            orientation="horizontal"
+            sx={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
+          >
+            <Typography
+              sx={{
+                fontSize: "lg",
+                fontWeight: "lg",
+                flexGrow: 1,
+                marginLeft: "5px",
+              }}
+            >
+              {pvo.price == 0
+                ? "나눔♥"
+                : new Intl.NumberFormat("ko-KR").format(pvo.price) + "원"}
+            </Typography>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
+              >
+                <RemoveRedEyeOutlinedIcon
+                  style={{ fontSize: "14px", marginRight: "15px" }}
+                />
+                <span style={{ fontSize: "12px", marginLeft: "auto" }}>
+                  {pvo.viewqty}
+                </span>
+              </div>
+              <div
+                style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
+              >
+                <ChatBubbleOutlineOutlinedIcon
+                  style={{ fontSize: "14px", marginRight: "15px" }}
+                />
+                <span style={{ fontSize: "12px", marginLeft: "auto" }}>
+                  {pvo.chatroomqty}
+                </span>
+              </div>
+              <div
+                style={{ display: "flex", alignItems: "center", marginLeft: "0" }}
+              >
+                <FavoriteBorderOutlinedIcon
+                  style={{ fontSize: "14px", marginRight: "15px" }}
+                />
+                <span style={{ fontSize: "12px", marginLeft: "auto" }}>
+                  {pvo.likedqty}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </div>
       </Card>
     </Link>
   );
