@@ -164,7 +164,6 @@ public class PostController {
     // 조회수 증가
     @RequestMapping("/incViewqty")
     public Map<String, Object> incViewqty(int postkey) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!  " + postkey + "  !!!!!!!!!!!");
         Map<String, Object> e_map = new HashMap<>();
         e_map.put("postkey", postkey);
         e_map.put("result", p_service.incViewqty(postkey));
