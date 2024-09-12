@@ -245,7 +245,7 @@
 
 
     <!-- PostVO와 PostImgVO를 매핑하는 resultMap -->
-    <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
+    <resultMap id="post_image_map_2" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey"/>
         <result column="title" property="title"/>
         <!-- 게시글의 다른 컬럼들 -->
