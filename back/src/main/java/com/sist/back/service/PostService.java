@@ -14,6 +14,7 @@ import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
 import com.sist.back.vo.PostCountVO;
+import com.sist.back.vo.PostImgVO;
 
 @Service
 public class PostService {
@@ -108,8 +109,10 @@ public class PostService {
         return p_mapper.deletePostImg(postkey);
     }
 
-    public PostVO[] search(String sort, String category, String minPrice, String maxPrice) {
-        Map<String, String> map = new HashMap<>();
+    public PostVO[] search(String loc1, String[] loc2, String sort, String category, String minPrice, String maxPrice) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("loc1", loc1);
+        map.put("loc2", loc2);
         map.put("sort", sort);
         map.put("category", category);
         map.put("minPrice", minPrice);
@@ -140,6 +143,10 @@ public class PostService {
     // 특정 상태를 조회하는 메서드
     public List<PostVO> findByPoststatus(int poststatus) {
         return p_mapper.findByPoststatus(poststatus);
+    }
+
+    public List<PostImgVO> getPImgListByPostKey(int postkey) {
+        return p_mapper.pImg_list(postkey); // PostMapper에서 pImg_list 메서드 호출
     }
 
 }
