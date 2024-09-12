@@ -1,6 +1,7 @@
 package com.sist.back.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,4 +16,6 @@ public interface TownMapper {
     int insertTown(TownVO vo);
 
     TownVO searchTownByKey(int key);
+
+    List<String> searchTownByRegion(Map<String, Object> map);
 }

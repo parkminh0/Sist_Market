@@ -43,11 +43,15 @@ import "/public/css/profile.css";
 import Cookies from "js-cookie";
 
 export default function page() {
+  const [region2_list, setRegion2_list] = useState([]);
   const [category_list, setCategory_list] = useState([]);
   const [post_list, setPost_list] = useState([]);
 
   const router = useRouter();
 
+  // 위치 파라미터 값
+  const [loc1Param, setLoc1Param] = useState("");
+  const [loc2Param, setLoc2Param] = useState([]);
   // 카테고리 파라미터 값
   const [categoryParam, setCategoryParam] = useState(null);
   // 정렬 파라미터 값
@@ -76,21 +80,49 @@ export default function page() {
   }
   // #endregion
 
+  // #region 비동기-Region2 리스트
+  function getRegion2(loc1, loc2) {
+    axios({
+      url: "/town/postside",
+      method: "get",
+      params: {
+        key: "1",
+        value: loc1,
+        now: loc2,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion2_list(res.data.res_list);
+    });
+  }
+  // #endregion
+
   // #region useEffect-카테고리, 파라미터 초기화
   useEffect(() => {
     setCookie_region1(decodeURIComponent(Cookies.get("region1")));
     setCookie_region2(decodeURIComponent(Cookies.get("region2")));
     setCookie_region3(decodeURIComponent(Cookies.get("region3")));
+
     getCategory();
+
     let currentUrl = window.location.href;
     let currentUrlObj = new URL(currentUrl);
     let params = new URLSearchParams(currentUrlObj.search);
-    // 'category' 파라미터의 모든 값 가져오기
+    let loc1Param = params.get("loc1");
+    let loc2Param = params.getAll("loc2");
     let cateParam = params.get("category");
     let srtParam = params.get("sort");
     let minParam = params.get("minPrice");
     let maxParam = params.get("maxPrice");
 
+    if (loc1Param != null && loc1Param != "") {
+      getRegion2(loc1Param, loc2Param);
+    }
+
+    setLoc1Param(loc1Param);
+    setLoc2Param(loc2Param);
     setCategoryParam(cateParam);
     setSortParam(srtParam);
     setMinPriceParam(minParam);
@@ -100,6 +132,8 @@ export default function page() {
       url: "/adpost/search",
       method: "get",
       params: {
+        loc1: loc1Param,
+        loc2: loc2Param,
         category: cateParam,
         sort: srtParam,
         minPrice: minParam,
@@ -209,15 +243,42 @@ export default function page() {
   }, []);
   // #endregion
 
-  // #region 카테고리 선택
-  function goPage(e, key) {
-    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
-    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
+  // #region 동네 선택
+  function goLocPage(e) {
     let url = new URL(window.location.href);
     let params = new URLSearchParams(url.search);
-    // 'category' 파라미터를 제거
+
+    if (e.dataset.selected == "true") {
+      e.dataset.selected = "false";
+    } else {
+      e.dataset.selected = "true";
+    }
+
+    // URL에서 'loc2' 파라미터 제거
+    params.delete("loc2");
+
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    Array.from(document.getElementsByClassName("locationlink")).forEach(
+      (item) => {
+        if (item.dataset.selected == "true")
+          newUrl += "&loc2=" + item.dataset.loc;
+      }
+    );
+
+    // 페이지 이동
+    router.push(newUrl);
+    window.location.href = newUrl;
+  }
+  // #endregion
+
+  // #region 카테고리 선택
+  function goPage(e, key) {
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+    // URL에서 'category' 파라미터를 제거
     params.delete("category");
-    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+    // 선택된 경우 category 추가
+    // 선택 해제인 경우 유지
     let newUrl = url.pathname + "?" + params.toString() + url.hash;
     if (e.dataset.selected !== "true") {
       newUrl += "&category=" + key;
@@ -225,42 +286,34 @@ export default function page() {
 
     // 페이지 이동
     router.push(newUrl);
-
-    // 페이지가 새로 로드되지 않으면 강제로 리로드
     window.location.href = newUrl;
   }
   // #endregion
 
   // #region 정렬 선택
   function goSortPage(e, key) {
-    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
-    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
     let url = new URL(window.location.href);
     let params = new URLSearchParams(url.search);
 
     let tmp = params.get("sort");
+    // 같으면 수행 안함, 다르면 'sort' 파라미터 제거 후 추가
     if (tmp == key) {
       return;
     } else {
-      // 'sort' 파라미터를 제거
       params.delete("sort");
     }
-    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
+
     let newUrl = url.pathname + "?" + params.toString() + url.hash;
     newUrl += "&sort=" + key;
 
     // 페이지 이동
     router.push(newUrl);
-
-    // 페이지가 새로 로드되지 않으면 강제로 리로드
     window.location.href = newUrl;
   }
   // #endregion
 
   // #region 가격 선택
   function goPricePage(e, minp, maxp) {
-    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
-    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
     let url = new URL(window.location.href);
     let params = new URLSearchParams(url.search);
 
@@ -279,16 +332,12 @@ export default function page() {
 
     // 페이지 이동
     router.push(newUrl);
-
-    // 페이지가 새로 로드되지 않으면 강제로 리로드
     window.location.href = newUrl;
   }
   // #endregion
 
   // #region 가격 입력
   function goPricePageBtn(e) {
-    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
-    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
     let url = new URL(window.location.href);
     let params = new URLSearchParams(url.search);
 
@@ -315,21 +364,29 @@ export default function page() {
     let newUrl = url.pathname + "?" + params.toString() + url.hash;
     newUrl += "&minPrice=" + minp;
     newUrl += "&maxPrice=" + maxp;
+
     // 페이지 이동
     router.push(newUrl);
-    // 페이지가 새로 로드되지 않으면 강제로 리로드
     window.location.href = newUrl;
   }
   // #endregion
 
   // #region 필터 삭제
   function deleteSearch(e) {
-    // 현재 URL에서 경로와 쿼리 문자열을 가져옵니다.
-    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 조작합니다.
     let url = new URL(window.location.href);
     let params = new URLSearchParams(url.search);
     let tmp = e.dataset.deltype;
     switch (tmp) {
+      case "loc2":
+        let loc2Params = params.getAll("loc2");
+        // 모두 삭제 후 일치하지 않는 "loc2" 값들 다시 추가
+        params.delete("loc2");
+        loc2Params.forEach((loc2Value) => {
+          if (loc2Value !== e.dataset.loc2) {
+            params.append("loc2", loc2Value);
+          }
+        });
+        break;
       case "category":
         params.delete("category");
         break;
@@ -348,8 +405,6 @@ export default function page() {
 
     // 페이지 이동
     router.push(newUrl);
-
-    // 페이지가 새로 로드되지 않으면 강제로 리로드
     window.location.href = newUrl;
   }
   // #endregion
@@ -831,7 +886,9 @@ export default function page() {
                   <h3 className="_588sy4198 _588sy41y _588sy41a2">동네</h3>
                   <div className="_1d991sp2 _1h4pbgya08">
                     <div className="_1h4pbgy7wo _1h4pbgy76o _1h4pbgy7ao _1h4pbgy7c0">
-                      {cookie_region1}
+                      {cookie_region1 != null &&
+                        cookie_region1 != "undefined" &&
+                        cookie_region1}
                     </div>
                     <div className="_1h4pbgy7w8">
                       <div
@@ -842,7 +899,7 @@ export default function page() {
                         <Link
                           className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
                           data-part="radio"
-                          data-selected="true"
+                          data-selected="false"
                           data-gtm="search_filter"
                           href="#"
                           style={{ marginInlineStart: "8px" }}
@@ -857,69 +914,66 @@ export default function page() {
                           />
                           <div
                             data-part="radio-control"
-                            data-selected="true"
-                            className="_1vqth4d4"
-                          ></div>
-                          <span className="_1vqth4d5" data-part="radio-label">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              맨해튼
-                            </font>
-                          </span>
-                        </Link>
-                        <Link
-                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
-                          data-part="radio"
-                          data-selected="false"
-                          data-gtm="search_filter"
-                          href="#"
-                          style={{ marginInlineStart: "16px" }}
-                        >
-                          <input
-                            type="radio"
-                            data-part="radio-input"
-                            aria-hidden="true"
-                            tabIndex="-1"
-                            className="_1vqth4d3"
-                            value="7438"
-                          />
-                          <div
-                            data-part="radio-control"
                             data-selected="false"
                             className="_1vqth4d4"
                           ></div>
                           <span className="_1vqth4d5" data-part="radio-label">
                             <font style={{ verticalAlign: "inherit" }}>
-                              어퍼 웨스트 사이드
+                              전체
                             </font>
                           </span>
                         </Link>
-                        <Link
-                          className="_1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
-                          data-part="radio"
-                          data-selected="false"
-                          data-gtm="search_filter"
-                          href="#"
-                          style={{ marginInlineStart: "16px" }}
-                        >
-                          <input
-                            type="radio"
-                            data-part="radio-input"
-                            aria-hidden="true"
-                            tabIndex="-1"
-                            className="_1vqth4d3"
-                            value="15306"
-                          />
-                          <div
-                            data-part="radio-control"
-                            data-selected="false"
-                            className="_1vqth4d4"
-                          ></div>
-                          <span className="_1vqth4d5" data-part="radio-label">
-                            <font style={{ verticalAlign: "inherit" }}>
-                              중앙 공원
-                            </font>
-                          </span>
-                        </Link>
+                        {region2_list &&
+                          region2_list.map((region, i) => {
+                            let chk = false;
+
+                            loc2Param.forEach((loc) => {
+                              if (loc === region) {
+                                chk = true;
+                              }
+                            });
+
+                            return (
+                              <>
+                                <Link
+                                  key={i}
+                                  className="locationlink _1vqth4d2 _1h4pbgy9uw _1h4pbgy9wg _1h4pbgya0o _1h4pbgy9yw _1vqth4d1"
+                                  data-part="radio"
+                                  data-selected={chk}
+                                  data-gtm="search_filter"
+                                  data-loc={region}
+                                  href="#"
+                                  style={{ marginInlineStart: "16px" }}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    goLocPage(e.currentTarget);
+                                  }}
+                                >
+                                  <input
+                                    type="radio"
+                                    data-part="radio-input"
+                                    aria-hidden="true"
+                                    tabIndex="-1"
+                                    className="_1vqth4d3"
+                                    value="7438"
+                                  />
+                                  <div
+                                    data-part="radio-control"
+                                    data-selected={chk}
+                                    className="_1vqth4d4"
+                                  ></div>
+                                  <span
+                                    className="_1vqth4d5"
+                                    data-part="radio-label"
+                                  >
+                                    <font style={{ verticalAlign: "inherit" }}>
+                                      {region}
+                                    </font>
+                                  </span>
+                                </Link>
+                              </>
+                            );
+                          })}
                       </div>
                     </div>
                   </div>
@@ -1205,10 +1259,58 @@ export default function page() {
                 <div className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy90g">
                   <ul className="_1h4pbgy9ug _1h4pbgy9x4 _1h4pbgy9wo _1h4pbgy90g">
                     <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
-                      <font style={{ verticalAlign: "inherit" }}>
-                        {sortParam == "recent" ? "최신순" : "인기순"}
-                      </font>
+                      {sortParam == "recent" ? "최신순" : "인기순"}
                     </li>
+                    {loc2Param != null &&
+                      loc2Param.length > 0 &&
+                      loc2Param
+                        .slice()
+                        .reverse()
+                        .map((loc, i) => (
+                          <li
+                            key={i}
+                            className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68"
+                          >
+                            <font style={{ verticalAlign: "inherit" }}>
+                              {loc}
+                            </font>
+                            <span
+                              data-deltype="loc2"
+                              data-loc2={loc}
+                              onClick={(e) => deleteSearch(e.currentTarget)}
+                              className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
+                            >
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  width: "14px",
+                                  height: "14px",
+                                }}
+                                data-seed-icon="icon_close_regular"
+                                data-seed-icon-version="0.2.1"
+                              >
+                                <svg
+                                  id="icon_close_regular"
+                                  width="100%"
+                                  height="100%"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  data-karrot-ui-icon="true"
+                                >
+                                  <g>
+                                    <path
+                                      fillRule="evenodd"
+                                      clipRule="evenodd"
+                                      d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                                      fill="currentColor"
+                                    ></path>
+                                  </g>
+                                </svg>
+                              </span>
+                            </span>
+                          </li>
+                        ))}
                     {categoryParam != null && (
                       <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
                         {category_list.map((category) =>

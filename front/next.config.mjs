@@ -28,6 +28,10 @@ const nextConfig = {
         source: "/admin/board/:path*",
         destination: "http://localhost:8080/admin/board/:path*",
       },
+      {
+        source: "/town/:path*",
+        destination: "http://localhost:8080/town/:path*",
+      },
     ];
   },
 };

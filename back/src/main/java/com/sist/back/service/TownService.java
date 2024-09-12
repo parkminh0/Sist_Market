@@ -1,6 +1,7 @@
 package com.sist.back.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,15 @@ public class TownService {
 
     public TownVO searchTownByKey(int key) {
         return townMapper.searchTownByKey(key);
+    }
+
+    public String[] searchTownByRegion(Map<String, Object> map) {
+        String[] ar = null;
+        List<String> list = townMapper.searchTownByRegion(map);
+        if (list != null && list.size() > 0) {
+            ar = new String[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
     }
 }
