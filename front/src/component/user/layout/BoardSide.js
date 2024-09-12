@@ -24,7 +24,7 @@ export default function MyPageSide() {
 
   function getData() {  
     axios.get(bcUrl)
-    .then((json) => {
+    .then((json) => { 
         setBclist(json.data.bc_list);
         setCategorykey(json.data.bc_list.key);
     })
