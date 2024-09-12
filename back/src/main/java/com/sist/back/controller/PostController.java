@@ -68,21 +68,6 @@ public class PostController {
         return res;
     }
 
-    // // POST 요청을 처리하기 위해 @PostMapping 사용
-    // @PostMapping("/searchpost")
-    // public Map<String, Object> searchpost(@RequestBody Map<String, Object>
-    // searchParams) {
-    // // 요청 파라미터 확인 (디버깅용)
-    // System.out.println("Received search parameters: " + searchParams);
-
-    // // 결과를 담을 Map 객체 생성
-    // Map<String, Object> res = new HashMap<>();
-
-    // res.put("post_list", p_service.searchpost(searchParams));
-    // // 결과를 JSON 형태로 반환
-    // return res;
-    // }
-
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
         // 요청 파라미터 확인 (디버깅용)
@@ -93,6 +78,7 @@ public class PostController {
 
         // 결과를 담을 Map 객체 생성
         Map<String, Object> res = new HashMap<>();
+        List<PostVO> postList = new ArrayList<>();
 
         // "전체"인 경우 1, 2, 3, 4 상태의 게시글 조회
         if ("all".equals(poststatus)) {
@@ -380,10 +366,11 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String sort, String category, String minPrice, String maxPrice) {
+    public Map<String, Object> search(String loc1, String[] loc2, String sort, String category, String minPrice,
+            String maxPrice) {
 
         Map<String, Object> res = new HashMap<>();
-        res.put("res_search", p_service.search(sort, category, minPrice, maxPrice));
+        res.put("res_search", p_service.search(loc1, loc2, sort, category, minPrice, maxPrice));
         return res;
     }
 

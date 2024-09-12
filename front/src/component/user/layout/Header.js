@@ -13,9 +13,18 @@ import {
   Button,
   FormControl,
   TextField,
+  Paper,
+  InputBase,
+  List,
+  ListItemText,
+  ListItem,
 } from "@mui/material";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { IconButton, ListDivider, Typography } from "@mui/joy";
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
 
 // 필요한 다른 import들도 여기에 추가
 
@@ -36,46 +45,21 @@ export default function Header() {
     }
   }, [pathname]);
 
-  // let lastScrollTop = 0;
-  // window.addEventListener(
-  //   "scroll",
-  //   function () {
-  //     let st = window.pageYOffset || document.documentElement.scrollTop;
-  //     if (st > lastScrollTop) {
-  //       if (
-  //         !document
-  //           .querySelector("div._1a7kymoh")
-  //           .classList.contains("_1a7kymoi")
-  //       )
-  //         document.querySelector("div._1a7kymoh").classList.add("_1a7kymoi");
-  //     } else {
-  //       if (
-  //         document
-  //           .querySelector("div._1a7kymoh")
-  //           .classList.contains("_1a7kymoi")
-  //       )
-  //         document.querySelector("div._1a7kymoh").classList.remove("_1a7kymoi");
-  //     }
-  //     lastScrollTop = st <= 0 ? 0 : st;
-  //   },
-  //   false
-  // );
-
   // #region 위치 모달 오픈
-  function show_location_dialog() {
-    document.querySelector("div.modal-overlay").style.display = "block";
-    document.querySelector("#location_dialog").style.display = "block";
-    document.querySelector("body").classList.add("modal-open");
-  }
-  // #endregion
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [nearList, setNearList] = useState([]);
 
-  // #region 위치 모달 닫기
-  function close_location_dialog() {
-    document.querySelector("div.modal-overlay").style.display = "none";
-    document.querySelector("#location_dialog").style.display = "none";
-    document.getElementById("location_modal_input").value = "";
-    document.querySelector("body").classList.remove("modal-open"); // 스크롤 해제
-  }
+  const locationClose = () => {
+    setLocationOpen(false);
+  };
+
+  useEffect(() => {
+    if (locationOpen == true) {
+    }
+    if (locationOpen == false) {
+      setNearList([]);
+    }
+  }, [locationOpen]);
   // #endregion
 
   const [region1, setRegion1] = useState("");
@@ -83,6 +67,10 @@ export default function Header() {
   const [region3, setRegion3] = useState("");
 
   useEffect(() => {
+    setRegion1(decodeURIComponent(Cookies.get("region1")));
+    setRegion2(decodeURIComponent(Cookies.get("region2")));
+    setRegion3(decodeURIComponent(Cookies.get("region3")));
+
     const kakaoMapScript = document.createElement("script");
     kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
@@ -94,8 +82,10 @@ export default function Header() {
         if (!window.kakao.maps.services) {
           return;
         }
-
-        getLocation(); // API 로드 후에 함수 호출
+        let tmp = Cookies.get("region1");
+        if (tmp == null || tmp == "") {
+          getLocation(); // API 로드 후에 함수 호출
+        }
       });
     };
   }, []);
@@ -142,25 +132,27 @@ export default function Header() {
       return;
     }
 
+    // 현재 위치 찾기 여부
     if (e == null) return;
+
     let ul_tag = document.getElementById("location_list");
     while (ul_tag.firstChild) {
       ul_tag.removeChild(ul_tag.firstChild);
     }
 
-    let url = new URL(window.location.href);
-    let params = new URLSearchParams(url.search);
-    // 위치 파라미터 제거
-    params.delete("loc1");
-    params.delete("loc2");
-    params.delete("loc3");
+    // let url = new URL(window.location.href);
+    // let params = new URLSearchParams(url.search);
+    // // 위치 파라미터 제거
+    // params.delete("loc1");
+    // params.delete("loc2");
+    // params.delete("loc3");
     // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
-    let newUrl = url.pathname + "?" + params.toString() + url.hash;
-    if (e.dataset.selected !== "true") {
-      newUrl += "&loc1=" + region1;
-      newUrl += "&loc2=" + region2;
-      newUrl += "&loc3=" + region3;
-    }
+    // let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    // if (e.dataset.selected !== "true") {
+    //   newUrl += "&loc1=" + region1;
+    //   newUrl += "&loc2=" + region2;
+    //   newUrl += "&loc3=" + region3;
+    // }
 
     // 3. 새로운 li 요소 추가 (innerHTML 사용)
     ul_tag.innerHTML = `
@@ -188,7 +180,6 @@ export default function Header() {
       url: logout_url,
       method: "POST",
     }).then((res) => {
-      console.log(res);
       if (res.data.msg == "로그아웃") {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
@@ -205,7 +196,6 @@ export default function Header() {
   const login_url = "/user/api/login";
   const [user, setUser] = useState({});
 
-  const c_path = usePathname();
   //token 저장
   const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
@@ -220,7 +210,6 @@ export default function Header() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      //console.log(res.data.msg);
       if (res.data.cnt === 1) {
         window.location.reload(); //현재 경로 재로드
       } else {
@@ -250,7 +239,6 @@ export default function Header() {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
     signIn("kakao", { callbackUrl: "/user/kakao/login" });
-    //goController();
   };
   const [chk, setChk] = useState(true);
   useEffect(() => {
@@ -299,11 +287,6 @@ export default function Header() {
 
   return (
     <>
-      {/* <script
-        type="text/javascript"
-        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services"
-        async
-      ></script> */}
       <div className="_1a7kymo0"></div>
       <div className="_1a7kymo3 _1h4pbgya14 _1h4pbgy98o _1h4pbgy8jc _1h4pbgy9ug _1h4pbgy9xc _1h4pbgy1u0 _1h4pbgya2w">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -382,7 +365,7 @@ export default function Header() {
           >
             <div className="_1h4pbgy9u0 _1h4pbgy9ub _1h4pbgy8bk">
               <button
-                onClick={show_location_dialog}
+                onClick={() => setLocationOpen(true)}
                 className="lrcwe20 _1h4pbgy8g _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy17c _1h4pbgy7ag _1h4pbgy9yw lrcwe22 _1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy780"
                 data-gtm="gnb_location"
               >
@@ -412,7 +395,11 @@ export default function Header() {
                   </svg>
                 </span>
                 <font>
-                  <font>{region3}</font>
+                  <font>
+                    {region2 != null && region2 != "undefined"
+                      ? region2
+                      : "동네설정"}
+                  </font>
                 </font>
                 <span
                   style={{ display: "inline-flex" }}
@@ -658,9 +645,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* 모달 오버레이 */}
-      <div className="modal-overlay"></div>
-
       {/* 로그인 모달 */}
       <React.Fragment>
         <Dialog
@@ -672,7 +656,6 @@ export default function Header() {
               event.preventDefault();
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries(formData.entries());
-              console.log(formJson);
 
               // 여기에 로그인 처리를 위한 로직을 추가
               // 예: axios를 사용한 로그인 요청 보내기
@@ -853,147 +836,99 @@ export default function Header() {
       </React.Fragment>
 
       {/* 위치설정 */}
-      <div
-        style={{ pointerEvents: "auto", display: "none" }}
-        id="location_dialog"
-        role="dialog"
-        aria-describedby="radix-:R24pH2:"
-        aria-labelledby="radix-:R24pH1:"
-        data-state="open"
-        className="sboh910 sboh912 sboh915"
-        tabIndex="-1"
-      >
-        <header className="_1sapi5fb _1h4pbgy7ns _1h4pbgy7sg _1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xs _1h4pbgy8jc _1h4pbgy78o _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy3rc">
-          <div className="_1sapi5fc _1h4pbgy8jc">
-            <h3 className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy78o _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy8jc">
-              동네설정
-            </h3>
-          </div>
-          <span
-            className="_1sapi5fd _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
-            onClick={close_location_dialog}
+      <React.Fragment>
+        <Dialog
+          open={locationOpen}
+          onClose={locationClose}
+          PaperProps={
+            {
+              //component: "form",
+              //onSubmit: locationHandleSubmit,
+            }
+          }
+        >
+          <DialogTitle
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            <span
-              className="_1h4pbgy8gw _1h4pbgy8r4"
-              data-seed-icon="icon_close_regular"
-              data-seed-icon-version="0.2.1"
-              style={{ display: "inline-flex" }}
-            >
-              <svg
-                id="icon_close_regular"
-                width="100%"
-                height="100%"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                data-karrot-ui-icon="true"
+            동네 설정
+          </DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={locationClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent dividers>
+            <FormControl fullWidth margin="dense">
+              <Paper
+                component="form"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
               >
-                <g>
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
-                    fill="currentColor"
-                  ></path>
-                </g>
-              </svg>
-            </span>
-          </span>
-        </header>
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="구명으로 검색 (ex. 서초구)"
+                  onChange={(e) => setTitle(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // 기본 Enter 동작 방지
+                      //searchNotice(); // 검색 함수 호출
+                    }
+                  }}
+                />
+                <IconButton
+                  type="button"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                  //onClick={searchNotice}
+                >
+                  <SearchIcon />
+                </IconButton>
+              </Paper>
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <Button variant="outlined" startIcon={<MyLocationIcon />}>
+                현재위치로 찾기
+              </Button>
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <List
+                sx={{
+                  overflow: "auto",
+                  maxHeight: 300,
+                }}
+              >
+                {[0, 1, 2, 3, 4].map((sectionId, i) => (
+                  <>
+                    <ListItem key={`item-${sectionId}-hihi`}>
+                      <ListItemText primary="hihi" />
+                    </ListItem>
+                    <ListDivider inset="gutter" />
+                  </>
+                ))}
+              </List>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button type="submit">선택 완료</Button>
+            <Button onClick={locationClose}>취소</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+      {/*
         <div className="_1sapi5fe _1h4pbgya00 _1h4pbgy9w0 _1h4pbgy8jc _1h4pbgy8tk _1h4pbgya0o">
           <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8yo">
-            <div className="_1h4pbgy7e8 _1h4pbgy7iw _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90w">
-              <div className="_1h4pbgy7nk _1h4pbgy7s8">
-                <div className="_1h4pbgya0o">
-                  <form action=".">
-                    <div className="_1h4pbgya0o">
-                      <input
-                        id="location_modal_input"
-                        className="_1wcdkwr0 _1wcdkwr1"
-                        type="search"
-                        aria-label="Search input"
-                        placeholder="동명(읍, 면)으로 검색 (ex. 서초동)"
-                      />
-                      <button
-                        type="submit"
-                        aria-label="Search"
-                        className="_1wcdkwr5 _1h4pbgy7cg _1h4pbgy7h4 _1h4pbgy7ls _1h4pbgy7qg _1h4pbgya0w _1h4pbgy9dc _1h4pbgy9ps _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy1qe _1h4pbgy94o _1h4pbgy9yw"
-                      >
-                        <span
-                          className="_1h4pbgy8g _1h4pbgy8gg _1h4pbgy8qo"
-                          data-seed-icon="icon_search_fill"
-                          data-seed-icon-version="0.2.1"
-                          style={{ display: "inline-flex" }}
-                        >
-                          <svg
-                            id="icon_search_fill"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M10.5 2C5.80558 2 2 5.80558 2 10.5C2 15.1944 5.80558 19 10.5 19C12.4869 19 14.3145 18.3183 15.7618 17.176L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L17.176 15.7618C18.3183 14.3145 19 12.4869 19 10.5C19 5.80558 15.1944 2 10.5 2ZM4 10.5C4 6.91015 6.91015 4 10.5 4C14.0899 4 17 6.91015 17 10.5C17 14.0899 14.0899 17 10.5 17C6.91015 17 4 14.0899 4 10.5Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div className="_1h4pbgy7nk _1h4pbgy7s8">
-                <button
-                  className="seed-box-button"
-                  data-scope="button"
-                  data-part="root"
-                  id="button::r0:"
-                  type="button"
-                  data-size="small"
-                  data-variant="primaryLow"
-                  style={{ width: "100%" }}
-                  data-focus-visible=""
-                  onClick={(e) => getLocation(e.currentTarget)}
-                >
-                  <span data-part="prefix">
-                    <span
-                      data-seed-icon="icon_certification_regular"
-                      data-seed-icon-version="0.2.1"
-                      style={{ display: "inline-flex" }}
-                    >
-                      <svg
-                        id="icon_certification_regular"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
-                      >
-                        <g>
-                          <path
-                            fillRule="evenodd"
-                            clipule="evenodd"
-                            d="M12 0.75C12.4212 0.75 12.7627 1.09148 12.7627 1.51271V2.68746C17.3145 3.05521 20.9448 6.68546 21.3125 11.2373H22.4873C22.9085 11.2373 23.25 11.5788 23.25 12C23.25 12.4212 22.9085 12.7627 22.4873 12.7627H21.3125C20.9448 17.3145 17.3145 20.9448 12.7627 21.3125V22.4873C12.7627 22.9085 12.4212 23.25 12 23.25C11.5788 23.25 11.2373 22.9085 11.2373 22.4873V21.3125C6.68546 20.9448 3.05521 17.3145 2.68746 12.7627H1.51271C1.09148 12.7627 0.75 12.4212 0.75 12C0.75 11.5788 1.09148 11.2373 1.51271 11.2373H2.68746C3.05521 6.68546 6.68546 3.05521 11.2373 2.68746V1.51271C11.2373 1.09148 11.5788 0.75 12 0.75ZM19.7811 11.2373H18.6737C18.2525 11.2373 17.911 11.5788 17.911 12C17.911 12.4212 18.2525 12.7627 18.6737 12.7627H19.7811C19.422 16.4715 16.4715 19.422 12.7627 19.7811V18.6737C12.7627 18.2525 12.4212 17.911 12 17.911C11.5788 17.911 11.2373 18.2525 11.2373 18.6737V19.7811C7.52852 19.422 4.57803 16.4715 4.21893 12.7627H5.32627C5.74751 12.7627 6.08898 12.4212 6.08898 12C6.08898 11.5788 5.74751 11.2373 5.32627 11.2373H4.21893C4.57802 7.52852 7.52852 4.57802 11.2373 4.21893V5.32627C11.2373 5.74751 11.5788 6.08898 12 6.08898C12.4212 6.08898 12.7627 5.74751 12.7627 5.32627V4.21893C16.4715 4.57802 19.422 7.52852 19.7811 11.2373Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
-                  </span>
-                  <span className="seed-semantic-typography-label3-bold">
-                    현재위치로 찾기
-                  </span>
-                </button>
-              </div>
-            </div>
             <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgya00">
               <div className="_1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy7ds _1h4pbgy7ig">
                 <span className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
@@ -1072,7 +1007,7 @@ export default function Header() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

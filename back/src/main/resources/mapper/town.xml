@@ -34,4 +34,36 @@
         0
       )
     </insert>
+
+    <select id="searchTownByRegion" resultType="String" parameterType="map">
+      SELECT DISTINCT
+              region2
+        FROM `town`
+        WHERE isdeleted = 0
+          AND region1 = #{value}
+        ORDER BY 
+          CASE 
+            <foreach item="item" collection="now" separator=" " close="">
+              WHEN region2 = #{item} THEN 0
+            </foreach>
+            ELSE 1
+          END, 
+          region2
+    </select>
+
+    <!-- <select id="searchNearRegion" resultType="String" parameterType="map">
+      SELECT DISTINCT
+        region2
+      FROM `town`
+      WHERE isdeleted = 0
+        AND region1 = #{value}
+      ORDER BY 
+        CASE 
+          <foreach item="item" collection="now" separator=" " close="">
+            WHEN region2 = #{item} THEN 0
+          </foreach>
+          ELSE 1
+        END, 
+        region2
+    </select> -->
 </mapper>
