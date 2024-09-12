@@ -233,7 +233,7 @@ export default function Page() {
         getLocation(res.data.pvo);
 
       if (param.get("edit") != null) {
-        editPost(res.data.pvo.userkey);
+        editPost(res.data.pvo.userkey,res.data.pvo.poststatus);
       }
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
@@ -309,10 +309,12 @@ export default function Page() {
   }
   // #endregion
 
-  function editPost(userkey) {
+  function editPost(userkey,poststatus) {
     if (userkey != Cookies.get("userkey")) {
       alert("수정 권한이 없습니다.");
-    } else {
+    } else if(poststatus==3){
+      alert("구매완료된 게시글은 수정하실 수 없습니다.");
+    }else {
       setOpen(true);
     }
   }
@@ -710,7 +712,7 @@ export default function Page() {
                 {canEdit ? (
                   <Button
                     onClick={() => {
-                      editPost(postVO.userkey);
+                      editPost(postVO.userkey,postVO.poststatus);
                     }}
                     color="success"
                     variant="contained"
@@ -803,17 +805,72 @@ export default function Page() {
             </Grid>
           </div>
         </section>
-        <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
+        <section
+          className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb"
+          style={{minWidth:450}}
+          >
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
               관련상품
             </div>
+            <Link
+                className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
+                href={`/post`}
+              >
+                <span
+                  data-gtm="buy_sell_detail_user_article_see_all"
+                  className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
+                >
+                  더보기
+                </span>
+                <span className="_1h4pbgy9ug _1h4pbgy9wo">
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      width: "16px",
+                      height: "16px",
+                      marginLeft: 'auto'
+                    }}
+                    className="_1h4pbgyu0"
+                    data-seed-icon="icon_chevron_right_fill"
+                    data-seed-icon-version="0.2.1"
+                  >
+                    <svg
+                      id="icon_chevron_right_fill"
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-karrot-ui-icon="true"
+                    >
+                      <g>
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                          fill="currentColor"
+                        ></path>
+                      </g>
+                    </svg>
+                  </span>
+                </span>
+              </Link>
           </header>
-          <div data-gtm="buy_sell_detail_recommended_article">
-            <Grid container spacing={2}>
+          <div
+            data-gtm="buy_sell_detail_recommended_article"
+            style={{
+              width: '100%',
+              minWidth: '450px'
+            }}
+          >
+            <Grid container sx={{width:'100%', minWidth:450}}>
               {popCate.length > 0
-                ? popCate.map((pcvo, index) => {
-                    return <PopCateList2 key={index} pvo={pcvo} />;
+                ? popCate.map((pcvo, index) => {return(
+                  <Grid item sx={{minWidth:"20%",maxWidth:"50%"}}>
+                     <PopCateList2 key={index} pvo={pcvo} />
+                  </Grid>
+                    )
                   })
                 : ""}
             </Grid>
