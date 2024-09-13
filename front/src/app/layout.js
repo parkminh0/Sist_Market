@@ -8,20 +8,22 @@ import Header from "@/component/user/layout/Header";
 import Footer from "@/component/user/layout/Footer";
 import { usePathname } from "next/navigation";
 import { SessionProvider } from "next-auth/react";
+import FooterBanner from "@/component/user/layout/FooterBanner";
 const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({ children ,session}) {
+export default function RootLayout({ children, session }) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith("/admin");
 
   return (
     <html lang="en">
       <SessionProvider session={session}>
-      <body className={inter.className}>
-        {!isAdminRoute && <Header />}
-        {children}
-        {!isAdminRoute && <Footer />} 
-      </body>
+        <body className={inter.className}>
+          {!isAdminRoute && <Header />}
+          {children}
+          {!isAdminRoute && <FooterBanner />}
+          {!isAdminRoute && <Footer />}
+        </body>
       </SessionProvider>
     </html>
   );
