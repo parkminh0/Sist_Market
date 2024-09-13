@@ -1,7 +1,6 @@
 "use client";
 
 import Button from "@mui/joy/Button";
-import { Button as mButton } from "@mui/material/Button";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
@@ -11,7 +10,6 @@ import IconButton from "@mui/joy/IconButton";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import {
   Backdrop,
@@ -263,41 +261,54 @@ export default function page() {
   // #endregion
 
   // #region 내 물건 팔기 버튼
-  // useEffect(() => {
-  //   const container = document.querySelector(
-  //     "div._1h4pbgy8jc._1h4pbgy9ug._1h4pbgy9vs"
-  //   );
-  //   const button = document.querySelector(".write-button");
+  useEffect(() => {
+    const container = document.getElementById("search_article");
+    const button = document.querySelector(".write-button");
 
-  //   const handleScroll = () => {
-  //     const containerRect = container.getBoundingClientRect();
-  //     const buttonHeight = button.offsetHeight;
+    const handleScroll = () => {
+      const containerRect = container.getBoundingClientRect();
+      const buttonHeight = button.offsetHeight;
 
-  //     if (containerRect.bottom < window.innerHeight + buttonHeight) {
-  //       button.style.position = "absolute";
-  //       button.style.bottom = "20px";
-  //       button.style.right = "20px";
-  //     } else if (containerRect.top < window.innerHeight) {
-  //       button.style.position = "fixed";
-  //       button.style.bottom = "20px";
-  //       button.style.right = `${
-  //         window.innerWidth - containerRect.right + 20
-  //       }px`;
-  //     } else {
-  //       button.style.position = "absolute";
-  //       button.style.bottom = "20px";
-  //       button.style.right = "20px";
-  //     }
-  //   };
+      // 1. 컨테이너가 화면에 전혀 보이지 않을 때 버튼을 숨김
+      if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
+        button.style.display = "none"; // 버튼 숨김
+      }
+      // 2. 컨테이너가 화면에 있을 때 버튼을 보이게 함
+      else {
+        button.style.display = "block"; // 버튼 표시
 
-  //   handleScroll();
+        // 컨테이너의 bottom이 화면의 하단보다 위로 올라갔을 때
+        if (containerRect.bottom <= buttonHeight + 20) {
+          // 컨테이너 하단에 고정
+          button.style.position = "absolute";
+          button.style.bottom = "20px";
+          button.style.right = "20px";
+        }
+        // 컨테이너가 화면에 보일 때
+        else if (containerRect.top <= window.innerHeight) {
+          // 버튼이 화면의 오른쪽 하단에 고정
+          button.style.position = "fixed";
+          button.style.bottom = "20px";
+          button.style.right = `${
+            window.innerWidth - containerRect.right + 20
+          }px`;
+        } else {
+          // 기본 absolute 위치
+          button.style.position = "absolute";
+          button.style.bottom = "20px";
+          button.style.right = "20px";
+        }
+      }
+    };
 
-  //   document.addEventListener("scroll", handleScroll);
+    handleScroll();
 
-  //   return () => {
-  //     document.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, []);
+    document.addEventListener("scroll", handleScroll);
+
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   // #endregion
 
   // #region 동네 선택
@@ -329,7 +340,7 @@ export default function page() {
         }
       );
 
-      if (tmpCnt == region2_list.length) {
+      if (tmpCnt == region2_list.length || tmpCnt == 0) {
         newUrl += "&loc2=all";
       } else {
         newUrl += tmpNewUrl;
@@ -1391,41 +1402,43 @@ export default function page() {
                           className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68"
                         >
                           {loc == "all" ? `${cookie_region1} 전체` : loc}
-                          <span
-                            data-deltype="loc2"
-                            data-loc2={loc}
-                            onClick={(e) => deleteSearch(e.currentTarget)}
-                            className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
-                          >
+                          {loc != "all" && (
                             <span
-                              style={{
-                                display: "inline-flex",
-                                width: "14px",
-                                height: "14px",
-                              }}
-                              data-seed-icon="icon_close_regular"
-                              data-seed-icon-version="0.2.1"
+                              data-deltype="loc2"
+                              data-loc2={loc}
+                              onClick={(e) => deleteSearch(e.currentTarget)}
+                              className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
                             >
-                              <svg
-                                id="icon_close_regular"
-                                width="100%"
-                                height="100%"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                data-karrot-ui-icon="true"
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  width: "14px",
+                                  height: "14px",
+                                }}
+                                data-seed-icon="icon_close_regular"
+                                data-seed-icon-version="0.2.1"
                               >
-                                <g>
-                                  <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
-                                    fill="currentColor"
-                                  ></path>
-                                </g>
-                              </svg>
+                                <svg
+                                  id="icon_close_regular"
+                                  width="100%"
+                                  height="100%"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  data-karrot-ui-icon="true"
+                                >
+                                  <g>
+                                    <path
+                                      fillRule="evenodd"
+                                      clipRule="evenodd"
+                                      d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                                      fill="currentColor"
+                                    ></path>
+                                  </g>
+                                </svg>
+                              </span>
                             </span>
-                          </span>
+                          )}
                         </li>
                       ))}
                     {categoryParam != null && (
@@ -1535,13 +1548,14 @@ export default function page() {
                 </div>
               </div>
               {/* 게시글 진열 */}
-              {post_list ? (
-                <>
-                  <div
-                    data-gtm="search_article"
-                    className="_13tpfox0 _1h4pbgy9vc _1h4pbgy8jc _13tpfox1"
-                    style={{ minWidth: "0", position: "relative" }}
-                  >
+              <div
+                data-gtm="search_article"
+                id="search_article"
+                className="_13tpfox0 _1h4pbgy9vc _1h4pbgy8jc _13tpfox1"
+                style={{ minWidth: "0", position: "relative" }}
+              >
+                {post_list ? (
+                  <>
                     {post_list.map((post, i) => (
                       <Link
                         key={i}
@@ -1724,76 +1738,73 @@ export default function page() {
                               <span
                                 style={{ fontSize: "12px", marginLeft: "0" }}
                               >
-                                10
+                                {post.likedqty}
                               </span>
                             </div>
                           </CardContent>
                         </Card>
                       </Link>
                     ))}
-                    <Button
-                      className="write-button"
-                      style={{
-                        position: "fixed",
-                        bottom: "20px",
-                        right: "20px",
-                        zIndex: "1000",
-                        color: "white",
-                        backgroundColor: "#ff6f0f",
-                      }}
-                      variant="contained"
-                      starticon={<AddIcon />}
-                      onClick={() => {
-                        if (
-                          Cookies.get("userkey") == null ||
-                          Cookies.get("userkey") == ""
-                        ) {
-                          alert("로그인 후 이용해주세요.");
-                          return;
-                        }
-                        setOpen(true);
-                      }}
-                    >
-                      내 물건 팔기
-                    </Button>
-                  </div>
-                  <div
-                    style={{ display: viewMore ? "block" : "none" }} // viewMore가 t
-                    data-gtm="search_show_more_articles"
-                    className="_1h4pbgy7y8"
-                  >
-                    <mButton
-                      variant="contained"
-                      style={{ width: "100%" }}
-                      className="seed-box-button"
-                      data-size="medium"
-                      data-variant="secondary"
-                      onClick={showMorePost}
-                    >
-                      더보기
-                    </mButton>
-                  </div>
-                </>
-              ) : (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100vh",
-                  }}
-                >
+                  </>
+                ) : (
                   <div
                     style={{
-                      fontSize: "1.5rem",
-                      lineHeight: "1.2",
-                      transform: "translateY(-200px)",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "100vh",
                     }}
                   >
-                    게시글이 없습니다.
+                    <div
+                      style={{
+                        fontSize: "1.5rem",
+                        lineHeight: "1.2",
+                        transform: "translateY(-200px)",
+                      }}
+                    >
+                      게시글이 없습니다.
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              <Button
+                className="write-button"
+                style={{
+                  color: "white",
+                  backgroundColor: "#ff6f0f",
+                  zIndex: "1000",
+                }}
+                variant="contained"
+                starticon={<AddIcon />}
+                onClick={() => {
+                  if (
+                    Cookies.get("userkey") == null ||
+                    Cookies.get("userkey") == ""
+                  ) {
+                    alert("로그인 후 이용해주세요.");
+                    return;
+                  }
+                  setOpen(true);
+                }}
+              >
+                내 물건 팔기
+              </Button>
+              <div
+                style={{ display: viewMore ? "block" : "none" }} // viewMore가 t
+                data-gtm="search_show_more_articles"
+                className="_1h4pbgy7y8"
+              >
+                <Button
+                  variant="contained"
+                  style={{ width: "100%" }}
+                  className="seed-box-button"
+                  data-size="medium"
+                  data-variant="secondary"
+                  onClick={showMorePost}
+                >
+                  더보기
+                </Button>
+              </div>
             </div>
           </section>
         </div>

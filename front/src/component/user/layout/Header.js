@@ -5,6 +5,7 @@ import HeaderItem from "./HeaderItem";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import React from "react";
+import PlaceIcon from "@mui/icons-material/Place";
 import {
   Dialog,
   DialogTitle,
@@ -18,6 +19,9 @@ import {
   List,
   ListItemText,
   ListItem,
+  Menu,
+  MenuItem,
+  Divider,
 } from "@mui/material";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -25,13 +29,59 @@ import { IconButton, ListDivider, Typography } from "@mui/joy";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { styled, alpha } from "@mui/material/styles";
 
-// 필요한 다른 import들도 여기에 추가
+// #region 민호-동네설정메뉴
+const StyledMenu = styled((props) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "right",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "right",
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  "& .MuiPaper-root": {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    color: "rgb(55, 65, 81)",
+    boxShadow:
+      "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+    "& .MuiMenu-list": {
+      padding: "4px 0",
+    },
+    "& .MuiMenuItem-root": {
+      "& .MuiSvgIcon-root": {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      "&:active": {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity
+        ),
+      },
+    },
+    ...theme.applyStyles("dark", {
+      color: theme.palette.grey[300],
+    }),
+  },
+}));
+// #endregion
 
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession(); //nextAtuh파일에서 nickname을 세션에 저장해서 받아옴
 
+  // #region 민호-현재 링크 표시
   useEffect(() => {
     const currentPath = pathname || "/";
     const activeLink = document.querySelector(`a[data-href="${currentPath}"]`);
@@ -44,33 +94,77 @@ export default function Header() {
       activeLink.classList.add("_1nvz3xsp");
     }
   }, [pathname]);
+  // #endregion
 
-  // #region 위치 모달 오픈
+  // #region 민호-동네설정 메뉴
+  const [anchorEl, setAnchorEl] = useState(null);
+  const locationMenuOpen = Boolean(anchorEl);
+  const locationMenuClick = (event) => {
+    if (Cookies.get("userkey") == null || Cookies.get("userkey") == undefined) {
+      alert("로그인 후 이용 가능합니다.");
+      return;
+    }
+
+    if (region1 == null || region1 == "") {
+      alert("위치 기반 서비스를 허용해주세요.");
+      return;
+    }
+    setAnchorEl(event.currentTarget);
+  };
+
+  const locationMenuClose = () => {
+    setAnchorEl(null);
+  };
+  // #endregion
+
+  // #region 민호-동네설정 모달
   const [locationOpen, setLocationOpen] = useState(false);
-  const [nearList, setNearList] = useState([]);
 
   const locationClose = () => {
     setLocationOpen(false);
   };
-
-  useEffect(() => {
-    if (locationOpen == true) {
-    }
-    if (locationOpen == false) {
-      setNearList([]);
-    }
-  }, [locationOpen]);
   // #endregion
 
+  // #region 민호-주소
   const [region1, setRegion1] = useState("");
   const [region2, setRegion2] = useState("");
   const [region3, setRegion3] = useState("");
+
+  // 사용자 주소
+  const [userAddress, setUserAddress] = useState([]);
 
   useEffect(() => {
     setRegion1(decodeURIComponent(Cookies.get("region1")));
     setRegion2(decodeURIComponent(Cookies.get("region2")));
     setRegion3(decodeURIComponent(Cookies.get("region3")));
 
+    // 로그인 되어있는 경우 사용자 주소 가져오기
+    let userkey = decodeURIComponent(Cookies.get("userkey"));
+    if (userkey != null && userkey != "") {
+      axios({
+        url: "/address/getAddress",
+        method: "post",
+        params: {
+          userkey: userkey,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        setUserAddress(res.data.getAddress);
+        console.log(res.data.getAddress);
+      });
+
+      return;
+    }
+    let tmp = Cookies.get("region1");
+    // 로그인 안돼있으면서 위치정보 안받아온 경우 받아오기
+    if ((userkey == null || userkey == "") && (tmp == null || tmp == "")) {
+      getLocation(); // API 로드 후에 함수 호출
+    }
+  }, []);
+
+  function getLocation(e) {
     const kakaoMapScript = document.createElement("script");
     kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
@@ -82,87 +176,59 @@ export default function Header() {
         if (!window.kakao.maps.services) {
           return;
         }
-        let tmp = Cookies.get("region1");
-        if (tmp == null || tmp == "") {
-          getLocation(); // API 로드 후에 함수 호출
+        // Geolocation API 지원 여부 확인
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // 주소-좌표 변환 객체를 생성합니다
+            const geocoder = new window.kakao.maps.services.Geocoder();
+            const coord = new kakao.maps.LatLng(latitude, longitude);
+
+            const callback = (result, status) => {
+              if (status === window.kakao.maps.services.Status.OK) {
+                setRegion1(result[0].address.region_1depth_name);
+                setRegion2(result[0].address.region_2depth_name);
+                setRegion3(result[0].address.region_3depth_name);
+                Cookies.set(
+                  "region1",
+                  encodeURIComponent(result[0].address.region_1depth_name)
+                );
+                Cookies.set(
+                  "region2",
+                  encodeURIComponent(result[0].address.region_2depth_name)
+                );
+                Cookies.set(
+                  "region3",
+                  encodeURIComponent(result[0].address.region_3depth_name)
+                );
+                Cookies.set("latitude", latitude);
+                Cookies.set("longitude", longitude);
+              }
+            };
+
+            geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+          });
+        } else {
+          alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+          return;
         }
       });
     };
-  }, []);
-
-  function getLocation(e) {
-    // Geolocation API 지원 여부 확인
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        // 주소-좌표 변환 객체를 생성합니다
-        const geocoder = new window.kakao.maps.services.Geocoder();
-        const coord = new kakao.maps.LatLng(latitude, longitude);
-
-        const callback = (result, status) => {
-          if (status === window.kakao.maps.services.Status.OK) {
-            //console.log("결과", result);
-
-            setRegion1(result[0].address.region_1depth_name);
-            setRegion2(result[0].address.region_2depth_name);
-            setRegion3(result[0].address.region_3depth_name);
-            Cookies.set(
-              "region1",
-              encodeURIComponent(result[0].address.region_1depth_name)
-            );
-            Cookies.set(
-              "region2",
-              encodeURIComponent(result[0].address.region_2depth_name)
-            );
-            Cookies.set(
-              "region3",
-              encodeURIComponent(result[0].address.region_3depth_name)
-            );
-            Cookies.set("latitude", latitude);
-            Cookies.set("longitude", longitude);
-          }
-        };
-
-        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
-      });
-    } else {
-      alert("브라우저가 위치 서비스를 지원하지 않습니다.");
-      return;
-    }
-
-    // 현재 위치 찾기 여부
-    if (e == null) return;
-
-    let ul_tag = document.getElementById("location_list");
-    while (ul_tag.firstChild) {
-      ul_tag.removeChild(ul_tag.firstChild);
-    }
-
-    // let url = new URL(window.location.href);
-    // let params = new URLSearchParams(url.search);
-    // // 위치 파라미터 제거
-    // params.delete("loc1");
-    // params.delete("loc2");
-    // params.delete("loc3");
-    // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
-    // let newUrl = url.pathname + "?" + params.toString() + url.hash;
-    // if (e.dataset.selected !== "true") {
-    //   newUrl += "&loc1=" + region1;
-    //   newUrl += "&loc2=" + region2;
-    //   newUrl += "&loc3=" + region3;
-    // }
-
-    // 3. 새로운 li 요소 추가 (innerHTML 사용)
-    ul_tag.innerHTML = `
-                        <li class="_1h4pbgy3q8">
-                          <a class="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc" href="${newUrl}">
-                            ${region3}
-                          </a>
-                        </li>
-                      `;
   }
+  // #endregion
+
+  // #region 지은-로그인관련
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   const router = useRouter();
 
@@ -274,16 +340,7 @@ export default function Header() {
       setChk(false);
     }
   };
-  // 로그인 모달 부분
-  const [open, setOpen] = useState(false);
-  // 로그인 모달 열기
-  const handleClose = () => {
-    setOpen(false);
-  };
-  // 로그인 모달 닫기
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  // #endregion
 
   return (
     <>
@@ -364,69 +421,55 @@ export default function Header() {
             data-expanded="true"
           >
             <div className="_1h4pbgy9u0 _1h4pbgy9ub _1h4pbgy8bk">
-              <button
-                onClick={() => setLocationOpen(true)}
+              <Button
+                id="demo-customized-button"
                 className="lrcwe20 _1h4pbgy8g _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy17c _1h4pbgy7ag _1h4pbgy9yw lrcwe22 _1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy780"
                 data-gtm="gnb_location"
+                style={{
+                  borderRadius: "21px",
+                  backgroundColor: "var(--seed-scale-color-gray-100)",
+                  border: "none",
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                }}
+                aria-controls={
+                  locationMenuOpen ? "demo-customized-menu" : undefined
+                }
+                aria-haspopup="true"
+                aria-expanded={locationMenuOpen ? "true" : undefined}
+                variant="outlined"
+                disableElevation
+                onClick={locationMenuClick}
+                startIcon={<PlaceIcon />}
+                endIcon={<KeyboardArrowDownIcon />}
               >
-                <span
-                  style={{ display: "inline-flex" }}
-                  className="_1h4pbgy8gg _1h4pbgy8qo _1h4pbgy8ao"
-                  data-seed-icon="icon_location_fill"
-                  data-seed-icon-version="0.2.1"
-                >
-                  <svg
-                    id="icon_location_fill"
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    data-karrot-ui-icon="true"
-                  >
-                    <g>
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M2.19995 10.5798C2.19995 5.16739 6.58756 0.779785 12 0.779785C17.4123 0.779785 21.8 5.16739 21.8 10.5798C21.8 13.9799 19.5985 17.1391 17.4217 19.3764C16.3174 20.5113 15.1817 21.4481 14.2536 22.1055C13.7903 22.4337 13.3694 22.6988 13.0225 22.8857C12.8498 22.9788 12.6843 23.0584 12.5339 23.1169C12.4059 23.1666 12.2081 23.2342 12 23.2342C11.7918 23.2342 11.594 23.1666 11.466 23.1169C11.3156 23.0584 11.1501 22.9788 10.9774 22.8857C10.6305 22.6988 10.2096 22.4337 9.74627 22.1055C8.81823 21.4481 7.68247 20.5113 6.57819 19.3764C4.40138 17.1391 2.19995 13.9799 2.19995 10.5798ZM8.38442 10.1041C8.38442 8.10725 10.0031 6.48852 12 6.48852C13.9968 6.48852 15.6155 8.10725 15.6155 10.1041C15.6155 12.1009 13.9968 13.7196 12 13.7196C10.0031 13.7196 8.38442 12.1009 8.38442 10.1041Z"
-                        fill="currentColor"
-                      ></path>
-                    </g>
-                  </svg>
-                </span>
-                <font>
-                  <font>
-                    {region2 != null && region2 != "undefined"
-                      ? region2
-                      : "동네설정"}
-                  </font>
-                </font>
-                <span
-                  style={{ display: "inline-flex" }}
-                  className="_1h4pbgy8g8 _1h4pbgy8qg _1h4pbgy85s"
-                  data-seed-icon="icon_expand_more_fill"
-                  data-seed-icon-version="0.2.1"
-                >
-                  <svg
-                    id="icon_expand_more_fill"
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    data-karrot-ui-icon="true"
-                  >
-                    <g>
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M2.79289 7.29289C3.18342 6.90237 3.81658 6.90237 4.20711 7.29289L12 15.0858L19.7929 7.29289C20.1834 6.90237 20.8166 6.90237 21.2071 7.29289C21.5976 7.68342 21.5976 8.31658 21.2071 8.70711L12.7071 17.2071C12.3166 17.5976 11.6834 17.5976 11.2929 17.2071L2.79289 8.70711C2.40237 8.31658 2.40237 7.68342 2.79289 7.29289Z"
-                        fill="currentColor"
-                      ></path>
-                    </g>
-                  </svg>
-                </span>
-              </button>
+                {userAddress != null &&
+                userAddress != "undefined" &&
+                userAddress.length > 0
+                  ? userAddress[0].tvo.region3
+                  : "동네설정"}
+              </Button>
+              <StyledMenu
+                id="demo-customized-menu"
+                MenuListProps={{
+                  "aria-labelledby": "demo-customized-button",
+                }}
+                anchorEl={anchorEl}
+                open={locationMenuOpen}
+                onClose={locationMenuClose}
+              >
+                <MenuItem onClick={locationMenuClose} disableRipple>
+                  Edit
+                </MenuItem>
+                <MenuItem onClick={locationMenuClose} disableRipple>
+                  Duplicate
+                </MenuItem>
+                <Divider sx={{ my: 0.5 }} />
+                <MenuItem onClick={() => setLocationOpen(true)} disableRipple>
+                  내 동네 설정
+                </MenuItem>
+              </StyledMenu>
             </div>
             <div className="_1h4pbgy9w0 _1h4pbgy8jc _1h4pbgya2z">
               <form action="/us/buy-sell/all/">
@@ -926,88 +969,6 @@ export default function Header() {
           </DialogActions>
         </Dialog>
       </React.Fragment>
-      {/*
-        <div className="_1sapi5fe _1h4pbgya00 _1h4pbgy9w0 _1h4pbgy8jc _1h4pbgy8tk _1h4pbgya0o">
-          <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8yo">
-            <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgya00">
-              <div className="_1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy7ds _1h4pbgy7ig">
-                <span className="_1h4pbgy79s _1h4pbgy7ag _1h4pbgy7c8">
-                  근처 동네
-                </span>
-              </div>
-              <ul
-                id="location_list"
-                className="_1h4pbgy7nk _1h4pbgy7s8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy7ko _1h4pbgy8og"
-              >
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=manhattan-7426"
-                  >
-                    Manhattan
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=bronx-7488"
-                  >
-                    Bronx
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=queens-7490"
-                  >
-                    Queens
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=brooklyn-7498"
-                  >
-                    Brooklyn
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=hudson-county-7722"
-                  >
-                    Hudson County
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=essex-county-14529"
-                  >
-                    Essex County
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=bergen-county-14538"
-                  >
-                    Bergen County
-                  </a>
-                </li>
-                <li className="_1h4pbgy3q8">
-                  <a
-                    className="_1h4pbgy7e0 _1h4pbgy7io _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy8jc"
-                    href="/about/?in=cook-county-15668"
-                  >
-                    Cook County
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 }

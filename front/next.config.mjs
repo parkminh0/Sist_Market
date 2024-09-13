@@ -32,6 +32,10 @@ const nextConfig = {
         source: "/town/:path*",
         destination: "http://localhost:8080/town/:path*",
       },
+      {
+        source: "/address/:path*",
+        destination: "http://localhost:8080/address/:path*",
+      },
     ];
   },
 };
