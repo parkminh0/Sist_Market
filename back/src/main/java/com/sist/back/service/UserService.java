@@ -112,6 +112,42 @@ public class UserService {
         return ar;
     }
 
+    public int F_Check(String me, String you){
+        return mapper.F_Check(me, you);
+    }
+    public int N_Check(String me, String you){
+        return mapper.N_Check(me, you);
+    }
+    public int B_Check(String me, String you){
+        return mapper.B_Check(me, you);
+    }
+
+    public int likeN(String me, String you){
+        return mapper.likeN(me, you);
+    }
+    public int likeI(String me, String you){
+        return mapper.likeI(me, you);
+    }
+    public int noseeN(String me, String you){
+        return mapper.noseeN(me, you);
+    }
+    public int noseeI(String me, String you){
+        return mapper.noseeI(me, you);
+    }
+    public int blockN(String me, String you){
+        return mapper.blockN(me, you);
+    }
+    public int blockI(String me, String you){
+        return mapper.blockI(me, you);
+    }
+
+
+
+
+
+
+
+
     public userVO getUserForAdmin(String userkey) {
         return mapper.getUserForAdmin(userkey);
     }
