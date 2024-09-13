@@ -18,6 +18,7 @@ import {
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import "/public/css/post_detail.css";
+import "/public/css/popcatelist.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useTheme } from "@emotion/react";
@@ -529,7 +530,7 @@ export default function Page() {
                       <div className="_1ry6htkj">
                         <Link
                           data-gtm="buy_sell_profile_nickname"
-                          href="/users/brit-xwmmep6mj7j4/?in=manhattan-7426"
+                          href={`/userPage?userkey=${userVO.userkey}`}
                           className="_1gb2dg21"
                         >
                           <span className="_1ry6htkk _1ry6htkl _1ry6htkq _1ry6htkv _1ry6htkz">
@@ -793,8 +794,9 @@ export default function Page() {
               ""
             )}
           </header>
-          <div data-gtm="buy_sell_detail_user_article">
-            <Grid container spacing={2}>
+          <div 
+            className="PopCateGrid"
+            >
               {cellList.length > 0
                 ? cellList.map((clvo, index) => {
                     if (index < 5) {
@@ -802,7 +804,6 @@ export default function Page() {
                     }
                   })
                 : ""}
-            </Grid>
           </div>
         </section>
         <section
@@ -857,23 +858,15 @@ export default function Page() {
                 </span>
               </Link>
           </header>
-          <div
-            data-gtm="buy_sell_detail_recommended_article"
-            style={{
-              width: '100%',
-              minWidth: '450px'
-            }}
+          <div 
+            className="PopCateGrid"
           >
-            <Grid container sx={{width:'100%', minWidth:450}}>
               {popCate.length > 0
                 ? popCate.map((pcvo, index) => {return(
-                  <Grid item sx={{minWidth:"20%",maxWidth:"50%"}}>
                      <PopCateList2 key={index} pvo={pcvo} />
-                  </Grid>
                     )
                   })
                 : ""}
-            </Grid>
           </div>
         </section>
       </article>

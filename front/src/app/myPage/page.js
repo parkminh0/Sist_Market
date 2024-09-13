@@ -63,6 +63,10 @@ export default function page() {
   }
 
   useEffect(() => {
+    if(Cookies.get("userkey")==undefined){
+      alert("로그인이 필요한 서비스입니다.");
+      window.location.replace("/");
+    }
     getData();
   }, []);
 

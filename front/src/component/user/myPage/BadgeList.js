@@ -6,7 +6,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export default function BadgeList({ onBadgeCountChange }) {
+export default function BadgeList({ userKey, onBadgeCountChange }) {
     const ALL_URL = "/user/badge/getAllBadge";
     const API_URL = "/user/badge/getBadge";
     const REP_URL = "/user/badge/representBadge";
@@ -18,7 +18,7 @@ export default function BadgeList({ onBadgeCountChange }) {
     const [selectedBadge, setSelectedBadge] = useState('');
     const [badgekey, setBadgekey] = useState('');
     const [open, setOpen] = useState('');
-    const userkey = Cookies.get("userkey");
+    const userkey = userKey;
 
     useEffect(() => {
         getAllData();
