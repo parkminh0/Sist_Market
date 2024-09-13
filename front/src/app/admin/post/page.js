@@ -33,6 +33,11 @@ export default function Page() {
         console.error("There was an error with the search request:", error);
       });
   }
+  // 검색 조건 폼 초기화
+  function clearAll() {
+    let frm = document.getElementById("frmSearch");
+    frm.reset(); // 폼의 모든 입력 필드를 기본값으로 초기화
+  }
 
   useEffect(() => {
     callData();
@@ -86,7 +91,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                        개수
+                        ${prod.cntAll}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -103,7 +108,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-sdodfs">
-                        개수
+                        ${prod.sellingAll}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -120,7 +125,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                        개수
+                        ${prod.soldoutAll}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -137,7 +142,7 @@ export default function Page() {
                     </div>
                     <div className="MuiStack-root css-1h3carr">
                       <a className="MuiTypography-root MuiTypography-custom.h6BH MuiLink-root MuiLink-underlineAlways css-13xs5pa">
-                        개수
+                        ${prod.unsellingAll}
                       </a>
                       <span className="MuiTypography-root MuiTypography-custom.body1H css-grko2a">
                         개
@@ -381,28 +386,32 @@ export default function Page() {
                 <tr>
                   <th scope="row">일자 검색</th>
                   <td colSpan="3">
-                    <ul className="price" id="price">
+                    <ul className="search_dtm" id="search_dtm">
                       <li>
-                        <select className="price" name="price" id="price">
-                          <option value="price">게시글 생성일</option>
-                          <option value="last_price">게시글 수정일</option>
-                          <option value="last_price">게시글 삭제일</option>
-                          <option value="last_price">끌어올리기 일자</option>
-                          <option value="last_price">거래완료 일자</option>
+                        <select
+                          className="search_dtm"
+                          name="search_dtm"
+                          id="search_dtm"
+                        >
+                          <option value="create_dtm">게시글 생성일</option>
+                          <option value="update_dtm">게시글 수정일</option>
+                          <option value="delete_dtm">게시글 삭제일</option>
+                          <option value="remind_dtm">끌어올리기 일자</option>
+                          <option value="deal_dtm">거래완료 일자</option>
                         </select>
                         <input
                           type="date"
-                          id="create_dtm_a"
-                          name="create_dtm_a"
-                          className="create_dtm_a"
+                          id="search_dtm_a"
+                          name="search_dtm_a"
+                          className="search_dtm_a"
                           style={{ width: "100px" }}
                         />
                         <span className="ec-mode-common-period-area">~</span>
                         <input
                           type="date"
-                          id="create_dtm_b"
-                          name="create_dtm_b"
-                          className="create_dtm_b"
+                          id="search_dtm_b"
+                          name="search_dtm_b"
+                          className="search_dtm_b"
                           style={{ width: "100px" }}
                         />
                       </li>
@@ -421,7 +430,12 @@ export default function Page() {
             >
               <span>검색</span>
             </a>
-            <a href="#" className="btnSearch reset" id="productSearchReset">
+            <a
+              href="#"
+              onClick={clearAll}
+              className="btnSearch reset"
+              id="productSearchReset"
+            >
               <span>초기화</span>
             </a>
           </div>
@@ -470,22 +484,21 @@ export default function Page() {
               <thead id="product-list-header">
                 <tr>
                   <th scope="col">No</th>
-                  <th scope="col">게시글명</th>
-                  <th scope="col">게시글 번호</th>
-                  <th scope="col">거래 장소명</th>
-                  <th scope="col">동네명</th>
-                  <th scope="col">판매자명</th>
-                  <th scope="col">등록 가격</th>
-                  <th scope="col">판매 가격</th>
-                  <th scope="col">위도</th>
-                  <th scope="col">경도</th>
-                  <th scope="col">흥정 가능 여부</th>
-                  <th scope="col">조회수</th>
-                  <th scope="col">게시글 등록일</th>
-                  <th scope="col">게시글 수정일</th>
-                  <th scope="col">게시글 삭제일</th>
-                  <th scope="col">끌어올리기 일자</th>
-                  <th scope="col">거래 완료 일자</th>
+                  <th scope="col">회원번호</th>
+                  <th scope="col">도시번호</th>
+                  <th scope="col">카테고리 번호</th>
+                  <th scope="col">제목</th>
+                  <th scope="col">거래방식</th>
+                  <th scope="col">가격</th>
+                  <th scope="col">변동후 가격</th>
+                  <th scope="col">거래장소명</th>
+                  <th scope="col">흥정가능여부</th>
+                  <th scope="col">생성일자</th>
+                  <th scope="col">수정일자</th>
+                  <th scope="col">삭제일자</th>
+                  <th scope="col">끌어올리기일자</th>
+                  <th scope="col">거래완료일자</th>
+                  <th scope="col">게시글상태</th>
                 </tr>
               </thead>
               <tbody className="center" id="product-list">
@@ -505,7 +518,14 @@ export default function Page() {
                       <td>{prod.method}</td>
                       <td>{prod.price}</td>
                       <td>{prod.lastprice}</td>
-                      <td>{prod.content}</td>
+                      <td>{prod.hope_place}</td>
+                      <td>{prod.canbargain}</td>
+                      <td>{prod.create_dtm}</td>
+                      <td>{prod.update_dtm}</td>
+                      <td>{prod.delete_dtm}</td>
+                      <td>{prod.remind_dtm}</td>
+                      <td>{prod.deal_dtm}</td>
+                      <td>{prod.poststatus}</td>
                     </tr>
                   ))}
               </tbody>
