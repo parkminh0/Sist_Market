@@ -467,10 +467,16 @@
         SELECT * FROM 
         (SELECT p.* FROM `post` p
           JOIN `town` t ON t.townkey = p.townkey
+          <!-- 게시글미노출 -->
+         <if test="userkey != null and userkey != ''">
+          LEFT JOIN `nosee` n ON n.userkey = #{userkey} AND n.noseeuserkey != p.userkey
+          LEFT JOIN `blocked` b ON b.userkey = #{userkey} AND b.blockeduserkey != p.userkey
+          LEFT JOIN `noseepost` np ON np.userkey = #{userkey} AND np.postkey != p.postkey
+         </if>
          WHERE 1 = 1
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
-        </if>
+         </if>
         <if test="loc2 != null and loc2.length > 0 and loc2[0] != 'all'">
             AND (
                 <foreach item="item" collection="loc2" separator=" OR ">
