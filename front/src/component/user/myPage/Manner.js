@@ -8,13 +8,13 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export default function Manner({ onMannerCountChange }) {
+export default function Manner({ userKey, onMannerCountChange }) {
   const API_URL = "/user/manner/getManner";
 
   const [list, setList] = useState([]);
   const [goods, setGoods] = useState([]);
   const [bads, setBads] = useState([]);
-  const userkey = Cookies.get("userkey");
+  const userkey = userKey;
 
   useEffect(() => {
     getData();
