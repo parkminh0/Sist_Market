@@ -68,6 +68,7 @@ export default function UcerCellList2(props) {
   const post = props.pvo;
   return (
     <Link
+      key={props.key}
       data-gtm="search_article"
       className="_1h4pbgy9ug"
       href={`/post/detail?postkey=${post.postkey}`}
@@ -107,7 +108,14 @@ export default function UcerCellList2(props) {
           >
             {post.title}
           </Typography>
-          <Typography level="body-sm">
+          <Typography
+          level="body-sm"
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
             {post.hope_place != null &&
               post.hope_place != "" &&
               post.hope_lati != null &&
@@ -124,12 +132,11 @@ export default function UcerCellList2(props) {
           </Typography>
         </div>
         <AspectRatio
-          minHeight="200px"
-          maxHeight="200px"
-          minWidth="200px"
-          maxwidth="200px"
-          margin="0"
-          padding="0"
+          ratio={1/1}
+          sx={{
+            margin: "0",
+            padding: "0",
+          }}
         >
           {post.pimg_list && post.pimg_list.length > 0 ? (
             <span
