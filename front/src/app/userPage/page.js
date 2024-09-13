@@ -5,14 +5,16 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/buylist.css";
-import "/public/css/paging.css";
+// import "/public/css/paging.css";
+import "/public/css/popcatelist.css";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import BadgeList from "@/component/user/myPage/BadgeList";
+
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
 import { Box, Typography, LinearProgress, Grid } from '@mui/material';
-import Cookies from "js-cookie";
+import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+
 
 export default function page() {
   const API_URL = "/user/api/getUser";
@@ -20,20 +22,18 @@ export default function page() {
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('badge');
   const [status, setStatus] = useState(1);
-  const [badgeCount, setBadgeCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const [mannerCount, setMannerCount] = useState(0);
   const [mannerTemp, setMannerTemp] = useState(36.5);
   const [vo, setVo] = useState({});
+  const [cellList, setCellList] = useState([]);
 
   const params = useSearchParams();
   const userkey = params.get("userkey");
 
-  const categoryList = ['badge','manner','review'];
+  const categoryList = ['cell','manner','review'];
   
-  const handleBadgeCount = (count) => {
-    setBadgeCount(count);
-  };
+ 
 
   const handleReviewCount = (count) => {
     setReviewCount(count);
@@ -47,7 +47,7 @@ export default function page() {
       setWhatNow(category);
       setStatus(categoryList.indexOf(category)+1);
   
-      if (category == 'badge') {
+      if (category == 'cell') {
       setSelectedTab('1');
       } else if (category == 'manner') {
       setSelectedTab('2');
@@ -64,11 +64,12 @@ export default function page() {
     ).then((res) => {
       console.log(res.data.uvo);
       setVo(res.data.uvo);
+      setCellList(res.data.uvo.cell_list);
     });
   }
 
   useEffect(() => {
-    updateList('badge');
+    updateList('cell');
     axios.get("/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
@@ -177,50 +178,52 @@ export default function page() {
             {/* <jsp:include page="/WEB-INF/views/user/myPageSub/myPageSide.jsp" /> */}
             <MyPageSide />
             {/* <!-- 여기서부터 콘텐츠 --> */}
-            <div data-v-0a67d0b5="" data-v-0adb81cc="" className="content_area my-page-content">
+            <div data-v-0a67d0b5="" data-v-0adb81cc="" className="content_area my-page-content" style={{minWidth:600}}>
               <div data-v-0a67d0b5="" className="my_purchase">
                 <div data-v-6b53f901="" data-v-0a67d0b5="" className="content_title">
                   <div data-v-6b53f901="" className="title">
                     <h3 data-v-6b53f901="">프로필</h3>
                   </div>
                 </div>
-                <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership">
-                    <Grid container spacing={2}>
-                        <Grid item sm={7}>
-                            <div data-v-ed683452="" className="user_detail">
+                <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership UserPageShip">
+                    <div className="UserProfileGrid">
+                    {/* <Grid container spacing={2}> */}
+                        {/* <Grid item sm={7}> */}
+                            <div data-v-ed683452="" className="user_detail UserPageDetail">
                                 <div data-v-ed683452="" className="user_thumb">
-                                <img data-v-ed683452=""
-                                src={vo.imgurl}
-                                alt="사용자 이미지" className="thumb_img"/>
+                                    <img data-v-ed683452=""
+                                        src={vo.imgurl}
+                                        alt="사용자 이미지" className="thumb_img"/>
                                 </div>
                                 <div data-v-ed683452="" className="user_info">
-                                <div data-v-ed683452="" className="info_box" style={{width:'fit-content'}}>
-                                    <strong data-v-ed683452="" className="name" style={{width:'fit-content'}}>
-                                    {vo.nickname}
-                                    </strong>
-                                    <p data-v-ed683452="" className="email" style={{width:'fit-content'}}>
-                                    {vo.id} [ {vo.email} ]
-                                    </p>
-                                </div>
+                                    <div data-v-ed683452="" className="info_box" style={{width:'fit-content'}}>
+                                        <strong data-v-ed683452="" className="name" style={{width:'fit-content'}}>
+                                        {vo.nickname}
+                                        </strong>
+                                        <p data-v-ed683452="" className="email" style={{width:'fit-content'}}>
+                                        {vo.id} [ {vo.email} ]
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </Grid>
-                        <Grid item sm={5}>
-                            <div style={{ marginTop: '60px' }}>
-                            <LinearProgressWithLabel temp={ mannerTemp } />
+                        {/* </Grid> */}
+                        {/* <Grid item sm={5}> */}
+                            <div className="mannerTemp" style={{ marginTop: '60px' }}>
+                                <LinearProgressWithLabel temp={ mannerTemp } />
                             </div>
-                        </Grid>
-                    </Grid>
+                        {/* </Grid> */}
+                    {/* </Grid> */}
+                    </div>
                 </div>
                 <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
                   <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
-                          {badgeCount}
+                          {cellList.length}
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
-                          활동 배지
+                          판매 목록
                         </dd>
                       </dl>
                     </Link>
@@ -251,8 +254,17 @@ export default function page() {
                   </div>
                 </div>
                 <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
-                    <div data-v-24868902="" data-v-eff62a72="" className="empty_area" style={{paddingTop: '50px'}}>
-                        {selectedTab == '1' && ( <p data-v-24868902="" className="desc"><BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/></p>)}
+                    <div data-v-24868902="" data-v-eff62a72="" className={`empty_area ${selectedTab == '1' ? 'userPage' : ''}`} style={{paddingTop: '50px'}}>
+                        {selectedTab == '1' && (
+                            <p data-v-24868902="" className="desc">
+                                <div className="UserPageGrid" >
+                                {cellList.length > 0
+                                ? cellList.map((clvo, index) => {
+                                    return <UserCellList2 key={index} pvo={clvo} />;
+                                }) : ""}
+                                </div>
+                            </p>
+                        )}
                         {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><Manner userKey={userkey} onMannerCountChange={handleMannerCount} /></p>)}
                         {selectedTab == '3' && ( <p data-v-24868902="" className="desc"><Review userKey={userkey} onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
