@@ -47,36 +47,34 @@ export default function HeaderItem() {
     <>
       <ul className="_1a7kymoc _588sy42q _588sy415q _588sy412w _588sy4wq">
         {link_item.map((items) => {
-          if (items) {
-            if (items.title == "마이페이지" && userkey == undefined) {
-              return (
-                <li key={items.title}>
-                  <Link
-                    className="_1a7kymoe _1a7kymod _588sy4fw _588sy4j2 _588sy4mw _588sy4jq _588sy41"
-                    data-href={items.data_href}
-                    href={items.path}
-                    onClick={(e) => {
-                      alert("로그인이 필요한 서비스입니다.");
-                      e.preventDefault();
-                    }}
-                  >
-                    {items.title}
-                  </Link>
-                </li>
-              );
-            }
+          if (items.title == "마이페이지" && userkey == undefined) {
             return (
               <li key={items.title}>
                 <Link
-                  data-href={items.data_href}
                   className="_1a7kymoe _1a7kymod _588sy4fw _588sy4j2 _588sy4mw _588sy4jq _588sy41"
+                  data-href={items.data_href}
                   href={items.path}
+                  onClick={(e) => {
+                    alert("로그인이 필요한 서비스입니다.");
+                    e.preventDefault();
+                  }}
                 >
                   {items.title}
                 </Link>
               </li>
             );
           }
+          return (
+            <li key={items.title}>
+              <Link
+                data-href={items.data_href}
+                className="_1a7kymoe _1a7kymod _588sy4fw _588sy4j2 _588sy4mw _588sy4jq _588sy41"
+                href={items.path}
+              >
+                {items.title}
+              </Link>
+            </li>
+          );
         })}
       </ul>
     </>
