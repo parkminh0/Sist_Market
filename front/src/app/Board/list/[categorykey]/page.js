@@ -1,5 +1,4 @@
-'use client'
-
+"use client"
 import Link from "next/link";
 import "/public/css/myPage.css";
 import BoardSide from "@/component/user/layout/BoardSide";
@@ -16,20 +15,20 @@ import axios from "axios";
 
 export default function (props) {
     const [ar, setAr] = useState([]);
-    
     const [categorykey, setCategorykey] = useState(`${props.params.categorykey}`);
     const listUrl = `/admin/board/userBbsList?categorykey=${props.params.categorykey}`;
-
     const [nowPage, setNowPage] = useState(1);
     const [page, setPage] = useState({});
     const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
+    const [bclist, setBclist] = useState([]);
+    const [categoryName, setCategoryName] = useState("");  // 카테고리 이름 저장
 
     // 페이지 변경시 모든 공지사항 로드
     function getData(cPage) {  
       axios.get(listUrl, {
         params: {
           cPage: cPage,
-          categorykey: 2
+          categorykey: categorykey
         }
       })
       .then((json) => {
@@ -49,14 +48,32 @@ export default function (props) {
         getData(cPage.toString());  // cPage를 문자열로 변환
       }
     }
-    
-    
 
     useEffect(() => {
         getData(nowPage);
     }, [nowPage]);
 
-    
+    //bclist 가져와서 =boardside로 넘겨줄거임
+    const bcUrl = "/admin/board/getAllBc";
+
+    function getBcList() {  
+      axios.get(bcUrl)
+      .then((json) => { 
+          setBclist(json.data.bc_list);
+          const category = json.data.bc_list.find(bc => bc.key === categorykey);
+          if (category) {
+            setCategoryName(category.value);  // 선택한 카테고리 이름 저장
+          }
+      })
+      .catch((error) => {
+          console.error("데이터 로딩 오류:", error);  
+      });
+    }
+
+    useEffect(() => {
+      getBcList();
+    }, [categorykey]);
+
     // 공지사항 검색
     const sUrl = "/admin/board/searchForNotice";
     function searchNotice(cPage = 1){  // cPage 인자 추가
@@ -96,13 +113,13 @@ export default function (props) {
                                     </li>
                                 </ol>
                             </nav>
-                            <Link href="/Board/notice">
+                            <Link href="/Board/list/1">
                                 <span className="_588sy4192 _588sy41x _588sy41b2 _588sy43">
                                     쌍용소식
                                 </span>
                             </Link>
                         </div>
-                        <Link href="/Board/notice">
+                        <Link href="/Board/list/1">
                             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
                                 <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
                                     쌍용소식
@@ -115,7 +132,7 @@ export default function (props) {
                     <article className="_1h4pbgy7wg _1h4pbgy7wz">
                         <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
                             {/* 마이페이지 서브 */}
-                            <BoardSide />
+                            <BoardSide bclist={bclist} categorykey={categorykey}/>
                             {/* 여기서부터 콘텐츠 */}
                             <div
                                 data-v-81750584=""
@@ -129,7 +146,7 @@ export default function (props) {
                                     className="content_title border"
                                 >
                                     <div data-v-6b53f901="" className="title">
-                                        <h3 data-v-6b53f901="">이벤트</h3>
+                                        <h3 data-v-6b53f901="">{categoryName}</h3>
                                     </div>
                                 </div>
                                 {/* 검색 */}
@@ -167,7 +184,7 @@ export default function (props) {
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                           >
                                             <TableCell align="left" sx={{ width: '20%', fontWeight: 'bold' }}>
-                                              {ar.categorykey == 1 ? '공지사항' : '이벤트'}
+                                              {categoryName}
                                             </TableCell>
                                             <TableCell align="left" sx={{ width: '80%' }}>
                                               <Link href={`/Board/view/${ar.boardkey}`}>
