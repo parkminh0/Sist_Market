@@ -11,8 +11,10 @@ import { useSearchParams } from "next/navigation";
 
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import { Box, Typography, LinearProgress, Grid } from '@mui/material';
+import { Box, Typography, LinearProgress, Grid, Button } from '@mui/material';
 import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import FHRBMenu from "@/component/user/userPage/FHRBMenu";
+import Cookies from "js-cookie";
 
 
 export default function page() {
@@ -21,6 +23,9 @@ export default function page() {
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('badge');
   const [status, setStatus] = useState(1);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isNosee, setIsNosee] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
   const [reviewCount, setReviewCount] = useState(0);
   const [mannerCount, setMannerCount] = useState(0);
   const [mannerTemp, setMannerTemp] = useState(36.5);
@@ -68,6 +73,23 @@ export default function page() {
   }
 
   useEffect(() => {
+    const me = Cookies.get("userkey");
+    const you = userkey;
+    if(me!=undefined){
+        if(me == you){
+            window.location.replace("/myPage");
+        }
+    }
+    axios.get("/user/api/FHRBCheck", {
+      params: {
+        me: me,
+        you: you,
+    }
+    }).then((res) => {
+        setIsLiked(res.data.isLiked);
+        setIsNosee(res.data.isNosee);
+        setIsBlocked(res.data.isBlocked);
+    });
     updateList('cell');
     axios.get("/user/manner/getManner", {
       params: { userkey: userkey }
@@ -184,8 +206,6 @@ export default function page() {
                 </div>
                 <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership UserPageShip">
                     <div className="UserProfileGrid">
-                    {/* <Grid container spacing={2}> */}
-                        {/* <Grid item sm={7}> */}
                             <div data-v-ed683452="" className="user_detail UserPageDetail">
                                 <div data-v-ed683452="" className="user_thumb">
                                     <img data-v-ed683452=""
@@ -203,13 +223,16 @@ export default function page() {
                                     </div>
                                 </div>
                             </div>
-                        {/* </Grid> */}
-                        {/* <Grid item sm={5}> */}
-                            <div className="mannerTemp" style={{ marginTop: '60px' }}>
+                            <div className="BtnPart">
+                                <div className="PraiseOrNot">
+                                    <Button className="PraiseBtn" variant="contained">매너 평가</Button>
+                                    <Button className="DisapproveBtn" variant="contained">비매너 평가</Button>
+                                </div>
+                                <FHRBMenu you={userkey} isLiked={isLiked} isNosee={isNosee} isBlocked={isBlocked}/>
+                            </div>
+                            <div className="mannerTemp">
                                 <LinearProgressWithLabel temp={ mannerTemp } />
                             </div>
-                        {/* </Grid> */}
-                    {/* </Grid> */}
                     </div>
                 </div>
                 <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >

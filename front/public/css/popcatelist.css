@@ -43,8 +43,46 @@
     min-width: 600px;
     column-gap: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 2fr;
     row-gap: 32px
+}
+
+.BtnPart{
+    display: flex;
+    flex-direction: row;
+}
+
+.PraiseOrNot{
+    display: flex;
+    flex-direction: column;
+}
+
+.PraiseBtn{
+    margin-left: 15px;
+    margin-bottom: 2px;
+    font-size: 17px;
+    background-color: #008000;
+}
+.PraiseBtn:hover{
+    background-color: #22a222;
+}
+
+.DisapproveBtn{
+    margin-left: 15px;
+    margin-top: 2px;
+    font-size: 17px;
+    background-color: #ee6a30;
+}
+
+.DisapproveBtn:hover{
+    background-color: #ff8c52;
+}
+
+.MenuBtn{
+    margin: auto 0;
+    color: #000000;
+    background-color: none;
 }
 
 .UserPageShip{

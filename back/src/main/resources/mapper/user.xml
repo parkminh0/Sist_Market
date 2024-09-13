@@ -264,6 +264,62 @@
     WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
+    <!-- 사용자 모아보기, 미노출, 차단 여부 확인 -->
+    <select id="F_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `likeuser`
+        WHERE userkey = #{me}
+        AND likeuserkey = #{you}
+    </select>
+    <select id="N_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `nosee`
+        WHERE userkey = #{me}
+        AND noseeuserkey = #{you}
+    </select>
+    <select id="B_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `blocked`
+        WHERE userkey = #{me}
+        AND blockeduserkey = #{you}
+    </select>
+
+
+    <delete id="likeN" parameterType="Map">
+        DELETE
+        FROM `likeuser`
+        WHERE userkey = #{me}
+        AND likeuserkey = #{you}
+    </delete>
+    <insert id="likeI" parameterType="Map">
+        INSERT
+        INTO `likeuser`(userkey,likeuserkey)
+        VALUES (#{me}, #{you})
+    </insert>
+    <delete id="noseeN" parameterType="Map">
+        DELETE
+        FROM `nosee`
+        WHERE userkey = #{me}
+        AND noseeuserkey = #{you}
+    </delete>
+    <insert id="noseeI" parameterType="Map">
+        INSERT
+        INTO `nosee`(userkey,noseeuserkey)
+        VALUES (#{me}, #{you})
+    </insert>
+    <delete id="blockN" parameterType="Map">
+        DELETE
+        FROM `blocked`
+        WHERE userkey = #{me}
+        AND blockeduserkey = #{you}
+    </delete>
+    <insert id="blockI" parameterType="Map">
+        INSERT
+        INTO `blocked`(userkey,blockeduserkey)
+        VALUES (#{me}, #{you})
+    </insert>
+
+
    <!-- 관심목록 수, 내용 -->
     <select id="getWishlistCount" resultType="int" parameterType="Map">
         SELECT COUNT(*)

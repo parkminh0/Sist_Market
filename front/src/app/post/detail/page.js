@@ -776,7 +776,7 @@ export default function Page() {
             {cellList.length > 6 ? (
               <Link
                 className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-                href={`/user/post/celllist?userkey=${userVO.userkey}`}
+                href={`/userPage?userkey=${userVO.userkey}`}
               >
                 <span
                   data-gtm="buy_sell_detail_user_article_see_all"

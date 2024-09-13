@@ -23,6 +23,17 @@ public interface UserMapper {
 
     List<userVO> searchForAdmin(Map iMap);
 
+    int F_Check(String me, String you);
+    int N_Check(String me, String you);
+    int B_Check(String me, String you);
+
+    int likeN(String me, String you);
+    int likeI(String me, String you);
+    int noseeN(String me, String you);
+    int noseeI(String me, String you);
+    int blockN(String me, String you);
+    int blockI(String me, String you);
+
     userVO getUserForAdmin(String userkey);
 
     int userDelForAdmin(String userkey);
