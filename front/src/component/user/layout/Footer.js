@@ -4,13 +4,14 @@ import axios from "axios";
 export default function Footer() {
   const bcUrl = "/admin/board/getAllBc";
   const [bclist, setBclist] = useState([]);
-  const [categorykey,setCategorykey] = useState(0);
+  //const [categorykey,setCategorykey] = useState(0);
 
   function getData() {  
     axios.get(bcUrl)
     .then((json) => {
         setBclist(json.data.bc_list);
-        setCategorykey(json.data.bc_list.key);
+        //setCategorykey(json.data.bc_list.key);
+        
     })
     .catch((error) => {
         console.error("데이터 로딩 오류:", error);  
@@ -19,6 +20,7 @@ export default function Footer() {
 
   useEffect(() => {
     getData();
+    //console.log("@@@@@@@@@@@@@@@@@@@@@@@"+categorykey);
 }, []);
 
   return (
@@ -146,7 +148,7 @@ export default function Footer() {
 
               <div className="dmu53n2">
               <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
-                <font>카테고리 목록</font>
+                <font>쌍용소식</font>
               </div>
               <div className="_1h4pbgy9ug _1h4pbgy9vs">
                 {bclist.length > 0 ? (
@@ -154,14 +156,14 @@ export default function Footer() {
                     <Link
                       key={index}
                       className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                      href={`/Board/list/${categorykey}`} // 각 카테고리의 링크를 설정
+                      href={`/Board/list/${bc.key}`} // 각 카테고리의 링크를 설정
                       target="_self"
                     >
                       <font>{bc.value}</font> {/* 카테고리 이름 표시 */}
                     </Link>
                   ))
                 ) : (
-                  <font>준비 중...</font>
+                  <font>게시판 목록이 없습니다.</font>
                 )}
               </div>
             </div>
