@@ -465,7 +465,7 @@
 
     <select id="search" resultMap="postMap" parameterType="map">
         SELECT * FROM 
-        (SELECT p.* FROM `post` p
+        (SELECT (SELECT COUNT(*) FROM wishlist WHERE postkey = p.postkey) likedqty, p.* FROM `post` p
           JOIN `town` t ON t.townkey = p.townkey
           <!-- 게시글미노출 -->
          <if test="userkey != null and userkey != ''">
