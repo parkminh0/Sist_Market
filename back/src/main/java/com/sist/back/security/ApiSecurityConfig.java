@@ -43,6 +43,10 @@ public class ApiSecurityConfig {
                                 .requestMatchers("/user/api/chkPhone").permitAll()
                                 .requestMatchers("/user/delImage").permitAll()
                                 .requestMatchers("/user/api/getUser").permitAll()
+                                .requestMatchers("/user/api/FHRBCheck").permitAll()
+                                .requestMatchers("/user/api/likeIoN").permitAll()
+                                .requestMatchers("/user/api/noseeIoN").permitAll()
+                                .requestMatchers("/user/api/blockIoN").permitAll()
 
                                 .anyRequest().authenticated() // 나머지 모든 요청은 인증이 되어야 함
                 )

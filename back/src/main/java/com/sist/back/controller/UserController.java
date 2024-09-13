@@ -174,6 +174,64 @@ public class UserController {
         return map;
     }
 
+    // 계정관리 user정보
+    @RequestMapping("/api/FHRBCheck")
+    @ResponseBody
+    public Map<String, Object> FHRBCheck(String me, String you) {
+        Map<String, Object> map = new HashMap<>();
+        int f_num = service.F_Check(me, you);
+        System.out.println("f_num"+f_num);
+        int n_num = service.N_Check(me, you);
+        int b_num = service.B_Check(me, you);
+        map.put("isLiked", f_num>0);
+        map.put("isNosee", n_num>0);
+        map.put("isBlocked", b_num>0);
+        return map;
+    }
+    
+    // 계정관리 user정보
+    @RequestMapping("/api/likeIoN")
+    @ResponseBody
+    public Map<String, Object> likeIoN(String me, String you, Boolean isLiked) {
+        Map<String, Object> map = new HashMap<>();
+        int l_num = -1;
+        if(isLiked){
+            l_num = service.likeN(me, you);
+        } else{
+            l_num = service.likeI(me, you);
+        }
+        map.put("isBlocked", l_num);
+        return map;
+    }
+    @RequestMapping("/api/noseeIoN")
+    @ResponseBody
+    public Map<String, Object> noseeIoN(String me, String you, Boolean isNosee) {
+        Map<String, Object> map = new HashMap<>();
+        int n_num = -1;
+        if(isNosee){
+            n_num = service.noseeN(me, you);
+        } else{
+            n_num = service.noseeI(me, you);
+        }
+        map.put("isBlocked", n_num);
+        return map;
+    }
+    @RequestMapping("/api/blockIoN")
+    @ResponseBody
+    public Map<String, Object> blockIoN(String me, String you, Boolean isBlocked) {
+        Map<String, Object> map = new HashMap<>();
+        int b_num = -1;
+        if(isBlocked){
+            b_num = service.blockN(me, you);
+        } else{
+            b_num = service.blockI(me, you);
+        }
+        map.put("isBlocked", b_num);
+        return map;
+    }
+
+
+
     // jwt token login
     @PostMapping("/api/login")
     @ResponseBody
