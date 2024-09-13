@@ -9,6 +9,10 @@ import {
   Box,
   Breadcrumbs,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
   Grid,
   IconButton,
   MobileStepper,
@@ -30,6 +34,7 @@ import UserCellList from "@/component/user/post/detail/UserCellList";
 import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import PopCateList from "@/component/user/post/detail/PopCateList";
 import PopCateList2 from "@/component/user/post/detail/PopCateList2";
+import ReportModal from "@/component/user/post/detail/report/ReportModal";
 
 export default function Page() {
   // PO(PriceOffer: 가격제안)모달용 데이터
@@ -400,6 +405,14 @@ export default function Page() {
     }
   }
   // #endregion
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const handleReportOpen = () => setReportOpen(true);
+  const handleReportClose = () => setReportOpen(false);
+  const [chkOpen, setChkOpen] = useState(false);
+  const handleChkOpen = () => { setChkOpen(true); };
+  const handleChkClose = (res) => { setChkOpen(false); if (res) { setReportOpen(true); } };
+
   return (
     <>
       {postVO ? (
@@ -700,15 +713,28 @@ export default function Page() {
                 <span>관심 {postVO.likedqty}</span> ·{" "}
                 <span>조회 {viewqty}</span>
               </div>
-              <Link
-                href="#"
-                className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
-                style={{
-                  textDecorationLine: "underline",
-                }}
-              >
-                이 게시글 신고하기
-              </Link>
+              <button onClick={() => {
+                  if (!userkey) {
+                    alert("로그인이 필요한 서비스입니다.");
+                  } else {
+                    handleChkOpen();
+                  }
+                }} 
+                className="_1h4pbgy76o" style={{ cursor: 'pointer', textAlign: 'left' }}>
+                <span style={{ borderBottom: '0.5px solid gray' }}>이 게시글 신고하기</span>
+              </button>
+              <Dialog open={chkOpen} onClose={() => handleChkClose(false)} aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-description">
+                <DialogContent style={{ paddingBottom: '5px' }}>
+                  <DialogContentText id="confirm-dialog-description" style={{ color: 'black', marginTop: '5px' }}>
+                    신고하면 철회할 수 없습니다. 계속 하시겠습니까?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => handleChkClose(true)} style={{ backgroundColor: 'gray', color: 'white' }} >확인</Button>
+                  <Button onClick={() => handleChkClose(false)} style={{ backgroundColor: '#ff5722', color: 'white' }} autoFocus>취소</Button>
+                </DialogActions>
+              </Dialog>
+              <ReportModal reportOpen={reportOpen} handleReportClose={handleReportClose} handleReportOpen={handleReportOpen} pvo={postVO}/>
               <div className="nfm9bo0 _1h4pbgy7e8 _1h4pbgy7cj _1h4pbgy7iw _1h4pbgy7h7 _1h4pbgy7nk _1h4pbgy7lv _1h4pbgy7s8 _1h4pbgy7qj _1h4pbgy9u8 _1h4pbgya14 _1h4pbgya0r _1h4pbgy9e0 _1h4pbgy9jc _1h4pbgy9oo _1h4pbgy1u0">
                 {canEdit ? (
                   <Button
