@@ -403,12 +403,7 @@
             now(),
         </if>
         #{delete_dtm},
-        <if test="poststatus == 0">
-            #{remind_dtm},
-        </if>
-        <if test="poststatus == 1">
-            now(),
-        </if>
+        #{remind_dtm},
         #{dealuserkey},
         #{deal_dtm},
         #{userreview},
@@ -469,7 +464,8 @@
     </update>
 
     <select id="search" resultMap="postMap" parameterType="map">
-        SELECT p.* FROM `post` p
+        SELECT * FROM 
+        (SELECT p.* FROM `post` p
           JOIN `town` t ON t.townkey = p.townkey
          WHERE 1 = 1
          <if test="loc1 != null and loc1 != ''">
@@ -491,19 +487,25 @@
         <if test="maxPrice != null and maxPrice != ''">
             AND p.price <![CDATA[<=]]> #{maxPrice}
         </if>
+        ) x
+        WHERE 1 = 1
+        <if test="lastPostKey != null and lastPostKey != '0'">
+            AND x.postkey <![CDATA[<]]> #{lastPostKey}
+        </if>
         <if test="sort != null and sort != ''">
+            ORDER BY 
             <if test="sort == 'recent'">
-                ORDER BY 
-                 CASE WHEN p.remind_dtm IS NULL 
-                      THEN p.create_dtm 
-                      ELSE p.remind_dtm
+                 CASE WHEN x.remind_dtm IS NULL 
+                      THEN x.create_dtm 
+                      ELSE x.remind_dtm
                   END DESC,
-                p.create_dtm DESC
+                x.create_dtm DESC
             </if>
             <if test="sort == 'popular'">
-                ORDER BY p.viewqty DESC
+                x.viewqty DESC
             </if>
         </if>
+        limit #{howManyPost}
     </select>
 
     <select id="main" resultMap="postMap" parameterType="String">

@@ -201,17 +201,17 @@ public class PostController {
         Map<String, Object> image = new HashMap<>();
         if (post_img != null) {
             Path path = Paths.get(postImgPath);
-                if (path.toString().contains("back")) {
-                    String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "");
-                    path = Paths.get(changedPath);
-                }
+            if (path.toString().contains("back")) {
+                String pathString = path.toString();
+                String changedPath = pathString.replace("back\\", "");
+                path = Paths.get(changedPath);
+            }
             String filePath = path.resolve(post_img).toString();
-            File f = new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +post_img);
+            File f = new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) + post_img);
             String fname = f.getName();
-            if(f.exists()){
+            if (f.exists()) {
                 image.put("name", fname);
-                image.put("imgurl", "/img/postimg/"+post_img);
+                image.put("imgurl", "/img/postimg/" + post_img);
                 image.put("file", f);
             }
         }
@@ -366,11 +366,23 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String loc1, String[] loc2, String sort, String category, String minPrice,
+    public Map<String, Object> search(String lastPostKey, String loc1, String[] loc2, String sort, String category,
+            String minPrice,
             String maxPrice) {
 
+        System.out.println("들어왔을떄 키" + lastPostKey);
+        int howManyPost = 15;
         Map<String, Object> res = new HashMap<>();
-        res.put("res_search", p_service.search(loc1, loc2, sort, category, minPrice, maxPrice));
+        PostVO[] ar = p_service.search(lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice, maxPrice);
+        String lastKey = null;
+        try {
+            lastKey = ar[ar.length - 1].getPostkey();
+        } catch (Exception e) {
+        }
+        res.put("res_search", ar);
+        res.put("lastPostKey", lastKey);
+        System.out.println("나갈때 키" + lastKey);
+
         return res;
     }
 
