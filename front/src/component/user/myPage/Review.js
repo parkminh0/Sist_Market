@@ -5,7 +5,7 @@ import { Box, Typography, Avatar, Divider, Tabs, Tab, Modal } from '@mui/materia
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export default function Review({ onReviewCountChange }) {
+export default function Review({ userKey, onReviewCountChange }) {
   const BUY_URL = "/user/buyingReview";
   const SELL_URL = "/user/sellingReview";
 
@@ -14,7 +14,7 @@ export default function Review({ onReviewCountChange }) {
   const [sellingList, setSellingList] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const userkey = Cookies.get("userkey");
+  const userkey = userKey;
 
   useEffect(() => {
     getData();

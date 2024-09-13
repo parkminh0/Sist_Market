@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import { Box, Typography, LinearProgress } from '@mui/material';
+import { Box, Typography, LinearProgress, Grid } from '@mui/material';
 import Cookies from "js-cookie";
 
 export default function page() {
@@ -25,7 +25,9 @@ export default function page() {
   const [mannerCount, setMannerCount] = useState(0);
   const [mannerTemp, setMannerTemp] = useState(36.5);
   const [vo, setVo] = useState({});
-  const userkey = Cookies.get("userkey");
+
+  const params = useSearchParams();
+  const userkey = params.get("userkey");
 
   const categoryList = ['badge','manner','review'];
   
@@ -183,32 +185,32 @@ export default function page() {
                   </div>
                 </div>
                 <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership">
-                  <div data-v-ed683452="" className="user_detail">
-                    <div data-v-ed683452="" className="user_thumb">
-                      <img data-v-ed683452=""
-                      src={vo.imgurl}
-                      alt="사용자 이미지" className="thumb_img"/>
-                    </div>
-                    <div data-v-ed683452="" className="user_info">
-                      <div data-v-ed683452="" className="info_box">
-                        <strong data-v-ed683452="" className="name">
-                          {vo.nickname}
-                        </strong>
-                        <p data-v-ed683452="" className="email">
-                          {vo.id} [ {vo.email} ]
-                        </p>
-                      </div>
-                      <div data-v-ed683452="" className="info-buttons">
-                        <Link data-v-420a5cda="" data-v-ed683452="" href="/myPage/profile/edit" className="btn btn outlinegrey small" type="button" >
-                          {" "}
-                          프로필 수정{" "}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style={{ marginTop: '60px' }}>
-                  <LinearProgressWithLabel temp={ mannerTemp } />
+                    <Grid container spacing={2}>
+                        <Grid item sm={7}>
+                            <div data-v-ed683452="" className="user_detail">
+                                <div data-v-ed683452="" className="user_thumb">
+                                <img data-v-ed683452=""
+                                src={vo.imgurl}
+                                alt="사용자 이미지" className="thumb_img"/>
+                                </div>
+                                <div data-v-ed683452="" className="user_info">
+                                <div data-v-ed683452="" className="info_box" style={{width:'fit-content'}}>
+                                    <strong data-v-ed683452="" className="name" style={{width:'fit-content'}}>
+                                    {vo.nickname}
+                                    </strong>
+                                    <p data-v-ed683452="" className="email" style={{width:'fit-content'}}>
+                                    {vo.id} [ {vo.email} ]
+                                    </p>
+                                </div>
+                                </div>
+                            </div>
+                        </Grid>
+                        <Grid item sm={5}>
+                            <div style={{ marginTop: '60px' }}>
+                            <LinearProgressWithLabel temp={ mannerTemp } />
+                            </div>
+                        </Grid>
+                    </Grid>
                 </div>
                 <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
                   <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
