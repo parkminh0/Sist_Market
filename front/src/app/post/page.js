@@ -11,7 +11,8 @@ import IconButton from "@mui/joy/IconButton";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import { green } from "@mui/material/colors";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 import {
   Backdrop,
   Box,
@@ -29,6 +30,7 @@ import {
   ImageList,
   ImageListItem,
   InputAdornment,
+  Menu,
   MenuItem,
   OutlinedInput,
   Radio,
@@ -55,6 +57,8 @@ export default function page() {
 
   // 현재 가져온 상품 개수
   const [lastPostKey, setLastPostKey] = useState(0);
+  // 상품 수 15개 보다 적을 경우 더보기 숨김
+  const [viewMore, setViewMore] = useState(true);
   // 위치 파라미터 값
   const [loc1Param, setLoc1Param] = useState("");
   const [loc2Param, setLoc2Param] = useState([]);
@@ -71,9 +75,8 @@ export default function page() {
   const [cookie_region1, setCookie_region1] = useState("");
   const [cookie_region2, setCookie_region2] = useState("");
   const [cookie_region3, setCookie_region3] = useState("");
-
+  // 프로그레스 띄우기용
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   // #region 비동기-카테고리 리스트
   function getCategory() {
@@ -139,10 +142,12 @@ export default function page() {
     setMaxPriceParam(maxParam);
 
     if (!loading) {
+      setLoading(true);
       axios({
         url: "/adpost/search",
         method: "get",
         params: {
+          userkey: decodeURIComponent(Cookies.get("userkey")),
           loc1: loc1Param,
           loc2: loc2Param,
           category: cateParam,
@@ -155,6 +160,9 @@ export default function page() {
         },
       }).then((res) => {
         setPost_list(res.data.res_search);
+        if (!res.data.res_search || res.data.res_search.length < 15) {
+          setViewMore(false);
+        }
         if (res.data.lastPostKey != null) {
           setLastPostKey(res.data.lastPostKey);
         }
@@ -185,6 +193,9 @@ export default function page() {
         },
       }).then((res) => {
         setPost_list((post) => [...post, ...res.data.res_search]);
+        if (!res.data.res_search || res.data.res_search.length < 15) {
+          setViewMore(false);
+        }
         if (res.data.lastPostKey != null) {
           setLastPostKey(res.data.lastPostKey);
         }
@@ -252,41 +263,41 @@ export default function page() {
   // #endregion
 
   // #region 내 물건 팔기 버튼
-  useEffect(() => {
-    const container = document.querySelector(
-      "div._1h4pbgy8jc._1h4pbgy9ug._1h4pbgy9vs"
-    );
-    const button = document.querySelector(".write-button");
+  // useEffect(() => {
+  //   const container = document.querySelector(
+  //     "div._1h4pbgy8jc._1h4pbgy9ug._1h4pbgy9vs"
+  //   );
+  //   const button = document.querySelector(".write-button");
 
-    const handleScroll = () => {
-      const containerRect = container.getBoundingClientRect();
-      const buttonHeight = button.offsetHeight;
+  //   const handleScroll = () => {
+  //     const containerRect = container.getBoundingClientRect();
+  //     const buttonHeight = button.offsetHeight;
 
-      if (containerRect.bottom < window.innerHeight + buttonHeight) {
-        button.style.position = "absolute";
-        button.style.bottom = "20px";
-        button.style.right = "20px";
-      } else if (containerRect.top < window.innerHeight) {
-        button.style.position = "fixed";
-        button.style.bottom = "20px";
-        button.style.right = `${
-          window.innerWidth - containerRect.right + 20
-        }px`;
-      } else {
-        button.style.position = "absolute";
-        button.style.bottom = "20px";
-        button.style.right = "20px";
-      }
-    };
+  //     if (containerRect.bottom < window.innerHeight + buttonHeight) {
+  //       button.style.position = "absolute";
+  //       button.style.bottom = "20px";
+  //       button.style.right = "20px";
+  //     } else if (containerRect.top < window.innerHeight) {
+  //       button.style.position = "fixed";
+  //       button.style.bottom = "20px";
+  //       button.style.right = `${
+  //         window.innerWidth - containerRect.right + 20
+  //       }px`;
+  //     } else {
+  //       button.style.position = "absolute";
+  //       button.style.bottom = "20px";
+  //       button.style.right = "20px";
+  //     }
+  //   };
 
-    handleScroll();
+  //   handleScroll();
 
-    document.addEventListener("scroll", handleScroll);
+  //   document.addEventListener("scroll", handleScroll);
 
-    return () => {
-      document.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
   // #endregion
 
   // #region 동네 선택
@@ -441,11 +452,16 @@ export default function page() {
         let loc2Params = params.getAll("loc2");
         // 모두 삭제 후 일치하지 않는 "loc2" 값들 다시 추가
         params.delete("loc2");
+        let chk = false;
         loc2Params.forEach((loc2Value) => {
           if (loc2Value !== e.dataset.loc2) {
             params.append("loc2", loc2Value);
+            chk = true;
           }
         });
+        if (!chk || loc2Params.length === 0) {
+          params.append("loc2", "all");
+        }
         break;
       case "category":
         params.delete("category");
@@ -455,9 +471,13 @@ export default function page() {
         params.delete("maxPrice");
         break;
       case "all":
+        params.delete("sort");
+        params.delete("loc2");
         params.delete("category");
         params.delete("minPrice");
         params.delete("maxPrice");
+        params.append("sort", "recent");
+        params.append("loc2", cookie_region2);
         break;
     }
     // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
@@ -548,11 +568,9 @@ export default function page() {
   };
   // #endregion
 
-  // #region 내 물건 팔기(작성)
+  // #region 내 물건 팔기
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
 
     // 유저 토큰 확인
     let tmpUserKey = Cookies.get("userkey");
@@ -560,70 +578,77 @@ export default function page() {
       alert("로그인 후 이용해주세요.");
       return;
     }
-    formData.append("userkey", tmpUserKey);
 
-    // 이미지 파일 FormData에 추가
-    previewImages.forEach((image) => {
-      const fileName = image.file.name;
-      formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
-    });
+    if (!loading) {
+      setLoading(true);
 
-    // 0: 임시저장  1: 판매중(작성완료)
-    const mode = event.currentTarget.dataset.mode;
-    formData.append("poststatus", mode === "save" ? 0 : 1);
+      const formData = new FormData(event.currentTarget);
+      formData.append("userkey", tmpUserKey);
 
-    // price가 공백("")이면 null 또는 0으로 변환
-    formData.set("price", price === "" ? 0 : price);
-
-    // 거래희망장소 위도, 경도
-    formData.append("hope_lati", hope_lati);
-    formData.append("hope_long", hope_long);
-
-    // town 정보
-    formData.append(
-      "region1",
-      region1 != null && region1 != "" ? region1 : cookie_region1
-    );
-    formData.append(
-      "region2",
-      region2 != null && region2 != "" ? region2 : cookie_region2
-    );
-    formData.append(
-      "region3",
-      region3 != null && region3 != "" ? region3 : cookie_region3
-    );
-
-    // 임시저장 후 작성완료 누를 경우 수정해야 함
-    if (savePostKey != null && savePostKey != "") {
-      formData.append("postkey", savePostKey);
-    }
-    formData.set("canBargain", canBargain);
-    formData.append("isPostPage", 1);
-    axios
-      .post(
-        savePostKey == null || savePostKey == ""
-          ? "/adpost/write"
-          : "/adpost/edit",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((response) => {
-        if (mode === "write") {
-          setSavePostKey("");
-          alert("게시글이 작성되었습니다.");
-          window.location.reload();
-        } else {
-          setSavePostKey(response.data.savePostKey);
-          alert("게시글이 저장되었습니다.");
-        }
-      })
-      .catch((error) => {
-        console.error("게시글 작성 오류", error);
+      // 이미지 파일 FormData에 추가
+      previewImages.forEach((image) => {
+        const fileName = image.file.name;
+        formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
       });
+
+      // 0: 임시저장  1: 판매중(작성완료)
+      const mode = event.currentTarget.dataset.mode;
+      formData.append("poststatus", mode === "save" ? 0 : 1);
+
+      // price가 공백("")이면 null 또는 0으로 변환
+      formData.set("price", price === "" ? 0 : price);
+
+      // 거래희망장소 위도, 경도
+      formData.append("hope_lati", hope_lati);
+      formData.append("hope_long", hope_long);
+
+      // town 정보
+      formData.append(
+        "region1",
+        region1 != null && region1 != "" ? region1 : cookie_region1
+      );
+      formData.append(
+        "region2",
+        region2 != null && region2 != "" ? region2 : cookie_region2
+      );
+      formData.append(
+        "region3",
+        region3 != null && region3 != "" ? region3 : cookie_region3
+      );
+
+      // 임시저장 후 작성완료 누를 경우 수정해야 함
+      if (savePostKey != null && savePostKey != "") {
+        formData.append("postkey", savePostKey);
+      }
+      formData.set("canBargain", canBargain);
+      formData.append("isPostPage", 1);
+      axios
+        .post(
+          savePostKey == null || savePostKey == ""
+            ? "/adpost/write"
+            : "/adpost/edit",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          if (mode === "write") {
+            setSavePostKey("");
+            alert("게시글이 작성되었습니다.");
+            window.location.reload();
+          } else {
+            setSavePostKey(response.data.savePostKey);
+            alert("게시글이 저장되었습니다.");
+          }
+        })
+        .catch((error) => {
+          console.error("게시글 작성 오류", error);
+        });
+      setLoading(false);
+    }
   };
   // #endregion
 
@@ -931,9 +956,7 @@ export default function page() {
               </Typography>
             </Breadcrumbs>
             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-              <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
-                맨해튼의 새제품과 중고품
-              </h1>
+              <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8"></h1>
             </div>
           </section>
         </div>
@@ -1022,11 +1045,15 @@ export default function page() {
                           region2_list.map((region, i) => {
                             let chk = false;
 
-                            loc2Param.forEach((loc) => {
-                              if (loc === region || loc === "all") {
-                                chk = true;
-                              }
-                            });
+                            if (loc2Param == null || loc2Param == "")
+                              chk = true;
+                            else {
+                              loc2Param.forEach((loc) => {
+                                if (loc === region || loc === "all") {
+                                  chk = true;
+                                }
+                              });
+                            }
 
                             return (
                               <>
@@ -1356,7 +1383,7 @@ export default function page() {
                     <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
                       {sortParam == "recent" ? "최신순" : "인기순"}
                     </li>
-                    {loc2Param != null &&
+                    {loc2Param &&
                       loc2Param.length > 0 &&
                       loc2Param.sort().map((loc, i) => (
                         <li
@@ -1513,7 +1540,7 @@ export default function page() {
                   <div
                     data-gtm="search_article"
                     className="_13tpfox0 _1h4pbgy9vc _1h4pbgy8jc _13tpfox1"
-                    style={{ minWidth: "0" }}
+                    style={{ minWidth: "0", position: "relative" }}
                   >
                     {post_list.map((post, i) => (
                       <Link
@@ -1550,12 +1577,22 @@ export default function page() {
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 maxWidth: "100%", // 제목이 있는 부모 요소의 너비에 맞춰서 제한
-                                display: "block",
+                                display: "flex", // Flexbox 레이아웃으로 변경
+                                justifyContent: "space-between", // 제목과 아이콘 사이에 공간 생성
+                                alignItems: "center", // 세로 중앙 정렬
                                 minWidth: "0", // 텍스트가 줄어들지 않도록 설정
                                 marginTop: "5px",
                               }}
                             >
-                              {post.title}
+                              <span
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {post.title}
+                              </span>
                             </Typography>
                             <Typography level="body-sm">
                               {post.hope_place != null &&
@@ -1694,8 +1731,34 @@ export default function page() {
                         </Card>
                       </Link>
                     ))}
+                    <Button
+                      className="write-button"
+                      style={{
+                        position: "fixed",
+                        bottom: "20px",
+                        right: "20px",
+                        zIndex: "1000",
+                        color: "white",
+                        backgroundColor: "#ff6f0f",
+                      }}
+                      variant="contained"
+                      starticon={<AddIcon />}
+                      onClick={() => {
+                        if (
+                          Cookies.get("userkey") == null ||
+                          Cookies.get("userkey") == ""
+                        ) {
+                          alert("로그인 후 이용해주세요.");
+                          return;
+                        }
+                        setOpen(true);
+                      }}
+                    >
+                      내 물건 팔기
+                    </Button>
                   </div>
                   <div
+                    style={{ display: viewMore ? "block" : "none" }} // viewMore가 t
                     data-gtm="search_show_more_articles"
                     className="_1h4pbgy7y8"
                   >
@@ -1731,30 +1794,6 @@ export default function page() {
                   </div>
                 </div>
               )}
-              <Button
-                className="write-button"
-                style={{
-                  position: "fixed",
-                  bottom: "20px",
-                  zIndex: "1000",
-                  color: "white",
-                  backgroundColor: "#ff6f0f",
-                }}
-                variant="contained"
-                starticon={<AddIcon />}
-                onClick={() => {
-                  if (
-                    Cookies.get("userkey") == null ||
-                    Cookies.get("userkey") == ""
-                  ) {
-                    alert("로그인 후 이용해주세요.");
-                    return;
-                  }
-                  setOpen(true);
-                }}
-              >
-                내 물건 팔기
-              </Button>
             </div>
           </section>
         </div>

@@ -42,12 +42,14 @@
         WHERE isdeleted = 0
           AND region1 = #{value}
         ORDER BY 
+          <if test="now != null">
           CASE 
             <foreach item="item" collection="now" separator=" " close="">
               WHEN region2 = #{item} THEN 0
             </foreach>
             ELSE 1
           END, 
+          </if>
           region2
     </select>
 
