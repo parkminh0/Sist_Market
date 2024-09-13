@@ -109,9 +109,10 @@ public class PostService {
         return p_mapper.deletePostImg(postkey);
     }
 
-    public PostVO[] search(String lastPostKey, int howManyPost, String loc1, String[] loc2, String sort,
+    public PostVO[] search(String userkey, String lastPostKey, int howManyPost, String loc1, String[] loc2, String sort,
             String category, String minPrice, String maxPrice) {
         Map<String, Object> map = new HashMap<>();
+        map.put("userkey", userkey);
         map.put("lastPostKey", lastPostKey);
         map.put("howManyPost", howManyPost);
         map.put("loc1", loc1);

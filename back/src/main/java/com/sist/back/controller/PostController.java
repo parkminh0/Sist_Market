@@ -366,14 +366,14 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String lastPostKey, String loc1, String[] loc2, String sort, String category,
+    public Map<String, Object> search(String userkey, String lastPostKey, String loc1, String[] loc2, String sort,
+            String category,
             String minPrice,
             String maxPrice) {
-
-        System.out.println("들어왔을떄 키" + lastPostKey);
         int howManyPost = 15;
         Map<String, Object> res = new HashMap<>();
-        PostVO[] ar = p_service.search(lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice, maxPrice);
+        PostVO[] ar = p_service.search(userkey, lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice,
+                maxPrice);
         String lastKey = null;
         try {
             lastKey = ar[ar.length - 1].getPostkey();
@@ -381,7 +381,6 @@ public class PostController {
         }
         res.put("res_search", ar);
         res.put("lastPostKey", lastKey);
-        System.out.println("나갈때 키" + lastKey);
 
         return res;
     }
