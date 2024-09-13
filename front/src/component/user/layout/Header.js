@@ -910,12 +910,12 @@ export default function Header() {
                 }}
               >
                 {[0, 1, 2, 3, 4].map((sectionId, i) => (
-                  <>
-                    <ListItem key={`item-${sectionId}-hihi`}>
+                  <div key={`item-${sectionId}-hihi`}>
+                    <ListItem>
                       <ListItemText primary="hihi" />
                     </ListItem>
                     <ListDivider inset="gutter" />
-                  </>
+                  </div>
                 ))}
               </List>
             </FormControl>

@@ -4,6 +4,16 @@
     grid-template-columns: 1fr 1fr;
     row-gap: 32px;
 }
+
+.userPage{
+    text-align: left !important;
+}
+
+.aspectRatio{
+    aspect-ratio: 1/1;
+    margin: "0";
+    padding: "0";
+}
         
 @media (min-width: 500px){
     .PopCateGrid{
@@ -28,3 +38,52 @@
         row-gap: 32px
     }
 }
+
+.UserProfileGrid{
+    min-width: 600px;
+    column-gap: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 32px
+}
+
+.UserPageShip{
+    flex-direction: column !important;
+}
+
+.UserPageDetail{
+    align-items: center !important;
+}
+
+.UserPageGrid{
+    column-gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    row-gap: 32px
+}
+
+@media (min-width: 600px){
+    .UserPageGrid{
+        column-gap: 20px;
+        grid-template-columns: repeat(3,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 900px){
+    .UserPageGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(4,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 1200px){
+    .UserPageGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(5,1fr);
+        row-gap: 32px
+    }
+}
+
+
