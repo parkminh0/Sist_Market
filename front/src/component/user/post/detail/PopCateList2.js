@@ -1,16 +1,43 @@
-import Link from "next/link";
-import "/public/css/popcatelist.css";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import AspectRatio from "@mui/joy/AspectRatio";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
-import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
-import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import IconButton from "@mui/joy/IconButton";
-import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import Cookies from "js-cookie";
+import Link from "next/link";
 
 export default function PopCateList2(props) {
+  const cookie_latitude = Cookies.get("latitude");
+  const cookie_longitude = Cookies.get("longitude");
+
+  function calDistance(post_lati, post_long) {
+    function deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    }
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(post_lati - cookie_latitude); // deg2rad below
+    var dLon = deg2rad(post_long - cookie_longitude);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(post_lati)) *
+        Math.cos(deg2rad(cookie_latitude)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+
+    if (d < 1) {
+      // 1km보다 작으면 미터로 표시
+      return `${Math.round(d * 1000)}m`;
+    } else {
+      // 1km 이상이면 소수점 첫째 자리까지 km로 표시
+      return `${d.toFixed(1)}km`;
+    }
+  } 
+
   function timeDifference(postTime) {
     const now = new Date(); // 현재 시간
     const postDate = new Date(postTime); // postVO.create_dtm 값을 Date 객체로 변환
@@ -38,16 +65,13 @@ export default function PopCateList2(props) {
       return "방금 전";
     }
   }
-  const pvo = props.pvo;
-  const price =
-    pvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+  const post = props.pvo;
   return (
     <Link
-      key={props.index}
       data-gtm="search_article"
       className="_1h4pbgy9ug"
-      href={`/post/detail?postkey=${pvo.postkey}`}
-      style={{margin: "5px 10px" }}
+      href={`/post/detail?postkey=${post.postkey}`}
+      style={{ minWidth: "0" }}
     >
       <Card
         sx={{
@@ -55,78 +79,93 @@ export default function PopCateList2(props) {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          minwidth: "0",
+          minWidth: "0",
           padding: "5px",
           gap: "0.5rem",
           backgroundColor: "white",
         }}
       >
-        <div style={{width:"100%"}}>
-          <div style={{ width: "100%", minwidth: "0", marginLeft: "5px" }}>
-            <Typography
-              component="span"
-              level="title-lg"
-              sx={{
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: "100%", // 제목이 있는 부모 요소의 너비에 맞춰서 제한
-                display: "block",
-                minwidth: "0", // 텍스트가 줄어들지 않도록 설정
-                marginTop: "5px",
+        <div
+          style={{
+            width: "100%",
+            minWidth: "0",
+            marginLeft: "5px",
+          }}
+        >
+          <Typography
+            component="span"
+            level="title-lg"
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "100%", // 제목이 있는 부모 요소의 너비에 맞춰서 제한
+              display: "block",
+              minWidth: "0", // 텍스트가 줄어들지 않도록 설정
+              marginTop: "5px",
+            }}
+          >
+            {post.title}
+          </Typography>
+          <Typography level="body-sm">
+            {post.hope_place != null &&
+              post.hope_place != "" &&
+              post.hope_lati != null &&
+              post.hope_long != null &&
+              (() => {
+                const distance = calDistance(
+                  post.hope_lati,
+                  post.hope_long
+                ); // 거리 계산
+                return `${distance} ·`; // 계산된 거리를 렌더링
+              })()}
+            {post.townVO && ` ${post.townVO.region3} · `}
+            {timeDifference(post.create_dtm)}
+          </Typography>
+        </div>
+        <AspectRatio
+          minHeight="200px"
+          maxHeight="200px"
+          minWidth="200px"
+          maxwidth="200px"
+          margin="0"
+          padding="0"
+        >
+          {post.pimg_list && post.pimg_list.length > 0 ? (
+            <span
+              className=" lazy-load-image-background opacity lazy-load-image-loaded"
+              style={{
+                color: "transparent",
+                display: "inlineBlock",
               }}
             >
-              {pvo.title}
-            </Typography>
-            <Typography level="body-sm">
-              위치 · 동네 · {timeDifference(pvo.create_dtm)}
-            </Typography>
-          </div>
-          <AspectRatio
-            minHeight="100%"
-            maxHeight="100%"
-            sx={{
-              minWidth:"100%",
-              maxWidth:"100%"
-            }}
-            margin="0"
-            padding="0"
-          >
-            {pvo.pimg_list && pvo.pimg_list.length > 0 ? (
-              <span
-                className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                style={{
-                  color: "transparent",
-                  display: "inlineBlock",
-                }}
-              >
-                <img
-                  className="_1b153uwe _1h4pbgya3k"
-                  src={pvo.pimg_list[0].imgurl}
-                />
-              </span>
-            ) : (
-              <ImageNotSupportedRoundedIcon
-                style={{
-                  width: "100%", // 아이콘의 너비를 100%로 설정
-                  height: "100%", // 아이콘의 높이를 100%로 설정
-                  zIndex: 1, // 필요하면 z-index로 가시성을 확보
-                }}
+              <img
+                className="_1b153uwe _1h4pbgya3k"
+                src={post.pimg_list[0].imgurl}
               />
-            )}
-            {pvo.poststatus == 2 ? (
-              <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
-                예약중
-              </span>
-            ) : pvo.poststatus == 3 ? (
-              <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
-                거래완료
-              </span>
-            ) : (
-              ""
-            )}
-          </AspectRatio>
-          <CardContent
+            </span>
+          ) : (
+            <ImageNotSupportedRoundedIcon
+              style={{
+                width: "100%", // 아이콘의 너비를 100%로 설정
+                height: "100%", // 아이콘의 높이를 100%로 설정
+                zIndex: 1, // 필요하면 z-index로 가시성을 확보
+              }}
+            />
+          )}
+          {post.poststatus == 2 ? (
+            <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwl">
+              예약중
+            </span>
+          ) : post.poststatus == 3 ? (
+            <span className="_1b153uwj _1h4pbgy7ag _1h4pbgy788 _1b153uwm">
+              거래완료
+            </span>
+          ) : (
+            ""
+          )}
+        </AspectRatio>
+        <CardContent
             orientation="horizontal"
             sx={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
           >
@@ -138,9 +177,9 @@ export default function PopCateList2(props) {
                 marginLeft: "5px",
               }}
             >
-              {pvo.price == 0
+              {post.price == 0
                 ? "나눔♥"
-                : new Intl.NumberFormat("ko-KR").format(pvo.price) + "원"}
+                : new Intl.NumberFormat("ko-KR").format(post.price) + "원"}
             </Typography>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div
@@ -150,7 +189,7 @@ export default function PopCateList2(props) {
                   style={{ fontSize: "14px", marginRight: "15px" }}
                 />
                 <span style={{ fontSize: "12px", marginLeft: "auto" }}>
-                  {pvo.viewqty}
+                  {post.viewqty}
                 </span>
               </div>
               <div
@@ -160,7 +199,7 @@ export default function PopCateList2(props) {
                   style={{ fontSize: "14px", marginRight: "15px" }}
                 />
                 <span style={{ fontSize: "12px", marginLeft: "auto" }}>
-                  {pvo.chatroomqty}
+                  {post.chatroomqty}
                 </span>
               </div>
               <div
@@ -170,12 +209,11 @@ export default function PopCateList2(props) {
                   style={{ fontSize: "14px", marginRight: "15px" }}
                 />
                 <span style={{ fontSize: "12px", marginLeft: "auto" }}>
-                  {pvo.likedqty}
+                  {post.likedqty}
                 </span>
               </div>
             </div>
           </CardContent>
-        </div>
       </Card>
     </Link>
   );
