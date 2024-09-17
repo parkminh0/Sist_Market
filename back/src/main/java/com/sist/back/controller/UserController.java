@@ -1,18 +1,17 @@
 package com.sist.back.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sist.back.service.UserService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
-import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.UserCountVO;
 import com.sist.back.vo.WishlistVO;
@@ -180,7 +178,7 @@ public class UserController {
     public Map<String, Object> FHRBCheck(String me, String you) {
         Map<String, Object> map = new HashMap<>();
         int f_num = service.F_Check(me, you);
-        System.out.println("f_num"+f_num);
+        
         int n_num = service.N_Check(me, you);
         int b_num = service.B_Check(me, you);
         map.put("isLiked", f_num>0);

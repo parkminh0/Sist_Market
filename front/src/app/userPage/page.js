@@ -1,19 +1,23 @@
 'use client'
 
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import "/public/css/myPage.css";
+import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
+import "/public/css/myPage.css";
 // import "/public/css/paging.css";
-import "/public/css/popcatelist.css";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
+import "/public/css/popcatelist.css";
 
+import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import { Box, Typography, LinearProgress, Grid, Button } from '@mui/material';
 import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
+import PraiseModal from "@/component/user/userPage/PraiseModal";
+import UserReport from "@/component/user/userPage/UserReport";
+import { Box, LinearProgress, Typography } from '@mui/material';
 import Cookies from "js-cookie";
 
 
@@ -26,6 +30,8 @@ export default function page() {
   const [isLiked, setIsLiked] = useState(false);
   const [isNosee, setIsNosee] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [cellCount, setCellCount] = useState(0);
+  const [badgeCount, setBadgeCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const [mannerCount, setMannerCount] = useState(0);
   const [mannerTemp, setMannerTemp] = useState(36.5);
@@ -35,9 +41,38 @@ export default function page() {
   const params = useSearchParams();
   const userkey = params.get("userkey");
 
-  const categoryList = ['cell','manner','review'];
+  const categoryList = ['cell','badge','manner','review'];
   
+
+  const [ifReport, setIfReport] = useState(false);
+  const [praiseOpen, setPraiseOpen] = useState(false);
+  const [disapproveOpen, setDisapproveOpen] = useState(false);
+
+  function openPraise(){
+    if(Cookies.get("userkey")==undefined){
+      alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+    setPraiseOpen(true);
+  }
+  function openDisapprove(){
+    if(Cookies.get("userkey")==undefined){
+      alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+    setDisapproveOpen(true);
+  }
+
+
+
  
+  const handleCellCount = (count) => {
+    setCellCount(count);
+  };
+
+  const handleBadgeCount = (count) => {
+    setBadgeCount(count);
+  };
 
   const handleReviewCount = (count) => {
     setReviewCount(count);
@@ -53,10 +88,12 @@ export default function page() {
   
       if (category == 'cell') {
       setSelectedTab('1');
-      } else if (category == 'manner') {
+      } else if (category == 'badge') {
       setSelectedTab('2');
-      } else if (category == 'review') {
+      } else if (category == 'manner') {
       setSelectedTab('3');
+      } else if (category == 'review') {
+      setSelectedTab('4');
       }
   }
 
@@ -69,6 +106,7 @@ export default function page() {
       console.log(res.data.uvo);
       setVo(res.data.uvo);
       setCellList(res.data.uvo.cell_list);
+      handleCellCount(res.data.uvo.cell_list.length);
     });
   }
 
@@ -91,6 +129,11 @@ export default function page() {
         setIsBlocked(res.data.isBlocked);
     });
     updateList('cell');
+    axios.get("/user/badge/getBadge", {
+      params: { userkey: userkey }
+  }).then((res) => {
+    setBadgeCount((res.data.b_ar&&res.data.b_ar!=undefined)?res.data.b_ar.length:0);
+  })
     axios.get("/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
@@ -225,10 +268,13 @@ export default function page() {
                             </div>
                             <div className="BtnPart">
                                 <div className="PraiseOrNot">
-                                    <Button className="PraiseBtn" variant="contained">매너 평가</Button>
-                                    <Button className="DisapproveBtn" variant="contained">비매너 평가</Button>
+                                    <button type="button" className="PraiseBtn" onClick={()=>{openPraise()}}>매너 평가</button>
+                                    <button type="button" className="DisapproveBtn" onClick={()=>{openDisapprove()}}>비매너 평가</button>
                                 </div>
-                                <FHRBMenu you={userkey} isLiked={isLiked} isNosee={isNosee} isBlocked={isBlocked}/>
+                                <FHRBMenu you={userkey} setIfReport={setIfReport} isLiked={isLiked}  setIsLiked={setIsLiked} isNosee={isNosee} setIsNosee={setIsNosee}  isBlocked={isBlocked} setIsBlocked={setIsBlocked} />
+                                <UserReport ifReport={ifReport}  setIfReport={setIfReport} userkey={userkey} />
+                                <PraiseModal praiseOpen={praiseOpen} setPraiseOpen={setPraiseOpen} userkey={userkey}/>
+                                <DisapproveModal disapproveOpen={disapproveOpen} setDisapproveOpen={setDisapproveOpen} userkey={userkey}/>
                             </div>
                             <div className="mannerTemp">
                                 <LinearProgressWithLabel temp={ mannerTemp } />
@@ -248,7 +294,19 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          {badgeCount}
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                          활동 배지
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -260,7 +318,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 4 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -285,8 +343,9 @@ export default function page() {
                                 </div>
                             </p>
                         )}
-                        {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><Manner userKey={userkey} onMannerCountChange={handleMannerCount} /></p>)}
-                        {selectedTab == '3' && ( <p data-v-24868902="" className="desc"><Review userKey={userkey} onReviewCountChange={handleReviewCount}/></p>)}
+                        {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/></p>)}
+                        {selectedTab == '3' && ( <p data-v-24868902="" className="desc"><Manner userKey={userkey} onMannerCountChange={handleMannerCount} /></p>)}
+                        {selectedTab == '4' && ( <p data-v-24868902="" className="desc"><Review userKey={userkey} onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
                 </div>
               </div>

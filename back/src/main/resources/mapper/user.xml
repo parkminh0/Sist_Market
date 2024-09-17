@@ -293,8 +293,8 @@
     </delete>
     <insert id="likeI" parameterType="Map">
         INSERT
-        INTO `likeuser`(userkey,likeuserkey)
-        VALUES (#{me}, #{you})
+        INTO `likeuser`(userkey,likeuserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
     </insert>
     <delete id="noseeN" parameterType="Map">
         DELETE
@@ -304,8 +304,8 @@
     </delete>
     <insert id="noseeI" parameterType="Map">
         INSERT
-        INTO `nosee`(userkey,noseeuserkey)
-        VALUES (#{me}, #{you})
+        INTO `nosee`(userkey,noseeuserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
     </insert>
     <delete id="blockN" parameterType="Map">
         DELETE
@@ -315,8 +315,8 @@
     </delete>
     <insert id="blockI" parameterType="Map">
         INSERT
-        INTO `blocked`(userkey,blockeduserkey)
-        VALUES (#{me}, #{you})
+        INTO `blocked`(userkey,blockeduserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
     </insert>
 
 
