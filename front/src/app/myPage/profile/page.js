@@ -1,18 +1,17 @@
 'use client'
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import "/public/css/myPage.css";
-import "/public/css/buylist.css";
-import "/public/css/paging.css";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import { Box, Typography, LinearProgress } from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
+import axios from "axios";
 import Cookies from "js-cookie";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import "/public/css/buylist.css";
+import "/public/css/myPage.css";
+import "/public/css/paging.css";
 
 export default function page() {
   const API_URL = "/user/api/getUser";

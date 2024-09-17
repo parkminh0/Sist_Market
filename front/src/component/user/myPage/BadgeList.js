@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
-import { Grid, Card, CardContent, Typography, Avatar, Box, Button, Modal, Divider } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import { Avatar, Box, Button, Card, CardContent, Divider, Grid, Modal, Typography } from '@mui/material';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
 
 export default function BadgeList({ userKey, onBadgeCountChange }) {
     const ALL_URL = "/user/badge/getAllBadge";
