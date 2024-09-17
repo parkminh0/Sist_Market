@@ -59,16 +59,29 @@
 }
 
 .PraiseBtn{
+    width: 125px;
+    height: 40px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
     margin-left: 15px;
     margin-bottom: 2px;
     font-size: 17px;
-    background-color: #008000;
+    background-color: #22a222;
 }
 .PraiseBtn:hover{
-    background-color: #22a222;
+    background-color: #44c444;
+}
+.PraiseBtn:active{
+    background-color: #008000;
 }
 
 .DisapproveBtn{
+    width: 125px;
+    height: 40px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
     margin-left: 15px;
     margin-top: 2px;
     font-size: 17px;
@@ -77,6 +90,9 @@
 
 .DisapproveBtn:hover{
     background-color: #ff8c52;
+}
+.DisapproveBtn:active{
+    background-color: #cc490e;
 }
 
 .MenuBtn{

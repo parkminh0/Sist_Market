@@ -13,4 +13,29 @@
       GROUP BY r.review
       ORDER BY MIN(r.reviewlistkey)
   </select>
+
+  <select id="getPraiseList" resultType="com.sist.back.vo.ReviewListVO">
+    SELECT *
+    FROM `reviewlist`
+    WHERE preference = 2
+  </select>
+
+  <insert id="praiseUser" parameterType="Map">
+    INSERT
+    INTO `manner`(userkey, reviewlistkey,estimateuserkey,ismanner,chatordeal,create_dtm,isdeleted)
+    VALUES(#{userkey},#{listKey},#{estimateUser},1,0,NOW(),0)
+  </insert>
+
+  <select id="getDisapproveList" resultType="com.sist.back.vo.ReviewListVO">
+    SELECT *
+    FROM `reviewlist`
+    WHERE preference = 0
+  </select>
+
+  <insert id="disapproveUser" parameterType="Map">
+    INSERT
+    INTO `manner`(userkey, reviewlistkey,estimateuserkey,ismanner,chatordeal,create_dtm,isdeleted)
+    VALUES(#{userkey},#{listKey},#{estimateUser},0,0,NOW(),0)
+  </insert>
+
 </mapper>

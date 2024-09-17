@@ -1,18 +1,15 @@
 package com.sist.back.controller;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sist.back.service.ReportService;
 import com.sist.back.vo.ReportListVO;
-
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -26,6 +23,15 @@ public class ReportController {
     public Map<String, Object> getReportList(String ispost, String sequence) {
         Map<String, Object> map = new HashMap<>();
         ReportListVO[] r_ar = r_service.getReportList(ispost, sequence);
+        map.put("r_ar", r_ar);
+        return map;
+    }
+
+    @RequestMapping("/getUserReportList")
+    @ResponseBody
+    public Map<String, Object> getUserReportList() {
+        Map<String, Object> map = new HashMap<>();
+        ReportListVO[] r_ar = r_service.getReportList("0", "0");
         map.put("r_ar", r_ar);
         return map;
     }
