@@ -1,7 +1,7 @@
 package com.sist.back.controller;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,13 +17,55 @@ public class MannerController {
     @Autowired
     private MannerService m_service;
 
-    @RequestMapping("getManner")
+    @RequestMapping("/getManner")
     @ResponseBody
     public Map<String, Object> getManner(String userkey) {
         Map<String, Object> map = new HashMap<>();
 
         ReviewListVO[] m_ar = m_service.getManner(userkey);
         map.put("m_ar", m_ar);
+
+        return map;
+    }
+
+    @RequestMapping("/getPraiseList")
+    @ResponseBody
+    public Map<String, Object> getPraiseList() {
+        Map<String, Object> map = new HashMap<>();
+
+        ReviewListVO[] m_ar = m_service.getPraiseList();
+        map.put("p_ar", m_ar);
+
+        return map;
+    }
+
+    @RequestMapping("/praiseUser")
+    @ResponseBody
+    public Map<String, Object> praiseUser(String userkey, String estimateUser,String listKey) {
+        Map<String, Object> map = new HashMap<>();
+        int result = m_service.praiseUser(userkey,estimateUser,listKey);
+        map.put("result", result);
+
+        return map;
+    }
+
+    @RequestMapping("/getDisapproveList")
+    @ResponseBody
+    public Map<String, Object> getDisapproveList() {
+        Map<String, Object> map = new HashMap<>();
+
+        ReviewListVO[] m_ar = m_service.getDisapproveList();
+        map.put("d_ar", m_ar);
+
+        return map;
+    }
+
+    @RequestMapping("/disapproveUser")
+    @ResponseBody
+    public Map<String, Object> disapproveUser(String userkey, String estimateUser,String listKey) {
+        Map<String, Object> map = new HashMap<>();
+        int result = m_service.disapproveUser(userkey,estimateUser,listKey);
+        map.put("result", result);
 
         return map;
     }
