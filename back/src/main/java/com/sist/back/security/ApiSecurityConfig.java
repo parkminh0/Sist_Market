@@ -29,6 +29,7 @@ public class ApiSecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/user/api/logout").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/user/api/reg").permitAll()
                                 .requestMatchers("/user/api/usercount").permitAll()
+                                .requestMatchers("/user/api/kakao/login").permitAll()
                                 .requestMatchers("/user/api/search_user_admin").permitAll()
                                 .requestMatchers("/user/api/admin/userEdit").permitAll()
                                 .requestMatchers("/user/api/admin/userDel").permitAll()

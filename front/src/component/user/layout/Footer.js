@@ -1,6 +1,28 @@
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
+import axios from "axios";
 export default function Footer() {
+  const bcUrl = "/admin/board/getAllBc";
+  const [bclist, setBclist] = useState([]);
+  //const [categorykey,setCategorykey] = useState(0);
+
+  function getData() {  
+    axios.get(bcUrl)
+    .then((json) => {
+        setBclist(json.data.bc_list);
+        //setCategorykey(json.data.bc_list.key);
+        
+    })
+    .catch((error) => {
+        console.error("데이터 로딩 오류:", error);  
+    });
+  }
+
+  useEffect(() => {
+    getData();
+    //console.log("@@@@@@@@@@@@@@@@@@@@@@@"+categorykey);
+}, []);
+
   return (
     <>
       <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
@@ -123,29 +145,30 @@ export default function Footer() {
                   </Link>
                 </div>
               </div>
+
               <div className="dmu53n2">
-                <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
-                  <font>쌍용 소식</font>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs">
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="/Board/event"
-                    target="_self"
-                  >
-                    <font>진행 중인 이벤트</font>
-                  </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="/Board/notice"
-                    rel="noreferrer noopener"
-                  >
-                    <font>공지사항</font>
-                  </Link>
-                </div>
+              <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
+                <font>쌍용소식</font>
               </div>
+              <div className="_1h4pbgy9ug _1h4pbgy9vs">
+                {bclist.length > 0 ? (
+                  bclist.map((bc, index) => (
+                    <Link
+                      key={index}
+                      className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
+                      href={`/Board/list/${bc.key}`} // 각 카테고리의 링크를 설정
+                      target="_self"
+                    >
+                      <font>{bc.value}</font> {/* 카테고리 이름 표시 */}
+                    </Link>
+                  ))
+                ) : (
+                  <font>게시판 목록이 없습니다.</font>
+                )}
+              </div>
+            </div>
+
+              
               <div className="dmu53n2">
                 <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
                   <font>
