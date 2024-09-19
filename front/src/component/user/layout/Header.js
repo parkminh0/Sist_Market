@@ -253,7 +253,7 @@ export default function Header() {
         Cookies.remove("next-auth.session-token");
         Cookies.remove("next-auth.csrf-token");
 
-        signOut({ callbackUrl: "/" });
+        signOut("kakao",{callbackUrl: "/" });
       }
     });
   }
@@ -277,7 +277,7 @@ export default function Header() {
       },
     }).then((res) => {
       if (res.data.cnt === 1) {
-        window.location.reload(); //현재 경로 재로드
+        window.location.href = "/"; 
       } else {
         alert(res.data.msg);
       }
@@ -304,7 +304,7 @@ export default function Header() {
   const kakao_login = async (e) => {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
-    signIn("kakao", { callbackUrl: "/user/kakao/login" });
+    signIn("kakao", { callbackUrl: "http://localhost:8080/user/api/kakao/login" });
   };
   const [chk, setChk] = useState(true);
   useEffect(() => {
@@ -315,7 +315,7 @@ export default function Header() {
     }
   }, [session]);
 
-  const kakao_url = "/user/kakao/login";
+  const kakao_url = "/user/api/kakao/login";
   // kakao controller에 데이터 전달
   const goController = async () => {
     if (session && session.user) {
@@ -325,6 +325,7 @@ export default function Header() {
         params: {
           nickname: session.user.name,
           email: session.user.email,
+          imgurl: session.user.image,
         },
         withCredentials: true,
         headers: {
@@ -333,11 +334,15 @@ export default function Header() {
       }).then((res) => {
         if (res.data.cnt === 1) {
           alert("로그인 성공!");
+          setAccessToken(Cookies.get("accessToken"));
+          setChk(false);
+          //window.location.href = "/"; 
+          
         } else {
           alert("로그인에 실패하였습니다.");
         }
       });
-      setChk(false);
+      
     }
   };
   // #endregion
@@ -705,6 +710,11 @@ export default function Header() {
 
               handleClose();
             },
+            style: {
+              maxWidth: "500px", // 모달 창의 최대 너비를 설정
+              width: "90%", // 뷰포트의 90% 너비를 차지하도록 설정
+              margin: "0 auto", // 가운데 정렬
+            },
           }}
         >
           <DialogTitle
@@ -759,7 +769,7 @@ export default function Header() {
                 width: "100%",
                 padding: "10px 0",
                 marginBottom: "12px",
-              }} // 회색 카카오톡 버튼
+              }}
             >
               <img
                 src="/img/kakao.png"
@@ -789,59 +799,50 @@ export default function Header() {
                 or
               </span>
             </div>
-            <FormControl
-              fullWidth
-              margin="dense"
-              variant="standard"
-              style={{ marginBottom: "4px" }}
-            >
-              <TextField
-                autoFocus
-                required
-                margin="dense"
+            {/* 아이디 입력 필드 */}
+            <div style={{ marginBottom: "12px" }}>
+              <input
+                type="text"
                 id="id"
                 name="id"
-                label="아이디"
-                type="text"
-                fullWidth
-                size="small"
-                onChange={handleChange}
-                InputProps={{
-                  style: {
-                    outline: "none",
-                    boxShadow: "none",
-                  },
-                  disableUnderline: true,
+                placeholder="아이디"
+                required
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  boxSizing: "border-box",
+                  fontSize: "14px",
+                  outline: "none",
                 }}
+                onChange={handleChange}
                 onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
                 onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
               />
-            </FormControl>
-            <FormControl
-              fullWidth
-              margin="dense"
-              variant="standard"
-              style={{ marginBottom: "4px" }}
-            >
-              <TextField
-                required
-                margin="dense"
+            </div>
+            {/* 비밀번호 입력 필드 */}
+            <div style={{ marginBottom: "12px" }}>
+              <input
+                type="password"
                 id="pw"
                 name="pw"
-                label="비밀번호"
-                type="password"
-                fullWidth
-                size="small"
-                onChange={handleChange}
-                InputProps={{
-                  style: {
-                    outline: "none",
-                    boxShadow: "none",
-                  },
-                  disableUnderline: true,
+                placeholder="비밀번호"
+                required
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  boxSizing: "border-box",
+                  fontSize: "14px",
+                  outline: "none",
                 }}
+                onChange={handleChange}
+                onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
+                onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
               />
-            </FormControl>
+            </div>
           </DialogContent>
           <DialogActions
             style={{ justifyContent: "center", paddingTop: "12px" }}
@@ -852,7 +853,7 @@ export default function Header() {
               style={{
                 backgroundColor: "#FF6F0F",
                 color: "#fff",
-                width: "80%",
+                width: "93%",
                 padding: "10px 0",
               }}
             >
@@ -877,6 +878,7 @@ export default function Header() {
           </div>
         </Dialog>
       </React.Fragment>
+
 
       {/* 위치설정 */}
       <React.Fragment>

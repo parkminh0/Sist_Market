@@ -332,9 +332,9 @@ public class UserController {
     }
 
     // kakao_login & reg
-    @RequestMapping("/kakao/login")
+    @RequestMapping("/api/kakao/login")
     @ResponseBody
-    public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
+    public Map<String, Object> kakaologin(String email, String nickname,String imgurl, HttpServletResponse res) {
         // System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
         // System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
@@ -345,6 +345,8 @@ public class UserController {
             fvo = new userVO();
             fvo.setNickname(nickname);
             fvo.setEmail(email);
+            fvo.setImgurl(imgurl);
+            fvo.setIsauthorized("0");
 
             // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
             String randomId = "user" + System.currentTimeMillis();
