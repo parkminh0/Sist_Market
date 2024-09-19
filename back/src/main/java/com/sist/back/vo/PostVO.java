@@ -25,8 +25,14 @@ public class PostVO {
         private userVO uvo;
         private userVO duvo;
         private categoryVO cvo;
+        TownVO townVO;
 
-        private String nickname, imgurl, city, district, name, reviewType;
+        private String nickname, imgurl, region1, region2, region3, reviewType;
 
         String isPostPage;
+
+        // 관심받은 횟수
+        private int likedqty;
+        // 채팅방 갯수
+        private int chatroomqty;
 }

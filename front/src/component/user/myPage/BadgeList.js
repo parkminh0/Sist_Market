@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
-import { Grid, Card, CardContent, Typography, Avatar, Box, Button, Modal, Divider } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import { Avatar, Box, Button, Card, CardContent, Divider, Grid, Modal, Typography } from '@mui/material';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-export default function BadgeList({ onBadgeCountChange }) {
+export default function BadgeList({ userKey, onBadgeCountChange }) {
     const ALL_URL = "/user/badge/getAllBadge";
     const API_URL = "/user/badge/getBadge";
     const REP_URL = "/user/badge/representBadge";
@@ -17,6 +17,7 @@ export default function BadgeList({ onBadgeCountChange }) {
     const [selectedBadge, setSelectedBadge] = useState('');
     const [badgekey, setBadgekey] = useState('');
     const [open, setOpen] = useState('');
+    const userkey = userKey;
 
     useEffect(() => {
         getAllData();
@@ -31,10 +32,10 @@ export default function BadgeList({ onBadgeCountChange }) {
 
     function getData() {
         axios.get(API_URL, {
-            params: { userkey: 45 }
+            params: { userkey: userkey }
         }).then((res) => {
             console.log(res.data.b_ar);
-            const badges = res.data.b_ar;
+            const badges = res.data.b_ar || [];
             const representBadge = badges.find((item) => item.isrepresent == "1");
             if (representBadge) {
                 setRepBadge(representBadge);
@@ -47,7 +48,7 @@ export default function BadgeList({ onBadgeCountChange }) {
     
     function setRepresentBadge() {
         axios.get(REP_URL, {
-            params: { userkey: 45, badgekey: badgekey }
+            params: { userkey: userkey, badgekey: badgekey }
         }).then((res) => {
             setRepBadge(list.find(badge => badge.badgekey == badgekey));
         });
@@ -55,7 +56,7 @@ export default function BadgeList({ onBadgeCountChange }) {
 
     function cancelRep() {
         axios.get(CAN_URL, {
-            params: { userkey: 45, badgekey: badgekey }
+            params: { userkey: userkey, badgekey: badgekey }
         }).then((res) => {
             setRepBadge(null);
         });
@@ -134,7 +135,7 @@ export default function BadgeList({ onBadgeCountChange }) {
                                 {unlockedBadgeKeys.includes(selectedBadge.badgekey) ? selectedBadge.postcontent : selectedBadge.precontent}
                             </Typography>
                             {/* 대표 배지 설정 O */}
-                            {selectedBadge && repBadge && selectedBadge.badgekey === repBadge.badgekey ? (
+                            {selectedBadge && repBadge && selectedBadge.badgekey == repBadge.badgekey ? (
                                 <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { cancelRep(); modalClose(); }}>
                                     대표 배지 해제
                                 </Button>

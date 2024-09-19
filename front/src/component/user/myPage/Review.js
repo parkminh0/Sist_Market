@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Avatar, Divider, Tabs, Tab, Modal } from '@mui/material';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
-export default function Review({ onReviewCountChange }) {
+export default function Review({ userKey, onReviewCountChange }) {
   const BUY_URL = "/user/buyingReview";
   const SELL_URL = "/user/sellingReview";
 
@@ -13,6 +14,7 @@ export default function Review({ onReviewCountChange }) {
   const [sellingList, setSellingList] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const userkey = userKey;
 
   useEffect(() => {
     getData();
@@ -20,13 +22,13 @@ export default function Review({ onReviewCountChange }) {
 
   function getData() {
     Promise.all([
-      axios.get(BUY_URL, { params: { userkey: 45} }),
-      axios.get(SELL_URL, { params: { userkey: 45} })
+      axios.get(BUY_URL, { params: { userkey: userkey} }),
+      axios.get(SELL_URL, { params: { userkey: userkey} })
     ]).then(([res1, res2]) => {
         console.log(res2.data.selling_ar);
         setBuyingList(res1.data.buying_ar);
         setSellingList(res2.data.selling_ar);
-        onReviewCountChange([...res1.data.buying_ar, ...res2.data.selling_ar].length);
+        onReviewCountChange([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
     })
   }
 
@@ -35,16 +37,16 @@ export default function Review({ onReviewCountChange }) {
   };
 
   function filter(f) {
-    if (f === 'buyer') {
-      return buyingList;
-    } else if (f === 'seller') {
-      return sellingList;
-    } else if (f === 'all') {
-      return [...sellingList, ...buyingList]; //sellingList + buyingList (순서 상관 O)
+    if (f == 'buyer') {
+      return buyingList || [];
+    } else if (f == 'seller') {
+      return sellingList || [];
+    } else if (f == 'all') {
+      return [...(sellingList || []), ...(buyingList || [])]; //sellingList + buyingList (순서 상관 O)
     } else {
       return [];
     }
-  }
+}
 
   const modalOpen = (imgUrl) => {
     setSelectedImage(imgUrl);
@@ -66,7 +68,8 @@ export default function Review({ onReviewCountChange }) {
       </Tabs>
       <Divider sx={{ my: 2 }} />
       <div className="empty_area">
-        {(selectedTab === 0 && filter('all').map((review, index) => (
+      {(selectedTab === 0 && (filter('all').length > 0 ? (
+        filter('all').map((review, index) => (
           <React.Fragment key={index}>
             <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
               <Box sx={{ display: 'flex', flexGrow: 1 }}>
@@ -75,7 +78,7 @@ export default function Review({ onReviewCountChange }) {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.district} {review.city} {review.name}
+                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
                   </Box>
@@ -84,15 +87,19 @@ export default function Review({ onReviewCountChange }) {
               {(review.dealuserreviewimg || review.userreviewimg) && (
                 <Box sx={{ ml: 2 }}>
                   <img src={review.dealuserreviewimg || review.userreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                      onClick={() => modalOpen(review.dealuserreviewimg || review.userreviewimg)}/>
+                    onClick={() => modalOpen(review.dealuserreviewimg || review.userreviewimg)} />
                 </Box>
               )}
             </Box>
-            {index < filter('all').length - 1 && ( <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
+            {index < filter('all').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
           </React.Fragment>
-        )))}
+        ))
+      ) : (
+        <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 거래 후기가 없습니다.</Typography>
+      )))}
 
-        {(selectedTab === 1 && filter('seller').map((review, index) => (
+      {(selectedTab === 1 && (filter('seller').length > 0 ? (
+        filter('seller').map((review, index) => (
           <React.Fragment key={index}>
             <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
               <Box sx={{ display: 'flex', flexGrow: 1 }}>
@@ -101,7 +108,7 @@ export default function Review({ onReviewCountChange }) {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.district} {review.city} {review.name}
+                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
                   </Box>
@@ -110,15 +117,19 @@ export default function Review({ onReviewCountChange }) {
               {review.userreviewimg && (
                 <Box sx={{ ml: 2 }}>
                   <img src={review.userreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                      onClick={() => modalOpen(review.userreviewimg)}/>
+                    onClick={() => modalOpen(review.userreviewimg)} />
                 </Box>
               )}
             </Box>
-            {index < filter('seller').length - 1 && ( <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
+            {index < filter('seller').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
           </React.Fragment>
-        )))}
+        ))
+      ) : (
+        <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 판매자 후기가 없습니다.</Typography>
+      )))}
 
-        {(selectedTab === 2 && filter('buyer').map((review, index) => (
+      {(selectedTab === 2 && (filter('buyer').length > 0 ? (
+        filter('buyer').map((review, index) => (
           <React.Fragment key={index}>
             <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
               <Box sx={{ display: 'flex', flexGrow: 1 }}>
@@ -127,7 +138,7 @@ export default function Review({ onReviewCountChange }) {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.district} {review.city} {review.name}
+                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
                   </Box>
@@ -136,13 +147,16 @@ export default function Review({ onReviewCountChange }) {
               {review.dealuserreviewimg && (
                 <Box sx={{ ml: 2 }}>
                   <img src={review.dealuserreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                      onClick={() => modalOpen(review.dealuserreviewimg)}/>
+                    onClick={() => modalOpen(review.dealuserreviewimg)} />
                 </Box>
               )}
             </Box>
-            {index < filter('buyer').length - 1 && ( <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
+            {index < filter('buyer').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
           </React.Fragment>
-        )))}
+        ))
+      ) : (
+        <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 구매자 후기가 없습니다.</Typography>
+      )))}
       </div>
       <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />
       <Modal open={openModal} onClose={modalClose} aria-labelledby="image-modal-title" aria-describedby="image-modal-description">

@@ -6,13 +6,15 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
-export default function Manner({ onMannerCountChange }) {
+export default function Manner({ userKey, onMannerCountChange }) {
   const API_URL = "/user/manner/getManner";
 
   const [list, setList] = useState([]);
   const [goods, setGoods] = useState([]);
   const [bads, setBads] = useState([]);
+  const userkey = userKey;
 
   useEffect(() => {
     getData();
@@ -20,15 +22,15 @@ export default function Manner({ onMannerCountChange }) {
 
   function getData() {
     axios.get(API_URL, {
-      params: { userkey: 45 }
+      params: { userkey: userkey }
     }).then((res) => {
-      setList(res.data.m_ar);
+      setList(res.data.m_ar || []);
       console.log(res.data.m_ar);
-      const goodList = res.data.m_ar.filter(item => item.preference === 1 || item.preference === 2);
-      const badList = res.data.m_ar.filter(item => item.preference === 0);
+      const goodList = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2);
+      const badList = (res.data.m_ar || []).filter(item => item.preference == 0);
       setGoods(goodList);
       setBads(badList);
-      const totalCount = res.data.m_ar.reduce((sum, item) => sum + item.count, 0);
+      const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       onMannerCountChange(totalCount);
     });
   }
@@ -51,7 +53,7 @@ export default function Manner({ onMannerCountChange }) {
                   <ListItemSecondaryAction>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PeopleAltIcon sx={{ color: 'gray', marginRight: 0.5 }} />
-                      <Typography sx={{ color: 'gray' }}>{item.count}</Typography> {/* Count 출력 */}
+                      <Typography sx={{ color: 'gray' }}>{item.count}</Typography>
                     </Box>
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -84,7 +86,7 @@ export default function Manner({ onMannerCountChange }) {
                   <ListItemSecondaryAction>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PeopleAltIcon sx={{ color: 'gray', marginRight: 0.5 }} />
-                      <Typography sx={{ color: 'gray' }}>{item.count}</Typography> {/* Count 출력 */}
+                      <Typography sx={{ color: 'gray' }}>{item.count}</Typography>
                     </Box>
                   </ListItemSecondaryAction>
                 </ListItem>

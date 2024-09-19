@@ -95,21 +95,23 @@ export default function SidebarItem(parentItem) {
       
       ],
     },
+    /////////////////////////////
     {
       title: "게시판",
-      path: "/admin/board",
+      path: "/admin/bbs",
       class: "link board",
       child: [
         {
           title: "게시판 카테고리 관리",
-          path: "/admin/board",
+          path: "/admin/bbs",
         },
         {
           title: "게시물 관리",
-          path: "/admin/board/post",
+          path: "/admin/bbs/post",
         },
       ],
     },
+    /////////////////////////
     {
       title: "쿠폰",
       path: "/admin/coupon",
@@ -192,10 +194,11 @@ export default function SidebarItem(parentItem) {
                     고객
                   </a>
                 </li>
+                {/* ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ */}
                 <li className="hasChild ">
                   <a
                     id="QA_Lnb_Menu7"
-                    href="/admin/board"
+                    href="/admin/bbs"
                     className="link board"
                     name="게시판"
                   >

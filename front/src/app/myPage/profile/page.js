@@ -1,31 +1,31 @@
 'use client'
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import "/public/css/myPage.css";
-import "/public/css/buylist.css";
-import "/public/css/paging.css";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
+import { Box, LinearProgress, Typography } from '@mui/material';
+import axios from "axios";
+import Cookies from "js-cookie";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import "/public/css/buylist.css";
+import "/public/css/myPage.css";
+import "/public/css/paging.css";
 
 export default function page() {
+  const API_URL = "/user/api/getUser";
 
   const [selectedTab, setSelectedTab] = useState('');
-  const [list, setList] = useState([]);
   const [whatNow, setWhatNow] = useState('badge');
   const [status, setStatus] = useState(1);
-  const [page, setPage] = useState({});
   const [badgeCount, setBadgeCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const [mannerCount, setMannerCount] = useState(0);
+  const [mannerTemp, setMannerTemp] = useState(36.5);
+  const [vo, setVo] = useState({});
+  const userkey = Cookies.get("userkey");
 
-  const API_URL = '/user/api/cellList';
-  
-  var category = useSearchParams().get("category");
   const categoryList = ['badge','manner','review'];
   
   const handleBadgeCount = (count) => {
@@ -40,10 +40,6 @@ export default function page() {
     setMannerCount(count);
   };
 
-  function changePage(pNum) { 
-    getCellList(pNum);
-  }
-
   function updateList(category){
       setWhatNow(category);
       setStatus(categoryList.indexOf(category)+1);
@@ -56,40 +52,91 @@ export default function page() {
       setSelectedTab('3');
       }
   }
-  
-  function getCellList(cPage){
-    axios({
-      url: API_URL,
-      method: 'post',
-      params: {
-          userkey: 1,
-          cPage: cPage,
-          poststatus: status,
-          start_date: startDate,
-          end_date: endDate,
+
+  function getData() {
+    axios.get(
+      API_URL, {
+        params: { userkey: userkey }
       }
-    }).then((res) => {
-        console.log(res.data);
-        setCelllist(res.data.celllist);
-      });
+    ).then((res) => {
+      console.log(res.data.uvo);
+      setVo(res.data.uvo);
+    });
   }
 
   useEffect(() => {
     updateList('badge');
     axios.get("/user/manner/getManner", {
-      params: { userkey: 45 }
+      params: { userkey: userkey }
     }).then((res) => {
-      const totalCount = res.data.m_ar.reduce((sum, item) => sum + item.count, 0);
+      const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
+      const goodTemps = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2)
+      .reduce((sum, item) => sum + item.count, 0);
+      const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
+      .reduce((sum, item) => sum + item.count, 0);
+      const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
+      setMannerTemp(updatedTemp);
     });
     Promise.all([
-      axios.get("/user/buyingReview", { params: { userkey: 45} }),
-      axios.get("/user/sellingReview", { params: { userkey: 45} })
+      axios.get("/user/buyingReview", { params: { userkey: userkey} }),
+      axios.get("/user/sellingReview", { params: { userkey: userkey} })
     ]).then(([res1, res2]) => {
-        setReviewCount([...res1.data.buying_ar, ...res2.data.selling_ar].length);
+        setReviewCount([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
     });
+    getData();
   }, []);
 
+  function getTemperatureEmoji(temp) {
+    if (temp <= 15) {
+      return '😟';
+    } else if (temp <= 30) {
+      return '😞';
+    } else if (temp <= 45) {
+      return '🙂'; 
+    } else if (temp <= 60) {
+      return '😊';
+    } else if (temp <= 80) {
+      return '😁';
+    } else {
+      return '😆';
+    }
+  }
+
+  function getProgressColor(temp) {
+    if (temp <= 15) {
+      return '#555555';
+    } else if (temp <= 30) {
+      return '#2E64FE';
+    } else if (temp <= 45) {
+      return 'skyblue';
+    } else if (temp <= 60) {
+      return '#01DF3A';
+    } else if (temp <= 80) {
+      return '#F2F5A9';
+    } else {
+      return 'orange';
+    }
+  }
+
+  function LinearProgressWithLabel({ temp }) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative', marginTop: '20px' }}>
+        <Box sx={{ position: 'absolute', left: 0, top: -35, display: 'flex', alignItems: 'center' }}>
+          <h3>매너 온도</h3>
+        </Box>
+        <Box sx={{ position: 'absolute', right: 0, top: -25, display: 'flex', alignItems: 'center' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{`${temp}℃`}</Typography>
+          <Typography variant="body2" sx={{ marginLeft: 0.2, fontSize: '1.2rem' }}>{getTemperatureEmoji(temp)}</Typography>
+        </Box>
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress variant="determinate" value={temp} 
+                          sx={{ '& .MuiLinearProgress-bar': { backgroundColor: getProgressColor(temp) }, '&.MuiLinearProgress-root': { backgroundColor: '#e0e0e0' } }}/>
+        </Box>
+      </Box>
+    );
+  }
+  
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
@@ -135,30 +182,33 @@ export default function page() {
                   </div>
                 </div>
                 <div data-v-ed683452="" data-v-7b7d73d2="" className="user_membership">
-                <div data-v-ed683452="" className="user_detail">
-                  <div data-v-ed683452="" className="user_thumb">
-                    <img data-v-ed683452=""
-                    //src={uvo.imgurl}
-                    alt="사용자 이미지" className="thumb_img"/>
-                  </div>
-                  <div data-v-ed683452="" className="user_info">
-                    <div data-v-ed683452="" className="info_box">
-                      <strong data-v-ed683452="" className="name">
-                        {/* {uvo.nickname} */}
-                      </strong>
-                      <p data-v-ed683452="" className="email">
-                        {/* {uvo.id} [ {uvo.email} ] */}
-                      </p>
+                  <div data-v-ed683452="" className="user_detail">
+                    <div data-v-ed683452="" className="user_thumb">
+                      <img data-v-ed683452=""
+                      src={vo.imgurl}
+                      alt="사용자 이미지" className="thumb_img"/>
                     </div>
-                    <div data-v-ed683452="" className="info-buttons">
-                      <Link data-v-420a5cda="" data-v-ed683452="" href="/myPage/profile/edit" className="btn btn outlinegrey small" type="button" >
-                        {" "}
-                        프로필 수정{" "}
-                      </Link>
+                    <div data-v-ed683452="" className="user_info">
+                      <div data-v-ed683452="" className="info_box">
+                        <strong data-v-ed683452="" className="name">
+                          {vo.nickname}
+                        </strong>
+                        <p data-v-ed683452="" className="email">
+                          {vo.id} [ {vo.email} ]
+                        </p>
+                      </div>
+                      <div data-v-ed683452="" className="info-buttons">
+                        <Link data-v-420a5cda="" data-v-ed683452="" href="/myPage/profile/edit" className="btn btn outlinegrey small" type="button" >
+                          {" "}
+                          프로필 수정{" "}
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+                <div style={{ marginTop: '60px' }}>
+                  <LinearProgressWithLabel temp={ mannerTemp } />
+                </div>
                 <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
                   <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
@@ -199,9 +249,9 @@ export default function page() {
                 </div>
                 <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
                     <div data-v-24868902="" data-v-eff62a72="" className="empty_area" style={{paddingTop: '50px'}}>
-                        {selectedTab === '1' && ( <p data-v-24868902="" className="desc"><BadgeList onBadgeCountChange={handleBadgeCount}/></p>)}
-                        {selectedTab === '2' && ( <p data-v-24868902="" className="desc"><Manner onMannerCountChange={handleMannerCount}/></p>)}
-                        {selectedTab === '3' && ( <p data-v-24868902="" className="desc"><Review onReviewCountChange={handleReviewCount}/></p>)}
+                        {selectedTab == '1' && ( <p data-v-24868902="" className="desc"><BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/></p>)}
+                        {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><Manner userKey={userkey} onMannerCountChange={handleMannerCount} /></p>)}
+                        {selectedTab == '3' && ( <p data-v-24868902="" className="desc"><Review userKey={userkey} onReviewCountChange={handleReviewCount}/></p>)}
                     </div>
                 </div>
               </div>

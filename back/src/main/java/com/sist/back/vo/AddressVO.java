@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressVO {
-    String addresskey,townkey,isselected,iscertified,range,isalarm,userkey;
+    String addresskey, userkey, townkey, isselected, iscertified, range, isalarm;
+    TownVO tvo;
 }

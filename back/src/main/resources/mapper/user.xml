@@ -264,6 +264,62 @@
     WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
+    <!-- 사용자 모아보기, 미노출, 차단 여부 확인 -->
+    <select id="F_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `likeuser`
+        WHERE userkey = #{me}
+        AND likeuserkey = #{you}
+    </select>
+    <select id="N_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `nosee`
+        WHERE userkey = #{me}
+        AND noseeuserkey = #{you}
+    </select>
+    <select id="B_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `blocked`
+        WHERE userkey = #{me}
+        AND blockeduserkey = #{you}
+    </select>
+
+
+    <delete id="likeN" parameterType="Map">
+        DELETE
+        FROM `likeuser`
+        WHERE userkey = #{me}
+        AND likeuserkey = #{you}
+    </delete>
+    <insert id="likeI" parameterType="Map">
+        INSERT
+        INTO `likeuser`(userkey,likeuserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
+    </insert>
+    <delete id="noseeN" parameterType="Map">
+        DELETE
+        FROM `nosee`
+        WHERE userkey = #{me}
+        AND noseeuserkey = #{you}
+    </delete>
+    <insert id="noseeI" parameterType="Map">
+        INSERT
+        INTO `nosee`(userkey,noseeuserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
+    </insert>
+    <delete id="blockN" parameterType="Map">
+        DELETE
+        FROM `blocked`
+        WHERE userkey = #{me}
+        AND blockeduserkey = #{you}
+    </delete>
+    <insert id="blockI" parameterType="Map">
+        INSERT
+        INTO `blocked`(userkey,blockeduserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
+    </insert>
+
+
    <!-- 관심목록 수, 내용 -->
     <select id="getWishlistCount" resultType="int" parameterType="Map">
         SELECT COUNT(*)
@@ -366,8 +422,20 @@
       FROM `post`
       WHERE userkey = #{userkey}
       AND poststatus = #{poststatus}
-      <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
-          AND create_dtm BETWEEN #{start_date} AND #{end_date}
+      <if test="poststatus == 1 or poststatus == 2">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND create_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 3">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 4">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND update_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
       </if>
     </select>
 
@@ -493,8 +561,10 @@
 
     <!-- 회원가입 -->
     <insert id="saveUser" parameterType="com.sist.back.vo.userVO">
-      INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm,  isdeleted)
-      VALUES (#{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, #{imgurl}, now(), #{isauthorized}, now(),  0)
+      INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm, isdeleted)
+      VALUES (
+        #{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, IFNULL(#{imgurl}, '/img/user/default_img.png'),now(), #{isauthorized}, now(), 0
+      )
     </insert>
 
     <!-- 카카오_이메일로 유저 확인-->

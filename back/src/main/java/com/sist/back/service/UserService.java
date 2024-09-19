@@ -112,6 +112,42 @@ public class UserService {
         return ar;
     }
 
+    public int F_Check(String me, String you){
+        return mapper.F_Check(me, you);
+    }
+    public int N_Check(String me, String you){
+        return mapper.N_Check(me, you);
+    }
+    public int B_Check(String me, String you){
+        return mapper.B_Check(me, you);
+    }
+
+    public int likeN(String me, String you){
+        return mapper.likeN(me, you);
+    }
+    public int likeI(String me, String you){
+        return mapper.likeI(me, you);
+    }
+    public int noseeN(String me, String you){
+        return mapper.noseeN(me, you);
+    }
+    public int noseeI(String me, String you){
+        return mapper.noseeI(me, you);
+    }
+    public int blockN(String me, String you){
+        return mapper.blockN(me, you);
+    }
+    public int blockI(String me, String you){
+        return mapper.blockI(me, you);
+    }
+
+
+
+
+
+
+
+
     public userVO getUserForAdmin(String userkey) {
         return mapper.getUserForAdmin(userkey);
     }
@@ -266,24 +302,6 @@ public class UserService {
         return mapper.editImage(uvo);
     }
 
-    public String saveImage(MultipartFile image) {
-        String uploadDir = context.getRealPath("/public/img/user/");
-        String fileName = image.getOriginalFilename();
-        String filePath = uploadDir + "/" + fileName;
-
-        File directory = new File(uploadDir);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        try {
-            File f = new File(filePath);
-            image.transferTo(f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "/img/user/" + fileName;
-    }
-
     public int delImage(String userkey) {
         return mapper.delImage(userkey);
     }
@@ -300,8 +318,17 @@ public class UserService {
         return mapper.editPw(uvo);
     }
 
+    public String encodePw(String pw) {
+        return passwordEncoder.encode(pw);
+    }
+
     public int editPhone(userVO uvo) {
         return mapper.editPhone(uvo);
     }
+
+    public boolean chkPw(String chkPw, String encodedPw) {
+        return passwordEncoder.matches(chkPw, encodedPw);
+    }
+
 
 }

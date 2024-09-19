@@ -23,9 +23,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
+import com.sist.back.service.TownService;
+import com.sist.back.service.OfferService;
+import com.sist.back.service.WishlistService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
+import com.sist.back.vo.TownVO;
+import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 
@@ -44,6 +49,15 @@ public class PostController {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    TownService townService;
+
+    @Autowired
+    OfferService o_service;
+
+    @Autowired
+    WishlistService w_service;
+
     @Value("${server.upload.post.image}")
     private String postImgPath;
 
@@ -54,15 +68,29 @@ public class PostController {
         return res;
     }
 
-    // POST 요청을 처리하기 위해 @PostMapping 사용
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
         // 요청 파라미터 확인 (디버깅용)
         System.out.println("Received search parameters: " + searchParams);
 
+        // searchParams에서 poststatus를 추출
+        String poststatus = searchParams.get("poststatus") != null ? searchParams.get("poststatus").toString() : "";
+
         // 결과를 담을 Map 객체 생성
         Map<String, Object> res = new HashMap<>();
-        res.put("post_list", p_service.searchpost(searchParams));
+        List<PostVO> postList = new ArrayList<>();
+
+        // "전체"인 경우 1, 2, 3, 4 상태의 게시글 조회
+        if ("all".equals(poststatus)) {
+            res.put("post_list", p_service.findAllByPoststatusIn(Arrays.asList(1, 2, 3, 4)));
+        } else if (!poststatus.isEmpty()) {
+            // 선택한 특정 상태만 조회
+            res.put("post_list", p_service.findByPoststatus(Integer.parseInt(poststatus)));
+        } else {
+            // poststatus 값이 없거나 잘못된 경우 처리
+            res.put("post_list", new ArrayList<>()); // 빈 리스트 반환 또는 기본 처리
+        }
+
         // 결과를 JSON 형태로 반환
         return res;
     }
@@ -74,6 +102,59 @@ public class PostController {
         e_map.put("tvo", p_service.getTownByPostKey(postkey));
         e_map.put("o_list", p_service.getOfferByPostKey(postkey));
         e_map.put("cr_list", p_service.getChatroomByPostKey(postkey));
+        return e_map;
+    }
+
+    @RequestMapping("/cellList")
+    public Map<String, Object> cellList(int userkey, int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("cellList", p_service.getCellListByUserPostKey(userkey, postkey));
+        return e_map;
+    }
+
+    @RequestMapping("/pop_cate")
+    public Map<String, Object> popCate(int categorykey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey));
+        return e_map;
+    }
+
+    @RequestMapping("/priceOffer")
+    public Map<String, Object> priceOffer(OfferVO ovo) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("result", o_service.makePriceOffer(ovo));
+        return e_map;
+    }
+
+    @RequestMapping("/isLike")
+    public Map<String, Object> isLike(int userkey, int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        Map<String, Object> w_map = new HashMap<>();
+        w_map.put("userkey", userkey);
+        w_map.put("postkey", postkey);
+        int result = w_service.isLike(w_map);
+        e_map.put("result", result);
+        return e_map;
+    }
+
+    @RequestMapping("/toggleLike")
+    public Map<String, Object> toggleLike(boolean isLike, int userkey, int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        Map<String, Object> w_map = new HashMap<>();
+        w_map.put("userkey", userkey);
+        w_map.put("postkey", postkey);
+        e_map.put("result", w_service.toggleLike(isLike, w_map));
+        return e_map;
+    }
+
+    // 조회수 증가
+    @RequestMapping("/incViewqty")
+    public Map<String, Object> incViewqty(int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("postkey", postkey);
+        e_map.put("result", p_service.incViewqty(postkey));
+        e_map.put("viewqty", p_service.getViewqty(postkey));
+
         return e_map;
     }
 
@@ -112,16 +193,58 @@ public class PostController {
         return map;
     }
 
+    // 이미지 파일 객체 가져오기
+    @RequestMapping("/imageFile")
+    public Map<String, Object> imageFile(String post_img) {
+        Map<String, Object> imageFile = new HashMap<>();
+        imageFile.put("post_img", post_img);
+        Map<String, Object> image = new HashMap<>();
+        if (post_img != null) {
+            Path path = Paths.get(postImgPath);
+            if (path.toString().contains("back")) {
+                String pathString = path.toString();
+                String changedPath = pathString.replace("back\\", "");
+                path = Paths.get(changedPath);
+            }
+            String filePath = path.resolve(post_img).toString();
+            File f = new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) + post_img);
+            String fname = f.getName();
+            if (f.exists()) {
+                image.put("name", fname);
+                image.put("imgurl", "/img/postimg/" + post_img);
+                image.put("file", f);
+            }
+        }
+        imageFile.put("imageFile", image);
+        return imageFile;
+    }
+
     // 사용자 - 중고거래 글 올리기
     @PostMapping("/write")
-    public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {
-        // townkey
+    public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
+            String region2, String region3) {
+        System.out.println("거래희망!!" + vo.getHope_place() + "까지");
+        if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
+                && !region3.equals("")) {
+            Map<String, String> searchTown = new HashMap<>();
+            TownVO tvo = new TownVO();
+            tvo.setRegion1(region1);
+            tvo.setRegion2(region2);
+            tvo.setRegion3(region3);
+            searchTown.put("region1", region1);
+            searchTown.put("region2", region2);
+            searchTown.put("region3", region3);
+            TownVO townVO = townService.searchKeyByRegion(tvo);
+            if (townVO == null) {
+                vo.setTownkey(String.valueOf(townService.insertTown(tvo)));
+            } else {
+                vo.setTownkey(townVO.getTownkey());
+            }
+        }
+
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
         // range
-        // hope_place
-        // hope_lati
-        // hope_long
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
@@ -170,25 +293,36 @@ public class PostController {
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
-    public Map<String, Object> edit(@ModelAttribute PostVO vo, List<MultipartFile> post_img) {
-        // townkey
+    public Map<String, Object> edit(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
+            String region2, String region3) {
+
+        if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
+                && !region3.equals("")) {
+            Map<String, String> searchTown = new HashMap<>();
+            TownVO tvo = new TownVO();
+            tvo.setRegion1(region1);
+            tvo.setRegion2(region2);
+            tvo.setRegion3(region3);
+            searchTown.put("region1", region1);
+            searchTown.put("region2", region2);
+            searchTown.put("region3", region3);
+            TownVO townVO = townService.searchKeyByRegion(tvo);
+            if (townVO == null) {
+                vo.setTownkey(String.valueOf(townService.insertTown(tvo)));
+            } else {
+                vo.setTownkey(townVO.getTownkey());
+            }
+        }
+
         // lastprice 변동 후 가격 = 가격
         vo.setLastprice(vo.getPrice());
         // range
-        // hope_place
-        // hope_lati
-        // hope_long
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
             vo.setCanbargain("0");
         }
-        // create_dtm
-        // update_dtm
-        // delete_dtm
-        // remind_dtm
-        // dealuserkey
 
         // 파일 데이터 처리
         // 1) 기존 존재하던 이미지 삭제
@@ -232,10 +366,22 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String sort, String category, String minPrice, String maxPrice) {
-
+    public Map<String, Object> search(String userkey, String lastPostKey, String loc1, String[] loc2, String sort,
+            String category,
+            String minPrice,
+            String maxPrice) {
+        int howManyPost = 15;
         Map<String, Object> res = new HashMap<>();
-        res.put("res_search", p_service.search(sort, category, minPrice, maxPrice));
+        PostVO[] ar = p_service.search(userkey, lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice,
+                maxPrice);
+        String lastKey = null;
+        try {
+            lastKey = ar[ar.length - 1].getPostkey();
+        } catch (Exception e) {
+        }
+        res.put("res_search", ar);
+        res.put("lastPostKey", lastKey);
+
         return res;
     }
 
@@ -255,7 +401,6 @@ public class PostController {
             if (!randomCategories.contains(key)) {
                 randomCategories.add(key); // 중복되지 않는 경우 추가
             }
-            System.out.println(key);
         }
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
@@ -270,21 +415,14 @@ public class PostController {
         return res;
     }
 
-    // 관리자 - 게시글 현황
-    // @GetMapping("/statuscounts")
-    // public Map<String, Integer> getPostStatusCounts() {
-    // Map<String, Integer> res = new HashMap<>();
-    // return res;
-    // }
-
     // 관리자 게시글 현황 확인
-    // @RequestMapping("/postcount")
-    // @ResponseBody
-    // public Map<String, Object> getPostCount() {
-    // Map<String, Object> map = new HashMap<>();
-    // PostCountVO pcvo = p_service.postForAdmin();
-    // map.put("pcvo", pcvo);
-    // return map;
-    // }
+    @RequestMapping("/postcount")
+    @ResponseBody
+    public Map<String, Object> getPostCount() {
+        Map<String, Object> map = new HashMap<>();
+        PostCountVO pcvo = p_service.postForPostAdmin();
+        map.put("pcvo", pcvo);
+        return map;
+    }
 
 }

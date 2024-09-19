@@ -131,7 +131,7 @@ export default function Footer() {
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="/category"
+                    href="/Board/event"
                     target="_self"
                   >
                     <font>진행 중인 이벤트</font>
@@ -139,8 +139,7 @@ export default function Footer() {
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://karrotmarket.com/ca"
-                    target="_blank"
+                    href="/Board/notice"
                     rel="noreferrer noopener"
                   >
                     <font>공지사항</font>

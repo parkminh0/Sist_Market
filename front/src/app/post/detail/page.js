@@ -1,25 +1,209 @@
 "use client";
-import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded';
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { Box, Breadcrumbs, Button, IconButton, MobileStepper, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Grid,
+  IconButton,
+  MobileStepper,
+  Paper,
+  Typography,
+} from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import "/public/css/post_detail.css";
-import { useRouter } from "next/navigation";
+import "/public/css/popcatelist.css";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useTheme } from "@emotion/react";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import Cookies from "js-cookie";
+import EditPostModal from "@/component/user/post/detail/EditPostModal";
+import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
+import UserCellList from "@/component/user/post/detail/UserCellList";
+import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import PopCateList from "@/component/user/post/detail/PopCateList";
+import PopCateList2 from "@/component/user/post/detail/PopCateList2";
+import ReportModal from "@/component/user/post/detail/report/ReportModal";
 
 export default function Page() {
+  // PO(PriceOffer: 가격제안)모달용 데이터
+
+  const [openPO, setOpenPO] = useState(false);
+  const handleClosePO = () => {
+    setOpenPO(false);
+  };
+
+  // 관심상품 등록/해제
+  const [like, setLike] = useState(false);
+
+  function isLike(postkey) {
+    axios({
+      url: "/adpost/isLike",
+      method: "get",
+      params: {
+        postkey: postkey,
+        userkey: Cookies.get("userkey"),
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.data.result > 0) {
+        setLike(true);
+      }
+    });
+  }
+
+  function toggleLike() {
+    axios({
+      url: "/adpost/toggleLike",
+      method: "get",
+      params: {
+        isLike: like, // isLike: true면 이미 등록된걸 삭제하는 것임
+        postkey: postKey,
+        userkey: userkey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.data.result > 0) {
+        if (like) {
+          alert("해당 게시물에 대한 관심을 취소하였습니다.");
+        } else {
+          alert("해당 게시물에 대한 관심을 등록하였습니다.");
+        }
+        setLike(!like);
+      }
+    });
+  }
+
+  // 조회수
+
+  const [viewqty, setViewqty] = useState(0);
+
+  function updateViewqty(postkey) {
+    axios({
+      url: "/adpost/incViewqty",
+      method: "get",
+      params: {
+        postkey: postkey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      console.log(res.data);
+      if (res.data.result > 0) {
+        setViewqty(res.data.viewqty);
+      }
+    });
+  }
+
+  function incViewqty(postkey) {
+    var userkey = Cookies.get("userkey");
+    if (userkey == undefined) {
+      userkey = 0;
+    }
+    var cookie = Cookies.get("viewedPost");
+    if (cookie != undefined) {
+      if (cookie.includes(`/${userkey}`)) {
+        // 유저가 있을 때
+        var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
+        // console.log(`userCookieTmp: ${userCookieTmp}`);
+        var beforeCookie = cookie.substring(0,cookie.indexOf(`/${userkey}`));
+        // console.log(`beforeCookie: ${beforeCookie}`);
+        var userCookie = userCookieTmp;
+        var afterCookie = "";
+        if(userCookieTmp.indexOf("/")>0){
+          userCookie = userCookieTmp.substring(0,userCookieTmp.indexOf("/"));
+          afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
+        }
+        // console.log(`userCookie: ${userCookie}`);
+        // console.log(`afterCookie: ${afterCookie}`);
+        if (!userCookie.includes(`[${postkey}]`)) {
+          // 새로운 페이지 일 때
+          updateViewqty(postkey);
+          Cookies.remove("viewedPost");
+          Cookies.set("viewedPost", `${beforeCookie}${userCookie}_[${postkey}]${afterCookie}`, {
+            expires: 1/(24*60) , // 1분
+            // expires: 1, // 하루(24시간)
+          });
+        } // 이미 본 페이지 일 때는 다른 작업없음
+      } else {
+        // 새로운 유저
+        updateViewqty(postkey);
+        Cookies.set("viewedPost", `${cookie}/${userkey}_[${postkey}]`, {
+          expires: 1/(24*60) , // 1분
+          // expires: 1, // 하루(24시간)
+        });
+      }
+    } else {
+      // 쿠키가 아예 없을 때
+      updateViewqty(postkey);
+      Cookies.set("viewedPost", `/${userkey}_[${postkey}]`, {
+        expires: 1/(24*60) , // 1분
+        // expires: 1, // 하루(24시간)
+      });
+    }
+  }
+
   // postkey 파라미터 값
   const [postKey, setPostKey] = useState(null);
+  const [userTown, setUserTown] = useState("");
+  const [manner, setManner] = useState(0);
   const [postVO, setPostVO] = useState({});
   const [userVO, setUserVO] = useState({});
+  const [popCate, setPopCate] = useState([]);
+  const [cellList, setCellList] = useState([]);
   const [categoryVO, setCategoryVO] = useState({});
   const [chatroomVO, setChatroomVO] = useState({});
+  const [canEdit, setCanEdit] = useState(false);
   const router = useRouter();
+
+  const userkey = Cookies.get("userkey");
+  const loggedIn = userkey != undefined;
+  const param = useSearchParams();
+
+  function getUserTown(address_list) {
+    var length = address_list.length > 0 ? address_list.length : 0;
+    var userTown = "";
+    for (var i = 0; i < length; i++) {
+      if (address_list[i].isselected == 1) {
+        var tvo = address_list[i].tvo;
+        userTown = tvo.region2 + " " + tvo.region3;
+      }
+    }
+    return userTown;
+  }
+
+  function getManner(m_list) {
+    var length = m_list.length > 0 ? m_list.length : 0;
+    var manner = 36.5;
+    for (var i = 0; i < length; i++) {
+      switch (m_list[i].ismanner) {
+        case "0":
+          manner -= 0.5;
+          break;
+        case "1":
+        case "2":
+          manner += 0.5;
+          break;
+      }
+    }
+    return manner;
+  }
 
   useEffect(() => {
     let currentUrl = window.location.href;
@@ -31,7 +215,7 @@ export default function Page() {
     setPostKey(postkey);
 
     axios({
-      url: "http://localhost:8080/adpost/detail",
+      url: "/adpost/detail",
       method: "get",
       params: {
         postkey: postkey,
@@ -40,13 +224,55 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
+      if (Cookies.get("userkey") != undefined) {
+        isLike(res.data.pvo.postkey);
+      }
+      
+      setViewqty(res.data.pvo.viewqty);
+      incViewqty(res.data.pvo.postkey);
       setPostVO(res.data.pvo);
       setCategoryVO(res.data.pvo.cvo);
       setUserVO(res.data.pvo.uvo);
       setChatroomVO(res.data.cr_list);
-      console.log(res.data.pvo.uvo);
+      setCanEdit(res.data.pvo.userkey == Cookies.get("userkey"));
+      if (res.data.pvo.hope_place != null && res.data.pvo.hope_place != "")
+        getLocation(res.data.pvo);
+
+      if (param.get("edit") != null) {
+        editPost(res.data.pvo.userkey,res.data.pvo.poststatus);
+      }
+
+      // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
+      setManner(getManner(res.data.pvo.uvo.m_list));
+
+      axios({
+        url: "/adpost/cellList",
+        method: "get",
+        params: {
+          userkey: res.data.pvo.uvo.userkey,
+          postkey: res.data.pvo.postkey,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        setCellList(res.data.cellList);
+      });
+
+      axios({
+        url: "/adpost/pop_cate",
+        method: "get",
+        params: {
+          categorykey: res.data.pvo.categorykey,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        setPopCate(res.data.popCateList);
+      });
     });
-  }, [router.query]);
+  }, [param.get("postkey")]);
 
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
@@ -59,8 +285,141 @@ export default function Page() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  // #region 시간 표현
+  function timeDifference(postTime) {
+    const now = new Date(); // 현재 시간
+    const postDate = new Date(postTime); // postVO.create_dtm 값을 Date 객체로 변환
+
+    const timeDiff = now - postDate; // 두 시간의 차이를 밀리초로 계산
+    const diffInSeconds = Math.floor(timeDiff / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYear = Math.floor(diffInDays / 365);
+
+    // #regin 차이에 따라 적절한 문자열을 반환
+    if (diffInYear > 0) {
+      return `${diffInYear}년 전`;
+    } else if (diffInMonths > 0) {
+      return `${diffInMonths}개월 전`;
+    } else if (diffInDays > 0) {
+      return `${diffInDays}일 전`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours}시간 전`;
+    } else if (diffInMinutes > 0) {
+      return `${diffInMinutes}분 전`;
+    } else {
+      return "방금 전";
+    }
+  }
+  // #endregion
+
+  function editPost(userkey,poststatus) {
+    if (userkey != Cookies.get("userkey")) {
+      alert("수정 권한이 없습니다.");
+    } else if(poststatus==3){
+      alert("구매완료된 게시글은 수정하실 수 없습니다.");
+    }else {
+      setOpen(true);
+    }
+  }
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  function getLocation(pvo) {
+    const kakaoMapScript = document.createElement("script");
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.async = false;
+    document.head.appendChild(kakaoMapScript);
+
+    kakaoMapScript.onload = () => {
+      // Kakao Maps API가 완전히 초기화된 후에 실행
+      window.kakao.maps.load(() => {
+        if (!window.kakao.maps.services) {
+          return;
+        }
+        setMap(pvo); // API 로드 후에 함수 호출
+      });
+    };
+  }
+  // #region 지도
+  function setMap(pvo) {
+    // Geolocation API 지원 여부 확인
+    try {
+      let hope_place = pvo.hope_place;
+      let latitude = pvo.hope_lati;
+      let longitude = pvo.hope_long;
+      // 주소-좌표 변환 객체를 생성합니다
+      let locPosition = new kakao.maps.LatLng(latitude, longitude);
+
+      // 인포윈도우를 생성합니다
+      let infowindow = new kakao.maps.InfoWindow({
+        content:
+          '<span id="info-title" style="display: block; background: black; color: #fff; text-align: center; height: 24px; line-height:22px; border-radius:4px; padding:0px 10px; ">' +
+          hope_place +
+          "</span>",
+      });
+
+      let mapContainer = document.getElementById("map"); // 지도를 표시할 div
+      let mapOption = {
+        center: locPosition, // 지도의 중심좌표
+        level: 5, // 지도의 확대 레벨
+      };
+      let map = new kakao.maps.Map(mapContainer, mapOption);
+      map.setDraggable(false);
+      map.setZoomable(false);
+
+      // 마커를 생성합니다
+      let marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(latitude, longitude),
+      });
+
+      // 인포윈도우를 마커위에 표시합니다
+      infowindow.open(map, marker);
+
+      marker.setMap(map);
+
+      let infoTitle = document.getElementById("info-title");
+      let w = infoTitle.offsetWidth + 10;
+      let ml = w / 2;
+      infoTitle.parentElement.style.top = "82px";
+      infoTitle.parentElement.style.left = "50%";
+      infoTitle.parentElement.style.marginLeft = -ml + "px";
+      infoTitle.parentElement.style.width = w + "px";
+      infoTitle.parentElement.previousSibling.style.display = "none";
+      infoTitle.parentElement.parentElement.style.border = "0px";
+      infoTitle.parentElement.parentElement.style.background = "unset";
+
+      kakao.maps.event.addListener(map, "click", function () {
+        window.open(
+          `https://map.kakao.com/link/map/${hope_place},${latitude},${longitude}`,
+          "_blank"
+        );
+      });
+    } catch (Exception) {
+      alert("지도 생성 중 오류가 발생했습니다.");
+      return;
+    }
+  }
+  // #endregion
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const handleReportOpen = () => setReportOpen(true);
+  const handleReportClose = () => setReportOpen(false);
+  const [chkOpen, setChkOpen] = useState(false);
+  const handleChkOpen = () => { setChkOpen(true); };
+  const handleChkClose = (res) => { setChkOpen(false); if (res) { setReportOpen(true); } };
+
   return (
     <>
+      {postVO ? (
+        <EditPostModal open={open} handleClose={handleClose} pvo={postVO} />
+      ) : (
+        ""
+      )}
       <article className="vqbuc90 _1h4pbgy7zs _1h4pbgy83s _1h4pbgy84b _1h4pbgy84l _1h4pbgy89k _1h4pbgy8eg _1h4pbgy9ug _1h4pbgy9vs _1h4pbgya0o">
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <div className="_588sy41z _588sy421 vqbuc9j _588sy422 _588sy42b _588sy4qe _588sy4r5">
@@ -94,59 +453,69 @@ export default function Page() {
               <div className="_588sy41b _588sy462 _588sy49e" id="relative">
                 <div
                   className="_588sy41z _588sy421 _588sy42q _588sy462"
-                  style={{ width: '100%', height: '100%' }} // 부모 div의 크기를 100%로 설정
+                  style={{ width: "100%", height: "100%" }} // 부모 div의 크기를 100%로 설정
                 >
-                {postVO.pimg_list && postVO.pimg_list.length > 0 ? 
-                <Box sx={{ width: '100%', height: '100%', flexGrow: 1 }}>
-                  <Box sx={{ width: '100%', height: '100%', p: 2 }}>
-                    <img
-                        className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
-                        src={postVO.pimg_list[activeStep].imgurl}
-                        alt=""
-                        style={{
-                          width: '100%',    // 부모 요소에 맞게 너비 100%
-                          height: '100%',   // 부모 요소에 맞게 높이 100%
-                          objectFit: 'cover', // 비율 유지하며 부모 요소에 맞게
-                          imageRendering: 'auto' // 이미지 렌더링 속성 설정 (smooth, high-quality)
-                        }}
+                  {postVO.pimg_list && postVO.pimg_list.length > 0 ? (
+                    <Box sx={{ width: "100%", height: "100%", flexGrow: 1 }}>
+                      <Box sx={{ width: "100%", height: "100%", p: 2 }}>
+                        <img
+                          className="_1io8bol1 _1io8bol0 _588sy462 _588sy498 _588sy41m _1io8bol2"
+                          src={postVO.pimg_list[activeStep].imgurl}
+                          alt=""
+                          style={{
+                            width: "100%", // 부모 요소에 맞게 너비 100%
+                            height: "100%", // 부모 요소에 맞게 높이 100%
+                            objectFit: "cover", // 비율 유지하며 부모 요소에 맞게
+                            imageRendering: "auto", // 이미지 렌더링 속성 설정 (smooth, high-quality)
+                          }}
+                        />
+                      </Box>
+                      <MobileStepper
+                        variant="dots"
+                        steps={postVO.pimg_list.length}
+                        position="static"
+                        activeStep={activeStep}
+                        nextButton={
+                          <Button
+                            size="large"
+                            onClick={handleNext}
+                            disabled={
+                              activeStep === postVO.pimg_list.length - 1
+                            }
+                          >
+                            다음
+                            {theme.direction === "rtl" ? (
+                              <KeyboardArrowLeft />
+                            ) : (
+                              <KeyboardArrowRight />
+                            )}
+                          </Button>
+                        }
+                        backButton={
+                          <Button
+                            size="large"
+                            onClick={handleBack}
+                            disabled={activeStep === 0}
+                          >
+                            {theme.direction === "rtl" ? (
+                              <KeyboardArrowRight />
+                            ) : (
+                              <KeyboardArrowLeft />
+                            )}
+                            이전
+                          </Button>
+                        }
+                      />
+                    </Box>
+                  ) : (
+                    <ImageNotSupportedRoundedIcon
+                      style={{
+                        width: "100%", // 아이콘의 너비를 100%로 설정
+                        height: "100%", // 아이콘의 높이를 100%로 설정
+                        zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                      }}
                     />
-                  </Box>
-                  <MobileStepper
-                    variant="dots"
-                    steps={postVO.pimg_list.length}
-                    position="static"
-                    activeStep={activeStep}
-                    nextButton={
-                      <Button
-                        size="small"
-                        onClick={handleNext}
-                        disabled={activeStep === postVO.pimg_list.length - 1}
-                      >
-                        다음
-                        {theme.direction === 'rtl' ? (
-                          <KeyboardArrowLeft />
-                        ) : (
-                          <KeyboardArrowRight />
-                        )}
-                      </Button>
-                    }
-                    backButton={
-                      <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                        {theme.direction === 'rtl' ? (
-                          <KeyboardArrowRight />
-                        ) : (
-                          <KeyboardArrowLeft />
-                        )}
-                        이전
-                      </Button>
-                    }
-                  />
-                </Box> : <ImageNotSupportedRoundedIcon style={{
-                              width: '100%',  // 아이콘의 너비를 100%로 설정
-                              height: '100%', // 아이콘의 높이를 100%로 설정
-                              zIndex: 1      // 필요하면 z-index로 가시성을 확보
-                            }}/>
-                }
+                  )}
                 </div>
               </div>
               <div className="vqbuc91 _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp">
@@ -174,7 +543,7 @@ export default function Page() {
                       <div className="_1ry6htkj">
                         <Link
                           data-gtm="buy_sell_profile_nickname"
-                          href="/users/brit-xwmmep6mj7j4/?in=manhattan-7426"
+                          href={`/userPage?userkey=${userVO.userkey}`}
                           className="_1gb2dg21"
                         >
                           <span className="_1ry6htkk _1ry6htkl _1ry6htkq _1ry6htkv _1ry6htkz">
@@ -183,10 +552,10 @@ export default function Page() {
                         </Link>
                         <Link
                           data-gtm="buy_sell_profile_region"
-                          href="/buy-sell/all/?in=lenox-hill-7437"
+                          href={`/post`}
                           className="_1ry6htk13 _1ry6htk14 _1ry6htk19 _1ry6htk1e _1ry6htk1i _1gb2dg21"
                         >
-                          위치 넣기
+                          {userTown}
                         </Link>
                       </div>
                     </div>
@@ -215,7 +584,7 @@ export default function Page() {
                           />
                         </span>
                         <span className="_1h4pbgy780 _1h4pbgy78q _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ag _1h4pbgy7c8">
-                          매너온도 넣기
+                          {`${manner}℃`}
                         </span>
                       </div>
                       <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
@@ -229,8 +598,42 @@ export default function Page() {
             </section>
             <section className="vqbuc93 _1h4pbgya0o _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy914 _1h4pbgy7eo _1h4pbgy7f6 _1h4pbgy7cr _1h4pbgy7jc _1h4pbgy7ju _1h4pbgy7hf _1h4pbgy808 _1h4pbgy82r _1h4pbgy83x _1h4pbgy84w _1h4pbgy883">
               <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1h4pbgy90q">
-                <div className="_1h4pbgy7ag _1h4pbgy78o _1h4pbgy796 _1h4pbgy79h _1h4pbgy7c8">
+                <div
+                  className="_1h4pbgy7ag _1h4pbgy78o _1h4pbgy796 _1h4pbgy79h _1h4pbgy7c8"
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
                   <h1 className="_1h4pbgy9uo">{postVO.title}</h1>
+
+                  {like ? (
+                    <FavoriteIcon
+                      onClick={() => {
+                        if (Cookies.get("userkey") != undefined) {
+                          toggleLike();
+                        } else {
+                          alert("로그인이 필요한 서비스입니다.");
+                        }
+                      }}
+                      style={{
+                        color: "#ff0000",
+                        marginLeft: "auto",
+                      }}
+                    />
+                  ) : (
+                    <FavoriteBorderIcon
+                      onClick={() => {
+                        if (Cookies.get("userkey") != undefined) {
+                          toggleLike();
+                        } else {
+                          alert("로그인이 필요한 서비스입니다.");
+                        }
+                      }}
+                      style={{ marginLeft: "auto" }}
+                    />
+                  )}
                 </div>
                 <h2 className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s _1h4pbgy77u _1h4pbgy785 _1h4pbgy7c0">
                   <Link
@@ -239,1142 +642,257 @@ export default function Page() {
                   >
                     {categoryVO.categoryname}
                   </Link>{" "}
-                  ·{" "}
-                  <time dateTime="2024-08-11T23:32:15.393-04:00">
-                    끌올 2시간 전 or 2시간 전
-                  </time>
+                  · <time>{timeDifference(postVO.create_dtm)}</time>
                 </h2>
                 {postVO.price == 0 && postVO.method == 1 ? (
                   <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
-                  나눔♥
-                </h3>
-                   ) : (
-                  <>
-                  <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
-                    {new Intl.NumberFormat("ko-KR").format(postVO.price)}원
+                    나눔♥
                   </h3>
-                  {postVO.canbargain == 0 ? (
-                    <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
-                      가격 제안 불가
-                    </span>
-                  ) : (
-                    <Link
-                      href="#"
-                      className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
-                      style={{
-                        color: "var(--seed-semantic-color-primary)",
-                        textDecorationLine: "underline",
-                      }}
-                    >
-                      <b>가격 제안하기</b>
-                    </Link>
-                  )}
+                ) : (
+                  <>
+                    <h3 className="_1h4pbgy7ag _1h4pbgy78g _1h4pbgy78q _1h4pbgy799 _1h4pbgy7c8 _1h4pbgy7v4 _1h4pbgy7x7">
+                      {new Intl.NumberFormat("ko-KR").format(postVO.price)}원
+                    </h3>
+                    {postVO.canbargain == 0 ? (
+                      <span className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8">
+                        가격 제안 불가
+                      </span>
+                    ) : (
+                      <div>
+                        <Link
+                          href="#"
+                          className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
+                          style={{
+                            color: "var(--seed-semantic-color-primary)",
+                            textDecorationLine: "underline",
+                          }}
+                          onClick={() => {
+                            if (loggedIn) {
+                              setOpenPO(true);
+                            } else {
+                              alert("로그인이 필요한 서비스입니다.");
+                            }
+                          }}
+                        >
+                          <b>가격 제안하기</b>
+                        </Link>
+                        <PriceOfferModal
+                          openPO={openPO}
+                          handleClosePO={handleClosePO}
+                          pvo={postVO}
+                        />
+                      </div>
+                    )}
                   </>
-                  )
-                }
-                
+                )}
               </div>
               <p className="vqbuc98 _1h4pbgy7ao _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy8g _1h4pbgy7bs _1h4pbgya4g _1h4pbgy9y8">
                 {postVO.content}
               </p>
-              <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
-                <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
-                  <span className="_1h4pbgy8g _1h4pbgy7ag">거래 희망 장소</span>
-                  <span>거래장소명 넣기, 아래엔 map 띄우기</span>
-                </li>
-              </ul>
+              {postVO.hope_place && (
+                <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
+                  <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
+                    <span className="_1h4pbgy8g _1h4pbgy7ag">
+                      거래 희망 장소
+                    </span>
+                    <span>{postVO.hope_place}</span>
+                  </li>
+                  <div
+                    id="map"
+                    style={{
+                      border: "0.5px solid black",
+                      marginTop: "10px",
+                      width: "100%",
+                      height: "350px",
+                    }}
+                  ></div>
+                </ul>
+              )}
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
-                <span>채팅 {chatroomVO.length}</span> · <span>관심 1</span> ·{" "}
-                <span>조회 {postVO.viewqty}</span>
+                <span>채팅 {chatroomVO.length}</span> ·{" "}
+                <span>관심 {postVO.likedqty}</span> ·{" "}
+                <span>조회 {viewqty}</span>
               </div>
-              <Link
-                href="#"
-                className="_1h4pbgy76o _1h4pbgy782 _1h4pbgy76r _1h4pbgy7ao _1h4pbgy7s _1h4pbgy7c8"
-                style={{
-                  textDecorationLine: "underline",
-                }}
-              >
-                이 게시글 신고하기
-              </Link>
+              <button onClick={() => {
+                  if (!userkey) {
+                    alert("로그인이 필요한 서비스입니다.");
+                  } else {
+                    handleChkOpen();
+                  }
+                }} 
+                className="_1h4pbgy76o" style={{ cursor: 'pointer', textAlign: 'left' }}>
+                <span style={{ borderBottom: '0.5px solid gray' }}>이 게시글 신고하기</span>
+              </button>
+              <Dialog open={chkOpen} onClose={() => handleChkClose(false)} aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-description">
+                <DialogContent style={{ paddingBottom: '5px' }}>
+                  <DialogContentText id="confirm-dialog-description" style={{ color: 'black', marginTop: '5px' }}>
+                    신고하면 철회할 수 없습니다. 계속 하시겠습니까?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => handleChkClose(true)} style={{ backgroundColor: 'gray', color: 'white' }} >확인</Button>
+                  <Button onClick={() => handleChkClose(false)} style={{ backgroundColor: '#ff5722', color: 'white' }} autoFocus>취소</Button>
+                </DialogActions>
+              </Dialog>
+              <ReportModal reportOpen={reportOpen} handleReportClose={handleReportClose} handleReportOpen={handleReportOpen} pvo={postVO}/>
               <div className="nfm9bo0 _1h4pbgy7e8 _1h4pbgy7cj _1h4pbgy7iw _1h4pbgy7h7 _1h4pbgy7nk _1h4pbgy7lv _1h4pbgy7s8 _1h4pbgy7qj _1h4pbgy9u8 _1h4pbgya14 _1h4pbgya0r _1h4pbgy9e0 _1h4pbgy9jc _1h4pbgy9oo _1h4pbgy1u0">
-                <button className="nfm9bo3 _1h4pbgy8jc _1h4pbgy9yw _1h4pbgy768 _1h4pbgya28 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy94w _1h4pbgy1uw _1h4pbgy1va _1h4pbgyqo _1h4pbgyqu _1h4pbgy78g _1h4pbgy76r _1h4pbgy7c8 _1h4pbgy7ag">
+                {canEdit ? (
+                  <Button
+                    onClick={() => {
+                      editPost(postVO.userkey,postVO.poststatus);
+                    }}
+                    color="success"
+                    variant="contained"
+                    style={{ width: "100%", marginBottom: 10 }}
+                  >
+                    수정하기
+                  </Button>
+                ) : (
+                  ""
+                )}
+                <Button
+                  variant="contained"
+                  style={{ width: "100%", backgroundColor: "#fa5050" }}
+                  onClick={() => {
+                    if (loggedIn) {
+                      alert("채팅방 이동");
+                    } else {
+                      alert("로그인이 필요한 서비스입니다.");
+                    }
+                  }}
+                >
                   채팅하기
-                </button>
+                </Button>
               </div>
             </section>
           </div>
         </div>
         <div className="vqbuc99 _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp vqbuc9b"></div>
-        <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
+        <section style={{minWidth:450}} className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
-              {userVO.nickname}님의 판매 물품 (6개까지만, 넘어가면 더보기,
-              안넘어가면 더보기 가림)
+              {userVO.nickname}님의 판매 물품
             </div>
-            <Link
-              className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-              href="/users/brit-xwmmep6mj7j4/?in=manhattan-7426"
-            >
-              <span
-                data-gtm="buy_sell_detail_user_article_see_all"
-                className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
+            {cellList.length > 6 ? (
+              <Link
+                className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
+                href={`/userPage?userkey=${userVO.userkey}`}
               >
-                더보기
-              </span>
-              <span className="_1h4pbgy9ug _1h4pbgy9wo">
                 <span
-                  style={{
-                    display: "inline-flex",
-                    width: "16px",
-                    height: "16px",
-                  }}
-                  className="_1h4pbgyu0"
-                  data-seed-icon="icon_chevron_right_fill"
-                  data-seed-icon-version="0.2.1"
+                  data-gtm="buy_sell_detail_user_article_see_all"
+                  className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
                 >
-                  <svg
-                    id="icon_chevron_right_fill"
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    data-karrot-ui-icon="true"
-                  >
-                    <g>
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                        fill="currentColor"
-                      ></path>
-                    </g>
-                  </svg>
+                  더보기
                 </span>
-              </span>
-            </Link>
+                <span className="_1h4pbgy9ug _1h4pbgy9wo">
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      width: "16px",
+                      height: "16px",
+                    }}
+                    className="_1h4pbgyu0"
+                    data-seed-icon="icon_chevron_right_fill"
+                    data-seed-icon-version="0.2.1"
+                  >
+                    <svg
+                      id="icon_chevron_right_fill"
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-karrot-ui-icon="true"
+                    >
+                      <g>
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                          fill="currentColor"
+                        ></path>
+                      </g>
+                    </svg>
+                  </span>
+                </span>
+              </Link>
+            ) : (
+              ""
+            )}
           </header>
-          <div
-            data-gtm="buy_sell_detail_user_article"
-            className="vqbuc9f vqbuc9e _1h4pbgy9vc _1h4pbgya2w"
-          >
-            <Link
-              href="/buy-sell/marble-cheese-board-w-cheese-knives-1762595/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
+          <div 
+            className="PopCateGrid"
             >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/7c887c3fcb70e6b745aca2a761805c18a3b16cd0e6557203b281db46ae714d9d.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Marble cheese board w/cheese knives
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $34
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Lenox Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/sea-foam-green-vase-1762787/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/1cd799bbc2076ce063a0eeac44177715d26f70d6f9ce3e5357b1d52ddb45c023.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Sea foam green vase
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $15
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Lenox Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/medeli-keyboard-piano-1762810/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/6d2b1185212472284f3949e379a6967b95bdbd06fae4d4fe9e0ffc763a5727f7.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Medeli keyboard piano
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $34
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Lenox Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/new-black-loafers-worn-once-2736233/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/26be3775a4f08e17116b334a3091a212d65b14e5e5c5b83cb5d3f7015b4790cb.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/26be3775a4f08e17116b334a3091a212d65b14e5e5c5b83cb5d3f7015b4790cb.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      New Black Loafers - worn once
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $40
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Lenox Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/wooden-easel-1762877/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/37578de3183ce0f3532d272ae8d43f50ad57a247a34c8dd4f5bc9fc527047c4f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/37578de3183ce0f3532d272ae8d43f50ad57a247a34c8dd4f5bc9fc527047c4f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Wooden easel
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $15
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Lenox Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/tree-plant-pot-1762833/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/b18f172327a0c72e93bfd7d13445892088853652739e0e3fd1c549c4b551c244.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202403/b18f172327a0c72e93bfd7d13445892088853652739e0e3fd1c549c4b551c244.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Tree/Plant pot
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $35
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Lenox Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
+              {cellList.length > 0
+                ? cellList.map((clvo, index) => {
+                    if (index < 5) {
+                      return <UserCellList2 key={index} pvo={clvo} />;
+                    }
+                  })
+                : ""}
           </div>
         </section>
-        <section className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
+        <section
+          className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb"
+          style={{minWidth:450}}
+          >
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
-              관련상품(6 x 3개?)
+              관련상품
             </div>
+            <Link
+                className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
+                href={`/post`}
+              >
+                <span
+                  data-gtm="buy_sell_detail_user_article_see_all"
+                  className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
+                >
+                  더보기
+                </span>
+                <span className="_1h4pbgy9ug _1h4pbgy9wo">
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      width: "16px",
+                      height: "16px",
+                      marginLeft: 'auto'
+                    }}
+                    className="_1h4pbgyu0"
+                    data-seed-icon="icon_chevron_right_fill"
+                    data-seed-icon-version="0.2.1"
+                  >
+                    <svg
+                      id="icon_chevron_right_fill"
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-karrot-ui-icon="true"
+                    >
+                      <g>
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                          fill="currentColor"
+                        ></path>
+                      </g>
+                    </svg>
+                  </span>
+                </span>
+              </Link>
           </header>
-          <div
-            data-gtm="buy_sell_detail_recommended_article"
-            className="vqbuc9f vqbuc9e _1h4pbgy9vc _1h4pbgya2w"
+          <div 
+            className="PopCateGrid"
           >
-            <Link
-              href="/buy-sell/organizer-caddy-suppy-caddy-2445847/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/80b8b99b46fc6663ec8046f24b67fa82a15181d8360abc844d85c7046c6d5dee_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/80b8b99b46fc6663ec8046f24b67fa82a15181d8360abc844d85c7046c6d5dee_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Organizer Caddy /Suppy Caddy
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      Free
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      East Village
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/auto-2676244/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/07483ea2396cb384484956361143c99a5d8932b445b493c855f397b34c303a4b.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/07483ea2396cb384484956361143c99a5d8932b445b493c855f397b34c303a4b.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Auto
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $39
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Chelsea
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/good-stuff-2713071/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/c634ce9e9c59ee6c5056eed8dd58bf84ae6693f11490f5d39f3c103965962206.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/c634ce9e9c59ee6c5056eed8dd58bf84ae6693f11490f5d39f3c103965962206.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Good Stuff
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $140
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Harlem
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/iphone-14-pro-hard-case-with-mountain-scenery-2419730/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/e4a6af3ae85f823ef433f435e2505b4c8d4ea2a45947add97c38c975bceed925.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/e4a6af3ae85f823ef433f435e2505b4c8d4ea2a45947add97c38c975bceed925.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      IPhone 14 pro hard case with mountain scenery
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $2.50
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Morningside Heights
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/stanley-travel-mug-2715829/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/44427daa95813966bf9d0a7f22f1443536a2b4164775da5a8c026ec3385b7604.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/44427daa95813966bf9d0a7f22f1443536a2b4164775da5a8c026ec3385b7604.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Stanley travel mug
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $45
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Harlem
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/leather-sling-2359905/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/5abff8724c4ce6fd9613a772f5885bad59eed094b352a803a81071c0e104c859_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/5abff8724c4ce6fd9613a772f5885bad59eed094b352a803a81071c0e104c859_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Leather Sling
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $50
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Upper East Side
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/pewter-mugs-2735567/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/956a0e1e749824bbcdd9bbc49aec2a3afe45162830d5e808edfee526a23e7a3a_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/956a0e1e749824bbcdd9bbc49aec2a3afe45162830d5e808edfee526a23e7a3a_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      pewter mugs
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $250
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Upper West Side
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/giant-escape-2-bicycle-2624817/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/e29dcce5890a807a680809f5bda522f0d5dc03181040043129c49a159b59802e_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/e29dcce5890a807a680809f5bda522f0d5dc03181040043129c49a159b59802e_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Giant Escape 2 bicycle
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $180
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Harlem
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/hot-wheel-collection-123-pieces-separate-or-whole-2668249/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/0f4d7dd2a20b4a4266acfb72db7b7076316bbff33ce4fe6366d7809d0989e72c.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/0f4d7dd2a20b4a4266acfb72db7b7076316bbff33ce4fe6366d7809d0989e72c.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Hot wheel collection 123 pieces separate or whole
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $3
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Greenwich Village
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/water-bottles-2555853/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/888610688749921850990704aa1a152488310b7dfec1fe906e9536689572f194_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/888610688749921850990704aa1a152488310b7dfec1fe906e9536689572f194_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      water bottles
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $5
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Hamilton Heights
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/s2318-hn-dell-monitor-2360599/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/5d1a397d8a1f2c9b801d73d195a27a2caaeaa645ca37c1af19fcd932ca342a0f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/5d1a397d8a1f2c9b801d73d195a27a2caaeaa645ca37c1af19fcd932ca342a0f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      S2318 hn , dell monitor
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $25
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Upper West Side
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/selling-my-10k-yellow-gold-curb-link-chain-2618081/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/57a9366461a9965f5c36fe53ba72b1042f6513e438a8f3ad7ea13114fab4e07f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/57a9366461a9965f5c36fe53ba72b1042f6513e438a8f3ad7ea13114fab4e07f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Selling my 10k yellow gold curb link chain
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $2,000
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Civic Center
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/grill-charcoal-lighter-fluid-skewer-sticks-brush-2352051/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/0551b49927f32b3481c068d824f850f3ba3ea77ada1631d9621d42592bd91537_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/0551b49927f32b3481c068d824f850f3ba3ea77ada1631d9621d42592bd91537_0.webp?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Grill + charcoal + lighter fluid + skewer sticks + brush
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $15
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      East Harlem
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/canvas-stand-for-wedding-black-x-4-2345610/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/6cd78cfae4be98fab1b87a9577fb2c9432b15a9c006277dbf2e6718ed0a28a42.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202406/6cd78cfae4be98fab1b87a9577fb2c9432b15a9c006277dbf2e6718ed0a28a42.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Canvas stand for wedding (black x 4)
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $40
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Midtown Center
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/ring-organizers-2632641/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/81b0aa229b87e6c5b0ac5e3a6d30286b5527c768cd30ccc58e42444318e4b17f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/81b0aa229b87e6c5b0ac5e3a6d30286b5527c768cd30ccc58e42444318e4b17f.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Ring organizers
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $10
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Midtown South Central
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/tiffany-co-silver-care-kit-2466167/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/3492edc14a3be253eed33fb4cba9dfbb911fbb97adde909e77402c8532c8bd41.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/3492edc14a3be253eed33fb4cba9dfbb911fbb97adde909e77402c8532c8bd41.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Tiffany &amp; Co. Silver Care Kit ⚽️
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $25
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Upper West Side
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/luggage-suitcase-several-available-great-condition-2521960/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/21a9bcbd7b85d14b5d40869b1ed514989a6ff060045201e6d72895d685248a17.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202407/21a9bcbd7b85d14b5d40869b1ed514989a6ff060045201e6d72895d685248a17.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Luggage/Suitcase (Several Available; Great Condition)
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $30
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      Sugar Hill
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            <Link
-              href="/buy-sell/lululemon-2695425/?in=manhattan-7426"
-              className="vqbuc9h vqbuc9g _588sy42q"
-            >
-              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwa _1b153uw6 _1b153uwc">
-                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                  <noscript>
-                    <span>
-                      <img
-                        className="_1b153uwe _1h4pbgya3k"
-                        src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/f14fbf9491d671a4aa59611f06cb7b13e83834bfb3f20bcaeb2fbec99f0c2225.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                        alt="thumbnail"
-                      />
-                    </span>
-                  </noscript>
-                  <span
-                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                    style={{ color: "transparent", display: "inline-block" }}
-                  >
-                    <img
-                      className="_1b153uwe _1h4pbgya3k"
-                      src="https://dtxw8q4qct0d4.cloudfront.net/origin/article/202408/f14fbf9491d671a4aa59611f06cb7b13e83834bfb3f20bcaeb2fbec99f0c2225.jpg?q=82&amp;s=300x300&amp;t=crop&amp;f=webp"
-                      alt="thumbnail"
-                    />
-                  </span>
-                </div>
-                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                      Lululemon
-                    </div>
-                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                      $40
-                    </div>
-                  </div>
-                  <div className="_1b153uwh _1h4pbgy8jc">
-                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                      East Harlem
-                    </h2>
-                  </div>
-                </div>
-              </article>
-            </Link>
+              {popCate.length > 0
+                ? popCate.map((pcvo, index) => {return(
+                     <PopCateList2 key={index} pvo={pcvo} />
+                    )
+                  })
+                : ""}
           </div>
         </section>
       </article>

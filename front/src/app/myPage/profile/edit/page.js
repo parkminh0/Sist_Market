@@ -5,9 +5,10 @@ import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
 import Link from "next/link";
-import { Button, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function Page() {
   //1. xml~controller에서는 그냥 db가서 중복확인하고 오는 거
@@ -18,10 +19,11 @@ export default function Page() {
   const DEL_IMG = "/user/delImage";
   const EDIT_URL = "/user/editUser";
   const DEL_USER = "/user/delUser";
+  const CHK_PW = "/user/chkPw";
+  const userkey = Cookies.get("userkey");
 
   const router = useRouter();
   const [uvo, setUvo] = useState({});
-  const [userkey, setUserkey] = useState('');
   const [nickname, setNickname] = useState('');
   const [email1, setEmail1] = useState('');
   const [email2, setEmail2] = useState('');
@@ -30,11 +32,14 @@ export default function Page() {
   const [confirmPw, setConfirmPw] = useState('');
   const [pwMatch, setPwMatch] = useState('');
   const [phone, setPhone] = useState('');
+  const [open, setOpen] = useState(false);
+  const [chkPw, setChkPw] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   function getData() {
     axios.get(
       API_URL, {
-        params: { userkey: '45' }
+        params: { userkey: userkey }
       }
     ).then((res) => {
       setUvo(res.data.uvo);
@@ -58,7 +63,7 @@ export default function Page() {
     if (file) {
       const formData = new FormData();
       formData.append('image', file);
-      formData.append('userkey', '45');
+      formData.append('userkey', userkey);
   
       axios.post(EDIT_IMG, formData, {
         headers: {
@@ -78,7 +83,7 @@ export default function Page() {
   function delImage() {
     axios.get(
       DEL_IMG, {
-        params: { userkey: '45' }
+        params: { userkey: userkey }
       }
     ).then(() => {
       console.log('이미지 삭제 성공');
@@ -188,18 +193,43 @@ export default function Page() {
     });
   }
 
-  function delUser() {
-    axios.get(
-      DEL_USER, {
-        params: { userkey: '45' }
-      }
-    ).then(() => {
-      alert("회원 탈퇴가 완료되었습니다.");
-      router.push('/');
-    }).catch(() => {
-      alert("회원 탈퇴에 실패했습니다.");
-    });
-  }
+  const modalOpen = () => {
+    const confirmDelete = window.confirm("정말 탈퇴하시겠습니까?");
+    if (confirmDelete) {
+      setOpen(true);
+    }
+  };
+
+  const modalClose = () => {
+    setChkPw("");
+    setErrorMsg("");
+    setOpen(false);
+  };
+
+  function userDel() {
+    axios.post( CHK_PW , { userkey: userkey, chkPw: chkPw })
+      .then((res) => {
+        if (res.data.msg) {
+          axios.get(DEL_USER, { params: { userkey: userkey } })
+            .then(() => {
+              // 탈퇴 성공 시 쿠키 삭제
+              // Cookies.remove('accessToken');
+              // Cookies.remove('refreshToken');
+              alert("회원 탈퇴가 완료되었습니다.");
+              window.location.replace("/");
+              // router.replace("/"); //뒤로가기 불가
+            })
+            .catch(() => {
+              alert("회원 탈퇴에 실패했습니다.");
+            });
+        } else {
+          setErrorMsg("비밀번호가 다릅니다.");
+        }
+      })
+      .catch(() => {
+        setErrorMsg("비밀번호 확인에 실패했습니다.");
+      });
+  };
 
   return (
     <>
@@ -247,9 +277,9 @@ export default function Page() {
             <div data-v-1ac01578="" data-v-0adb81cc="" className="content_area my-page-content" >
               <div data-v-1ac01578="" className="my_profile">
                 {/* 타이틀 */}
-                <div data-v-6b53f901="" data-v-1ac01578="" className="content_title border" >
+                <div data-v-6b53f901="" data-v-1ac01578="" className="content_title1 border" >
                   <div data-v-6b53f901="" className="title">
-                    <h3 data-v-6b53f901="">계정 관리</h3>
+                    <h3 className='title1' data-v-6b53f901="">계정 관리</h3>
                   </div>
                 </div>
                 {/* 프로필 이미지 */}
@@ -276,7 +306,7 @@ export default function Page() {
                   <h4 data-v-8b96a82e="" className="group_title">
                     프로필 정보
                   </h4>
-                  <div data-v-0c9f3f9e="" data-v-6d416020="" data-v-708ef468="" className="unit" data-v-8b96a82e="">
+                  <div data-v-0c9f3f9e="" data-v-6d416020="" data-v-708ef468="" className="unit1" data-v-8b96a82e="">
                     <h5 data-v-0c9f3f9e="" className="title">
                       프로필 이름
                     </h5>
@@ -290,13 +320,12 @@ export default function Page() {
                       </Button>
                     </div>
                   </div>
-                  <div data-v-0c9f3f9e="" data-v-6d416020="" data-v-708ef468="" className="unit" data-v-8b96a82e="">
+                  <div data-v-0c9f3f9e="" data-v-6d416020="" data-v-708ef468="" className="unit1" data-v-8b96a82e="">
                     <h5 data-v-0c9f3f9e="" className="title">
                       이름
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <TextField id="standard-basic2" defaultValue={uvo.name} variant="standard" placeholder={uvo.name ? `${uvo.name}` : ''} style={{ flex: '0 0 90%' }} 
-                              InputProps={{ readOnly: true }} />
+                    <TextField id="standard-basic2" defaultValue={uvo.name} variant="standard" placeholder={uvo.name ? `${uvo.name}` : ''} style={{ flex: '0 0 90%' }} disabled />
                       <div style={{ flex: '0 0 10%' }}></div>
                     </div>
                   </div>
@@ -306,7 +335,7 @@ export default function Page() {
                   <h4 data-v-8b96a82e="" className="group_title">
                     내 계정
                   </h4>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
+                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit1" data-v-8b96a82e="">
                     <h5 data-v-0c9f3f9e="" className="title">
                       이메일 주소
                     </h5>
@@ -329,16 +358,16 @@ export default function Page() {
                       </Button>
                     </div>
                   </div>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
+                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit1" data-v-8b96a82e="">
                     <h5 data-v-0c9f3f9e="" className="title">
                       아이디
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <TextField id="standard-basic3" defaultValue={uvo.id} variant="standard" placeholder={uvo.id ? `${uvo.id}` : ''} style={{ flex: '0 0 90%' }} InputProps={{ readOnly: true }}/>
+                    <TextField id="standard-basic3" defaultValue={uvo.id} variant="standard" placeholder={uvo.id ? `${uvo.id}` : ''} style={{ flex: '0 0 90%' }} disabled/>
                       <div style={{ flex: '0 0 10%' }}></div>
                     </div>
                   </div>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
+                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit1" data-v-8b96a82e="">
                     <h5 data-v-0c9f3f9e="" className="title">
                       새 비밀번호
                     </h5>
@@ -365,7 +394,7 @@ export default function Page() {
                   <h4 data-v-8b96a82e="" className="group_title">
                     개인 정보
                   </h4>
-                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit" data-v-8b96a82e="">
+                  <div data-v-0c9f3f9e="" data-v-1ac01578="" className="unit1" data-v-8b96a82e="">
                     <h5 data-v-0c9f3f9e="" className="title">
                       휴대폰 번호
                     </h5>
@@ -379,8 +408,22 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                <Link  data-v-1ac01578="" href="/my/withdrawal" className="btn_withdrawal" onClick={delUser}>회원 탈퇴</Link>
-                {/* <Button variant="outlined" className="btn_withdrawal" onClick={delUser}>회원 탈퇴</Button> */}
+                <Button variant="outlined" onClick={modalOpen}
+                  style={{ borderColor: '#BDBDBD', backgroundColor: '#BDBDBD', color: 'white', fontSize: '10px', padding: '5px 8px', 
+                          marginTop: '30px', float: 'right'}}>
+                  회원 탈퇴
+                </Button>
+                <Dialog open={open} onClose={modalClose}>
+                  <DialogTitle>비밀번호 확인</DialogTitle>
+                  <DialogContent>
+                    <TextField autoFocus margin="dense" label="비밀번호" type="password" fullWidth variant="standard" value={chkPw}
+                              onChange={(e) => setChkPw(e.target.value)} error={Boolean(errorMsg)} helperText={errorMsg}/>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={modalClose}>취소</Button>
+                    <Button onClick={userDel}>확인</Button>
+                  </DialogActions>
+                </Dialog>
               </div>
             </div>
           </section>

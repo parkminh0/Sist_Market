@@ -14,11 +14,12 @@ public interface BoardMapper {
 
     List<BoardVO> search(Map<String, Object> b_map);
 
-    // int boardAdd(Map<String, Object> add_map);
-
     int boardAdd(BoardVO bvo);
 
-    List<BoardVO> boardedit(String boardkey);
+    int edit(BoardVO bvo);
+
+    String changeCategoryname(String categoryname);
+
 
     int emptyAdd(BoardVO bvo);
 
@@ -26,8 +27,6 @@ public interface BoardMapper {
 
     BoardVO getBbs(String boardkey);
 
-    int edit(BoardVO bvo);
-    // List<BoardVO> boardedit(String boardkey);
 
     int del(String boardkey);
 
@@ -36,6 +35,8 @@ public interface BoardMapper {
     // 게시판 카테고리
     List<KeyTableVO> getAllBcList();
 
+    String getBc(String boardkey);
+
     int addBoardCategory(String value);
 
     int editBoardCategory(KeyTableVO kvo);
@@ -43,4 +44,14 @@ public interface BoardMapper {
     int delBoardCategory1(String value);
 
     int delBoardCategory2(String value);
+
+    //사용자 게시판 가져오기
+    List<BoardVO> userBbsList(Map<String, Object> b_map);
+
+    int userBbsCount(String categorykey);
+
+    List<BoardVO> searchForNotice(Map<String,Object> map);
+
+    int searchForNoticeCount(Map<String,Object> map);
+
 }

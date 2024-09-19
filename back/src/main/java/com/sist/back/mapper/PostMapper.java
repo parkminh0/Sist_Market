@@ -9,12 +9,21 @@ import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.TownVO;
+import com.sist.back.vo.PostImgVO;
 
 @Mapper
 public interface PostMapper {
     PostVO[] all();
 
+    int getViewqty(int postkey);
+
+    int incViewqty(int postkey);
+
     PostVO getPostByPostKey(int postkey);
+
+    List<PostVO> getPostByCategoryKey(int categorykey);
+
+    List<PostVO> getCellListByUserPostKey(int userkey, int postkey);
 
     TownVO getTownByPostKey(int postkey);
 
@@ -40,7 +49,7 @@ public interface PostMapper {
 
     int delKeywordByKey(String likeKey);
 
-    List<PostVO> search(Map<String, String> map);
+    List<PostVO> search(Map<String, Object> map);
 
     PostVO[] main(String param);
 
@@ -48,4 +57,11 @@ public interface PostMapper {
 
     int deletePostImg(String postkey);
 
+    // 여러 상태 값에 따른 조회 / search
+    List<PostVO> findAllByPoststatusIn(List<Integer> statuses);
+
+    // 특정 상태 값에 따른 조회 / search
+    List<PostVO> findByPoststatus(int poststatus);
+
+    List<PostImgVO> pImg_list(int postkey);
 }

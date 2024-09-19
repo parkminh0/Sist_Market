@@ -10,6 +10,7 @@ import "/public/css/paging.css";
 
 import { useSearchParams } from "next/navigation";
 import UserList from "@/component/user/myPage/userList/UserList";
+import Cookies from "js-cookie";
 
 
 export default function page(props) {
@@ -23,19 +24,21 @@ export default function page(props) {
     const [page, setPage] = useState({});
   
     const API_URL = '/user/api/lbiUsers';
+    const userkey = Cookies.get("userkey");
   
     function changePage(pNum) { 
-        getUserList(pNum);
+        getUserList(whatNow,pNum);
     }
   
-    function getUserList(cPage){
+    function getUserList(whatnow,cPage){
+      setWhatNow(whatnow);
       axios({
         url: API_URL,
         method: 'post',
         params: {
-            userkey: 1,
+            userkey: userkey,
             cPage: cPage,
-            userType: whatNow,
+            userType: whatnow,
         }
       }).then((res) => {
           console.log(res.data);
@@ -56,7 +59,7 @@ export default function page(props) {
           } else {
             setTotalRecord(res.data.totalRecord);
           }
-          setChangeNow(whatNow);
+          setChangeNow(whatnow);
         });
     }
   
@@ -83,8 +86,8 @@ export default function page(props) {
     }
   
     useEffect(()=>{
-        getUserList(page.nowPage);
-    },[whatNow]);
+        getUserList(props.searchParams.category, page.nowPage);
+    },[props.searchParams.category]);
   
   
     return (
@@ -144,7 +147,7 @@ export default function page(props) {
                     data-v-0a67d0b5=""
                     className="purchase_list_tab sell detail_tab"
                   >
-                    <div data-v-2cbb289b="" onClick={()=>setWhatNow('likeUser')} className={`tab_item ${changeNow == 'likeUser' ? 'tab_on' : ''}`}>
+                    <div data-v-2cbb289b="" onClick={()=>getUserList('likeUser',1)} className={`tab_item ${changeNow == 'likeUser' ? 'tab_on' : ''}`}>
                       <Link data-v-2cbb289b="" href="#" className="tab_link">
                         <dl data-v-2cbb289b="" className="tab_box">
                           <dt data-v-2cbb289b="" className="title">
@@ -156,7 +159,7 @@ export default function page(props) {
                         </dl>
                       </Link>
                     </div>
-                    <div data-v-2cbb289b="" onClick={()=>setWhatNow('blockedUser')} className={`tab_item ${changeNow == 'blockedUser' ? 'tab_on' : ''}`}>
+                    <div data-v-2cbb289b="" onClick={()=>getUserList('blockedUser',1)} className={`tab_item ${changeNow == 'blockedUser' ? 'tab_on' : ''}`}>
                       <Link data-v-2cbb289b="" href="#" className="tab_link">
                         <dl data-v-2cbb289b="" className="tab_box">
                           <dt data-v-2cbb289b="" className="title">
@@ -168,7 +171,7 @@ export default function page(props) {
                         </dl>
                       </Link>
                     </div>
-                    <div data-v-2cbb289b="" onClick={()=>setWhatNow('noseeUser')} className={`tab_item ${changeNow == 'noseeUser' ? 'tab_on' : ''}`}>
+                    <div data-v-2cbb289b="" onClick={()=>getUserList('noseeUser',1)} className={`tab_item ${changeNow == 'noseeUser' ? 'tab_on' : ''}`}>
                       <Link data-v-2cbb289b="" href="#" className="tab_link">
                         <dl data-v-2cbb289b="" className="tab_box">
                           <dt data-v-2cbb289b="" className="title">

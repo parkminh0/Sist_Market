@@ -1,11 +1,15 @@
 package com.sist.back.controller;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
+import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.UserCountVO;
@@ -38,6 +43,9 @@ public class UserController {
 
     @Autowired
     UserService service;
+
+    @Value("${server.upload.user.image}")
+    private String userImgPath;
 
     @RequestMapping("/login/kakao")
     public ModelAndView login(String code) {
@@ -164,10 +172,67 @@ public class UserController {
         return map;
     }
 
+    // 계정관리 user정보
+    @RequestMapping("/api/FHRBCheck")
+    @ResponseBody
+    public Map<String, Object> FHRBCheck(String me, String you) {
+        Map<String, Object> map = new HashMap<>();
+        int f_num = service.F_Check(me, you);
+        
+        int n_num = service.N_Check(me, you);
+        int b_num = service.B_Check(me, you);
+        map.put("isLiked", f_num>0);
+        map.put("isNosee", n_num>0);
+        map.put("isBlocked", b_num>0);
+        return map;
+    }
+    
+    // 계정관리 user정보
+    @RequestMapping("/api/likeIoN")
+    @ResponseBody
+    public Map<String, Object> likeIoN(String me, String you, Boolean isLiked) {
+        Map<String, Object> map = new HashMap<>();
+        int l_num = -1;
+        if(isLiked){
+            l_num = service.likeN(me, you);
+        } else{
+            l_num = service.likeI(me, you);
+        }
+        map.put("isBlocked", l_num);
+        return map;
+    }
+    @RequestMapping("/api/noseeIoN")
+    @ResponseBody
+    public Map<String, Object> noseeIoN(String me, String you, Boolean isNosee) {
+        Map<String, Object> map = new HashMap<>();
+        int n_num = -1;
+        if(isNosee){
+            n_num = service.noseeN(me, you);
+        } else{
+            n_num = service.noseeI(me, you);
+        }
+        map.put("isBlocked", n_num);
+        return map;
+    }
+    @RequestMapping("/api/blockIoN")
+    @ResponseBody
+    public Map<String, Object> blockIoN(String me, String you, Boolean isBlocked) {
+        Map<String, Object> map = new HashMap<>();
+        int b_num = -1;
+        if(isBlocked){
+            b_num = service.blockN(me, you);
+        } else{
+            b_num = service.blockI(me, you);
+        }
+        map.put("isBlocked", b_num);
+        return map;
+    }
+
+
+
     // jwt token login
     @PostMapping("/api/login")
     @ResponseBody
-
     public Map<String, Object> login(userVO vo, HttpServletResponse res) {
 
         Map<String, Object> map = new HashMap<>();
@@ -564,11 +629,32 @@ public class UserController {
         if (image.isEmpty()) {
             throw new IllegalArgumentException("이미지가 업로드되지 않았습니다.");
         }
-        String imagePath = service.saveImage(image);
+        String realPath = "/img/user/";
+        String fname = image.getOriginalFilename();
+
+        String ext = fname.substring(fname.lastIndexOf(".") + 1).toLowerCase();
+        if (!(ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif")
+                || ext.equals("psd") || ext.equals("bmp") || ext.equals("tif") || ext.equals("tiff"))) {
+            throw new IllegalArgumentException("지원하지 않는 파일 형식입니다.");
+        }
+
+        Path path = Paths.get(userImgPath);
+        if (path.toString().contains("back")) {
+            String pathString = path.toString();
+            String changedPath = pathString.replace("back\\", "");
+            path = Paths.get(changedPath);
+        }
+        String filePath = path.resolve(fname).toString();
+        fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0, filePath.lastIndexOf("\\")));
 
         userVO uvo = new userVO();
         uvo.setUserkey(userkey);
-        uvo.setImgurl(imagePath);
+        uvo.setImgurl(realPath + fname);
+
+        try {
+            image.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) + fname));
+        } catch (Exception e) {
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("cnt", service.editImage(uvo));
@@ -578,8 +664,17 @@ public class UserController {
     @RequestMapping("/delImage")
     @ResponseBody
     public Map<String, Object> delImage(String userkey) {
+        String realPath = "/img/user/";
+        userVO uvo = new userVO();
+        uvo.setUserkey(userkey);
+        uvo.setImgurl(realPath + "default_img.png");
+
         Map<String, Object> map = new HashMap<>();
-        map.put("cnt", service.delImage(userkey));
+        int cnt = service.delImage(userkey);
+        if (cnt > 0) {
+            service.editImage(uvo);
+        }
+        map.put("cnt", cnt);
         return map;
     }
 
@@ -602,7 +697,8 @@ public class UserController {
                 cnt = service.editEmail(uvo);
                 break;
             case "pw":
-                uvo.setPw(value);
+                String encodedPw = service.encodePw(value);
+                uvo.setPw(encodedPw);
                 cnt = service.editPw(uvo);
                 break;
             case "phone":
@@ -623,9 +719,33 @@ public class UserController {
 
     @RequestMapping("/delUser")
     @ResponseBody
-    public Map<String, Object> delUser(String userkey) {
+    public Map<String, Object> delUser(String userkey, HttpServletResponse res) {
         Map<String, Object> map = new HashMap<>();
-        map.put("cnt", service.userDelForAdmin(userkey));
+        int cnt = service.userDelForAdmin(userkey);
+        if (cnt > 0) {
+            logout(res);
+            map.put("cnt", cnt);
+            // map.put("msg", "회원 탈퇴 및 로그아웃이 완료되었습니다.");
+        } else {
+            map.put("cnt", cnt);
+            // map.put("msg", "회원 탈퇴에 실패했습니다.");
+        }
+        return map;
+    }
+
+    @RequestMapping("/chkPw")
+    @ResponseBody
+    public Map<String, Object> chkPw(@RequestBody Map<String, String> data) {
+        String userkey = data.get("userkey");
+        String chkPw = data.get("chkPw");
+        Map<String, Object> map = new HashMap<>();
+
+        userVO uvo = service.getUserForAdmin(userkey);
+        if (uvo != null && service.chkPw(chkPw, uvo.getPw())) {
+            map.put("msg", true);
+        } else {
+            map.put("msg", false);
+        }
         return map;
     }
 

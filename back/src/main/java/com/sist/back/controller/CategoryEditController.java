@@ -1,6 +1,8 @@
 package com.sist.back.controller;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -101,12 +103,11 @@ public class CategoryEditController {
         try {
             MultipartFile f = cvo.getFile();
             if (f != null && !f.isEmpty()) {
-                String fname = f.getOriginalFilename();
+                String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
                 Path path = Paths.get(upload);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "");
-                    path = Paths.get(changedPath);
+                    path = Paths.get(pathString);
                 }
                 String realPath = "/img/admin/category/";
                 String filePath = path.resolve(fname).toString();
@@ -121,7 +122,6 @@ public class CategoryEditController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return map;
     }
 

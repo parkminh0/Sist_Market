@@ -1,3 +1,20 @@
+.title1 {
+    font-size: 21px !important;
+    line-height: 29px;
+}
+
+.content_title1 {
+    border-bottom: 2px solid #222;
+    padding-bottom: 16px;
+}
+
+.unit1 {
+    display: flex;
+    flex-direction: column;
+    padding: 25px 0 12px;
+    position: relative;
+}
+
 .user_membership[data-v-ed683452] {
     background-color: #fff;
     border: 1px solid #ebebeb;
@@ -10910,3 +10927,5 @@ body:has(.web-to-app-modal) .download_banner[data-v-b51d26c6] {
 .mo .my_addressbook .content_title .btn_txt[data-v-6b53f901],.mo .my_payment .content_title .btn_txt[data-v-6b53f901],.sm .my_addressbook .content_title .btn_txt[data-v-6b53f901],.sm .my_payment .content_title .btn_txt[data-v-6b53f901] {
     width: 100%
 }
+
+

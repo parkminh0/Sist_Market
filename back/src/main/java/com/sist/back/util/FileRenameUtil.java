@@ -19,7 +19,6 @@ public class FileRenameUtil {
 
 		// 위의 전체경로를 가지고 파일객체 생성
 		File f = new File(saveFilePath);
-		System.out.println("renameutil경로" + saveFilePath);
 		// 파일이 이미 있다면 파일명 뒤에 숫자를 붙이기 위해 변수를 하나 준비하자.
 		int idx = 1;
 

@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TownVO {
-    private int townkey, status;
-    private String city, district, name, latitude, longitude;
+    private String townkey, isdeleted;
+    private String region1, region2, region3;
 }
