@@ -22,6 +22,7 @@ import {
   Menu,
   MenuItem,
   Divider,
+  Box,
 } from "@mui/material";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -31,6 +32,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { styled, alpha } from "@mui/material/styles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 // #region 민호-동네설정메뉴
 const StyledMenu = styled((props) => (
@@ -50,7 +53,7 @@ const StyledMenu = styled((props) => (
   "& .MuiPaper-root": {
     borderRadius: 6,
     marginTop: theme.spacing(1),
-    minWidth: 180,
+    minWidth: 200,
     color: "rgb(55, 65, 81)",
     boxShadow:
       "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
@@ -61,7 +64,6 @@ const StyledMenu = styled((props) => (
       "& .MuiSvgIcon-root": {
         fontSize: 18,
         color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
       },
       "&:active": {
         backgroundColor: alpha(
@@ -106,7 +108,8 @@ export default function Header() {
     }
 
     if (region1 == null || region1 == "") {
-      alert("위치 기반 서비스를 허용해주세요.");
+      setIsAdd(true);
+      setLocationOpen(true);
       return;
     }
     setAnchorEl(event.currentTarget);
@@ -117,30 +120,81 @@ export default function Header() {
   };
   // #endregion
 
+  // #region 민호-주소 삭제
+  function deleteAddress(addrKey, reg3, isselected) {
+    if (confirm("'" + reg3 + "'을 삭제하시겠습니까?")) {
+      axios({
+        url: "/address/deleteAddress",
+        method: "get",
+        params: {
+          addresskey: addrKey,
+          isselected: isselected,
+          userkey: decodeURIComponent(Cookies.get("userkey")),
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if (res.data.issuccess <= 0)
+          alert("삭제에 실패했습니다. 다시 시도해주세요.");
+        else {
+          router.push("/");
+          window.location.href = "/";
+        }
+      });
+    }
+  }
+  // #endregion
+
   // #region 민호-동네설정 모달
   const [locationOpen, setLocationOpen] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
 
   const locationClose = () => {
+    setSearchLoc("");
+    setIsAdd(false);
+    setSearchHere([]);
     setLocationOpen(false);
   };
   // #endregion
 
-  // #region 민호-주소
+  // #region 민호-주소검색
+  const [searchLoc, setSearchLoc] = useState("");
+
+  function searchLocation() {
+    if (searchLoc == null || searchLoc.trim() == "") {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+    axios({
+      url: "/town/getNearTown",
+      method: "get",
+      params: {
+        region1: "",
+        region2: searchLoc,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setSearchHere(res.data.getNearTown);
+    });
+  }
+  // #endregion
+
+  // #region 민호-주소 초기화
   const [region1, setRegion1] = useState("");
   const [region2, setRegion2] = useState("");
   const [region3, setRegion3] = useState("");
 
   // 사용자 주소
   const [userAddress, setUserAddress] = useState([]);
-
+  const [searchHere, setSearchHere] = useState([]);
   useEffect(() => {
-    setRegion1(decodeURIComponent(Cookies.get("region1")));
-    setRegion2(decodeURIComponent(Cookies.get("region2")));
-    setRegion3(decodeURIComponent(Cookies.get("region3")));
-
     // 로그인 되어있는 경우 사용자 주소 가져오기
     let userkey = decodeURIComponent(Cookies.get("userkey"));
-    if (userkey != null && userkey != "") {
+
+    if (userkey != null && userkey != "" && userkey != "undefined") {
       axios({
         url: "/address/getAddress",
         method: "post",
@@ -152,14 +206,28 @@ export default function Header() {
         },
       }).then((res) => {
         setUserAddress(res.data.getAddress);
-        console.log(res.data.getAddress);
+        if (res.data.getAddress && res.data.getAddress.length > 0) {
+          let reg1 = res.data.getAddress[0].tvo.region1;
+          let reg2 = res.data.getAddress[0].tvo.region2;
+          let reg3 = res.data.getAddress[0].tvo.region3;
+          Cookies.set("region1", encodeURIComponent(reg1));
+          Cookies.set("region2", encodeURIComponent(reg2));
+          Cookies.set("region3", encodeURIComponent(reg3));
+          setRegion1(reg1);
+          setRegion2(reg2);
+          setRegion3(reg3);
+        }
       });
 
       return;
     }
+
     let tmp = Cookies.get("region1");
     // 로그인 안돼있으면서 위치정보 안받아온 경우 받아오기
-    if ((userkey == null || userkey == "") && (tmp == null || tmp == "")) {
+    if (
+      (userkey == null || userkey == "" || userkey == "undefined") &&
+      (tmp == null || tmp == "" || tmp == "undefined")
+    ) {
       getLocation(); // API 로드 후에 함수 호출
     }
   }, []);
@@ -186,25 +254,26 @@ export default function Header() {
             const geocoder = new window.kakao.maps.services.Geocoder();
             const coord = new kakao.maps.LatLng(latitude, longitude);
 
+            let reg1 = "";
+            let reg2 = "";
+            let reg3 = "";
+
             const callback = (result, status) => {
               if (status === window.kakao.maps.services.Status.OK) {
-                setRegion1(result[0].address.region_1depth_name);
-                setRegion2(result[0].address.region_2depth_name);
-                setRegion3(result[0].address.region_3depth_name);
-                Cookies.set(
-                  "region1",
-                  encodeURIComponent(result[0].address.region_1depth_name)
-                );
-                Cookies.set(
-                  "region2",
-                  encodeURIComponent(result[0].address.region_2depth_name)
-                );
-                Cookies.set(
-                  "region3",
-                  encodeURIComponent(result[0].address.region_3depth_name)
-                );
-                Cookies.set("latitude", latitude);
-                Cookies.set("longitude", longitude);
+                reg1 = result[0].address.region_1depth_name;
+                reg2 = result[0].address.region_2depth_name;
+                reg3 = result[0].address.region_3depth_name;
+
+                if (e != null) {
+                  setSearchHere([[reg1, reg2, reg3]]);
+                } else {
+                  setRegion1(reg1);
+                  setRegion2(reg2);
+                  setRegion3(reg3);
+                  Cookies.set("region1", encodeURIComponent(reg1));
+                  Cookies.set("region2", encodeURIComponent(reg2));
+                  Cookies.set("region3", encodeURIComponent(reg3));
+                }
               }
             };
 
@@ -216,6 +285,35 @@ export default function Header() {
         }
       });
     };
+  }
+  // #endregion
+
+  // #region 민호-주소 변경
+  function changeLoc(reg3, isselected) {
+    if (isselected == 1) {
+      setAnchorEl(null);
+      return;
+    }
+
+    if (confirm("대표 동네를 '" + reg3 + "'으로 변경하시겠습니까?")) {
+      axios({
+        url: "/address/changeSelected",
+        method: "get",
+        params: {
+          userkey: decodeURIComponent(Cookies.get("userkey")),
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if (res.data.issuccess <= 0)
+          alert("변경에 실패했습니다. 다시 시도해주세요.");
+        else {
+          router.push("/");
+          window.location.href = "/";
+        }
+      });
+    }
   }
   // #endregion
 
@@ -425,6 +523,7 @@ export default function Header() {
             className="_1a7kymoh _1h4pbgy89k _1h4pbgy8eg _1h4pbgya0o _1h4pbgy9ug _1h4pbgy8jc _1a7kymog"
             data-expanded="true"
           >
+            {/* #region 동네설정 */}
             <div className="_1h4pbgy9u0 _1h4pbgy9ub _1h4pbgy8bk">
               <Button
                 id="demo-customized-button"
@@ -453,7 +552,9 @@ export default function Header() {
                 userAddress != "undefined" &&
                 userAddress.length > 0
                   ? userAddress[0].tvo.region3
-                  : "동네설정"}
+                  : region3 != ""
+                    ? region3
+                    : "동네설정"}
               </Button>
               <StyledMenu
                 id="demo-customized-menu"
@@ -464,18 +565,101 @@ export default function Header() {
                 open={locationMenuOpen}
                 onClose={locationMenuClose}
               >
-                <MenuItem onClick={locationMenuClose} disableRipple>
-                  Edit
-                </MenuItem>
-                <MenuItem onClick={locationMenuClose} disableRipple>
-                  Duplicate
-                </MenuItem>
-                <Divider sx={{ my: 0.5 }} />
-                <MenuItem onClick={() => setLocationOpen(true)} disableRipple>
+                {userAddress != null &&
+                  userAddress !== "undefined" &&
+                  userAddress.length > 0 && [
+                    ...userAddress.map((addr, i) => (
+                      <MenuItem
+                        key={addr.addresskey}
+                        onClick={() =>
+                          changeLoc(addr.tvo.region3, addr.isselected)
+                        }
+                        disableRipple
+                      >
+                        {/* 왼쪽에 [대표] 표시 */}
+                        {addr.isselected == 1 ? (
+                          <Typography
+                            sx={{ marginRight: "8px", color: "blue" }}
+                          >
+                            [대표]
+                          </Typography>
+                        ) : (
+                          <Typography
+                            sx={{ marginRight: "8px", visibility: "hidden" }}
+                          >
+                            [대표]
+                          </Typography>
+                        )}
+                        {addr.tvo.region3}
+
+                        {/* 오른쪽에 [수정] 버튼 */}
+                        <IconButton
+                          edge="end"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation(); // 부모 MenuItem의 onClick을 막음
+                            deleteAddress(
+                              addr.addresskey,
+                              addr.tvo.region3,
+                              addr.isselected
+                            ); // 삭제 핸들러 호출
+                          }}
+                          sx={{ marginLeft: "auto" }} // 자동으로 오른쪽 정렬
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        {/* 오른쪽에 [삭제] 버튼 */}
+                        <IconButton
+                          edge="end"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation(); // 부모 MenuItem의 onClick을 막음
+                            deleteAddress(
+                              addr.addresskey,
+                              addr.tvo.region3,
+                              addr.isselected
+                            ); // 삭제 핸들러 호출
+                          }}
+                          sx={{ marginLeft: "auto" }} // 자동으로 오른쪽 정렬
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </MenuItem>
+                    )),
+                    userAddress.length === 1 && (
+                      <MenuItem
+                        key="add"
+                        onClick={() => {
+                          setIsAdd(true);
+                          setLocationOpen(true);
+                        }}
+                        disableRipple
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <Typography>+ 추가</Typography>
+                        </Box>
+                      </MenuItem>
+                    ),
+                    // <Divider key="divider" sx={{ my: 0.5 }} />,
+                    // 추가 버튼 조건부 렌더링
+                  ]}
+                {/* <MenuItem onClick={() => setLocationOpen(true)} disableRipple>
                   내 동네 설정
-                </MenuItem>
+                </MenuItem> */}
               </StyledMenu>
             </div>
+            {/* #endregion 동네설정 끝 */}
             <div className="_1h4pbgy9w0 _1h4pbgy8jc _1h4pbgya2z">
               <form action="/us/buy-sell/all/">
                 <div className="_1h4pbgya0o">
@@ -923,12 +1107,12 @@ export default function Header() {
               >
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
-                  placeholder="구명으로 검색 (ex. 서초구)"
-                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="동명(읍, 면)으로 검색 (ex. 서초동)"
+                  onChange={(e) => setSearchLoc(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault(); // 기본 Enter 동작 방지
-                      //searchNotice(); // 검색 함수 호출
+                      searchLocation(); // 검색 함수 호출
                     }
                   }}
                 />
@@ -936,37 +1120,72 @@ export default function Header() {
                   type="button"
                   sx={{ p: "10px" }}
                   aria-label="search"
-                  //onClick={searchNotice}
+                  onClick={searchLocation}
                 >
                   <SearchIcon />
                 </IconButton>
               </Paper>
             </FormControl>
             <FormControl fullWidth margin="dense">
-              <Button variant="outlined" startIcon={<MyLocationIcon />}>
+              <Button
+                onClick={(e) => getLocation(e)}
+                variant="outlined"
+                startIcon={<MyLocationIcon />}
+              >
                 현재위치로 찾기
               </Button>
             </FormControl>
             <FormControl fullWidth margin="dense">
+              동네
               <List
                 sx={{
                   overflow: "auto",
                   maxHeight: 300,
                 }}
               >
-                {[0, 1, 2, 3, 4].map((sectionId, i) => (
-                  <div key={`item-${sectionId}-hihi`}>
-                    <ListItem>
-                      <ListItemText primary="hihi" />
-                    </ListItem>
-                    <ListDivider inset="gutter" />
+                {searchHere && searchHere.length > 0 ? (
+                  <div>
+                    {searchHere.map((loc, i) => {
+                      return (
+                        <div key={i}>
+                          <ListItem button onClick={changeLoc(loc.region3, 0)}>
+                            <ListItemText
+                              primary={
+                                loc.region1
+                                  ? loc.region1 +
+                                    " " +
+                                    loc.region2 +
+                                    " " +
+                                    loc.region3
+                                  : loc.join(" ")
+                              }
+                            />
+                          </ListItem>
+                          <ListDivider inset="gutter" />
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "150px", // 원하는 높이로 조절
+                      width: "100%",
+                      padding: "20px", // 내부 여백 추가
+                      boxSizing: "border-box", // 패딩 포함 크기 조절
+                    }}
+                  >
+                    <span>검색 결과 없음</span>
+                  </div>
+                )}
               </List>
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button type="submit">선택 완료</Button>
+            {/* <Button type="submit">선택 완료</Button> */}
             <Button onClick={locationClose}>취소</Button>
           </DialogActions>
         </Dialog>

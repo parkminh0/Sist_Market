@@ -10,4 +10,8 @@ import com.sist.back.vo.AddressVO;
 public interface AddressMapper {
 
     public List<AddressVO> getAddressByUserkey(String userkey);
+
+    int changeSelected(String userkey);
+
+    int deleteAddress(String addresskey);
 }

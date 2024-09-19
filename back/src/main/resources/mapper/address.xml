@@ -14,4 +14,18 @@
      WHERE userkey = #{userkey}
      ORDER BY isselected DESC
     </select>
+
+    <update id="changeSelected" parameterType="String">
+    UPDATE `address`
+      SET isselected = 
+      CASE WHEN isselected = 0 THEN 1 
+           WHEN isselected = 1 THEN 0
+       END
+     WHERE userkey = #{userkey}
+    </update>
+
+    <delete id="deleteAddress" parameterType="String">
+    DELETE FROM `address`
+     WHERE addresskey = #{addresskey}
+    </delete>
 </mapper>
