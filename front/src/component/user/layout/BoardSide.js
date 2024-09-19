@@ -1,9 +1,10 @@
+
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
-export default function MyPageSide() {
+export default function MyPageSide({ bclist, categorykey }) {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -26,28 +27,26 @@ export default function MyPageSide() {
     >
       <nav data-v-7bcac446="" data-v-0adb81cc="" className="snb">
         <div data-v-7bcac446="" className="snb_list">
-       
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
-            <li data-v-7a824f04="" className="menu_item">
-              <Link
-                data-href="/Board/notice"
-                data-v-7a824f04=""
-                href="/Board/notice"
-                className="menu_link"
-              >
-                공지사항
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link
-                data-href="/Board/event"
-                data-v-7a824f04=""
-                href="/Board/event"
-                className="menu_link"
-              >
-                이벤트
-              </Link>
-            </li>
+            {bclist.length > 0 ? (
+              bclist.map((bc, index) => (
+                <li key={index} data-v-7a824f04="" className="menu_item">
+                  <Link
+                    href={`/Board/list/${bc.key}`}
+                    data-href={`/Board/list/${bc.key}`}
+                    className="category-link"
+                    style={{
+                      
+                      fontWeight: pathname === `/Board/list/${bc.key}` ? 'bold' : 'normal', // 현재 선택된 카테고리는 bold
+                    }}
+                  >
+                    {bc.value} {/* 카테고리 이름을 표시 */}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <p>게시판 목록이 없습니다.</p>
+            )}
           </ul>
         </div>
       </nav>
