@@ -63,6 +63,7 @@ export default NextAuth({
 
     async session({ session, token }) {
       session.user = token;
+      session.user.image = token.picture;
       return session;
     },
   },
