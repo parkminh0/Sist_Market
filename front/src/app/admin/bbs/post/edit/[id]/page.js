@@ -10,6 +10,8 @@ import { Button, TextField } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 
 export default function Page() {
+  const params = useParams();
+
   // formats로 사용자가 넣을 수 있는 데이터를 제한함
   const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
   const API_URL = `/admin/board/getBbs?boardkey=${params.id}`;
@@ -19,10 +21,18 @@ export default function Page() {
   const AddImage_URL = "/admin/board/addImage";
   
   // 이미지 사이즈 조절을 위한 모듈
-  Quill.register('modules/imageActions', ImageActions);
-  Quill.register('modules/imageFormats', ImageFormats);
-  
-  const params = useParams();
+  // Quill.register('modules/imageActions', ImageActions);
+  // Quill.register('modules/imageFormats', ImageFormats);
+
+  // 이미지 모듈이 등록되지 않았을 때만 등록하도록 조건을 추가
+  if (!Quill.imports['modules/imageActions']) {
+    Quill.register('modules/imageActions', ImageActions);
+  }
+
+  if (!Quill.imports['modules/imageFormats']) {
+    Quill.register('modules/imageFormats', ImageFormats);
+  }
+
   const [vo, setVo] = useState({});
   const [bc_list, setBc_list] = useState([]);
   const [content, setContent] = useState(); // 에디터에 적히는 값 콘솔에 출력
@@ -164,7 +174,7 @@ export default function Page() {
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <select className="fSelect" id="sel_board_no" name="sel_board_no" value={categoryname} onChange={(e) => setCategoryname(e.target.value)}
+          <select className="fSelect" id="sel_board_no" name="sel_board_no" value={categoryname || ''} onChange={(e) => setCategoryname(e.target.value)}
             style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginRight: '10px', marginTop: '10px' }}>
             {bc_list && bc_list.map((bc, i) => (<option key={i} value={bc.value}>{bc.value}</option>))}
           </select>
@@ -177,12 +187,12 @@ export default function Page() {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <input type="text" id="title" name="title" placeholder="제목" required className="input-field"
-            value={title || vo.title} onChange={(e) => setTitle(e.target.value)}
+            value={title || vo.title || ''} onChange={(e) => setTitle(e.target.value)}
             style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginBottom: '10px' }} />
         </div>
       </div>
       <div>
-        <ReactQuill theme="snow" ref={quillRef} modules={modules} formats={formats} value={content || vo.content} onChange={setContent} style={{ height: '800px', width: '1000px' }}/>
+        <ReactQuill theme="snow" ref={quillRef} modules={modules} formats={formats} value={content || vo.content || ''} onChange={setContent} style={{ height: '800px', width: '1000px' }}/>
       </div>
     </>
   );
