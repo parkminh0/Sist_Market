@@ -171,7 +171,7 @@ export default function Page() {
             </colgroup>
             <thead>
               <tr>
-                <th scope="col" col><input type="checkbox" className="allChk" checked={allChecked} onChange={(e) => handleAllCheck(e)} /></th>
+                <th scope="col"><input type="checkbox" className="allChk" checked={allChecked} onChange={(e) => handleAllCheck(e)} /></th>
                 <th scope="col" style={{fontWeight: 'bold'}}>게사판 카테고리 번호</th>
                 <th scope="col" style={{fontWeight: 'bold'}}>게시판 카테고리명</th>
               </tr>

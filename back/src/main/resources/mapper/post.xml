@@ -554,5 +554,17 @@
         SELECT * FROM post WHERE poststatus = #{poststatus}
     </select>
 
+
+
+
+
+
+
+    <!-- 게시글 숨기기 -->
+    <update id="hidePost" parameterType="String">
+        UPDATE `post`
+        SET poststatus = 4
+        WHERE postkey = #{postkey}
+    </update>
 </mapper>
 
