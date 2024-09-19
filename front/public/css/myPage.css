@@ -3,6 +3,29 @@
     line-height: 29px;
 }
 
+.wishlistGrid{
+    column-gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    row-gap: 32px;
+}
+   
+@media (min-width: 500px){
+    .wishlistGrid{
+        column-gap: 20px;
+        grid-template-columns: repeat(2,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 800px){
+    .wishlistGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(4,1fr);
+        row-gap: 32px
+    }
+}
+
 .content_title1 {
     border-bottom: 2px solid #222;
     padding-bottom: 16px;

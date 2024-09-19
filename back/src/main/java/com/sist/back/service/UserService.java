@@ -1,15 +1,13 @@
 package com.sist.back.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.back.jwt.JwtProvider;
 import com.sist.back.mapper.UserMapper;
@@ -328,6 +326,26 @@ public class UserService {
 
     public boolean chkPw(String chkPw, String encodedPw) {
         return passwordEncoder.matches(chkPw, encodedPw);
+    }
+
+
+    public int getDidsell(String userkey_me,String userkey_you,String date_start,String date_end){
+        return mapper.getDidsell(userkey_me,userkey_you,date_start,date_end);
+    }
+
+
+    public int getDidbuy(String userkey_me,String userkey_you,String date_start,String date_end){
+        return mapper.getDidbuy(userkey_me,userkey_you,date_start,date_end);
+    }
+
+    public List<PostVO> getCellListForUserPage(String userkey){
+        return mapper.getCellListForUserPage(userkey);
+    }
+    public List<PostVO> getMorePost(String userkey,String limitpostkey,String lastpostkey){
+        return mapper.getMorePost(userkey,limitpostkey,lastpostkey);
+    }
+    public int getRestList(String userkey,String limitpostkey,String lastpostkey){
+        return mapper.getRestList(userkey,limitpostkey,lastpostkey);
     }
 
 
