@@ -25,4 +25,12 @@ public class AddressService {
 
         return ar;
     }
+
+    public int changeSelected(String userkey) {
+        return addressMapper.changeSelected(userkey);
+    }
+
+    public int deleteAddress(String addresskey) {
+        return addressMapper.deleteAddress(addresskey);
+    }
 }

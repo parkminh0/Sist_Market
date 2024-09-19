@@ -47,4 +47,16 @@ public class TownService {
         }
         return ar;
     }
+
+    // userkey로 Address 목록 가져오기
+    public TownVO[] getNearTown(String region1, String region2) {
+        TownVO[] ar = null;
+        List<TownVO> list = townMapper.getNearTown(region1, region2);
+        if (list != null && list.size() > 0) {
+            ar = new TownVO[list.size()];
+            list.toArray(ar);
+        }
+
+        return ar;
+    }
 }

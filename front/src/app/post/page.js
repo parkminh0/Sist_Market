@@ -139,34 +139,31 @@ export default function page() {
     setMinPriceParam(minParam);
     setMaxPriceParam(maxParam);
 
-    if (!loading) {
-      setLoading(true);
-      axios({
-        url: "/adpost/search",
-        method: "get",
-        params: {
-          userkey: decodeURIComponent(Cookies.get("userkey")),
-          loc1: loc1Param,
-          loc2: loc2Param,
-          category: cateParam,
-          sort: srtParam,
-          minPrice: minParam,
-          maxPrice: maxParam,
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => {
-        setPost_list(res.data.res_search);
-        if (!res.data.res_search || res.data.res_search.length < 15) {
-          setViewMore(false);
-        }
-        if (res.data.lastPostKey != null) {
-          setLastPostKey(res.data.lastPostKey);
-        }
-      });
-      setLoading(false);
-    }
+    axios({
+      url: "/adpost/search",
+      method: "get",
+      params: {
+        userkey: decodeURIComponent(Cookies.get("userkey")),
+        loc1: loc1Param,
+        loc2: loc2Param,
+        category: cateParam,
+        sort: srtParam,
+        minPrice: minParam,
+        maxPrice: maxParam,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setPost_list(res.data.res_search);
+      if (!res.data.res_search || res.data.res_search.length < 15) {
+        setViewMore(false);
+      }
+      if (res.data.lastPostKey != null) {
+        setLastPostKey(res.data.lastPostKey);
+      }
+    });
+    setLoading(false);
   }, [router.query]);
   // #endregion
 

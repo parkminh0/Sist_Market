@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.TownService;
@@ -28,4 +29,10 @@ public class TownController {
         return res;
     }
 
+    @GetMapping("/getNearTown")
+    public Map<String, Object> getNearTown(@RequestParam String region1, @RequestParam String region2) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("getNearTown", townService.getNearTown(region1, region2));
+        return res;
+    }
 }
