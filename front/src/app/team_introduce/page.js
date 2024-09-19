@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import styles from "/public/css/team_introduce.module.css"; 
+import styles from "/public/css/team_introduce.module.css";
 
 export default function Page() {
   return (
@@ -25,12 +25,15 @@ export default function Page() {
             </h2>
             <p className="_1bauyvj6 _1bauyvj0 _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c0">
               <font style={{ verticalAlign: "inherit" }}>
-              우리는 일상에서 쉽게 사용할 수 있는 지역 기반의 커뮤니티 서비스의 중요성을 느꼈습니다.
-              특히 사람들이 자신의 지역 내에서 중고 물품을 사고팔거나 소소한 도움을 주고받는 
-              플랫폼을 만들고 싶었습니다. 당근마켓과 유사한 서비스가 이미 성공적으로 자리잡고 있지만,
-              저희 팀은 이와 차별화된, 더 나은 사용자 경험과 기능을 제공하는 플랫폼을 구축하려는
-              목표를 가지고 이 프로젝트를 시작하게 되었습니다. 우리가 다루는 지역 커뮤니티의 
-              특성을 살리고, 사용자가 더 쉽고 편리하게 사용할 수 있는 시스템을 설계하는 데에 집중했습니다.
+                우리는 일상에서 쉽게 사용할 수 있는 지역 기반의 커뮤니티
+                서비스의 중요성을 느꼈습니다. 특히 사람들이 자신의 지역 내에서
+                중고 물품을 사고팔거나 소소한 도움을 주고받는 플랫폼을 만들고
+                싶었습니다. 당근마켓과 유사한 서비스가 이미 성공적으로 자리잡고
+                있지만, 저희 팀은 이와 차별화된, 더 나은 사용자 경험과 기능을
+                제공하는 플랫폼을 구축하려는 목표를 가지고 이 프로젝트를
+                시작하게 되었습니다. 우리가 다루는 지역 커뮤니티의 특성을
+                살리고, 사용자가 더 쉽고 편리하게 사용할 수 있는 시스템을
+                설계하는 데에 집중했습니다.
               </font>
             </p>
           </section>
@@ -40,13 +43,15 @@ export default function Page() {
             </h2>
             <p className="_1bauyvj6 _1bauyvj0 _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c0">
               <font style={{ verticalAlign: "inherit" }}>
-              저희 팀은 지역 커뮤니티를 기반으로 한 중고 거래 및 커뮤니티 플랫폼을 개발하고 있습니다. 
-              이 서비스는 사용자가 자신이 거주하는 지역 내에서 다양한 물품을 사고팔거나, 
-              도움이 필요한 이웃과 쉽게 소통할 수 있는 기능을 제공합니다. 
-              또한 사용자 친화적인 인터페이스와 지역 사회의 신뢰를 바탕으로 안전하고 
-              투명한 거래 환경을 제공하는 것을 목표로 하고 있습니다.
-              이 프로젝트는 Java, MySQL, MyBatis, Springboot, JwtProvider, Api등을 활용한 백엔드 개발과 Next.js를 활용한 프론트엔드 설계를 통해 
-              사용자 경험을 극대화하는 것을 목표로 하고 있습니다.
+                저희 팀은 지역 커뮤니티를 기반으로 한 중고 거래 및 커뮤니티
+                플랫폼을 개발하고 있습니다. 이 서비스는 사용자가 자신이 거주하는
+                지역 내에서 다양한 물품을 사고팔거나, 도움이 필요한 이웃과 쉽게
+                소통할 수 있는 기능을 제공합니다. 또한 사용자 친화적인
+                인터페이스와 지역 사회의 신뢰를 바탕으로 안전하고 투명한 거래
+                환경을 제공하는 것을 목표로 하고 있습니다. 이 프로젝트는 Java,
+                MySQL, MyBatis, Springboot, JwtProvider, Api등을 활용한 백엔드
+                개발과 Next.js를 활용한 프론트엔드 설계를 통해 사용자 경험을
+                극대화하는 것을 목표로 하고 있습니다.
               </font>
             </p>
           </section>
@@ -56,11 +61,12 @@ export default function Page() {
             </h2>
             <p className="_1bauyvj6 _1bauyvj0 _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c0">
               <font style={{ verticalAlign: "inherit" }}>
-              저희 팀은 개발, 디자인, 기획 등 다양한 역할을 맡은 팀원들로 구성되어 있으며, 
-              모두가 열정을 가지고 프로젝트를 진행하고 있습니다. 
-              각 팀원들은 자신의 역량을 발휘하여 프로젝트의 완성도를 높이고 있으며, 
-              사용자가 쉽게 접근하고 신뢰할 수 있는 플랫폼을 만드는 데 기여하고 있습니다. 
-              이번 프로젝트는 저희 팀원들의 협력과 창의성을 바탕으로 발전하고 있습니다.
+                저희 팀은 개발, 디자인, 기획 등 다양한 역할을 맡은 팀원들로
+                구성되어 있으며, 모두가 열정을 가지고 프로젝트를 진행하고
+                있습니다. 각 팀원들은 자신의 역량을 발휘하여 프로젝트의 완성도를
+                높이고 있으며, 사용자가 쉽게 접근하고 신뢰할 수 있는 플랫폼을
+                만드는 데 기여하고 있습니다. 이번 프로젝트는 저희 팀원들의
+                협력과 창의성을 바탕으로 발전하고 있습니다.
               </font>
             </p>
           </section>
@@ -79,7 +85,9 @@ export default function Page() {
                   <h3 className={styles.teamName}>박민호</h3>
                   <p className={styles.teamRole}>팀장</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>DB설계 및 기획</li>
+                    <li className={styles.teamDescriptionItem}>
+                      DB설계 및 기획
+                    </li>
                     <li className={styles.teamDescriptionItem}>업무 설명</li>
                     <li className={styles.teamDescriptionItem}>업무 설명</li>
                     <li className={styles.teamDescriptionItem}>업무 설명</li>
@@ -164,17 +172,11 @@ export default function Page() {
                 </div>
               </div>
             </div>
-
           </section>
-          
+
           <section className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90w">
-            <h2 className="_1bauyvj5 _1bauyvj0 _1h4pbgy794 _1h4pbgy79f _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgya4g _1h4pbgy9w8">
-              <font style={{ verticalAlign: "inherit" }}>연락하다</font>
-            </h2>
             <div className="_1bauyvjg _1h4pbgy780 _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy90w">
               <div>
-               
-                
                 <font style={{ verticalAlign: "inherit" }}>
                   <span className="_1h4pbgy80">
                     <font style={{ verticalAlign: "inherit" }}>
