@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.sist.back.vo.userVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.UserCountVO;
 import com.sist.back.vo.WishlistVO;
+import com.sist.back.vo.userVO;
 
 @Mapper
 public interface UserMapper {
@@ -108,5 +108,12 @@ public interface UserMapper {
     int editPw(userVO uvo);
 
     int editPhone(userVO uvo);
+
+
+    int getDidsell(String userkey_me,String userkey_you,String date_start,String date_end);
+    int getDidbuy(String userkey_me,String userkey_you,String date_start,String date_end);
+    List<PostVO> getCellListForUserPage(String userkey);
+    List<PostVO> getMorePost(String userkey,String limitpostkey,String lastpostkey);
+    int getRestList(String userkey,String limitpostkey,String lastpostkey);
 
 }
