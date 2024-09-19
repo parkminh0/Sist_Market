@@ -12,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostVO {
+        private String rnum;
+
         private String postkey, userkey, townkey, categorykey, method, price,
                         lastprice, range, canbargain, viewqty, dealuserkey,
                         poststatus, isdeleted, iscellvisible, isbuyvisible;
