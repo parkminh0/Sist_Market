@@ -179,10 +179,12 @@ const ReactEditor = () => {
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <select className="fSelect" id="sel_board_no" name="sel_board_no" onChange={(e) => setCategoryName(e.target.value)}
+          <select className="fSelect" id="sel_board_no" name="sel_board_no" value={categoryname} onChange={(e) => setCategoryName(e.target.value)}
             style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', marginRight: '10px', fontSize: '16px !important' }}>
-            <option value="" disabled selected hidden>:::카테고리 선택:::</option>
-            {bc_list && bc_list.map((bc, i) => (<option key={i} value={bc.value}>{bc.value}</option>))}
+              <option value="" disabled hidden>:::카테고리 선택:::</option>
+              {bc_list && bc_list.map((bc, i) => (
+                  <option key={i} value={bc.value}>{bc.value}</option>
+              ))}
           </select>
           <div className="button-group1" style={{ display: 'flex', gap: '10px' }}>
             <Button variant="contained" color="success" onClick={uploadContent}>저장</Button>
