@@ -153,4 +153,10 @@ public class PostService {
         return p_mapper.pImg_list(postkey); // PostMapper에서 pImg_list 메서드 호출
     }
 
+
+
+
+    public int hidePost(String postkey) {
+        return p_mapper.hidePost(postkey);
+    }
 }

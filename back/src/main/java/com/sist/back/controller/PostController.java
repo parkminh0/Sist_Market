@@ -425,4 +425,14 @@ public class PostController {
         return map;
     }
 
+
+
+    @RequestMapping("/hidePost")
+    @ResponseBody
+    public Map<String, Object> hidePost(String postkey) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = p_service.hidePost(postkey);
+        map.put("cnt", cnt);
+        return map;
+    }
 }
