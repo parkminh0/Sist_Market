@@ -5,6 +5,7 @@ import Category from "@/component/user/index/Category";
 import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export default function Home() {
   const [category_list, setCategory_list] = useState([]);
@@ -27,6 +28,10 @@ export default function Home() {
     axios({
       url: "/adpost/main",
       method: "get",
+      params: {
+        region1: decodeURIComponent(Cookies.get("region1")),
+        region2: decodeURIComponent(Cookies.get("region2")),
+      },
       headers: {
         "Content-Type": "application/json",
       },
@@ -469,251 +474,254 @@ export default function Home() {
       <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
         <article className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy91c _1h4pbgy92b _1h4pbgy91x _1h4pbgya0o _1h4pbgy83s _1h4pbgy84b _1h4pbgy84k">
           {/* 나눔 목록 */}
-          <section className="_1h4pbgy9ug _1h4pbgy9vs">
-            <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
-              <div
-                data-gtm="main_article"
-                className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0"
-              >
-                <font>나눔 목록</font>
-              </div>
-              <Link
-                className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-                href="/post?sort=recent&minPrice=0&maxPrice=0"
-              >
-                <span
-                  data-gtm="main_see_all"
-                  className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
+          {free_list && free_list.length > 0 && (
+            <section className="_1h4pbgy9ug _1h4pbgy9vs">
+              <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
+                <div
+                  data-gtm="main_article"
+                  className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0"
                 >
-                  <font>더보기</font>
-                </span>
-                <span className="_1h4pbgy9ug _1h4pbgy9wo">
+                  <font>나눔 목록</font>
+                </div>
+                <Link
+                  className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
+                  href="/post?sort=recent&minPrice=0&maxPrice=0"
+                >
                   <span
-                    style={{
-                      display: "inline-flex",
-                      width: "16px",
-                      height: "16px",
-                    }}
-                    className="_1h4pbgyu0"
-                    data-seed-icon="icon_chevron_right_fill"
-                    data-seed-icon-version="0.2.1"
+                    data-gtm="main_see_all"
+                    className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
                   >
-                    <svg
-                      id="icon_chevron_right_fill"
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-karrot-ui-icon="true"
-                    >
-                      <g>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
+                    <font>더보기</font>
                   </span>
-                </span>
-              </Link>
-            </header>
-            <div className="wa1ti51 _9rcp1w1 _1b153uw7">
-              <div className="_1n1zga84 _1n1zga80 _1h4pbgya0o">
-                <div
-                  data-scroll_div="scroll_div"
-                  data-scroll_idx="0"
-                  data-scroll_range="2"
-                  className="_1n1zga85 _1h4pbgy9zk _1h4pbgy8jc"
-                >
-                  <div className="wa1ti52 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7m3 _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7qr _1h4pbgy90w _1h4pbgya54">
-                    {free_list &&
-                      free_list.length > 0 &&
-                      free_list.map((post, i) => (
-                        <div key={i} className="wa1ti53">
-                          <Link href={`/post/detail?postkey=${post.postkey}`}>
-                            <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwb _1b153uw7">
-                              <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                                {post.pimg_list && post.pimg_list.length > 0 ? (
-                                  <span
-                                    className=" lazy-load-image-background opacity lazy-load-image-loaded"
-                                    style={{
-                                      color: "transparent",
-                                      display: "inlineBlock",
-                                    }}
-                                  >
-                                    <img
-                                      className="_1b153uwe _1h4pbgya3k"
-                                      src={post.pimg_list[0].imgurl}
-                                      alt="썸네일"
+                  <span className="_1h4pbgy9ug _1h4pbgy9wo">
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        width: "16px",
+                        height: "16px",
+                      }}
+                      className="_1h4pbgyu0"
+                      data-seed-icon="icon_chevron_right_fill"
+                      data-seed-icon-version="0.2.1"
+                    >
+                      <svg
+                        id="icon_chevron_right_fill"
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-karrot-ui-icon="true"
+                      >
+                        <g>
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                            fill="currentColor"
+                          ></path>
+                        </g>
+                      </svg>
+                    </span>
+                  </span>
+                </Link>
+              </header>
+              <div className="wa1ti51 _9rcp1w1 _1b153uw7">
+                <div className="_1n1zga84 _1n1zga80 _1h4pbgya0o">
+                  <div
+                    data-scroll_div="scroll_div"
+                    data-scroll_idx="0"
+                    data-scroll_range="2"
+                    className="_1n1zga85 _1h4pbgy9zk _1h4pbgy8jc"
+                  >
+                    <div className="wa1ti52 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7m3 _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7qr _1h4pbgy90w _1h4pbgya54">
+                      {free_list &&
+                        free_list.length > 0 &&
+                        free_list.map((post, i) => (
+                          <div key={i} className="wa1ti53">
+                            <Link href={`/post/detail?postkey=${post.postkey}`}>
+                              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwb _1b153uw7">
+                                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
+                                  {post.pimg_list &&
+                                  post.pimg_list.length > 0 ? (
+                                    <span
+                                      className=" lazy-load-image-background opacity lazy-load-image-loaded"
+                                      style={{
+                                        color: "transparent",
+                                        display: "inlineBlock",
+                                      }}
+                                    >
+                                      <img
+                                        className="_1b153uwe _1h4pbgya3k"
+                                        src={post.pimg_list[0].imgurl}
+                                        alt="썸네일"
+                                      />
+                                    </span>
+                                  ) : (
+                                    <ImageNotSupportedRoundedIcon
+                                      style={{
+                                        width: "100%", // 아이콘의 너비를 100%로 설정
+                                        height: "100%", // 아이콘의 높이를 100%로 설정
+                                        zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                      }}
                                     />
-                                  </span>
-                                ) : (
-                                  <ImageNotSupportedRoundedIcon
-                                    style={{
-                                      width: "100%", // 아이콘의 너비를 100%로 설정
-                                      height: "100%", // 아이콘의 높이를 100%로 설정
-                                      zIndex: 1, // 필요하면 z-index로 가시성을 확보
-                                    }}
-                                  />
-                                )}
-                              </div>
-                              <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                                  <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                                    <font>{post.title}</font>
+                                  )}
+                                </div>
+                                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
+                                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
+                                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
+                                      <font>{post.title}</font>
+                                    </div>
+                                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
+                                      <font>
+                                        {post.price == 0
+                                          ? "나눔♥"
+                                          : new Intl.NumberFormat(
+                                              "ko-KR"
+                                            ).format(post.price) + "원"}
+                                      </font>
+                                    </div>
                                   </div>
-                                  <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                                    <font>
-                                      {post.price == 0
-                                        ? "나눔♥"
-                                        : new Intl.NumberFormat("ko-KR").format(
-                                            post.price
-                                          ) + "원"}
-                                    </font>
+                                  <div className="_1b153uwh _1h4pbgy8jc">
+                                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
+                                      <font>
+                                        {post.townVO && post.townVO.region3}
+                                      </font>
+                                    </h2>
                                   </div>
                                 </div>
-                                <div className="_1b153uwh _1h4pbgy8jc">
-                                  <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                                    <font>
-                                      {post.townVO && post.townVO.region3}
-                                    </font>
-                                  </h2>
-                                </div>
-                              </div>
-                            </article>
-                          </Link>
-                        </div>
-                      ))}
-                    {/* 상품 끝 */}
-                    <Link href="/post?sort=recent&minPrice=0&maxPrice=0">
-                      <div className="_1kquttw0 _1b153uw8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy174 _1h4pbgy3oo _1h4pbgy94w _1kquttw1 _1b153uw6">
-                        <div className="_1h4pbgy9ug _1h4pbgy8zs">
-                          <span className="_1h4pbgy8g _1h4pbgy7ao">
-                            <font>전체 보기</font>
-                          </span>
-                          <span className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo">
-                            <span
-                              style={{
-                                display: "inline-flex",
-                                width: "14px",
-                                height: "14px",
-                              }}
-                              data-seed-icon="icon_chevron_right_fill"
-                              data-seed-icon-version="0.2.1"
-                            >
-                              <svg
-                                id="icon_chevron_right_fill"
-                                width="100%"
-                                height="100%"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                data-karrot-ui-icon="true"
-                              >
-                                <g>
-                                  <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                                    fill="currentColor"
-                                  ></path>
-                                </g>
-                              </svg>
+                              </article>
+                            </Link>
+                          </div>
+                        ))}
+                      {/* 상품 끝 */}
+                      <Link href="/post?sort=recent&minPrice=0&maxPrice=0">
+                        <div className="_1kquttw0 _1b153uw8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy174 _1h4pbgy3oo _1h4pbgy94w _1kquttw1 _1b153uw6">
+                          <div className="_1h4pbgy9ug _1h4pbgy8zs">
+                            <span className="_1h4pbgy8g _1h4pbgy7ao">
+                              <font>전체 보기</font>
                             </span>
-                          </span>
+                            <span className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo">
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  width: "14px",
+                                  height: "14px",
+                                }}
+                                data-seed-icon="icon_chevron_right_fill"
+                                data-seed-icon-version="0.2.1"
+                              >
+                                <svg
+                                  id="icon_chevron_right_fill"
+                                  width="100%"
+                                  height="100%"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  data-karrot-ui-icon="true"
+                                >
+                                  <g>
+                                    <path
+                                      fillRule="evenodd"
+                                      clipRule="evenodd"
+                                      d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                                      fill="currentColor"
+                                    ></path>
+                                  </g>
+                                </svg>
+                              </span>
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-                <div
-                  data-direct="left"
-                  className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga87 _1n1zga89"
-                ></div>
-                <div
-                  data-direct="right"
-                  className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga88"
-                ></div>
-                <div
-                  onClick={slide_l}
-                  className="_1n1zga8a _1n1zga8b"
-                  style={{
-                    _1n1zga81: "var(_1b153uw3)",
-                    _1n1zga82: "var(_1b153uw4)",
-                    _1n1zga83: "var(_1b153uw5)",
-                  }}
-                >
-                  <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8e _1n1zga8g">
-                    <span
-                      style={{ display: "inline-flex" }}
-                      className="_1n1zga8h"
-                      data-seed-icon="icon_chevron_left_thin"
-                      data-seed-icon-version="0.2.1"
-                    >
-                      <svg
-                        id="icon_chevron_left_thin"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
+                  <div
+                    data-direct="left"
+                    className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga87 _1n1zga89"
+                  ></div>
+                  <div
+                    data-direct="right"
+                    className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga88"
+                  ></div>
+                  <div
+                    onClick={slide_l}
+                    className="_1n1zga8a _1n1zga8b"
+                    style={{
+                      _1n1zga81: "var(_1b153uw3)",
+                      _1n1zga82: "var(_1b153uw4)",
+                      _1n1zga83: "var(_1b153uw5)",
+                    }}
+                  >
+                    <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8e _1n1zga8g">
+                      <span
+                        style={{ display: "inline-flex" }}
+                        className="_1n1zga8h"
+                        data-seed-icon="icon_chevron_left_thin"
+                        data-seed-icon-version="0.2.1"
                       >
-                        <g>
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M16.6225 3.17006C16.8525 3.40006 16.8525 3.78006 16.6225 4.01006L8.63245 12.0001L16.6225 19.9901C16.8525 20.2201 16.8525 20.6001 16.6225 20.8301C16.3925 21.0601 16.0125 21.0601 15.7825 20.8301L7.37245 12.4201C7.14245 12.1901 7.14245 11.8101 7.37245 11.5801L15.7825 3.17006C16.0125 2.94006 16.3925 2.94006 16.6225 3.17006Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
+                        <svg
+                          id="icon_chevron_left_thin"
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          data-karrot-ui-icon="true"
+                        >
+                          <g>
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M16.6225 3.17006C16.8525 3.40006 16.8525 3.78006 16.6225 4.01006L8.63245 12.0001L16.6225 19.9901C16.8525 20.2201 16.8525 20.6001 16.6225 20.8301C16.3925 21.0601 16.0125 21.0601 15.7825 20.8301L7.37245 12.4201C7.14245 12.1901 7.14245 11.8101 7.37245 11.5801L15.7825 3.17006C16.0125 2.94006 16.3925 2.94006 16.6225 3.17006Z"
+                              fill="currentColor"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div
-                  onClick={slide_r}
-                  className="_1n1zga8a _1n1zga8c"
-                  style={{
-                    _1n1zga81: "var(_1b153uw3)",
-                    _1n1zga82: "var(_1b153uw4)",
-                    _1n1zga83: "var(_1b153uw5)",
-                  }}
-                >
-                  <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8f">
-                    <span
-                      style={{ display: "inline-flex" }}
-                      className="_1n1zga8h"
-                      data-seed-icon="icon_chevron_right_thin"
-                      data-seed-icon-version="0.2.1"
-                    >
-                      <svg
-                        id="icon_chevron_right_thin"
-                        width="100%"
-                        height="100%"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        data-karrot-ui-icon="true"
+                  <div
+                    onClick={slide_r}
+                    className="_1n1zga8a _1n1zga8c"
+                    style={{
+                      _1n1zga81: "var(_1b153uw3)",
+                      _1n1zga82: "var(_1b153uw4)",
+                      _1n1zga83: "var(_1b153uw5)",
+                    }}
+                  >
+                    <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8f">
+                      <span
+                        style={{ display: "inline-flex" }}
+                        className="_1n1zga8h"
+                        data-seed-icon="icon_chevron_right_thin"
+                        data-seed-icon-version="0.2.1"
                       >
-                        <g>
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M8.22246 3.17006L16.6325 11.5801C16.8625 11.8101 16.8625 12.1901 16.6325 12.4201L8.22246 20.8301C7.99246 21.0601 7.61246 21.0601 7.38246 20.8301C7.15246 20.6001 7.15246 20.2201 7.38246 19.9901L15.3725 12.0001L7.38246 4.01006C7.15246 3.78006 7.15246 3.40006 7.38246 3.17006C7.61246 2.94006 7.99246 2.94006 8.22246 3.17006Z"
-                            fill="currentColor"
-                          ></path>
-                        </g>
-                      </svg>
-                    </span>
+                        <svg
+                          id="icon_chevron_right_thin"
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          data-karrot-ui-icon="true"
+                        >
+                          <g>
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M8.22246 3.17006L16.6325 11.5801C16.8625 11.8101 16.8625 12.1901 16.6325 12.4201L8.22246 20.8301C7.99246 21.0601 7.61246 21.0601 7.38246 20.8301C7.15246 20.6001 7.15246 20.2201 7.38246 19.9901L15.3725 12.0001L7.38246 4.01006C7.15246 3.78006 7.15246 3.40006 7.38246 3.17006C7.61246 2.94006 7.99246 2.94006 8.22246 3.17006Z"
+                              fill="currentColor"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
           {/* 카테고리 */}
           <section className="_1h4pbgy9ug _1h4pbgy9vs">
             <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
@@ -866,271 +874,278 @@ export default function Home() {
           {/* 카테고리 3개 */}
           {cate_list &&
             cate_list.length > 0 &&
-            cate_list.map((child_list, i) => (
-              <section key={i} className="_1h4pbgy9ug _1h4pbgy9vs">
-                <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
-                  <div
-                    data-gtm="main_article"
-                    className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0"
-                  >
-                    {category_list.map((cate, i) =>
-                      child_list &&
-                      child_list.length > 0 &&
-                      child_list[0].categorykey == cate.categorykey ? (
-                        <font key={i}>{cate.categoryname}</font>
-                      ) : (
-                        ""
-                      )
-                    )}
-                  </div>
-                  <Link
-                    className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-                    href={`/post?sort=recent&category=${child_list && child_list.length > 0 && child_list[0].categorykey}`}
-                  >
-                    <span
-                      data-gtm="main_see_all"
-                      className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
-                    >
-                      <font>
-                        <font>더보기</font>
-                      </font>
-                    </span>
-                    <span className="_1h4pbgy9ug _1h4pbgy9wo">
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          width: "16px",
-                          height: "16px",
-                        }}
-                        className="_1h4pbgyu0"
-                        data-seed-icon="icon_chevron_right_fill"
-                        data-seed-icon-version="0.2.1"
+            cate_list.map(
+              (child_list, i) =>
+                child_list &&
+                child_list.length > 0 && (
+                  <section key={i} className="_1h4pbgy9ug _1h4pbgy9vs">
+                    <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
+                      <div
+                        data-gtm="main_article"
+                        className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0"
                       >
-                        <svg
-                          id="icon_chevron_right_fill"
-                          width="100%"
-                          height="100%"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          data-karrot-ui-icon="true"
+                        {category_list.map((cate, i) =>
+                          child_list &&
+                          child_list.length > 0 &&
+                          child_list[0].categorykey == cate.categorykey ? (
+                            <font key={i}>{cate.categoryname}</font>
+                          ) : (
+                            ""
+                          )
+                        )}
+                      </div>
+                      <Link
+                        className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
+                        href={`/post?sort=recent&category=${child_list && child_list.length > 0 && child_list[0].categorykey}`}
+                      >
+                        <span
+                          data-gtm="main_see_all"
+                          className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
                         >
-                          <g>
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                              fill="currentColor"
-                            ></path>
-                          </g>
-                        </svg>
-                      </span>
-                    </span>
-                  </Link>
-                </header>
-                <div className="wa1ti51 _9rcp1w1 _1b153uw7">
-                  <div className="_1n1zga84 _1n1zga80 _1h4pbgya0o">
-                    <div
-                      data-scroll_div="scroll_div"
-                      data-scroll_idx="0"
-                      data-scroll_range="2"
-                      className="_1n1zga85 _1h4pbgy9zk _1h4pbgy8jc"
-                    >
-                      <div className="wa1ti52 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7m3 _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7qr _1h4pbgy90w _1h4pbgya54">
-                        {child_list.map((post, i) => (
-                          <div key={i} className="wa1ti53">
-                            <Link href={`/post/detail?postkey=${post.postkey}`}>
-                              <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwb _1b153uw7">
-                                <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
-                                  {post.pimg_list &&
-                                  post.pimg_list.length > 0 ? (
+                          <font>
+                            <font>더보기</font>
+                          </font>
+                        </span>
+                        <span className="_1h4pbgy9ug _1h4pbgy9wo">
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              width: "16px",
+                              height: "16px",
+                            }}
+                            className="_1h4pbgyu0"
+                            data-seed-icon="icon_chevron_right_fill"
+                            data-seed-icon-version="0.2.1"
+                          >
+                            <svg
+                              id="icon_chevron_right_fill"
+                              width="100%"
+                              height="100%"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              data-karrot-ui-icon="true"
+                            >
+                              <g>
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                                  fill="currentColor"
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                        </span>
+                      </Link>
+                    </header>
+                    <div className="wa1ti51 _9rcp1w1 _1b153uw7">
+                      <div className="_1n1zga84 _1n1zga80 _1h4pbgya0o">
+                        <div
+                          data-scroll_div="scroll_div"
+                          data-scroll_idx="0"
+                          data-scroll_range="2"
+                          className="_1n1zga85 _1h4pbgy9zk _1h4pbgy8jc"
+                        >
+                          <div className="wa1ti52 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7m3 _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7qr _1h4pbgy90w _1h4pbgya54">
+                            {child_list.map((post, i) => (
+                              <div key={i} className="wa1ti53">
+                                <Link
+                                  href={`/post/detail?postkey=${post.postkey}`}
+                                >
+                                  <article className="_1b153uw9 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy90g _1b153uw8 _1b153uwb _1b153uw7">
+                                    <div className="_1b153uwd _1h4pbgy1ts _1h4pbgya0o _1h4pbgya2w _1h4pbgy94w">
+                                      {post.pimg_list &&
+                                      post.pimg_list.length > 0 ? (
+                                        <span
+                                          className=" lazy-load-image-background opacity lazy-load-image-loaded"
+                                          style={{
+                                            color: "transparent",
+                                            display: "inlineBlock",
+                                          }}
+                                        >
+                                          <img
+                                            className="_1b153uwe _1h4pbgya3k"
+                                            src={post.pimg_list[0].imgurl}
+                                            alt="썸네일"
+                                          />
+                                        </span>
+                                      ) : (
+                                        <ImageNotSupportedRoundedIcon
+                                          style={{
+                                            width: "100%", // 아이콘의 너비를 100%로 설정
+                                            height: "100%", // 아이콘의 높이를 100%로 설정
+                                            zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                    <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
+                                      <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
+                                        <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
+                                          <font>
+                                            <font>{post.title}</font>
+                                          </font>
+                                        </div>
+                                        <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
+                                          <font>
+                                            <font>
+                                              {post.price == 0
+                                                ? "나눔♥"
+                                                : new Intl.NumberFormat(
+                                                    "ko-KR"
+                                                  ).format(post.price) + "원"}
+                                            </font>
+                                          </font>
+                                        </div>
+                                      </div>
+                                      <div className="_1b153uwh _1h4pbgy8jc">
+                                        <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
+                                          <font>
+                                            <font>
+                                              {post.townVO &&
+                                                post.townVO.region3}
+                                            </font>
+                                          </font>
+                                        </h2>
+                                      </div>
+                                    </div>
+                                  </article>
+                                </Link>
+                              </div>
+                            ))}
+                            <Link
+                              href={`/post?sort=recent&category=${child_list && child_list.length > 0 && child_list[0].categorykey}`}
+                            >
+                              <div className="_1kquttw0 _1b153uw8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy174 _1h4pbgy3oo _1h4pbgy94w _1kquttw1 _1b153uw6">
+                                <div className="_1h4pbgy9ug _1h4pbgy8zs">
+                                  <span className="_1h4pbgy8g _1h4pbgy7ao">
+                                    <font>
+                                      <font>전체 보기</font>
+                                    </font>
+                                  </span>
+                                  <span className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo">
                                     <span
-                                      className=" lazy-load-image-background opacity lazy-load-image-loaded"
                                       style={{
-                                        color: "transparent",
-                                        display: "inlineBlock",
+                                        display: "inline-flex",
+                                        width: "14px",
+                                        height: "14px",
                                       }}
+                                      data-seed-icon="icon_chevron_right_fill"
+                                      data-seed-icon-version="0.2.1"
                                     >
-                                      <img
-                                        className="_1b153uwe _1h4pbgya3k"
-                                        src={post.pimg_list[0].imgurl}
-                                        alt="썸네일"
-                                      />
+                                      <svg
+                                        id="icon_chevron_right_fill"
+                                        width="100%"
+                                        height="100%"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        data-karrot-ui-icon="true"
+                                      >
+                                        <g>
+                                          <path
+                                            fillRule="evenodd"
+                                            clipRule="evenodd"
+                                            d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                                            fill="currentColor"
+                                          ></path>
+                                        </g>
+                                      </svg>
                                     </span>
-                                  ) : (
-                                    <ImageNotSupportedRoundedIcon
-                                      style={{
-                                        width: "100%", // 아이콘의 너비를 100%로 설정
-                                        height: "100%", // 아이콘의 높이를 100%로 설정
-                                        zIndex: 1, // 필요하면 z-index로 가시성을 확보
-                                      }}
-                                    />
-                                  )}
+                                  </span>
                                 </div>
-                                <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy90g">
-                                  <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wg _1h4pbgy8zs _1h4pbgy8g _1h4pbgy8jc">
-                                    <div className="_1b153uwf _1h4pbgy7ao _1h4pbgy780 _1h4pbgya2w _1h4pbgy8og _1h4pbgya54">
-                                      <font>
-                                        <font>{post.title}</font>
-                                      </font>
-                                    </div>
-                                    <div className="_1b153uwg _1h4pbgy7ag _1h4pbgy780 _1h4pbgya54">
-                                      <font>
-                                        <font>
-                                          {post.price == 0
-                                            ? "나눔♥"
-                                            : new Intl.NumberFormat(
-                                                "ko-KR"
-                                              ).format(post.price) + "원"}
-                                        </font>
-                                      </font>
-                                    </div>
-                                  </div>
-                                  <div className="_1b153uwh _1h4pbgy8jc">
-                                    <h2 className="_1b153uwi _1h4pbgy7ao _1h4pbgy79s _1h4pbgy80 _1h4pbgya54 _1h4pbgy8jc _1h4pbgya2w">
-                                      <font>
-                                        <font>
-                                          {post.townVO && post.townVO.region3}
-                                        </font>
-                                      </font>
-                                    </h2>
-                                  </div>
-                                </div>
-                              </article>
+                              </div>
                             </Link>
                           </div>
-                        ))}
-                        <Link
-                          href={`/post?sort=recent&category=${child_list && child_list.length > 0 && child_list[0].categorykey}`}
+                        </div>
+                        <div
+                          data-direct="left"
+                          className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga87 _1n1zga89"
+                        ></div>
+                        <div
+                          data-direct="right"
+                          className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga88"
+                        ></div>
+                        <div
+                          onClick={slide_l}
+                          className="_1n1zga8a _1n1zga8b"
+                          style={{
+                            _1n1zga81: "var(_1b153uw3)",
+                            _1n1zga82: "var(_1b153uw4)",
+                            _1n1zga83: "var(_1b153uw5)",
+                          }}
                         >
-                          <div className="_1kquttw0 _1b153uw8 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy174 _1h4pbgy3oo _1h4pbgy94w _1kquttw1 _1b153uw6">
-                            <div className="_1h4pbgy9ug _1h4pbgy8zs">
-                              <span className="_1h4pbgy8g _1h4pbgy7ao">
-                                <font>
-                                  <font>전체 보기</font>
-                                </font>
-                              </span>
-                              <span className="_1h4pbgy9ug _1h4pbgy9xc _1h4pbgy9wo">
-                                <span
-                                  style={{
-                                    display: "inline-flex",
-                                    width: "14px",
-                                    height: "14px",
-                                  }}
-                                  data-seed-icon="icon_chevron_right_fill"
-                                  data-seed-icon-version="0.2.1"
-                                >
-                                  <svg
-                                    id="icon_chevron_right_fill"
-                                    width="100%"
-                                    height="100%"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    data-karrot-ui-icon="true"
-                                  >
-                                    <g>
-                                      <path
-                                        fillRule="evenodd"
-                                        clipRule="evenodd"
-                                        d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                                        fill="currentColor"
-                                      ></path>
-                                    </g>
-                                  </svg>
-                                </span>
-                              </span>
-                            </div>
+                          <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8e _1n1zga8g">
+                            <span
+                              style={{ display: "inline-flex" }}
+                              className="_1n1zga8h"
+                              data-seed-icon="icon_chevron_left_thin"
+                              data-seed-icon-version="0.2.1"
+                            >
+                              <svg
+                                id="icon_chevron_left_thin"
+                                width="100%"
+                                height="100%"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                data-karrot-ui-icon="true"
+                              >
+                                <g>
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M16.6225 3.17006C16.8525 3.40006 16.8525 3.78006 16.6225 4.01006L8.63245 12.0001L16.6225 19.9901C16.8525 20.2201 16.8525 20.6001 16.6225 20.8301C16.3925 21.0601 16.0125 21.0601 15.7825 20.8301L7.37245 12.4201C7.14245 12.1901 7.14245 11.8101 7.37245 11.5801L15.7825 3.17006C16.0125 2.94006 16.3925 2.94006 16.6225 3.17006Z"
+                                    fill="currentColor"
+                                  ></path>
+                                </g>
+                              </svg>
+                            </span>
                           </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div
-                      data-direct="left"
-                      className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga87 _1n1zga89"
-                    ></div>
-                    <div
-                      data-direct="right"
-                      className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga88"
-                    ></div>
-                    <div
-                      onClick={slide_l}
-                      className="_1n1zga8a _1n1zga8b"
-                      style={{
-                        _1n1zga81: "var(_1b153uw3)",
-                        _1n1zga82: "var(_1b153uw4)",
-                        _1n1zga83: "var(_1b153uw5)",
-                      }}
-                    >
-                      <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8e _1n1zga8g">
-                        <span
-                          style={{ display: "inline-flex" }}
-                          className="_1n1zga8h"
-                          data-seed-icon="icon_chevron_left_thin"
-                          data-seed-icon-version="0.2.1"
+                        </div>
+                        <div
+                          onClick={slide_r}
+                          className="_1n1zga8a _1n1zga8c"
+                          style={{
+                            _1n1zga81: "var(_1b153uw3)",
+                            _1n1zga82: "var(_1b153uw4)",
+                            _1n1zga83: "var(_1b153uw5)",
+                          }}
                         >
-                          <svg
-                            id="icon_chevron_left_thin"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M16.6225 3.17006C16.8525 3.40006 16.8525 3.78006 16.6225 4.01006L8.63245 12.0001L16.6225 19.9901C16.8525 20.2201 16.8525 20.6001 16.6225 20.8301C16.3925 21.0601 16.0125 21.0601 15.7825 20.8301L7.37245 12.4201C7.14245 12.1901 7.14245 11.8101 7.37245 11.5801L15.7825 3.17006C16.0125 2.94006 16.3925 2.94006 16.6225 3.17006Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
+                          <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8f">
+                            <span
+                              style={{ display: "inline-flex" }}
+                              className="_1n1zga8h"
+                              data-seed-icon="icon_chevron_right_thin"
+                              data-seed-icon-version="0.2.1"
+                            >
+                              <svg
+                                id="icon_chevron_right_thin"
+                                width="100%"
+                                height="100%"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                data-karrot-ui-icon="true"
+                              >
+                                <g>
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M8.22246 3.17006L16.6325 11.5801C16.8625 11.8101 16.8625 12.1901 16.6325 12.4201L8.22246 20.8301C7.99246 21.0601 7.61246 21.0601 7.38246 20.8301C7.15246 20.6001 7.15246 20.2201 7.38246 19.9901L15.3725 12.0001L7.38246 4.01006C7.15246 3.78006 7.15246 3.40006 7.38246 3.17006C7.61246 2.94006 7.99246 2.94006 8.22246 3.17006Z"
+                                    fill="currentColor"
+                                  ></path>
+                                </g>
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div
-                      onClick={slide_r}
-                      className="_1n1zga8a _1n1zga8c"
-                      style={{
-                        _1n1zga81: "var(_1b153uw3)",
-                        _1n1zga82: "var(_1b153uw4)",
-                        _1n1zga83: "var(_1b153uw5)",
-                      }}
-                    >
-                      <div className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8f">
-                        <span
-                          style={{ display: "inline-flex" }}
-                          className="_1n1zga8h"
-                          data-seed-icon="icon_chevron_right_thin"
-                          data-seed-icon-version="0.2.1"
-                        >
-                          <svg
-                            id="icon_chevron_right_thin"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M8.22246 3.17006L16.6325 11.5801C16.8625 11.8101 16.8625 12.1901 16.6325 12.4201L8.22246 20.8301C7.99246 21.0601 7.61246 21.0601 7.38246 20.8301C7.15246 20.6001 7.15246 20.2201 7.38246 19.9901L15.3725 12.0001L7.38246 4.01006C7.15246 3.78006 7.15246 3.40006 7.38246 3.17006C7.61246 2.94006 7.99246 2.94006 8.22246 3.17006Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            ))}
+                  </section>
+                )
+            )}
           {/* cate1_list */}
         </article>
       </div>
