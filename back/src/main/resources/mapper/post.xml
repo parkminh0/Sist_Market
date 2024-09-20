@@ -515,16 +515,20 @@
     </select>
 
     <select id="main" resultMap="postMap" parameterType="String">
-        select * from `post`
+        select p.* from `post` p
+         LEFT JOIN `town` t ON p.townkey = t.townkey
          where 1 = 1
           <if test ="param == 'free'">
-            AND method = 1 AND price = 0
+            AND p.method = 1 AND p.price = 0
           </if>
           <if test="param != 'free'">
-            AND categorykey = #{param}
+            AND p.categorykey = #{param}
+          </if>
+          <if test="region1 != 'undefined' and region2 != 'undefined'">
+            AND t.region1 = #{region1} AND t.region2 = #{region2}
           </if>
 
-          ORDER BY remind_dtm DESC
+          ORDER BY p.remind_dtm DESC
           limit 10
     </select>
 

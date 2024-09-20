@@ -308,6 +308,27 @@ export default function page() {
   }, []);
   // #endregion
 
+  // 내 물건 팔기
+  function chkTown() {
+    // 로그인 확인
+    if (Cookies.get("userkey") == null || Cookies.get("userkey") == "") {
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
+
+    // 위치 기반 서비스 확인
+    if (
+      (region1 == null || region1 == "") &&
+      (cookie_region1 == null ||
+        cookie_region1 == "" ||
+        cookie_region1 == "undefined")
+    ) {
+      alert("위치 기반 서비스를 허용해주세요.");
+      return;
+    }
+    setOpen(true);
+  }
+
   // #region 동네 선택
   function goLocPage(e) {
     let url = new URL(window.location.href);
@@ -485,7 +506,8 @@ export default function page() {
         params.delete("minPrice");
         params.delete("maxPrice");
         params.append("sort", "recent");
-        params.append("loc2", cookie_region2);
+        if (cookie_region2 != "undefined")
+          params.append("loc2", cookie_region2);
         break;
     }
     // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
@@ -587,6 +609,15 @@ export default function page() {
       return;
     }
 
+    if (
+      (region1 == null || region1 == "") &&
+      (cookie_region1 == null ||
+        cookie_region1 == "" ||
+        cookie_region1 == "undefined")
+    ) {
+      alert("위치 기반 서비스를 허용해주세요.");
+      return;
+    }
     if (!loading) {
       setLoading(true);
 
@@ -1440,12 +1471,9 @@ export default function page() {
                       ))}
                     {categoryParam != null && (
                       <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
-                        {category_list.map((category) =>
+                        {category_list.map((category, i) =>
                           category.categorykey == categoryParam ? (
-                            <font
-                              key={category.categorykey}
-                              style={{ verticalAlign: "inherit" }}
-                            >
+                            <font key={i} style={{ verticalAlign: "inherit" }}>
                               {category.categoryname}
                             </font>
                           ) : (
@@ -1605,6 +1633,12 @@ export default function page() {
                                 {post.title}
                               </span>
                             </Typography>
+                            <Typography
+                              level="body-sm"
+                              sx={{ fontSize: "0.7rem" }}
+                            >
+                              {post.cvo.categoryname}
+                            </Typography>
                             <Typography level="body-sm">
                               {post.hope_place != null &&
                                 post.hope_place != "" &&
@@ -1744,24 +1778,28 @@ export default function page() {
                     ))}
                   </>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "100vh",
-                    }}
-                  >
+                  <>
+                    <div></div>
                     <div
                       style={{
-                        fontSize: "1.5rem",
-                        lineHeight: "1.2",
-                        transform: "translateY(-200px)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100vh",
                       }}
                     >
-                      게시글이 없습니다.
+                      <div
+                        style={{
+                          fontSize: "1.5rem",
+                          lineHeight: "1.2",
+                          transform: "translateY(-200px)",
+                        }}
+                      >
+                        게시글이 없습니다.
+                      </div>
                     </div>
-                  </div>
+                    <div></div>
+                  </>
                 )}
               </div>
               <Button
@@ -1773,16 +1811,7 @@ export default function page() {
                 }}
                 variant="contained"
                 starticon={<AddIcon />}
-                onClick={() => {
-                  if (
-                    Cookies.get("userkey") == null ||
-                    Cookies.get("userkey") == ""
-                  ) {
-                    alert("로그인 후 이용해주세요.");
-                    return;
-                  }
-                  setOpen(true);
-                }}
+                onClick={chkTown}
               >
                 내 물건 팔기
               </Button>
@@ -1890,7 +1919,7 @@ export default function page() {
                 </ImageListItem>
                 {previewImages.map((img, i) => (
                   <ImageListItem
-                    key={img.id}
+                    key={i}
                     style={{
                       width: 100,
                       height: 100,
@@ -1972,8 +2001,8 @@ export default function page() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                {category_list.map((item) => (
-                  <MenuItem key={item.categorykey} value={item.categorykey}>
+                {category_list.map((item, i) => (
+                  <MenuItem key={i} value={item.categorykey}>
                     {item.categoryname}
                   </MenuItem>
                 ))}
@@ -2097,7 +2126,7 @@ export default function page() {
             }}
           >
             <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
-              거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
+              *거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
             </span>
             <div>
               <Button
