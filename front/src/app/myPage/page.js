@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import MyPageSide from "@/component/user/layout/MyPageSide";
+import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import "/public/css/myPage.css";
-import Link from "next/link";
-import MyPageSide from "@/component/user/layout/MyPageSide";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import "/public/css/myPage.css";
 
 export default function page() {
   const API_URL = "/user/api/admin/userEdit";
@@ -620,7 +621,7 @@ export default function page() {
                 </Link>
               </div>
               <div data-v-7b7d73d2="" className="interest_product">
-                <div data-v-7b7d73d2="" className="product_list">
+                <div data-v-7b7d73d2="" className="wishlistGrid">
                   {/* 여기서 FOREACH로 8개 뿌리기 */}
                   {uvo.w_list ? (
                     uvo.w_list.length > 0 ? (
@@ -628,128 +629,8 @@ export default function page() {
                         if (index > 7) {
                           return;
                         }
-                        const price =
-                          wlvo.pvo.price
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
                         return (
-                          <div
-                            key={index}
-                            data-v-2c8107bc=""
-                            data-v-7b7d73d2=""
-                            className="product_item"
-                          >
-                            <Link
-                              data-v-2c8107bc=""
-                              href={`/post/detail?postkey=${wlvo.pvo.postkey}`}
-                              className="item_inner"
-                            >
-                              <div data-v-2c8107bc="" className="thumb_box">
-                                <div
-                                  data-v-16369cf2=""
-                                  data-v-2c8107bc=""
-                                  className="product"
-                                  style={{
-                                    backgroundColor: "rgb(235, 240, 245)",
-                                  }}
-                                >
-                                  <div
-                                    data-v-17ca498c=""
-                                    data-v-16369cf2=""
-                                    className="display_tag_item product_inner_tag tag--default"
-                                  >
-                                    <div
-                                      data-v-17ca498c=""
-                                      data-v-a7793886=""
-                                      className="tag display_tag_item"
-                                      style={{
-                                        backgroundColor: "rgb(242, 249, 246)",
-                                        color: "rgb(49, 180, 110)",
-                                      }}
-                                    >
-                                      <span
-                                        data-v-17ca498c=""
-                                        className="tag_text"
-                                      >
-                                        {" "}
-                                        빠른배송{" "}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <picture
-                                    data-v-82b93d2c=""
-                                    data-v-16369cf2=""
-                                    className="picture product_img"
-                                  >
-                                    {wlvo.pvo.pimg_list &&
-                                    wlvo.pvo.pimg_list.length > 0 &&
-                                    wlvo.pvo.pimg_list[0].imgurl !=
-                                      undefined ? (
-                                      <img
-                                        alt={wlvo.pvo.title}
-                                        src={wlvo.pvo.pimg_list[0].imgurl}
-                                        loading="lazy"
-                                        style={{
-                                          backgroundColor: "#ebf0f5",
-                                          width: "100%",
-                                          height: "100%",
-                                        }}
-                                        data-v-53e92c51=""
-                                      />
-                                    ) : (
-                                      <ImageNotSupportedRoundedIcon
-                                        style={{
-                                          backgroundColor: "#ebf0f5",
-                                          width: "100%", // 아이콘의 너비를 100%로 설정
-                                          height: "100%", // 아이콘의 높이를 100%로 설정
-                                        }}
-                                      />
-                                    )}
-                                  </picture>
-                                  <span
-                                    data-v-4382eb99=""
-                                    data-v-2c8107bc=""
-                                    aria-label="관심상품"
-                                    role="button"
-                                    className="btn_wish"
-                                    data-v-16369cf2=""
-                                  >
-                                    <svg
-                                      data-v-4382eb99=""
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className="icon sprite-icons ico-wish-on"
-                                    >
-                                      {/* <use data-v-4382eb99="" href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-wish-on" xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-wish-on"></use> */}
-                                    </svg>
-                                  </span>
-                                </div>
-                              </div>
-                              <div data-v-2c8107bc="" className="info_box">
-                                <div data-v-2c8107bc="" className="brand">
-                                  <p data-v-2c8107bc="" className="brand-text">
-                                    {" "}
-                                    {wlvo.pvo.title}{" "}
-                                  </p>
-                                </div>
-                                <p data-v-2c8107bc="" className="name">
-                                  {wlvo.pvo.cvo.categoryname}
-                                </p>
-                                <div data-v-2c8107bc="" className="price">
-                                  <div data-v-2c8107bc="" className="amount lg">
-                                    <em data-v-2c8107bc="" className="num">
-                                      {" "}
-                                      {price}{" "}
-                                    </em>
-                                  </div>
-                                  <div data-v-2c8107bc="" className="desc">
-                                    <p data-v-2c8107bc="">
-                                      {wlvo.pvo.hope_place}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </Link>
-                          </div>
+                          <UserCellList2 key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (

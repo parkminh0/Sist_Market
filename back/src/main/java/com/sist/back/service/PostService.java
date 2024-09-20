@@ -131,8 +131,8 @@ public class PostService {
         return ar;
     }
 
-    public PostVO[] main(String param) {
-        return p_mapper.main(param);
+    public PostVO[] main(String param, String region1, String region2) {
+        return p_mapper.main(param, region1, region2);
     }
 
     public PostCountVO postForPostAdmin() {
@@ -153,4 +153,7 @@ public class PostService {
         return p_mapper.pImg_list(postkey); // PostMapper에서 pImg_list 메서드 호출
     }
 
+    public int hidePost(String postkey) {
+        return p_mapper.hidePost(postkey);
+    }
 }

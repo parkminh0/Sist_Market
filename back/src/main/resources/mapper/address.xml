@@ -14,4 +14,42 @@
      WHERE userkey = #{userkey}
      ORDER BY isselected DESC
     </select>
+
+    <update id="changeSelected" parameterType="String">
+    UPDATE `address`
+      SET isselected = 
+      CASE WHEN isselected = 0 THEN 1 
+           WHEN isselected = 1 THEN 0
+       END
+     WHERE userkey = #{userkey}
+    </update>
+
+    <delete id="deleteAddress" parameterType="String">
+    DELETE FROM `address`
+     WHERE addresskey = #{addresskey}
+    </delete>
+
+    <insert id="addAddress" parameterType="map">
+    INSERT INTO `address`
+      (userkey,
+      townkey,
+      isselected,
+      iscertified,
+      `range`,
+      isalarm) 
+    VALUES (
+      #{userkey},
+      #{townkey},
+      #{nowLength},
+      0,
+      0,
+      0
+      )
+    </insert>
+    
+    <update id="modifyAddress" parameterType="map">
+    UPDATE `address`
+      SET townkey = #{townkey}
+    WHERE addresskey = #{addresskey}
+    </update>
 </mapper>

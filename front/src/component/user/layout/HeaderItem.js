@@ -5,11 +5,11 @@ import { useEffect } from "react";
 
 export default function HeaderItem() {
   const userkey = Cookies.get("userkey");
-  const region1 = Cookies.get("region1");
-  const region2 = Cookies.get("region2");
-  const region3 = Cookies.get("region3");
+  const region1 = decodeURIComponent(Cookies.get("region1"));
+  const region2 = decodeURIComponent(Cookies.get("region2"));
+  const region3 = decodeURIComponent(Cookies.get("region3"));
   let tmpLocParam = "";
-  if (region1 != null && region1 != "") {
+  if (region1 != "undefined" && region1 != null && region1 != "") {
     tmpLocParam = "&loc1=" + region1 + "&loc2=" + region2;
   }
   const link_item = [

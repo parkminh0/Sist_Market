@@ -332,9 +332,9 @@ public class UserController {
     }
 
     // kakao_login & reg
-    @RequestMapping("/kakao/login")
+    @RequestMapping("/api/kakao/login")
     @ResponseBody
-    public Map<String, Object> kakaologin(String email, String nickname, HttpServletResponse res) {
+    public Map<String, Object> kakaologin(String email, String nickname,String imgurl, HttpServletResponse res) {
         // System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
         // System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
@@ -345,6 +345,8 @@ public class UserController {
             fvo = new userVO();
             fvo.setNickname(nickname);
             fvo.setEmail(email);
+            fvo.setImgurl(imgurl);
+            fvo.setIsauthorized("0");
 
             // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
             String randomId = "user" + System.currentTimeMillis();
@@ -748,5 +750,72 @@ public class UserController {
         }
         return map;
     }
+
+
+    @RequestMapping("/userPage/getData")
+    @ResponseBody
+    public Map<String, Object> getData(String userkey) {
+        
+        Map<String, Object> u_map = new HashMap<>();
+
+        userVO uvo = service.getUserForAdmin(userkey);
+        int cell1count = service.getCell1TotalCount(userkey);
+        int cell2count = service.getCell2TotalCount(userkey);
+        int cellCount = cell1count+cell2count;
+        List<PostVO> cellList = service.getCellListForUserPage(userkey);
+        String limitpostkey = cellList.get(0).getPostkey();
+        String lastpostkey = "9999";
+        boolean isnextexist = cellCount>5;
+        if(!cellList.isEmpty()){
+            lastpostkey = cellList.get(cellList.size()-1).getRnum();
+        }
+        
+        u_map.put("uvo", uvo);
+        u_map.put("cellCount", cellCount);
+        u_map.put("cellList", cellList);
+        u_map.put("limitpostkey", limitpostkey);
+        u_map.put("lastpostkey", lastpostkey);
+        u_map.put("isnextexist", isnextexist);
+        
+        return u_map;
+    }
+    
+    @RequestMapping("/userPage/canPoN")
+    @ResponseBody
+    public Map<String, Object> canPoN(String userkey_me,String userkey_you,String date_start,String date_end) {
+        
+        Map<String, Object> c_map = new HashMap<>();
+
+        int result_s = service.getDidsell(userkey_me,userkey_you,date_start,date_end);
+        int result_b = service.getDidbuy(userkey_me,userkey_you,date_start,date_end);
+        
+        c_map.put("result", result_s+result_b);
+        
+        return c_map;
+    }
+    
+    @RequestMapping("/userPage/getMorePost")
+    @ResponseBody
+    public Map<String, Object> getMorePost(String userkey, String limitpostkey, String lastpostkey) {
+        
+        Map<String, Object> c_map = new HashMap<>();
+
+        List<PostVO> cellList = service.getMorePost(userkey, limitpostkey, lastpostkey);
+        int cellCount = service.getRestList(userkey, limitpostkey, lastpostkey);
+        boolean isnextexist = (cellCount>5);
+        String lp_key = "9999";
+        if(!cellList.isEmpty()){
+            lp_key = cellList.get(cellList.size()-1).getRnum();
+        }
+        
+        c_map.put("cellList", cellList);
+        c_map.put("lastpostkey", lp_key);
+        c_map.put("isnextexist", isnextexist);
+        
+        return c_map;
+    }
+
+
+
 
 }

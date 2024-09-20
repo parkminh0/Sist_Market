@@ -387,8 +387,7 @@ public class PostController {
 
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
-    public Map<String, Object> main() {
-
+    public Map<String, Object> main(String region1, String region2) {
         categoryVO[] c_list = categoryService.all();
         // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
         List<Integer> randomCategories = new ArrayList<>();
@@ -405,12 +404,12 @@ public class PostController {
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
         // 배열을 리스트로 변환하여 할당
-        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0))));
-        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1))));
-        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2))));
+        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0)), region1, region2));
+        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1)), region1, region2));
+        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2)), region1, region2));
 
         Map<String, Object> res = new HashMap<>();
-        res.put("free_list", p_service.main("free"));
+        res.put("free_list", p_service.main("free", region1, region2));
         res.put("cate_list", tmp);
         return res;
     }
@@ -425,4 +424,12 @@ public class PostController {
         return map;
     }
 
+    @RequestMapping("/hidePost")
+    @ResponseBody
+    public Map<String, Object> hidePost(String postkey) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = p_service.hidePost(postkey);
+        map.put("cnt", cnt);
+        return map;
+    }
 }

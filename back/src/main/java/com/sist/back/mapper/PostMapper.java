@@ -51,7 +51,7 @@ public interface PostMapper {
 
     List<PostVO> search(Map<String, Object> map);
 
-    PostVO[] main(String param);
+    PostVO[] main(String param, String region1, String region2);
 
     PostCountVO countpostForAdmin();
 
@@ -64,4 +64,6 @@ public interface PostMapper {
     List<PostVO> findByPoststatus(int poststatus);
 
     List<PostImgVO> pImg_list(int postkey);
+
+    int hidePost(String postkey);
 }
