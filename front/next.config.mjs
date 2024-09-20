@@ -36,6 +36,10 @@ const nextConfig = {
         source: "/address/:path*",
         destination: "http://localhost:8080/address/:path*",
       },
+      {
+        source: "/searchlog/:path*",
+        destination: "http://localhost:8080/searchlog/:path*",
+      },
     ];
   },
 };

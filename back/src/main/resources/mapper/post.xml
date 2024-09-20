@@ -467,13 +467,14 @@
         SELECT * FROM 
         (SELECT (SELECT COUNT(*) FROM wishlist WHERE postkey = p.postkey) likedqty, p.* FROM `post` p
           JOIN `town` t ON t.townkey = p.townkey
+          JOIN `category` c ON c.categorykey = p.categorykey
           <!-- 게시글미노출 -->
          <if test="userkey != null and userkey != ''">
           LEFT JOIN `nosee` n ON n.userkey = #{userkey} AND n.noseeuserkey != p.userkey
           LEFT JOIN `blocked` b ON b.userkey = #{userkey} AND b.blockeduserkey != p.userkey
           LEFT JOIN `noseepost` np ON np.userkey = #{userkey} AND np.postkey != p.postkey
          </if>
-         WHERE 1 = 1
+         WHERE p.isdeleted = 0
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
          </if>
@@ -483,6 +484,13 @@
                 t.region2 = #{item}
                 </foreach>
             )
+        </if>
+           AND p.poststatus IN (1, 2, 3)
+        <if test="onsale != null and onsale != '' and onsale == 'true'">
+           AND p.poststatus = 1
+        </if>
+        <if test="search != null and search != ''">
+            AND (p.title LIKE CONCAT('%', #{search}, '%') OR c.categoryname LIKE CONCAT('%', #{search}, '%'))
         </if>
         <if test="category != null and category != ''">
             AND p.categorykey = #{category}
@@ -514,10 +522,15 @@
         limit #{howManyPost}
     </select>
 
+    <select id="searchTemp" resultMap="postMap" parameterType="map">
+        SELECT * FROM post 
+         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
+    </select>
+
     <select id="main" resultMap="postMap" parameterType="String">
         select p.* from `post` p
          LEFT JOIN `town` t ON p.townkey = t.townkey
-         where 1 = 1
+         where p.isdeleted = 0 AND p.poststatus = 1
           <if test ="param == 'free'">
             AND p.method = 1 AND p.price = 0
           </if>

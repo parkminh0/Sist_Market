@@ -60,6 +60,10 @@ export default function page() {
   // 위치 파라미터 값
   const [loc1Param, setLoc1Param] = useState("");
   const [loc2Param, setLoc2Param] = useState([]);
+  // 판매중인 상품만 보기
+  const [onsaleParam, setOnsaleParam] = useState("false");
+  // 게시글 검색 값
+  const [searchParam, setSearchParam] = useState("");
   // 카테고리 파라미터 값
   const [categoryParam, setCategoryParam] = useState(null);
   // 정렬 파라미터 값
@@ -123,6 +127,8 @@ export default function page() {
     let params = new URLSearchParams(currentUrlObj.search);
     let loc1Param = params.get("loc1");
     let loc2Param = params.getAll("loc2");
+    let onsaleParam = params.get("onsale");
+    let searchParam = params.get("search");
     let cateParam = params.get("category");
     let srtParam = params.get("sort");
     let minParam = params.get("minPrice");
@@ -134,6 +140,11 @@ export default function page() {
 
     setLoc1Param(loc1Param);
     setLoc2Param(loc2Param);
+    if (onsaleParam == null || onsaleParam == "") {
+      onsaleParam = "false";
+    }
+    setOnsaleParam(onsaleParam);
+    setSearchParam(searchParam);
     setCategoryParam(cateParam);
     setSortParam(srtParam);
     setMinPriceParam(minParam);
@@ -144,6 +155,8 @@ export default function page() {
       method: "get",
       params: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
+        onsale: onsaleParam,
+        search: searchParam,
         loc1: loc1Param,
         loc2: loc2Param,
         category: cateParam,
@@ -176,6 +189,7 @@ export default function page() {
         method: "get",
         params: {
           lastPostKey: lastPostKey,
+          search: searchParam,
           loc1: loc1Param,
           loc2: loc2Param,
           category: categoryParam,
@@ -187,13 +201,18 @@ export default function page() {
           "Content-Type": "application/json",
         },
       }).then((res) => {
-        setPost_list((post) => [...post, ...res.data.res_search]);
-        if (!res.data.res_search || res.data.res_search.length < 15) {
+        if (!res.data.res_search || res.data.res_search.length == 0) {
           setViewMore(false);
+        } else {
+          setPost_list((post) => [...post, ...res.data.res_search]);
+          if (res.data.res_search.length < 15) {
+            setViewMore(false);
+          }
+          if (res.data.lastPostKey != null) {
+            setLastPostKey(res.data.lastPostKey);
+          }
         }
-        if (res.data.lastPostKey != null) {
-          setLastPostKey(res.data.lastPostKey);
-        }
+
         setLoading(false);
       });
     }
@@ -326,8 +345,45 @@ export default function page() {
       alert("위치 기반 서비스를 허용해주세요.");
       return;
     }
+
+    // 임시저장 확인
+    axios({
+      url: "/adpost/searchTemp",
+      method: "get",
+      params: {
+        userkey: decodeURIComponent(Cookies.get("userkey")),
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setPost_list(res.data.res_search);
+      if (!res.data.res_search || res.data.res_search.length < 15) {
+        setViewMore(false);
+      }
+      if (res.data.lastPostKey != null) {
+        setLastPostKey(res.data.lastPostKey);
+      }
+    });
     setOpen(true);
   }
+
+  // #region 판매중인 상품만 보기 선택
+  function goOnsale(e) {
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    params.delete("onsale");
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    if (e.dataset.checked == "false") {
+      newUrl += "&onsale=true";
+    }
+
+    // 페이지 이동
+    router.push(newUrl);
+    window.location.href = newUrl;
+  }
+  // #endregion
 
   // #region 동네 선택
   function goLocPage(e) {
@@ -467,6 +523,7 @@ export default function page() {
 
     // 페이지 이동
     router.push(newUrl);
+    f;
     window.location.href = newUrl;
   }
   // #endregion
@@ -477,6 +534,9 @@ export default function page() {
     let params = new URLSearchParams(url.search);
     let tmp = e.dataset.deltype;
     switch (tmp) {
+      case "onsale":
+        params.delete("onsale");
+        break;
       case "loc2":
         let loc2Params = params.getAll("loc2");
         // 모두 삭제 후 일치하지 않는 "loc2" 값들 다시 추가
@@ -500,6 +560,8 @@ export default function page() {
         params.delete("maxPrice");
         break;
       case "all":
+        params.delete("onsale");
+        params.delete("search");
         params.delete("sort");
         params.delete("loc2");
         params.delete("category");
@@ -995,7 +1057,11 @@ export default function page() {
               </Typography>
             </Breadcrumbs>
             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-              <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8"></h1>
+              {searchParam != null && searchParam != "" && (
+                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
+                  "{searchParam}" 검색결과
+                </h1>
+              )}
             </div>
           </section>
         </div>
@@ -1020,6 +1086,52 @@ export default function page() {
                 </button>
               </header>
               <section>
+                <div class="_588sy41z _588sy421 _588sy4qq _588sy4h2">
+                  <Link
+                    href="#"
+                    className="rx8bta0 rx8bta1"
+                    label="Show active listings only"
+                    role="checkbox"
+                    aria-label="Show active listings only"
+                    data-checked={`${onsaleParam}`}
+                    onClick={(e) => goOnsale(e.currentTarget)}
+                  >
+                    <div
+                      {...(onsaleParam == "true" ? { "data-checked": "" } : {})}
+                      aria-hidden="true"
+                      class="rx8bta7 rx8bta9"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-seed-icon="true"
+                        data-seed-icon-version="0.4.0-beta.2"
+                        width="24"
+                        height="24"
+                        className="rx8bta8 rx8btaf"
+                        {...(onsaleParam == "true"
+                          ? { "data-checked": "" }
+                          : {})}
+                      >
+                        <g>
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M21.0843 4.18854C21.5325 4.51124 21.6342 5.13618 21.3115 5.58438L11.3115 19.0844C11.1361 19.3281 10.8604 19.48 10.5607 19.4982C10.2609 19.5164 9.96888 19.399 9.7652 19.1784L2.7652 11.6784C2.3906 11.2725 2.4159 10.6399 2.82172 10.2653C3.22755 9.89067 3.8602 9.91597 4.23481 10.3218L10.4041 16.9219L19.6885 4.41577C20.0112 3.96757 20.6361 3.86584 21.0843 4.18854Z"
+                            fill="currentColor"
+                          ></path>
+                        </g>
+                      </svg>
+                    </div>
+                    <span
+                      id="checkbox::Rpqop::label"
+                      className="rx8btal rx8btam"
+                    >
+                      판매중인 상품만 보기
+                    </span>
+                  </Link>
+                </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
                   <h3 className="_588sy4198 _588sy41y _588sy41a2">동네</h3>
                   <div className="_1d991sp2 _1h4pbgya08">
@@ -1422,6 +1534,45 @@ export default function page() {
                     <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
                       {sortParam == "recent" ? "최신순" : "인기순"}
                     </li>
+                    {onsaleParam == "true" && (
+                      <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
+                        판매중인 상품
+                        <span
+                          data-deltype="onsale"
+                          onClick={(e) => deleteSearch(e.currentTarget)}
+                          className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
+                        >
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              width: "14px",
+                              height: "14px",
+                            }}
+                            data-seed-icon="icon_close_regular"
+                            data-seed-icon-version="0.2.1"
+                          >
+                            <svg
+                              id="icon_close_regular"
+                              width="100%"
+                              height="100%"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              data-karrot-ui-icon="true"
+                            >
+                              <g>
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                                  fill="currentColor"
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                        </span>
+                      </li>
+                    )}
                     {loc2Param &&
                       loc2Param.length > 0 &&
                       loc2Param.sort().map((loc, i) => (
@@ -1677,6 +1828,20 @@ export default function page() {
                                 <img
                                   className="_1b153uwe _1h4pbgya3k"
                                   src={post.pimg_list[0].imgurl}
+                                  onError={(e) => {
+                                    // 부모 span 태그를 DOM에서 제거
+                                    const parentSpan = e.target.parentNode;
+
+                                    // 새로운 div를 생성하고 아이콘을 삽입
+                                    const fallbackIcon =
+                                      document.createElement("div");
+                                    fallbackIcon.innerHTML = `
+          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ImageNotSupportedRoundedIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1;"><path d="m21.19 21.19-.78-.78L18 18l-4.59-4.59-9.82-9.82-.78-.78a.9959.9959 0 0 0-1.41 0C1 3.2 1 3.83 1.39 4.22L3 5.83V19c0 1.1.9 2 2 2h13.17l1.61 1.61c.39.39 1.02.39 1.41 0 .39-.39.39-1.03 0-1.42M6.02 18c-.42 0-.65-.48-.39-.81l2.49-3.2c.2-.25.58-.26.78-.01l2.1 2.53L12.17 15l3 3zm14.98.17L5.83 3H19c1.1 0 2 .9 2 2z"></path></svg>`;
+                                    parentSpan.parentNode.appendChild(
+                                      fallbackIcon
+                                    );
+                                    parentSpan.remove();
+                                  }}
                                 />
                               </span>
                             ) : (
