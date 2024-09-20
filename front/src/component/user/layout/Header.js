@@ -98,6 +98,32 @@ export default function Header() {
   }, [pathname]);
   // #endregion
 
+  // #region 민호-인기검색어
+  const [searchlog, setSearchlog] = useState([]);
+  function getSearchlog() {
+    axios({
+      url: "/searchlog/getSearchlog",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setSearchlog(res.data.getSearchlog);
+    });
+  }
+
+  function goSearchPost(link) {
+    let tmpLocParam = "";
+    if (region1 != "undefined" && region1 != null && region1 != "") {
+      tmpLocParam = "&loc1=" + region1 + "&loc2=" + region2;
+    }
+
+    let url = "/post?sort=recent" + tmpLocParam + "&search=" + link;
+    router.push(url);
+    window.location.href = url;
+  }
+  // #endregion
+
   // #region 민호-동네설정 메뉴
   const [anchorEl, setAnchorEl] = useState(null);
   const locationMenuOpen = Boolean(anchorEl);
@@ -206,6 +232,7 @@ export default function Header() {
   }
   useEffect(() => {
     getUserAddress();
+    getSearchlog();
   }, []);
 
   function getLocation(e) {
@@ -399,6 +426,27 @@ export default function Header() {
         }
       });
     }
+  }
+  // #endregion
+
+  // #region 민호-게시글검색
+  const [txtSearchPost, setTxtSearchPost] = useState("");
+
+  function searchPost() {
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    params.delete("search");
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    newUrl += "&search=" + txtSearchPost;
+
+    // 페이지 이동
+    router.push(newUrl);
+    window.location.href = newUrl;
+  }
+
+  function delTxtSearchPost() {
+    setTxtSearchPost("");
   }
   // #endregion
 
@@ -746,7 +794,7 @@ export default function Header() {
             </div>
             {/* #endregion 동네설정 끝 */}
             <div className="_1h4pbgy9w0 _1h4pbgy8jc _1h4pbgya2z">
-              <form action="/us/buy-sell/all/">
+              <form action={searchPost}>
                 <div className="_1h4pbgya0o">
                   <input
                     className="_1wcdkwr0 _1wcdkwr1"
@@ -754,11 +802,54 @@ export default function Header() {
                     aria-label="검색 입력"
                     placeholder="무엇을 찾고 계신가요?"
                     name="search"
+                    value={txtSearchPost}
+                    onChange={(e) => setTxtSearchPost(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); // 기본 Enter 동작 방지
+                        searchPost(); // 검색 함수 호출
+                      }
+                    }}
                   />
+                  {txtSearchPost != "" && (
+                    <button
+                      className="_1wcdkwr3 _1h4pbgy7cg _1h4pbgy7h4 _1h4pbgy7ls _1h4pbgy7qg _1h4pbgya0w _1h4pbgy9dc _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy9yw _1h4pbgy7s"
+                      type="button"
+                      aria-label="Reset search results"
+                      onClick={delTxtSearchPost}
+                    >
+                      <span
+                        class="_1wcdkwr4 _1h4pbgy7s"
+                        data-seed-icon="icon_remove_circle_fill"
+                        data-seed-icon-version="0.2.1"
+                        style={{ display: "inline-flex" }}
+                      >
+                        <svg
+                          id="icon_remove_circle_fill"
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          data-karrot-ui-icon="true"
+                        >
+                          <g>
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM9.18446 8.26829C8.93134 8.01517 8.52096 8.01517 8.26784 8.26829C8.01472 8.52141 8.01472 8.93179 8.26784 9.18491L11.0832 12.0002L8.26784 14.8156C8.01472 15.0687 8.01472 15.4791 8.26784 15.7322C8.52096 15.9853 8.93134 15.9853 9.18446 15.7322L11.9998 12.9169L14.8151 15.7322C15.0682 15.9853 15.4786 15.9853 15.7317 15.7322C15.9849 15.4791 15.9849 15.0687 15.7317 14.8156L12.9164 12.0002L15.7317 9.18491C15.9849 8.93179 15.9849 8.52141 15.7317 8.26829C15.4786 8.01517 15.0682 8.01517 14.8151 8.26829L11.9998 11.0836L9.18446 8.26829Z"
+                              fill="currentColor"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                    </button>
+                  )}
                   <button
                     type="submit"
                     aria-label="찾다"
                     className="_1wcdkwr5 _1h4pbgy7cg _1h4pbgy7h4 _1h4pbgy7ls _1h4pbgy7qg _1h4pbgya0w _1h4pbgy9dc _1h4pbgy9ps _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy1qe _1h4pbgy94o _1h4pbgy9yw"
+                    onClick={searchPost}
                   >
                     <span
                       style={{ display: "inline-flex" }}
@@ -796,160 +887,24 @@ export default function Header() {
                         <font>인기 검색어</font>
                       </div>
                       <ul className="_1h4pbgy9ug _1h4pbgy9wo">
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=bike"
-                          >
-                            <font>
-                              <font>자전거</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=couch"
-                          >
-                            <font>
-                              <font>침상</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=sofa"
-                          >
-                            <font>
-                              <font>소파</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=dining+table"
-                          >
-                            <font>
-                              <font>식탁</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=tv"
-                          >
-                            <font>
-                              <font>TV</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=mirror"
-                          >
-                            <font>
-                              <font>거울</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=portable+air+conditioner"
-                          >
-                            <font>
-                              <font>휴대용 에어컨</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=desk"
-                          >
-                            <font>
-                              <font>책상</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=iphone"
-                          >
-                            <font>
-                              <font>아이폰</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=stroller"
-                          >
-                            <font>
-                              <font>유모차</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=bed"
-                          >
-                            <font>
-                              <font>침대</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=ikea"
-                          >
-                            <font>
-                              <font>이케아</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=tv+stand"
-                          >
-                            <font>
-                              <font>TV 스탠드</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=cars+for+sale"
-                          >
-                            <font>
-                              <font>판매용 자동차</font>
-                            </font>
-                          </Link>
-                        </li>
+                        {searchlog &&
+                          searchlog.map((log, i) => {
+                            return (
+                              <li
+                                key={i}
+                                className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf"
+                              >
+                                <Link
+                                  data-gtm="gnb_popular_keyword"
+                                  className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
+                                  href="#"
+                                  onClick={() => goSearchPost(log)}
+                                >
+                                  <font>{log}</font>
+                                </Link>
+                              </li>
+                            );
+                          })}
                       </ul>
                     </div>
                   </div>
