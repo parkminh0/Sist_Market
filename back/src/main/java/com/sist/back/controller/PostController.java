@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
+import com.sist.back.service.SearchlogService;
 import com.sist.back.service.TownService;
 import com.sist.back.service.OfferService;
 import com.sist.back.service.WishlistService;
@@ -57,6 +58,9 @@ public class PostController {
 
     @Autowired
     WishlistService w_service;
+
+    @Autowired
+    SearchlogService searchlogService;
 
     @Value("${server.upload.post.image}")
     private String postImgPath;
@@ -366,14 +370,23 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String userkey, String lastPostKey, String loc1, String[] loc2, String sort,
+    public Map<String, Object> search(String userkey, String onsale, String search, String lastPostKey, String loc1,
+            String[] loc2,
+            String sort,
             String category,
             String minPrice,
             String maxPrice) {
         int howManyPost = 15;
         Map<String, Object> res = new HashMap<>();
-        PostVO[] ar = p_service.search(userkey, lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice,
+        PostVO[] ar = p_service.search(userkey, onsale, search, lastPostKey, howManyPost, loc1, loc2, sort, category,
+                minPrice,
                 maxPrice);
+
+        // 검색어 저장
+        if (search != null && !search.equals("") && !search.trim().equals("")) {
+            searchlogService.addSearchlog(search);
+        }
+
         String lastKey = null;
         try {
             lastKey = ar[ar.length - 1].getPostkey();
