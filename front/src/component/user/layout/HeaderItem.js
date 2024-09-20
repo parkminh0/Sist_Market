@@ -9,7 +9,7 @@ export default function HeaderItem() {
   const region2 = decodeURIComponent(Cookies.get("region2"));
   const region3 = decodeURIComponent(Cookies.get("region3"));
   let tmpLocParam = "";
-  if (region1 != null && region1 != "") {
+  if (region1 != "undefined" && region1 != null && region1 != "") {
     tmpLocParam = "&loc1=" + region1 + "&loc2=" + region2;
   }
   const link_item = [
