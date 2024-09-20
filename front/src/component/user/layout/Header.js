@@ -108,7 +108,6 @@ export default function Header() {
     }
 
     if (region1 == null || region1 == "") {
-      setIsAdd(true);
       setLocationOpen(true);
       return;
     }
@@ -120,39 +119,13 @@ export default function Header() {
   };
   // #endregion
 
-  // #region 민호-주소 삭제
-  function deleteAddress(addrKey, reg3, isselected) {
-    if (confirm("'" + reg3 + "'을 삭제하시겠습니까?")) {
-      axios({
-        url: "/address/deleteAddress",
-        method: "get",
-        params: {
-          addresskey: addrKey,
-          isselected: isselected,
-          userkey: decodeURIComponent(Cookies.get("userkey")),
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => {
-        if (res.data.issuccess <= 0)
-          alert("삭제에 실패했습니다. 다시 시도해주세요.");
-        else {
-          router.push("/");
-          window.location.href = "/";
-        }
-      });
-    }
-  }
-  // #endregion
-
   // #region 민호-동네설정 모달
   const [locationOpen, setLocationOpen] = useState(false);
-  const [isAdd, setIsAdd] = useState(false);
 
   const locationClose = () => {
     setSearchLoc("");
-    setIsAdd(false);
+    setPrevAddrKey("");
+    setPrevTown({});
     setSearchHere([]);
     setLocationOpen(false);
   };
@@ -190,7 +163,7 @@ export default function Header() {
   // 사용자 주소
   const [userAddress, setUserAddress] = useState([]);
   const [searchHere, setSearchHere] = useState([]);
-  useEffect(() => {
+  function getUserAddress() {
     // 로그인 되어있는 경우 사용자 주소 가져오기
     let userkey = decodeURIComponent(Cookies.get("userkey"));
 
@@ -230,6 +203,9 @@ export default function Header() {
     ) {
       getLocation(); // API 로드 후에 함수 호출
     }
+  }
+  useEffect(() => {
+    getUserAddress();
   }, []);
 
   function getLocation(e) {
@@ -273,6 +249,8 @@ export default function Header() {
                   Cookies.set("region1", encodeURIComponent(reg1));
                   Cookies.set("region2", encodeURIComponent(reg2));
                   Cookies.set("region3", encodeURIComponent(reg3));
+                  Cookies.set("latitude", encodeURIComponent(latitude));
+                  Cookies.set("longitude", encodeURIComponent(longitude));
                 }
               }
             };
@@ -289,17 +267,124 @@ export default function Header() {
   // #endregion
 
   // #region 민호-주소 변경
-  function changeLoc(reg3, isselected) {
+  const [prevAddrKey, setPrevAddrKey] = useState("");
+  const [prevTown, setPrevTown] = useState({});
+  function changeLoc(addrKey, reg1, reg2, reg3, isselected, nowReg) {
     if (isselected == 1) {
       setAnchorEl(null);
       return;
     }
 
-    if (confirm("대표 동네를 '" + reg3 + "'으로 변경하시겠습니까?")) {
+    if (reg3 == undefined || reg3 == "") {
+      reg1 = nowReg[0];
+      reg2 = nowReg[1];
+      reg3 = nowReg[2];
+    }
+
+    // addrKey가 0인 경우 동네 추가
+    if (addrKey == "") {
+      if (confirm("'" + reg3 + "'을 내 동네에 추가하시겠습니까?")) {
+        axios({
+          url: "/address/addAddress",
+          method: "get",
+          params: {
+            userkey: decodeURIComponent(Cookies.get("userkey")),
+            region1: reg1,
+            region2: reg2,
+            region3: reg3,
+            nowLength: userAddress && userAddress.length > 0 ? 1 : 0,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          if (res.data.issuccess <= 0)
+            alert("추가에 실패했습니다. 다시 시도해주세요.");
+          else {
+            getUserAddress();
+            router.push("/");
+            window.location.href = "/";
+          }
+        });
+      }
+    } else {
+      if (prevAddrKey != "") {
+        // 주소 변경
+        let prev =
+          prevTown.region1 + " " + prevTown.region2 + " " + prevTown.region3;
+        let next = reg1 + " " + reg2 + " " + reg3;
+        if (prev == next) return;
+        if (confirm("'" + prev + "'을 '" + next + "'으로 변경하시겠습니까?")) {
+          axios({
+            url: "/address/modifyAddress",
+            method: "get",
+            params: {
+              addresskey: prevAddrKey,
+              region1: reg1,
+              region2: reg2,
+              region3: reg3,
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((res) => {
+            if (res.data.issuccess <= 0)
+              alert("변경에 실패했습니다. 다시 시도해주세요.");
+            else {
+              getUserAddress();
+              router.push("/");
+              window.location.href = "/";
+            }
+          });
+        }
+      } else {
+        // 대표 동네 변경
+        if (confirm("대표 동네를 '" + reg3 + "'으로 변경하시겠습니까?")) {
+          axios({
+            url: "/address/changeSelected",
+            method: "get",
+            params: {
+              userkey: decodeURIComponent(Cookies.get("userkey")),
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((res) => {
+            if (res.data.issuccess <= 0)
+              alert("변경에 실패했습니다. 다시 시도해주세요.");
+            else {
+              getUserAddress();
+              router.push("/");
+              window.location.href = "/";
+            }
+          });
+        }
+      }
+    }
+  }
+  // #endregion
+
+  // #region 민호-주소 삭제
+  function deleteAddress(addrKey, reg3, isselected) {
+    if (userAddress.length == 1) {
+      if (
+        confirm(
+          "동네는 최소 1개 이상 선택해셔야 합니다.\r\n현재 설정된 동네를 변경하시겠습니까?"
+        )
+      ) {
+        setPrevAddrKey(addrKey);
+        setLocationOpen(true);
+      }
+      return;
+    }
+
+    if (confirm("'" + reg3 + "'을 삭제하시겠습니까?")) {
       axios({
-        url: "/address/changeSelected",
+        url: "/address/deleteAddress",
         method: "get",
         params: {
+          addresskey: addrKey,
+          isselected: isselected,
           userkey: decodeURIComponent(Cookies.get("userkey")),
         },
         headers: {
@@ -307,7 +392,7 @@ export default function Header() {
         },
       }).then((res) => {
         if (res.data.issuccess <= 0)
-          alert("변경에 실패했습니다. 다시 시도해주세요.");
+          alert("삭제에 실패했습니다. 다시 시도해주세요.");
         else {
           router.push("/");
           window.location.href = "/";
@@ -351,8 +436,10 @@ export default function Header() {
         Cookies.remove("next-auth.session-token");
         Cookies.remove("next-auth.csrf-token");
 
+
         signOut({ redirect: false });
         window.location.href = "/";
+
       }
     });
   }
@@ -376,7 +463,7 @@ export default function Header() {
       },
     }).then((res) => {
       if (res.data.cnt === 1) {
-        window.location.href = "/"; 
+        window.location.href = "/";
       } else {
         alert(res.data.msg);
       }
@@ -403,7 +490,9 @@ export default function Header() {
   const kakao_login = async (e) => {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
-    signIn("kakao", { callbackUrl: "http://localhost:8080/user/api/kakao/login" });
+    signIn("kakao", {
+      callbackUrl: "http://localhost:8080/user/api/kakao/login",
+    });
   };
   const [chk, setChk] = useState(true);
   useEffect(() => {
@@ -435,13 +524,11 @@ export default function Header() {
           alert("로그인 성공!");
           setAccessToken(Cookies.get("accessToken"));
           setChk(false);
-          //window.location.href = "/"; 
-          
+          //window.location.href = "/";
         } else {
           alert("로그인에 실패하였습니다.");
         }
       });
-      
     }
   };
   // #endregion
@@ -562,9 +649,17 @@ export default function Header() {
                   userAddress.length > 0 && [
                     ...userAddress.map((addr, i) => (
                       <MenuItem
+                        data-modal="false"
                         key={addr.addresskey}
-                        onClick={() =>
-                          changeLoc(addr.tvo.region3, addr.isselected)
+                        onClick={(e) =>
+                          changeLoc(
+                            addr.addresskey,
+                            addr.tvo.region1,
+                            addr.tvo.region2,
+                            addr.tvo.region3,
+                            addr.isselected,
+                            ""
+                          )
                         }
                         disableRipple
                       >
@@ -590,11 +685,9 @@ export default function Header() {
                           size="small"
                           onClick={(e) => {
                             e.stopPropagation(); // 부모 MenuItem의 onClick을 막음
-                            deleteAddress(
-                              addr.addresskey,
-                              addr.tvo.region3,
-                              addr.isselected
-                            ); // 삭제 핸들러 호출
+                            setPrevAddrKey(addr.addresskey);
+                            setPrevTown(addr.tvo);
+                            setLocationOpen(true);
                           }}
                           sx={{ marginLeft: "auto" }} // 자동으로 오른쪽 정렬
                         >
@@ -606,6 +699,7 @@ export default function Header() {
                           size="small"
                           onClick={(e) => {
                             e.stopPropagation(); // 부모 MenuItem의 onClick을 막음
+                            setPrevTown(addr.tvo);
                             deleteAddress(
                               addr.addresskey,
                               addr.tvo.region3,
@@ -622,7 +716,6 @@ export default function Header() {
                       <MenuItem
                         key="add"
                         onClick={() => {
-                          setIsAdd(true);
                           setLocationOpen(true);
                         }}
                         disableRipple
@@ -1056,7 +1149,6 @@ export default function Header() {
         </Dialog>
       </React.Fragment>
 
-
       {/* 위치설정 */}
       <React.Fragment>
         <Dialog
@@ -1141,7 +1233,19 @@ export default function Header() {
                     {searchHere.map((loc, i) => {
                       return (
                         <div key={i}>
-                          <ListItem button onClick={changeLoc(loc.region3, 0)}>
+                          <ListItem
+                            button
+                            onClick={(e) =>
+                              changeLoc(
+                                prevAddrKey,
+                                loc.region1,
+                                loc.region2,
+                                loc.region3,
+                                0,
+                                loc
+                              )
+                            }
+                          >
                             <ListItemText
                               primary={
                                 loc.region1
