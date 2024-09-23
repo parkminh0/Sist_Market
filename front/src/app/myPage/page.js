@@ -632,9 +632,7 @@ export default function page() {
                           return;
                         }
                         return (
-                          <div key={index}>
-                            <UserCellList2 pvo={wlvo.pvo} />
-                          </div>
+                            <UserCellList2 key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (
