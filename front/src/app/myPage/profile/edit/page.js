@@ -154,7 +154,7 @@ export default function Page() {
     // let input = e.target.value.replace(/[^0-9]/g, ''); //숫자만 남기기
     
     const check = /[0-9]/g;
-    if(check.test(e.nativeEvent.data)){
+    if(check.test(e.nativeEvent.data)||e.nativeEvent.inputType!="inputText"){
       let input = e.target.value;
 
       //'010-' 부분이 지워지지 않도록 강제
