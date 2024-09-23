@@ -104,7 +104,7 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.result > 0) {
         setViewqty(res.data.viewqty);
       }
@@ -896,7 +896,9 @@ export default function Page() {
           >
               {popCate.length > 0
                 ? popCate.map((pcvo, index) => {return(
-                     <PopCateList2 key={index} pvo={pcvo} />
+                    <div key={index}>
+                     <PopCateList2 pvo={pcvo} />
+                    </div>
                     )
                   })
                 : ""}
