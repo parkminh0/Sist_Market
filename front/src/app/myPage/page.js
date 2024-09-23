@@ -32,7 +32,7 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data.ar);
+      // console.log(res.data.ar);
       setUvo(res.data.ar);
       const cell_list = res.data.ar.cell_list;
       var sell1 = 0;
@@ -59,7 +59,7 @@ export default function page() {
       setSell_2(sell2);
       setSell_3(sell3);
       setSell_4(sell4);
-      console.log([sell1, sell2, sell3, sell4]);
+      // console.log([sell1, sell2, sell3, sell4]);
     });
   }
 
@@ -627,13 +627,13 @@ export default function page() {
                   {uvo.w_list ? (
                     uvo.w_list.length > 0 ? (
                       uvo.w_list.map((wlvo, index) => {
-                        console.log(`wlvo[${index}]: `);
-                        console.log(wlvo);
                         if (index > 7) {
                           return;
                         }
                         return (
-                          <UserCellList2 key={index} pvo={wlvo.pvo} />
+                          <div key={index}>
+                            <UserCellList2 pvo={wlvo.pvo} />
+                          </div>
                         );
                       })
                     ) : (
