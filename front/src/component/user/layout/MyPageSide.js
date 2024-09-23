@@ -168,10 +168,10 @@ export default function MyPageSide() {
           </strong>
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
             {bc_list.map((ar, index) => (
-              <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" className="menu_link" key={index} href={`/Board/list/${ar.key}`}target="_self">
-                <font>{ar.value}</font>
-              </Link>
+              <li data-v-7a824f04=""  key={index} className="menu_item">
+                <Link data-v-7a824f04="" className="menu_link" href={`/Board/list/${ar.key}`}target="_self">
+                  <font>{ar.value}</font>
+                </Link>
               </li>
             ))}
           </ul>
@@ -217,7 +217,7 @@ export default function MyPageSide() {
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
+              <Link data-v-7a824f04="" href="/Board/terms" className="menu_link">
                 약관 및 정책
               </Link>
             </li>

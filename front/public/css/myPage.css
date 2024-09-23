@@ -9,7 +9,14 @@
     border-bottom: none;
   }
 
+  .snb_menu {
+    list-style-type: none;
+  }
   
+  .menu_item {
+    list-style-type: none;
+  }
+
 
 .title1 {
     font-size: 21px !important;
@@ -6494,8 +6501,13 @@ img,video {
     vertical-align: top
 }
 
-li,ol,ul {
+/* li,ol,ul {
     list-style: none
+} */
+
+.page-content ol.decimal-list {
+    list-style: decimal !important;
+    padding-left: 20px !important;
 }
 
 table {
