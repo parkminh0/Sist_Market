@@ -6,7 +6,7 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
-import ThermostatIcon from "@mui/icons-material/Thermostat";
+import EventIcon from '@mui/icons-material/Event';
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -164,25 +164,7 @@ export default function page() {
               >
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/manner"
-                  className="menu-item"
-                >
-                  <div data-v-247cd1ce="" className="icon-wrap">
-                    <ThermostatIcon sx={{ width: 28, height: 28 }} />
-                  </div>
-                  <p
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-247cd1ce=""
-                    className="text-lookup name display_paragraph"
-                    style={{ color: "rgb(34, 34, 34)" }}
-                  >
-                    매너온도
-                  </p>
-                </Link>
-                <Link
-                  data-v-247cd1ce=""
-                  href="/myPage/badge"
+                  href="/myPage/profile"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -217,7 +199,7 @@ export default function page() {
                     가계부
                   </p>
                 </Link>
-                <Link data-v-247cd1ce="" href="/notice" className="menu-item">
+                <Link data-v-247cd1ce="" href="/Board/list/1" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
                     <CampaignIcon sx={{ width: 28, height: 28 }} />
                     <span data-v-247cd1ce="" className="badge"></span>
@@ -229,9 +211,28 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    공지사항/이벤트
+                    공지사항
                   </p>
                 </Link>
+                <Link
+                  data-v-247cd1ce=""
+                  href="/Board/list/2"
+                  className="menu-item"
+                >
+                  <div data-v-247cd1ce="" className="icon-wrap">
+                    <EventIcon sx={{ width: 28, height: 28 }}/>
+                  </div>
+                  <p
+                    data-v-09bea70c=""
+                    data-v-7d3b6402=""
+                    data-v-247cd1ce=""
+                    className="text-lookup name display_paragraph"
+                    style={{ color: "rgb(34, 34, 34)" }}
+                  >
+                    이벤트
+                  </p>
+                </Link>
+
               </div>
               {/* 구매 내역 */}
               <div
