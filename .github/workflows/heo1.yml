@@ -57,7 +57,7 @@ jobs:
 
       - name: SSH into EC2 and run Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
             cd /home/ubuntu/market
             docker-compose down
             docker-compose up -d --build
