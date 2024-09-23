@@ -363,7 +363,7 @@ export default function Page() {
           "</span>",
       });
 
-      let mapContainer = document.getElementById("map"); // 지도를 표시할 div
+      let mapContainer = document.getElementById("mapDetail"); // 지도를 표시할 div
       let mapOption = {
         center: locPosition, // 지도의 중심좌표
         level: 5, // 지도의 확대 레벨
@@ -705,7 +705,7 @@ export default function Page() {
                     <span>{postVO.hope_place}</span>
                   </li>
                   <div
-                    id="map"
+                    id="mapDetail" 
                     style={{
                       border: "0.5px solid black",
                       marginTop: "10px",

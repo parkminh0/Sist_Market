@@ -151,20 +151,25 @@ export default function Page() {
   };
 
   const phoneChange = (e) => {
-    let input = e.target.value.replace(/[^0-9]/g, ''); //숫자만 남기기
+    // let input = e.target.value.replace(/[^0-9]/g, ''); //숫자만 남기기
+    
+    const check = /[0-9]/g;
+    if(check.test(e.nativeEvent.data)){
+      let input = e.target.value;
 
-    //'010-' 부분이 지워지지 않도록 강제
-    if (input.startsWith('010')) {
-        //010 이후의 번호만 처리
-        if (input.length <= 7) {
-            input = input.replace(/(\d{3})(\d{1,4})/, '010-$2'); //010-XXXX
-        } else {
-            input = input.replace(/(\d{3})(\d{4})(\d{1,4})/, '010-$2-$3'); //010-XXXX-XXXX
-        }
-    } else {
-        input = '010'; //'010'까지만 유지하고 '-'는 추가하지 않음
+      //'010-' 부분이 지워지지 않도록 강제
+      if (input.startsWith('010')) {
+          //010 이후의 번호만 처리
+          if (input.length <= 7) {
+              input = input.replace(/(\d{3})(\d{1,4})/, '010-$2'); //010-XXXX
+          } else {
+              input = input.replace(/(\d{3})(\d{4})(\d{1,4})/, '010-$2-$3'); //010-XXXX-XXXX
+          }
+      } else {
+          input = '010'; //'010'까지만 유지하고 '-'는 추가하지 않음
+      }
+      setPhone(input.slice(0, 13)); //최대 13자까지만 설정
     }
-    setPhone(input.slice(0, 13)); //최대 13자까지만 설정
   };
 
   // useEffect(() => {

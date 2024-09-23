@@ -1,12 +1,194 @@
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, IconButton, ImageList, ImageListItem, InputAdornment, MenuItem, OutlinedInput, Radio, RadioGroup, TextField, Typography } from "@mui/material";
-import { Fragment, useEffect, useRef, useState } from "react";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, IconButton, ImageList, ImageListItem, InputAdornment, MenuItem, OutlinedInput, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Link from 'next/link';
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export default function EditPostModal(props) {
     
+
+  const cookie_latitude = Cookies.get("latitude");
+  const cookie_longitude = Cookies.get("longitude");
+  const [cookie_region1, setCookie_region1] = useState("");
+  const [cookie_region2, setCookie_region2] = useState("");
+  const [cookie_region3, setCookie_region3] = useState("");
+
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [tmpHope_place, setTmpHope_place] = useState("");
+  const [tmpHope_lati, setTmpHope_lati] = useState("");
+  const [tmpHope_long, setTmpHope_long] = useState("");
+  const [tmpRegion1, setTmpRegion1] = useState("");
+  const [tmpRegion2, setTmpRegion2] = useState("");
+  const [tmpRegion3, setTmpRegion3] = useState("");
+
+  const locationHandleSubmit = (event) => {
+    event.preventDefault();
+    setHope_place(tmpHope_place);
+    setHope_lati(tmpHope_lati);
+    setHope_long(tmpHope_long);
+    setRegion1(tmpRegion1);
+    setRegion2(tmpRegion2);
+    setRegion3(tmpRegion3);
+    locationClose();
+  };
+
+  const locationClose = () => {
+    setTmpHope_place("");
+    setTmpHope_lati("");
+    setTmpHope_long("");
+    setTmpRegion1("");
+    setTmpRegion2("");
+    setTmpRegion3("");
+    setLocationOpen(false);
+  };
+
+  function getLocation() {
+    const kakaoMapScript = document.createElement("script");
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.async = false;
+    document.head.appendChild(kakaoMapScript);
+
+    kakaoMapScript.onload = () => {
+      // Kakao Maps API가 완전히 초기화된 후에 실행
+      window.kakao.maps.load(() => {
+        if (!window.kakao.maps.services) {
+          return;
+        }
+        setMap(); // API 로드 후에 함수 호출
+      });
+    };
+  }
+
+  function setMap() {
+    // Geolocation API 지원 여부 확인
+    if ("geolocation" in navigator) {
+      try {
+        navigator.geolocation.getCurrentPosition((position) => {
+          let latitude = position.coords.latitude;
+          let longitude = position.coords.longitude;
+          if (hope_lati != null && hope_lati != "") {
+            latitude = hope_lati;
+          }
+          if (hope_long != null && hope_long != "") {
+            longitude = hope_long;
+          }
+          if (hope_place != null && hope_place != "") {
+            setTmpHope_place(hope_place);
+          }
+
+          const geocoder = new window.kakao.maps.services.Geocoder();
+          const coord = new kakao.maps.LatLng(latitude, longitude);
+          const callback = (result, status) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+              setTmpRegion1(result[0].address.region_1depth_name);
+              setTmpRegion2(result[0].address.region_2depth_name);
+              setTmpRegion3(result[0].address.region_3depth_name);
+            }
+          };
+          geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+
+          // 주소-좌표 변환 객체 생성
+          let locPosition = new kakao.maps.LatLng(latitude, longitude);
+
+          let message =
+            '<div style="padding:5px; font-size:11px; text-align:center; display:inline-block;">지도를 움직여 선택하세요.</div>';
+          let mapContainer = document.getElementById("mapEdit"); // 지도를 표시할 div
+          let mapOption = {
+            center: locPosition, // 지도의 중심좌표
+            level: 3, // 지도의 확대 레벨
+          };
+          let map = new kakao.maps.Map(mapContainer, mapOption);
+
+          // 마커를 생성합니다
+          let marker = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(latitude, longitude),
+          });
+
+          let iwContent = message; // 인포윈도우에 표시할 내용
+
+          // 인포윈도우를 생성합니다
+          let infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
+          });
+
+          // 인포윈도우를 마커위에 표시합니다
+          infowindow.open(map, marker);
+
+          setTmpHope_lati(latitude);
+          setTmpHope_long(longitude);
+
+          marker.setMap(map);
+
+          // 마우스 드래그로 지도 이동이 완료되었을 때 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
+          kakao.maps.event.addListener(map, "center_changed", function () {
+            try {
+              // 지도 중심좌표를 얻어옵니다
+              let latlng = map.getCenter();
+              marker.setPosition(latlng);
+              infowindow.close();
+            } catch (Exception) {
+              alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+              return;
+            }
+          });
+
+          kakao.maps.event.addListener(map, "dragend", function () {
+            try {
+              // 지도 중심좌표를 얻어옵니다
+              let latlng = map.getCenter();
+              setTmpHope_lati(latlng.getLat());
+              setTmpHope_long(latlng.getLng());
+
+              const geocoder = new window.kakao.maps.services.Geocoder();
+              const callback = (result, status) => {
+                if (status === window.kakao.maps.services.Status.OK) {
+                  setTmpRegion1(result[0].address.region_1depth_name);
+                  setTmpRegion2(result[0].address.region_2depth_name);
+                  setTmpRegion3(result[0].address.region_3depth_name);
+                }
+              };
+              geocoder.coord2Address(
+                latlng.getLng(),
+                latlng.getLat(),
+                callback
+              );
+            } catch (Exception) {
+              setTmpHope_place("");
+              setTmpHope_lati("");
+              setTmpHope_long("");
+              setTmpRegion1("");
+              setTmpRegion2("");
+              setTmpRegion3("");
+              alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+              return;
+            }
+          });
+        });
+      } catch (Exception) {
+        setTmpHope_place("");
+        setTmpHope_lati("");
+        setTmpHope_long("");
+        setTmpRegion1("");
+        setTmpRegion2("");
+        setTmpRegion3("");
+        alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+        return;
+      }
+    } else {
+      setTmpHope_place("");
+      setTmpHope_lati("");
+      setTmpHope_long("");
+      setTmpRegion1("");
+      setTmpRegion2("");
+      setTmpRegion3("");
+      alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+      return;
+    }
+  }
+
+
     const open = props.open;
     const handleClose = props.handleClose;
     const fileInputRef = useRef(null);
@@ -22,6 +204,12 @@ export default function EditPostModal(props) {
     const [price, setPrice] = useState();
     const [canBargain, setCanBargain] = useState();
     const [content, setContent] = useState();
+    const [hope_place, setHope_place] = useState("");
+    const [hope_lati, setHope_lati] = useState("");
+    const [hope_long, setHope_long] = useState("");
+    const [region1, setRegion1] = useState("");
+    const [region2, setRegion2] = useState("");
+    const [region3, setRegion3] = useState("");
     const [savePostKey, setSavePostKey] = useState();
 
 
@@ -145,6 +333,24 @@ export default function EditPostModal(props) {
         // price가 공백("")이면 null 또는 0으로 변환
         formData.set("price", price === "" ? 0 : price);
         
+      // 거래희망장소 위도, 경도
+      formData.append("hope_lati", hope_lati);
+      formData.append("hope_long", hope_long);
+
+      // town 정보
+      formData.append(
+        "region1",
+        region1 != null && region1 != "" ? region1 : cookie_region1
+      );
+      formData.append(
+        "region2",
+        region2 != null && region2 != "" ? region2 : cookie_region2
+      );
+      formData.append(
+        "region3",
+        region3 != null && region3 != "" ? region3 : cookie_region3
+      );
+      
         // 임시저장 후 작성완료 누를 경우 수정해야 함
         formData.append("postkey", pvo.postkey);
         
@@ -174,6 +380,8 @@ export default function EditPostModal(props) {
     useEffect(() => {
         getCategory();
         var pvo = props.pvo;
+        console.log("props.pvo");
+        console.log(props.pvo);
         setPvo(props.pvo);
         setTitle(pvo.title);
         setCategory(pvo.cvo?pvo.cvo.categorykey:1);
@@ -186,6 +394,13 @@ export default function EditPostModal(props) {
                       pvo.pimg_list?pvo.pimg_list.length:0,
                       [],
                       pvo.pimg_list?pvo.pimg_list:[]);
+        setCookie_region1(decodeURIComponent(Cookies.get("region1")));
+        setCookie_region2(decodeURIComponent(Cookies.get("region2")));
+        setCookie_region3(decodeURIComponent(Cookies.get("region3")));
+        setHope_place(pvo.hope_place);
+        setHope_lati(pvo.hope_lati);
+        setHope_long(pvo.hope_long);
+        
     },[open]);
 
 
@@ -377,10 +592,17 @@ export default function EditPostModal(props) {
                 size="small"
                 id="price"
                 name="price"
+                type='number'
                 placeholder="가격을 입력해주세요."
                 disabled={isFree}
                 value={isFree ? 0 : price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => {
+                  const check = /[0-9]/g;
+                  if(check.test(e.nativeEvent.data)){
+                    setPrice(e.target.value);
+                  }
+
+                }}
                 endAdornment={
                   <InputAdornment position="end">원</InputAdornment>
                 }
@@ -415,6 +637,116 @@ export default function EditPostModal(props) {
                 onChange={(e) => setContent(e.target.value)}
               />
             </FormControl>
+            <FormControl
+              fullWidth
+              margin="dense"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              <Link
+                href="#"
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  setHope_place("");
+                  setHope_lati("");
+                  setHope_long("");
+                }}
+                style={{
+                  marginLeft: "auto",
+                }}
+              >
+                삭제
+              </Link>
+              <TextField
+                margin="dense"
+                id="hope_place"
+                name="hope_place"
+                label="거래 희망 장소"
+                type="text"
+                fullWidth
+                size="small"
+                value={hope_place}
+                onClick={() => {
+                  getLocation();
+                  setLocationOpen(true);
+                }}
+                InputProps={{
+                  readOnly: true, // readonly 설정
+                }}
+              />
+            </FormControl>
+            {/* 거래 희망 장소 모달 */}
+            <Fragment>
+              <Dialog
+                open={locationOpen}
+                onClose={locationClose}
+                id="hopeDialog"
+                PaperProps={{
+                  component: "form",
+                  onSubmit: locationHandleSubmit,
+                }}
+              >
+                <DialogTitle
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  위치 추가
+                </DialogTitle>
+                <IconButton
+                  aria-label="close"
+                  onClick={locationClose}
+                  sx={{
+                    position: "absolute",
+                    right: 8,
+                    top: 8,
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <DialogContent dividers>
+                  <Typography gutterBottom>
+                    이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
+                  </Typography>
+                  <DialogContentText
+                    style={{ marginBottom: "20px" }}
+                    sx={{ fontSize: "0.875rem" }}
+                  >
+                    만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
+                  </DialogContentText>
+                  <FormLabel required id="demo-simple-row-radio-buttons-group-label">
+                    거래 희망 장소명
+                  </FormLabel>
+                  <TextField
+                    required
+                    margin="dense"
+                    id="tmpHope_place"
+                    name="tmpHope_place"
+                    placeholder="예) 강남역 1번 출구, 교보타워 앞"
+                    type="text"
+                    fullWidth
+                    size="small"
+                    value={tmpHope_place}
+                    onChange={(e) => setTmpHope_place(e.target.value)}
+                  />
+                  <div
+                    id="mapEdit"
+                    style={{
+                      border: "0.5px solid black",
+                      marginTop: "10px",
+                      width: "100%",
+                      height: "350px",
+                    }}
+                  ></div>
+                </DialogContent>
+                <DialogActions>
+                  <Button type="button" onClick={locationHandleSubmit}>선택 완료</Button>
+                  <Button onClick={locationClose}>취소</Button>
+                </DialogActions>
+              </Dialog>
+            </Fragment>
           </DialogContent>
           <DialogActions>
             <Button
