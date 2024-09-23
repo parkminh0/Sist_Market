@@ -522,7 +522,7 @@
         limit #{howManyPost}
     </select>
 
-    <select id="searchTemp" resultMap="postMap" parameterType="map">
+    <select id="searchTemp" resultMap="postMap" parameterType="String">
         SELECT * FROM post 
          WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
     </select>
