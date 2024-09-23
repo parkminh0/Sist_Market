@@ -94,7 +94,7 @@ export default function EditPostModal(props) {
 
           let message =
             '<div style="padding:5px; font-size:11px; text-align:center; display:inline-block;">지도를 움직여 선택하세요.</div>';
-          let mapContainer = document.getElementById("map"); // 지도를 표시할 div
+          let mapContainer = document.getElementById("mapEdit"); // 지도를 표시할 div
           let mapOption = {
             center: locPosition, // 지도의 중심좌표
             level: 3, // 지도의 확대 레벨
@@ -592,10 +592,17 @@ export default function EditPostModal(props) {
                 size="small"
                 id="price"
                 name="price"
+                type='number'
                 placeholder="가격을 입력해주세요."
                 disabled={isFree}
                 value={isFree ? 0 : price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => {
+                  const check = /[0-9]/g;
+                  if(check.test(e.nativeEvent.data)){
+                    setPrice(e.target.value);
+                  }
+
+                }}
                 endAdornment={
                   <InputAdornment position="end">원</InputAdornment>
                 }
@@ -725,7 +732,7 @@ export default function EditPostModal(props) {
                     onChange={(e) => setTmpHope_place(e.target.value)}
                   />
                   <div
-                    id="map"
+                    id="mapEdit"
                     style={{
                       border: "0.5px solid black",
                       marginTop: "10px",
@@ -735,7 +742,7 @@ export default function EditPostModal(props) {
                   ></div>
                 </DialogContent>
                 <DialogActions>
-                  <Button type="submit">선택 완료</Button>
+                  <Button type="button" onClick={locationHandleSubmit}>선택 완료</Button>
                   <Button onClick={locationClose}>취소</Button>
                 </DialogActions>
               </Dialog>

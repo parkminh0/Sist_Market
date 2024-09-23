@@ -201,6 +201,7 @@ export default function page() {
                 <Link
                   data-v-247cd1ce=""
                   href="/myPage/moneybook"
+                  target="_blank"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -626,6 +627,8 @@ export default function page() {
                   {uvo.w_list ? (
                     uvo.w_list.length > 0 ? (
                       uvo.w_list.map((wlvo, index) => {
+                        console.log(`wlvo[${index}]: `);
+                        console.log(wlvo);
                         if (index > 7) {
                           return;
                         }
