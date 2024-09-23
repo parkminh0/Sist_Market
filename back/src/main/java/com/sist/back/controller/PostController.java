@@ -398,6 +398,17 @@ public class PostController {
         return res;
     }
 
+    // 사용자 - 임시저장 게시글 불러오기
+    @GetMapping("/searchTemp")
+    public Map<String, Object> searchTemp(String userkey) {
+        Map<String, Object> res = new HashMap<>();
+        PostVO vo = p_service.searchTemp(userkey);
+
+        res.put("res_searchTemp", vo);
+
+        return res;
+    }
+
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
     public Map<String, Object> main(String region1, String region2) {

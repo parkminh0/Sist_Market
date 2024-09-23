@@ -51,6 +51,8 @@ public interface PostMapper {
 
     List<PostVO> search(Map<String, Object> map);
 
+    PostVO searchTemp(String userkey);
+
     PostVO[] main(String param, String region1, String region2);
 
     PostCountVO countpostForAdmin();
