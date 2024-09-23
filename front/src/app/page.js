@@ -9,7 +9,7 @@ export default function Home() {
 
   function getCategory() {
     axios({
-      url: "http://localhost:8080/category/all",
+      url: "/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
