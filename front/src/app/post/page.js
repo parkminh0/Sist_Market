@@ -10,7 +10,7 @@ import IconButton from "@mui/joy/IconButton";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 import {
   Backdrop,
   Box,
@@ -45,6 +45,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
 import Cookies from "js-cookie";
+import EditPostModal from "@/component/user/post/detail/EditPostModal";
 
 export default function page() {
   const [region2_list, setRegion2_list] = useState([]);
@@ -327,7 +328,18 @@ export default function page() {
   }, []);
   // #endregion
 
-  // 내 물건 팔기
+  // #region 민호-물건팔기 모달 open & 임시저장 불러오기
+  const [tempPost, setTempPost] = useState({});
+  const [tempPostConfirmOpen, setTempPostConfirmOpen] = useState(false);
+  const [isTemp, setIsTemp] = useState(false);
+
+  function tempPostClose(chkTemp) {
+    setTempPostConfirmOpen(false);
+    if (chkTemp == null) return;
+    if (chkTemp == 1) setIsTemp(true);
+    else setOpen(true);
+  }
+
   function chkTown() {
     // 로그인 확인
     if (Cookies.get("userkey") == null || Cookies.get("userkey") == "") {
@@ -357,16 +369,15 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      setPost_list(res.data.res_search);
-      if (!res.data.res_search || res.data.res_search.length < 15) {
-        setViewMore(false);
-      }
-      if (res.data.lastPostKey != null) {
-        setLastPostKey(res.data.lastPostKey);
+      setTempPost(res.data.res_searchTemp);
+      if (res.data.res_searchTemp != null) {
+        setTempPostConfirmOpen(true);
+      } else {
+        setOpen(true);
       }
     });
-    setOpen(true);
   }
+  // #endregion
 
   // #region 판매중인 상품만 보기 선택
   function goOnsale(e) {
@@ -612,6 +623,8 @@ export default function page() {
     setRegion3("");
     setIsFree(false);
     setOpen(false);
+    setIsTemp(false);
+    setTempPost({});
     setPreviewImages([]);
   };
 
@@ -1836,7 +1849,7 @@ export default function page() {
                                     const fallbackIcon =
                                       document.createElement("div");
                                     fallbackIcon.innerHTML = `
-          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ImageNotSupportedRoundedIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1;"><path d="m21.19 21.19-.78-.78L18 18l-4.59-4.59-9.82-9.82-.78-.78a.9959.9959 0 0 0-1.41 0C1 3.2 1 3.83 1.39 4.22L3 5.83V19c0 1.1.9 2 2 2h13.17l1.61 1.61c.39.39 1.02.39 1.41 0 .39-.39.39-1.03 0-1.42M6.02 18c-.42 0-.65-.48-.39-.81l2.49-3.2c.2-.25.58-.26.78-.01l2.1 2.53L12.17 15l3 3zm14.98.17L5.83 3H19c1.1 0 2 .9 2 2z"></path></svg>`;
+          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="LocalMallIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1; color: rgb(255, 111, 97); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; background-color: rgb(249, 249, 249);"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3m0 10c-2.76 0-5-2.24-5-5h2c0 1.66 1.34 3 3 3s3-1.34 3-3h2c0 2.76-2.24 5-5 5"></path></svg>`;
                                     parentSpan.parentNode.appendChild(
                                       fallbackIcon
                                     );
@@ -1845,11 +1858,13 @@ export default function page() {
                                 />
                               </span>
                             ) : (
-                              <ImageNotSupportedRoundedIcon
+                              <LocalMallIcon
                                 style={{
                                   width: "100%", // 아이콘의 너비를 100%로 설정
                                   height: "100%", // 아이콘의 높이를 100%로 설정
                                   zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                  color: "#ff6f61", // 이쁜 코랄 계열 색상
+                                  backgroundColor: "#f9f9f9", // 아이콘 뒤 배경 색상
                                 }}
                               />
                             )}
@@ -2380,6 +2395,28 @@ export default function page() {
           </DialogActions>
         </Dialog>
       </React.Fragment>
+      {/* 임시저장 확인 모달 */}
+      <Dialog
+        open={tempPostConfirmOpen}
+        onClose={() => tempPostClose(null)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"작성중인 게시글이 있습니다."}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {`'${tempPost.title}' 글을 이어서 작성하시겠습니까?`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => tempPostClose(1)}>이어서 쓰기</Button>
+          <Button onClick={() => tempPostClose(0)}>새로 쓰기</Button>
+        </DialogActions>
+      </Dialog>
+      {/* 임시저장 게시글 작성 모달 */}
+      <EditPostModal open={isTemp} handleClose={handleClose} pvo={tempPost} />
     </>
   );
 }

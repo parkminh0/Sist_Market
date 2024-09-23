@@ -135,6 +135,11 @@ public class PostService {
         return ar;
     }
 
+    // 임시저장 게시글
+    public PostVO searchTemp(String userkey) {
+        return p_mapper.searchTemp(userkey);
+    }
+
     public PostVO[] main(String param, String region1, String region2) {
         return p_mapper.main(param, region1, region2);
     }
