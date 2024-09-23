@@ -217,7 +217,7 @@ export default function MyPageSide() {
               </Link>
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
+              <Link data-v-7a824f04="" href="/Board/terms" className="menu_link">
                 약관 및 정책
               </Link>
             </li>
