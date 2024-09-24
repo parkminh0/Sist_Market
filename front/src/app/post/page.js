@@ -10,7 +10,7 @@ import IconButton from "@mui/joy/IconButton";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 import {
   Backdrop,
   Box,
@@ -45,6 +45,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
 import Cookies from "js-cookie";
+import EditPostModal from "@/component/user/post/detail/EditPostModal";
 
 export default function page() {
   const [region2_list, setRegion2_list] = useState([]);
@@ -60,6 +61,10 @@ export default function page() {
   // 위치 파라미터 값
   const [loc1Param, setLoc1Param] = useState("");
   const [loc2Param, setLoc2Param] = useState([]);
+  // 판매중인 상품만 보기
+  const [onsaleParam, setOnsaleParam] = useState("false");
+  // 게시글 검색 값
+  const [searchParam, setSearchParam] = useState("");
   // 카테고리 파라미터 값
   const [categoryParam, setCategoryParam] = useState(null);
   // 정렬 파라미터 값
@@ -123,6 +128,8 @@ export default function page() {
     let params = new URLSearchParams(currentUrlObj.search);
     let loc1Param = params.get("loc1");
     let loc2Param = params.getAll("loc2");
+    let onsaleParam = params.get("onsale");
+    let searchParam = params.get("search");
     let cateParam = params.get("category");
     let srtParam = params.get("sort");
     let minParam = params.get("minPrice");
@@ -134,39 +141,43 @@ export default function page() {
 
     setLoc1Param(loc1Param);
     setLoc2Param(loc2Param);
+    if (onsaleParam == null || onsaleParam == "") {
+      onsaleParam = "false";
+    }
+    setOnsaleParam(onsaleParam);
+    setSearchParam(searchParam);
     setCategoryParam(cateParam);
     setSortParam(srtParam);
     setMinPriceParam(minParam);
     setMaxPriceParam(maxParam);
 
-    if (!loading) {
-      setLoading(true);
-      axios({
-        url: "/adpost/search",
-        method: "get",
-        params: {
-          userkey: decodeURIComponent(Cookies.get("userkey")),
-          loc1: loc1Param,
-          loc2: loc2Param,
-          category: cateParam,
-          sort: srtParam,
-          minPrice: minParam,
-          maxPrice: maxParam,
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => {
-        setPost_list(res.data.res_search);
-        if (!res.data.res_search || res.data.res_search.length < 15) {
-          setViewMore(false);
-        }
-        if (res.data.lastPostKey != null) {
-          setLastPostKey(res.data.lastPostKey);
-        }
-      });
-      setLoading(false);
-    }
+    axios({
+      url: "/adpost/search",
+      method: "get",
+      params: {
+        userkey: decodeURIComponent(Cookies.get("userkey")),
+        onsale: onsaleParam,
+        search: searchParam,
+        loc1: loc1Param,
+        loc2: loc2Param,
+        category: cateParam,
+        sort: srtParam,
+        minPrice: minParam,
+        maxPrice: maxParam,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setPost_list(res.data.res_search);
+      if (!res.data.res_search || res.data.res_search.length < 15) {
+        setViewMore(false);
+      }
+      if (res.data.lastPostKey != null) {
+        setLastPostKey(res.data.lastPostKey);
+      }
+    });
+    setLoading(false);
   }, [router.query]);
   // #endregion
 
@@ -179,6 +190,7 @@ export default function page() {
         method: "get",
         params: {
           lastPostKey: lastPostKey,
+          search: searchParam,
           loc1: loc1Param,
           loc2: loc2Param,
           category: categoryParam,
@@ -190,13 +202,18 @@ export default function page() {
           "Content-Type": "application/json",
         },
       }).then((res) => {
-        setPost_list((post) => [...post, ...res.data.res_search]);
-        if (!res.data.res_search || res.data.res_search.length < 15) {
+        if (!res.data.res_search || res.data.res_search.length == 0) {
           setViewMore(false);
+        } else {
+          setPost_list((post) => [...post, ...res.data.res_search]);
+          if (res.data.res_search.length < 15) {
+            setViewMore(false);
+          }
+          if (res.data.lastPostKey != null) {
+            setLastPostKey(res.data.lastPostKey);
+          }
         }
-        if (res.data.lastPostKey != null) {
-          setLastPostKey(res.data.lastPostKey);
-        }
+
         setLoading(false);
       });
     }
@@ -309,6 +326,74 @@ export default function page() {
       document.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  // #endregion
+
+  // #region 민호-물건팔기 모달 open & 임시저장 불러오기
+  const [tempPost, setTempPost] = useState({});
+  const [tempPostConfirmOpen, setTempPostConfirmOpen] = useState(false);
+  const [isTemp, setIsTemp] = useState(false);
+
+  function tempPostClose(chkTemp) {
+    setTempPostConfirmOpen(false);
+    if (chkTemp == null) return;
+    if (chkTemp == 1) setIsTemp(true);
+    else setOpen(true);
+  }
+
+  function chkTown() {
+    // 로그인 확인
+    if (Cookies.get("userkey") == null || Cookies.get("userkey") == "") {
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
+
+    // 위치 기반 서비스 확인
+    if (
+      (region1 == null || region1 == "") &&
+      (cookie_region1 == null ||
+        cookie_region1 == "" ||
+        cookie_region1 == "undefined")
+    ) {
+      alert("위치 기반 서비스를 허용해주세요.");
+      return;
+    }
+
+    // 임시저장 확인
+    axios({
+      url: "/adpost/searchTemp",
+      method: "get",
+      params: {
+        userkey: decodeURIComponent(Cookies.get("userkey")),
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setTempPost(res.data.res_searchTemp);
+      if (res.data.res_searchTemp != null) {
+        setTempPostConfirmOpen(true);
+      } else {
+        setOpen(true);
+      }
+    });
+  }
+  // #endregion
+
+  // #region 판매중인 상품만 보기 선택
+  function goOnsale(e) {
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    params.delete("onsale");
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    if (e.dataset.checked == "false") {
+      newUrl += "&onsale=true";
+    }
+
+    // 페이지 이동
+    router.push(newUrl);
+    window.location.href = newUrl;
+  }
   // #endregion
 
   // #region 동네 선택
@@ -449,6 +534,7 @@ export default function page() {
 
     // 페이지 이동
     router.push(newUrl);
+    f;
     window.location.href = newUrl;
   }
   // #endregion
@@ -459,6 +545,9 @@ export default function page() {
     let params = new URLSearchParams(url.search);
     let tmp = e.dataset.deltype;
     switch (tmp) {
+      case "onsale":
+        params.delete("onsale");
+        break;
       case "loc2":
         let loc2Params = params.getAll("loc2");
         // 모두 삭제 후 일치하지 않는 "loc2" 값들 다시 추가
@@ -482,13 +571,16 @@ export default function page() {
         params.delete("maxPrice");
         break;
       case "all":
+        params.delete("onsale");
+        params.delete("search");
         params.delete("sort");
         params.delete("loc2");
         params.delete("category");
         params.delete("minPrice");
         params.delete("maxPrice");
         params.append("sort", "recent");
-        params.append("loc2", cookie_region2);
+        if (cookie_region2 != "undefined")
+          params.append("loc2", cookie_region2);
         break;
     }
     // 경로와 수정된 쿼리 문자열을 조합하여 새로운 URL을 만듭니다.
@@ -531,6 +623,8 @@ export default function page() {
     setRegion3("");
     setIsFree(false);
     setOpen(false);
+    setIsTemp(false);
+    setTempPost({});
     setPreviewImages([]);
   };
 
@@ -590,6 +684,15 @@ export default function page() {
       return;
     }
 
+    if (
+      (region1 == null || region1 == "") &&
+      (cookie_region1 == null ||
+        cookie_region1 == "" ||
+        cookie_region1 == "undefined")
+    ) {
+      alert("위치 기반 서비스를 허용해주세요.");
+      return;
+    }
     if (!loading) {
       setLoading(true);
 
@@ -967,7 +1070,11 @@ export default function page() {
               </Typography>
             </Breadcrumbs>
             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-              <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8"></h1>
+              {searchParam != null && searchParam != "" && (
+                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
+                  "{searchParam}" 검색결과
+                </h1>
+              )}
             </div>
           </section>
         </div>
@@ -992,6 +1099,52 @@ export default function page() {
                 </button>
               </header>
               <section>
+                <div class="_588sy41z _588sy421 _588sy4qq _588sy4h2">
+                  <Link
+                    href="#"
+                    className="rx8bta0 rx8bta1"
+                    label="Show active listings only"
+                    role="checkbox"
+                    aria-label="Show active listings only"
+                    data-checked={`${onsaleParam}`}
+                    onClick={(e) => goOnsale(e.currentTarget)}
+                  >
+                    <div
+                      {...(onsaleParam == "true" ? { "data-checked": "" } : {})}
+                      aria-hidden="true"
+                      class="rx8bta7 rx8bta9"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-seed-icon="true"
+                        data-seed-icon-version="0.4.0-beta.2"
+                        width="24"
+                        height="24"
+                        className="rx8bta8 rx8btaf"
+                        {...(onsaleParam == "true"
+                          ? { "data-checked": "" }
+                          : {})}
+                      >
+                        <g>
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M21.0843 4.18854C21.5325 4.51124 21.6342 5.13618 21.3115 5.58438L11.3115 19.0844C11.1361 19.3281 10.8604 19.48 10.5607 19.4982C10.2609 19.5164 9.96888 19.399 9.7652 19.1784L2.7652 11.6784C2.3906 11.2725 2.4159 10.6399 2.82172 10.2653C3.22755 9.89067 3.8602 9.91597 4.23481 10.3218L10.4041 16.9219L19.6885 4.41577C20.0112 3.96757 20.6361 3.86584 21.0843 4.18854Z"
+                            fill="currentColor"
+                          ></path>
+                        </g>
+                      </svg>
+                    </div>
+                    <span
+                      id="checkbox::Rpqop::label"
+                      className="rx8btal rx8btam"
+                    >
+                      판매중인 상품만 보기
+                    </span>
+                  </Link>
+                </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
                   <h3 className="_588sy4198 _588sy41y _588sy41a2">동네</h3>
                   <div className="_1d991sp2 _1h4pbgya08">
@@ -1394,6 +1547,45 @@ export default function page() {
                     <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
                       {sortParam == "recent" ? "최신순" : "인기순"}
                     </li>
+                    {onsaleParam == "true" && (
+                      <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
+                        판매중인 상품
+                        <span
+                          data-deltype="onsale"
+                          onClick={(e) => deleteSearch(e.currentTarget)}
+                          className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
+                        >
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              width: "14px",
+                              height: "14px",
+                            }}
+                            data-seed-icon="icon_close_regular"
+                            data-seed-icon-version="0.2.1"
+                          >
+                            <svg
+                              id="icon_close_regular"
+                              width="100%"
+                              height="100%"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              data-karrot-ui-icon="true"
+                            >
+                              <g>
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                                  fill="currentColor"
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                        </span>
+                      </li>
+                    )}
                     {loc2Param &&
                       loc2Param.length > 0 &&
                       loc2Param.sort().map((loc, i) => (
@@ -1443,12 +1635,9 @@ export default function page() {
                       ))}
                     {categoryParam != null && (
                       <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
-                        {category_list.map((category) =>
+                        {category_list.map((category, i) =>
                           category.categorykey == categoryParam ? (
-                            <font
-                              key={category.categorykey}
-                              style={{ verticalAlign: "inherit" }}
-                            >
+                            <font key={i} style={{ verticalAlign: "inherit" }}>
                               {category.categoryname}
                             </font>
                           ) : (
@@ -1608,6 +1797,12 @@ export default function page() {
                                 {post.title}
                               </span>
                             </Typography>
+                            <Typography
+                              level="body-sm"
+                              sx={{ fontSize: "0.7rem" }}
+                            >
+                              {post.cvo.categoryname}
+                            </Typography>
                             <Typography level="body-sm">
                               {post.hope_place != null &&
                                 post.hope_place != "" &&
@@ -1646,14 +1841,30 @@ export default function page() {
                                 <img
                                   className="_1b153uwe _1h4pbgya3k"
                                   src={post.pimg_list[0].imgurl}
+                                  onError={(e) => {
+                                    // 부모 span 태그를 DOM에서 제거
+                                    const parentSpan = e.target.parentNode;
+
+                                    // 새로운 div를 생성하고 아이콘을 삽입
+                                    const fallbackIcon =
+                                      document.createElement("div");
+                                    fallbackIcon.innerHTML = `
+          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="LocalMallIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1; color: rgb(255, 111, 97); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; background-color: rgb(249, 249, 249);"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3m0 10c-2.76 0-5-2.24-5-5h2c0 1.66 1.34 3 3 3s3-1.34 3-3h2c0 2.76-2.24 5-5 5"></path></svg>`;
+                                    parentSpan.parentNode.appendChild(
+                                      fallbackIcon
+                                    );
+                                    parentSpan.remove();
+                                  }}
                                 />
                               </span>
                             ) : (
-                              <ImageNotSupportedRoundedIcon
+                              <LocalMallIcon
                                 style={{
                                   width: "100%", // 아이콘의 너비를 100%로 설정
                                   height: "100%", // 아이콘의 높이를 100%로 설정
                                   zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                  color: "#ff6f61", // 이쁜 코랄 계열 색상
+                                  backgroundColor: "#f9f9f9", // 아이콘 뒤 배경 색상
                                 }}
                               />
                             )}
@@ -1747,24 +1958,28 @@ export default function page() {
                     ))}
                   </>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "100vh",
-                    }}
-                  >
+                  <>
+                    <div></div>
                     <div
                       style={{
-                        fontSize: "1.5rem",
-                        lineHeight: "1.2",
-                        transform: "translateY(-200px)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100vh",
                       }}
                     >
-                      게시글이 없습니다.
+                      <div
+                        style={{
+                          fontSize: "1.5rem",
+                          lineHeight: "1.2",
+                          transform: "translateY(-200px)",
+                        }}
+                      >
+                        게시글이 없습니다.
+                      </div>
                     </div>
-                  </div>
+                    <div></div>
+                  </>
                 )}
               </div>
               <Button
@@ -1776,16 +1991,7 @@ export default function page() {
                 }}
                 variant="contained"
                 starticon={<AddIcon />}
-                onClick={() => {
-                  if (
-                    Cookies.get("userkey") == null ||
-                    Cookies.get("userkey") == ""
-                  ) {
-                    alert("로그인 후 이용해주세요.");
-                    return;
-                  }
-                  setOpen(true);
-                }}
+                onClick={chkTown}
               >
                 내 물건 팔기
               </Button>
@@ -1893,7 +2099,7 @@ export default function page() {
                 </ImageListItem>
                 {previewImages.map((img, i) => (
                   <ImageListItem
-                    key={img.id}
+                    key={i}
                     style={{
                       width: 100,
                       height: 100,
@@ -1975,8 +2181,8 @@ export default function page() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                {category_list.map((item) => (
-                  <MenuItem key={item.categorykey} value={item.categorykey}>
+                {category_list.map((item, i) => (
+                  <MenuItem key={i} value={item.categorykey}>
                     {item.categoryname}
                   </MenuItem>
                 ))}
@@ -2100,7 +2306,7 @@ export default function page() {
             }}
           >
             <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
-              거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
+              *거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
             </span>
             <div>
               <Button
@@ -2189,6 +2395,28 @@ export default function page() {
           </DialogActions>
         </Dialog>
       </React.Fragment>
+      {/* 임시저장 확인 모달 */}
+      <Dialog
+        open={tempPostConfirmOpen}
+        onClose={() => tempPostClose(null)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"작성중인 게시글이 있습니다."}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {`'${tempPost.title}' 글을 이어서 작성하시겠습니까?`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => tempPostClose(1)}>이어서 쓰기</Button>
+          <Button onClick={() => tempPostClose(0)}>새로 쓰기</Button>
+        </DialogActions>
+      </Dialog>
+      {/* 임시저장 게시글 작성 모달 */}
+      <EditPostModal open={isTemp} handleClose={handleClose} pvo={tempPost} />
     </>
   );
 }

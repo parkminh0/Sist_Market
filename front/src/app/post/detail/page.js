@@ -104,7 +104,7 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.result > 0) {
         setViewqty(res.data.viewqty);
       }
@@ -363,7 +363,7 @@ export default function Page() {
           "</span>",
       });
 
-      let mapContainer = document.getElementById("map"); // 지도를 표시할 div
+      let mapContainer = document.getElementById("mapDetail"); // 지도를 표시할 div
       let mapOption = {
         center: locPosition, // 지도의 중심좌표
         level: 5, // 지도의 확대 레벨
@@ -525,7 +525,7 @@ export default function Page() {
                       {/* 프로필 이미지 */}
                       <Link
                         data-gtm="buy_sell_profile_image"
-                        href="/users/brit-xwmmep6mj7j4/?in=manhattan-7426"
+                        href={`/userPage?userkey=${userVO.userkey}`}
                         aria-label="profile page of Brit"
                       >
                         <span
@@ -606,7 +606,14 @@ export default function Page() {
                     alignItems: "center",
                   }}
                 >
-                  <h1 className="_1h4pbgy9uo">{postVO.title}</h1>
+
+                  {/* poststatus 관련 수정 */}
+                  <h1 style={{ color: postVO.poststatus == 2 ? 'green' : postVO.poststatus == 3 ? 'gray' : 'black'}}>
+                    {`${postVO.poststatus == 2 ? '예약중' : postVO.poststatus == 3 ? '거래완료': ''}`}
+                  </h1>
+                  &nbsp;
+                  <h1 className="_1h4pbgy9uo">{`${postVO.title}`}</h1>
+                  
 
                   {like ? (
                     <FavoriteIcon
@@ -698,7 +705,7 @@ export default function Page() {
                     <span>{postVO.hope_place}</span>
                   </li>
                   <div
-                    id="map"
+                    id="mapDetail" 
                     style={{
                       border: "0.5px solid black",
                       marginTop: "10px",
@@ -889,7 +896,9 @@ export default function Page() {
           >
               {popCate.length > 0
                 ? popCate.map((pcvo, index) => {return(
-                     <PopCateList2 key={index} pvo={pcvo} />
+                    <div key={index}>
+                     <PopCateList2 pvo={pcvo} />
+                    </div>
                     )
                   })
                 : ""}

@@ -22,6 +22,7 @@ import {
   Menu,
   MenuItem,
   Divider,
+  Box,
 } from "@mui/material";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -31,6 +32,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { styled, alpha } from "@mui/material/styles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 // #region 민호-동네설정메뉴
 const StyledMenu = styled((props) => (
@@ -50,7 +53,7 @@ const StyledMenu = styled((props) => (
   "& .MuiPaper-root": {
     borderRadius: 6,
     marginTop: theme.spacing(1),
-    minWidth: 180,
+    minWidth: 200,
     color: "rgb(55, 65, 81)",
     boxShadow:
       "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
@@ -61,7 +64,6 @@ const StyledMenu = styled((props) => (
       "& .MuiSvgIcon-root": {
         fontSize: 18,
         color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
       },
       "&:active": {
         backgroundColor: alpha(
@@ -96,6 +98,32 @@ export default function Header() {
   }, [pathname]);
   // #endregion
 
+  // #region 민호-인기검색어
+  const [searchlog, setSearchlog] = useState([]);
+  function getSearchlog() {
+    axios({
+      url: "/searchlog/getSearchlog",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setSearchlog(res.data.getSearchlog);
+    });
+  }
+
+  function goSearchPost(link) {
+    let tmpLocParam = "";
+    if (region1 != "undefined" && region1 != null && region1 != "") {
+      tmpLocParam = "&loc1=" + region1 + "&loc2=" + region2;
+    }
+
+    let url = "/post?sort=recent" + tmpLocParam + "&search=" + link;
+    router.push(url);
+    window.location.href = url;
+  }
+  // #endregion
+
   // #region 민호-동네설정 메뉴
   const [anchorEl, setAnchorEl] = useState(null);
   const locationMenuOpen = Boolean(anchorEl);
@@ -106,7 +134,7 @@ export default function Header() {
     }
 
     if (region1 == null || region1 == "") {
-      alert("위치 기반 서비스를 허용해주세요.");
+      setLocationOpen(true);
       return;
     }
     setAnchorEl(event.currentTarget);
@@ -121,26 +149,51 @@ export default function Header() {
   const [locationOpen, setLocationOpen] = useState(false);
 
   const locationClose = () => {
+    setSearchLoc("");
+    setPrevAddrKey("");
+    setPrevTown({});
+    setSearchHere([]);
     setLocationOpen(false);
   };
   // #endregion
 
-  // #region 민호-주소
+  // #region 민호-주소검색
+  const [searchLoc, setSearchLoc] = useState("");
+
+  function searchLocation() {
+    if (searchLoc == null || searchLoc.trim() == "") {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+    axios({
+      url: "/town/getNearTown",
+      method: "get",
+      params: {
+        region1: "",
+        region2: searchLoc,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setSearchHere(res.data.getNearTown);
+    });
+  }
+  // #endregion
+
+  // #region 민호-주소 초기화
   const [region1, setRegion1] = useState("");
   const [region2, setRegion2] = useState("");
   const [region3, setRegion3] = useState("");
 
   // 사용자 주소
   const [userAddress, setUserAddress] = useState([]);
-
-  useEffect(() => {
-    setRegion1(decodeURIComponent(Cookies.get("region1")));
-    setRegion2(decodeURIComponent(Cookies.get("region2")));
-    setRegion3(decodeURIComponent(Cookies.get("region3")));
-
+  const [searchHere, setSearchHere] = useState([]);
+  function getUserAddress() {
     // 로그인 되어있는 경우 사용자 주소 가져오기
     let userkey = decodeURIComponent(Cookies.get("userkey"));
-    if (userkey != null && userkey != "") {
+
+    if (userkey != null && userkey != "" && userkey != "undefined") {
       axios({
         url: "/address/getAddress",
         method: "post",
@@ -152,16 +205,34 @@ export default function Header() {
         },
       }).then((res) => {
         setUserAddress(res.data.getAddress);
-        console.log(res.data.getAddress);
+        if (res.data.getAddress && res.data.getAddress.length > 0) {
+          let reg1 = res.data.getAddress[0].tvo.region1;
+          let reg2 = res.data.getAddress[0].tvo.region2;
+          let reg3 = res.data.getAddress[0].tvo.region3;
+          Cookies.set("region1", encodeURIComponent(reg1));
+          Cookies.set("region2", encodeURIComponent(reg2));
+          Cookies.set("region3", encodeURIComponent(reg3));
+          setRegion1(reg1);
+          setRegion2(reg2);
+          setRegion3(reg3);
+        }
       });
 
       return;
     }
+
     let tmp = Cookies.get("region1");
     // 로그인 안돼있으면서 위치정보 안받아온 경우 받아오기
-    if ((userkey == null || userkey == "") && (tmp == null || tmp == "")) {
+    if (
+      (userkey == null || userkey == "" || userkey == "undefined") &&
+      (tmp == null || tmp == "" || tmp == "undefined")
+    ) {
       getLocation(); // API 로드 후에 함수 호출
     }
+  }
+  useEffect(() => {
+    getUserAddress();
+    getSearchlog();
   }, []);
 
   function getLocation(e) {
@@ -186,25 +257,28 @@ export default function Header() {
             const geocoder = new window.kakao.maps.services.Geocoder();
             const coord = new kakao.maps.LatLng(latitude, longitude);
 
+            let reg1 = "";
+            let reg2 = "";
+            let reg3 = "";
+
             const callback = (result, status) => {
               if (status === window.kakao.maps.services.Status.OK) {
-                setRegion1(result[0].address.region_1depth_name);
-                setRegion2(result[0].address.region_2depth_name);
-                setRegion3(result[0].address.region_3depth_name);
-                Cookies.set(
-                  "region1",
-                  encodeURIComponent(result[0].address.region_1depth_name)
-                );
-                Cookies.set(
-                  "region2",
-                  encodeURIComponent(result[0].address.region_2depth_name)
-                );
-                Cookies.set(
-                  "region3",
-                  encodeURIComponent(result[0].address.region_3depth_name)
-                );
-                Cookies.set("latitude", latitude);
-                Cookies.set("longitude", longitude);
+                reg1 = result[0].address.region_1depth_name;
+                reg2 = result[0].address.region_2depth_name;
+                reg3 = result[0].address.region_3depth_name;
+
+                if (e != null) {
+                  setSearchHere([[reg1, reg2, reg3]]);
+                } else {
+                  setRegion1(reg1);
+                  setRegion2(reg2);
+                  setRegion3(reg3);
+                  Cookies.set("region1", encodeURIComponent(reg1));
+                  Cookies.set("region2", encodeURIComponent(reg2));
+                  Cookies.set("region3", encodeURIComponent(reg3));
+                  Cookies.set("latitude", encodeURIComponent(latitude));
+                  Cookies.set("longitude", encodeURIComponent(longitude));
+                }
               }
             };
 
@@ -216,6 +290,163 @@ export default function Header() {
         }
       });
     };
+  }
+  // #endregion
+
+  // #region 민호-주소 변경
+  const [prevAddrKey, setPrevAddrKey] = useState("");
+  const [prevTown, setPrevTown] = useState({});
+  function changeLoc(addrKey, reg1, reg2, reg3, isselected, nowReg) {
+    if (isselected == 1) {
+      setAnchorEl(null);
+      return;
+    }
+
+    if (reg3 == undefined || reg3 == "") {
+      reg1 = nowReg[0];
+      reg2 = nowReg[1];
+      reg3 = nowReg[2];
+    }
+
+    // addrKey가 0인 경우 동네 추가
+    if (addrKey == "") {
+      if (confirm("'" + reg3 + "'을 내 동네에 추가하시겠습니까?")) {
+        axios({
+          url: "/address/addAddress",
+          method: "get",
+          params: {
+            userkey: decodeURIComponent(Cookies.get("userkey")),
+            region1: reg1,
+            region2: reg2,
+            region3: reg3,
+            nowLength: userAddress && userAddress.length > 0 ? 1 : 0,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          if (res.data.issuccess <= 0)
+            alert("추가에 실패했습니다. 다시 시도해주세요.");
+          else {
+            getUserAddress();
+            router.push("/");
+            window.location.href = "/";
+          }
+        });
+      }
+    } else {
+      if (prevAddrKey != "") {
+        // 주소 변경
+        let prev =
+          prevTown.region1 + " " + prevTown.region2 + " " + prevTown.region3;
+        let next = reg1 + " " + reg2 + " " + reg3;
+        if (prev == next) return;
+        if (confirm("'" + prev + "'을 '" + next + "'으로 변경하시겠습니까?")) {
+          axios({
+            url: "/address/modifyAddress",
+            method: "get",
+            params: {
+              addresskey: prevAddrKey,
+              region1: reg1,
+              region2: reg2,
+              region3: reg3,
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((res) => {
+            if (res.data.issuccess <= 0)
+              alert("변경에 실패했습니다. 다시 시도해주세요.");
+            else {
+              getUserAddress();
+              router.push("/");
+              window.location.href = "/";
+            }
+          });
+        }
+      } else {
+        // 대표 동네 변경
+        if (confirm("대표 동네를 '" + reg3 + "'으로 변경하시겠습니까?")) {
+          axios({
+            url: "/address/changeSelected",
+            method: "get",
+            params: {
+              userkey: decodeURIComponent(Cookies.get("userkey")),
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((res) => {
+            if (res.data.issuccess <= 0)
+              alert("변경에 실패했습니다. 다시 시도해주세요.");
+            else {
+              getUserAddress();
+              router.push("/");
+              window.location.href = "/";
+            }
+          });
+        }
+      }
+    }
+  }
+  // #endregion
+
+  // #region 민호-주소 삭제
+  function deleteAddress(addrKey, reg3, isselected) {
+    if (userAddress.length == 1) {
+      if (
+        confirm(
+          "동네는 최소 1개 이상 선택해셔야 합니다.\r\n현재 설정된 동네를 변경하시겠습니까?"
+        )
+      ) {
+        setPrevAddrKey(addrKey);
+        setLocationOpen(true);
+      }
+      return;
+    }
+
+    if (confirm("'" + reg3 + "'을 삭제하시겠습니까?")) {
+      axios({
+        url: "/address/deleteAddress",
+        method: "get",
+        params: {
+          addresskey: addrKey,
+          isselected: isselected,
+          userkey: decodeURIComponent(Cookies.get("userkey")),
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if (res.data.issuccess <= 0)
+          alert("삭제에 실패했습니다. 다시 시도해주세요.");
+        else {
+          router.push("/");
+          window.location.href = "/";
+        }
+      });
+    }
+  }
+  // #endregion
+
+  // #region 민호-게시글검색
+  const [txtSearchPost, setTxtSearchPost] = useState("");
+
+  function searchPost() {
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    params.delete("search");
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    newUrl += "&search=" + txtSearchPost;
+
+    // 페이지 이동
+    router.push(newUrl);
+    window.location.href = newUrl;
+  }
+
+  function delTxtSearchPost() {
+    setTxtSearchPost("");
   }
   // #endregion
 
@@ -253,7 +484,10 @@ export default function Header() {
         Cookies.remove("next-auth.session-token");
         Cookies.remove("next-auth.csrf-token");
 
-        signOut({ callbackUrl: "/" });
+
+        signOut({ redirect: false });
+        window.location.href = "/";
+
       }
     });
   }
@@ -277,7 +511,7 @@ export default function Header() {
       },
     }).then((res) => {
       if (res.data.cnt === 1) {
-        window.location.reload(); //현재 경로 재로드
+        window.location.href = "/";
       } else {
         alert(res.data.msg);
       }
@@ -304,7 +538,9 @@ export default function Header() {
   const kakao_login = async (e) => {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
-    signIn("kakao", { callbackUrl: "/user/kakao/login" });
+    signIn("kakao", {
+      callbackUrl: "http://localhost:8080/user/api/kakao/login",
+    });
   };
   const [chk, setChk] = useState(true);
   useEffect(() => {
@@ -315,7 +551,7 @@ export default function Header() {
     }
   }, [session]);
 
-  const kakao_url = "/user/kakao/login";
+  const kakao_url = "/user/api/kakao/login";
   // kakao controller에 데이터 전달
   const goController = async () => {
     if (session && session.user) {
@@ -325,6 +561,7 @@ export default function Header() {
         params: {
           nickname: session.user.name,
           email: session.user.email,
+          imgurl: session.user.image,
         },
         withCredentials: true,
         headers: {
@@ -333,11 +570,13 @@ export default function Header() {
       }).then((res) => {
         if (res.data.cnt === 1) {
           alert("로그인 성공!");
+          setAccessToken(Cookies.get("accessToken"));
+          setChk(false);
+          //window.location.href = "/";
         } else {
           alert("로그인에 실패하였습니다.");
         }
       });
-      setChk(false);
     }
   };
   // #endregion
@@ -354,25 +593,16 @@ export default function Header() {
                 href="/"
                 className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9yw"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="95"
-                  fill="none"
-                  viewBox="0 0 300 114"
-                >
-                  <path
-                    fill="#FF6F0F"
-                    d="M149.339 86.474v-4.89l-.3-.115c-2.755 3.25-6.825 6-12.335 6-11.525 0-20.545-9.315-20.545-21.825s8.85-21.79 20.375-21.79a16.16 16.16 0 0 1 12.5 6l.3-.11v-4.92h10.965v41.65zm-21.84-20.84c0 6.365 4.715 11.93 11.29 11.93 6.41 0 11.085-5.35 11.085-11.93s-4.675-11.725-11.085-11.725c-6.6 0-11.29 5.36-11.29 11.725M272.468 65.634c0 12.555-9.555 21.825-22.54 21.825s-22.43-9.27-22.43-21.825 9.5-21.79 22.455-21.79 22.515 9.235 22.515 21.79m-33.5 0c0 6.94 4.66 12.385 11 12.385s11-5.445 11-12.385-4.66-12.365-11-12.365-11.02 5.425-11.02 12.365zM286.677 54.309v17.805c0 3.835 2.76 5.325 5.235 5.54a13.34 13.34 0 0 0 7.825-1.58l.26 9.63a24.5 24.5 0 0 1-10.47 1.735c-8.88-.5-14.105-4.725-14.105-14.07V37.054l11.255-3.685v11.455h12.105v9.5zM194.334 44.629l-.245 11.645a17.35 17.35 0 0 0-7.961-1.275c-4.45.355-8.365 2.265-8.365 8.455v23.02h-11.33v-41.65h11v6.59l.33.08c1.785-3.56 5.085-7 10.91-7.605 1.919-.208 3.86.046 5.661.74M226.913 44.629l-.245 11.645a17.4 17.4 0 0 0-7.965-1.275c-4.445.355-8.36 2.265-8.36 8.455v23.02h-11.345v-41.65h11v6.59l.33.08c1.785-3.56 5.09-7 10.915-7.605a12.14 12.14 0 0 1 5.67.74"
-                  ></path>
-                  <path
-                    fill="#FF6F0F"
-                    d="M105.584 86.474h14.766L100.964 63.72c6.66-3.37 14.116-10.795 16.856-18.91h-13.416c-2.64 6.545-7.595 12.445-14.5 14.5l-.2-.13V27.474H78.5v59h11.2v-18.95h.29zM29.24 36.869C13.09 36.869 0 49.684 0 65.833c0 22.325 29.32 34.175 29.24 34.14S58.5 88.158 58.5 65.833c0-16.15-13.115-28.964-29.26-28.964m0 40.684a11.07 11.07 0 1 1-.01-22.138 11.07 11.07 0 0 1 .01 22.138"
-                  ></path>
-                  <path
-                    fill="#00A05B"
-                    d="M35.82-.026c-6.825 0-11.575 4.77-12.32 10.38-9.1-2.5-16.23 4.385-16.23 12 0 5.82 4 10.525 9.335 12.05 4.3 1.225 12.045.315 12.045.315-.04-1.885 1.69-3.95 4.365-5.83 7.595-5.345 13.54-7.86 14.46-15.15.96-7.605-4.7-13.765-11.655-13.765"
-                  ></path>
-                </svg>
+                <img
+                  src="/img/orange_logo3.png"
+                  alt="당근마켓 로고"
+                  style={{ width: "30px", height: "auto" }}
+                /><br/>
+                <img
+                  src="/img/orange_text_logo3.png"
+                  alt="당근마켓 로고"
+                  style={{ width: "70px", height: "auto" }}
+                />
               </Link>
             </div>
             <div>
@@ -420,6 +650,7 @@ export default function Header() {
             className="_1a7kymoh _1h4pbgy89k _1h4pbgy8eg _1h4pbgya0o _1h4pbgy9ug _1h4pbgy8jc _1a7kymog"
             data-expanded="true"
           >
+            {/* #region 동네설정 */}
             <div className="_1h4pbgy9u0 _1h4pbgy9ub _1h4pbgy8bk">
               <Button
                 id="demo-customized-button"
@@ -448,7 +679,9 @@ export default function Header() {
                 userAddress != "undefined" &&
                 userAddress.length > 0
                   ? userAddress[0].tvo.region3
-                  : "동네설정"}
+                  : region3 != ""
+                    ? region3
+                    : "동네설정"}
               </Button>
               <StyledMenu
                 id="demo-customized-menu"
@@ -459,20 +692,109 @@ export default function Header() {
                 open={locationMenuOpen}
                 onClose={locationMenuClose}
               >
-                <MenuItem onClick={locationMenuClose} disableRipple>
-                  Edit
-                </MenuItem>
-                <MenuItem onClick={locationMenuClose} disableRipple>
-                  Duplicate
-                </MenuItem>
-                <Divider sx={{ my: 0.5 }} />
-                <MenuItem onClick={() => setLocationOpen(true)} disableRipple>
+                {userAddress != null &&
+                  userAddress !== "undefined" &&
+                  userAddress.length > 0 && [
+                    ...userAddress.map((addr, i) => (
+                      <MenuItem
+                        data-modal="false"
+                        key={addr.addresskey}
+                        onClick={(e) =>
+                          changeLoc(
+                            addr.addresskey,
+                            addr.tvo.region1,
+                            addr.tvo.region2,
+                            addr.tvo.region3,
+                            addr.isselected,
+                            ""
+                          )
+                        }
+                        disableRipple
+                      >
+                        {/* 왼쪽에 [대표] 표시 */}
+                        {addr.isselected == 1 ? (
+                          <Typography
+                            sx={{ marginRight: "8px", color: "blue" }}
+                          >
+                            [대표]
+                          </Typography>
+                        ) : (
+                          <Typography
+                            sx={{ marginRight: "8px", visibility: "hidden" }}
+                          >
+                            [대표]
+                          </Typography>
+                        )}
+                        {addr.tvo.region3}
+
+                        {/* 오른쪽에 [수정] 버튼 */}
+                        <IconButton
+                          edge="end"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation(); // 부모 MenuItem의 onClick을 막음
+                            setPrevAddrKey(addr.addresskey);
+                            setPrevTown(addr.tvo);
+                            setLocationOpen(true);
+                          }}
+                          sx={{ marginLeft: "auto" }} // 자동으로 오른쪽 정렬
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        {/* 오른쪽에 [삭제] 버튼 */}
+                        <IconButton
+                          edge="end"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation(); // 부모 MenuItem의 onClick을 막음
+                            setPrevTown(addr.tvo);
+                            deleteAddress(
+                              addr.addresskey,
+                              addr.tvo.region3,
+                              addr.isselected
+                            ); // 삭제 핸들러 호출
+                          }}
+                          sx={{ marginLeft: "auto" }} // 자동으로 오른쪽 정렬
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </MenuItem>
+                    )),
+                    userAddress.length === 1 && (
+                      <MenuItem
+                        key="add"
+                        onClick={() => {
+                          setLocationOpen(true);
+                        }}
+                        disableRipple
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <Typography>+ 추가</Typography>
+                        </Box>
+                      </MenuItem>
+                    ),
+                    // <Divider key="divider" sx={{ my: 0.5 }} />,
+                    // 추가 버튼 조건부 렌더링
+                  ]}
+                {/* <MenuItem onClick={() => setLocationOpen(true)} disableRipple>
                   내 동네 설정
-                </MenuItem>
+                </MenuItem> */}
               </StyledMenu>
             </div>
+            {/* #endregion 동네설정 끝 */}
             <div className="_1h4pbgy9w0 _1h4pbgy8jc _1h4pbgya2z">
-              <form action="/us/buy-sell/all/">
+              <form action={searchPost}>
                 <div className="_1h4pbgya0o">
                   <input
                     className="_1wcdkwr0 _1wcdkwr1"
@@ -480,11 +802,54 @@ export default function Header() {
                     aria-label="검색 입력"
                     placeholder="무엇을 찾고 계신가요?"
                     name="search"
+                    value={txtSearchPost}
+                    onChange={(e) => setTxtSearchPost(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); // 기본 Enter 동작 방지
+                        searchPost(); // 검색 함수 호출
+                      }
+                    }}
                   />
+                  {txtSearchPost != "" && (
+                    <button
+                      className="_1wcdkwr3 _1h4pbgy7cg _1h4pbgy7h4 _1h4pbgy7ls _1h4pbgy7qg _1h4pbgya0w _1h4pbgy9dc _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy9yw _1h4pbgy7s"
+                      type="button"
+                      aria-label="Reset search results"
+                      onClick={delTxtSearchPost}
+                    >
+                      <span
+                        class="_1wcdkwr4 _1h4pbgy7s"
+                        data-seed-icon="icon_remove_circle_fill"
+                        data-seed-icon-version="0.2.1"
+                        style={{ display: "inline-flex" }}
+                      >
+                        <svg
+                          id="icon_remove_circle_fill"
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          data-karrot-ui-icon="true"
+                        >
+                          <g>
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM9.18446 8.26829C8.93134 8.01517 8.52096 8.01517 8.26784 8.26829C8.01472 8.52141 8.01472 8.93179 8.26784 9.18491L11.0832 12.0002L8.26784 14.8156C8.01472 15.0687 8.01472 15.4791 8.26784 15.7322C8.52096 15.9853 8.93134 15.9853 9.18446 15.7322L11.9998 12.9169L14.8151 15.7322C15.0682 15.9853 15.4786 15.9853 15.7317 15.7322C15.9849 15.4791 15.9849 15.0687 15.7317 14.8156L12.9164 12.0002L15.7317 9.18491C15.9849 8.93179 15.9849 8.52141 15.7317 8.26829C15.4786 8.01517 15.0682 8.01517 14.8151 8.26829L11.9998 11.0836L9.18446 8.26829Z"
+                              fill="currentColor"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                    </button>
+                  )}
                   <button
                     type="submit"
                     aria-label="찾다"
                     className="_1wcdkwr5 _1h4pbgy7cg _1h4pbgy7h4 _1h4pbgy7ls _1h4pbgy7qg _1h4pbgya0w _1h4pbgy9dc _1h4pbgy9ps _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9xc _1h4pbgy1qe _1h4pbgy94o _1h4pbgy9yw"
+                    onClick={searchPost}
                   >
                     <span
                       style={{ display: "inline-flex" }}
@@ -522,160 +887,24 @@ export default function Header() {
                         <font>인기 검색어</font>
                       </div>
                       <ul className="_1h4pbgy9ug _1h4pbgy9wo">
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=bike"
-                          >
-                            <font>
-                              <font>자전거</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=couch"
-                          >
-                            <font>
-                              <font>침상</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=sofa"
-                          >
-                            <font>
-                              <font>소파</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=dining+table"
-                          >
-                            <font>
-                              <font>식탁</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=tv"
-                          >
-                            <font>
-                              <font>TV</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=mirror"
-                          >
-                            <font>
-                              <font>거울</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=portable+air+conditioner"
-                          >
-                            <font>
-                              <font>휴대용 에어컨</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=desk"
-                          >
-                            <font>
-                              <font>책상</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=iphone"
-                          >
-                            <font>
-                              <font>아이폰</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=stroller"
-                          >
-                            <font>
-                              <font>유모차</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=bed"
-                          >
-                            <font>
-                              <font>침대</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=ikea"
-                          >
-                            <font>
-                              <font>이케아</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=tv+stand"
-                          >
-                            <font>
-                              <font>TV 스탠드</font>
-                            </font>
-                          </Link>
-                        </li>
-                        <li className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf">
-                          <Link
-                            data-gtm="gnb_popular_keyword"
-                            className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
-                            href="/buy-sell/all/?in=manhattan-7426&amp;search=cars+for+sale"
-                          >
-                            <font>
-                              <font>판매용 자동차</font>
-                            </font>
-                          </Link>
-                        </li>
+                        {searchlog &&
+                          searchlog.map((log, i) => {
+                            return (
+                              <li
+                                key={i}
+                                className="_1a7kymor _1h4pbgy8b4 _1h4pbgy8bf"
+                              >
+                                <Link
+                                  data-gtm="gnb_popular_keyword"
+                                  className="_1a7kymos _1h4pbgy7nc _1h4pbgy7lv _1h4pbgy7s0 _1h4pbgy7qj _1h4pbgy8g _1h4pbgy7v _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy76o _1h4pbgy8rk _1h4pbgy8qr _1h4pbgy9yw _1h4pbgy67s _1h4pbgy76b _1h4pbgy95k _1h4pbgy93v"
+                                  href="#"
+                                  onClick={() => goSearchPost(log)}
+                                >
+                                  <font>{log}</font>
+                                </Link>
+                              </li>
+                            );
+                          })}
                       </ul>
                     </div>
                   </div>
@@ -704,6 +933,11 @@ export default function Header() {
               // 예: axios를 사용한 로그인 요청 보내기
 
               handleClose();
+            },
+            style: {
+              maxWidth: "500px", // 모달 창의 최대 너비를 설정
+              width: "90%", // 뷰포트의 90% 너비를 차지하도록 설정
+              margin: "0 auto", // 가운데 정렬
             },
           }}
         >
@@ -736,10 +970,11 @@ export default function Header() {
             </Button>
 
             <img
-              src="/img/karrot.png"
+              src="/img/orange_logo2.png"
               alt="당근마켓 로고"
-              style={{ marginTop: "20px", width: "100px" }}
+              style={{ marginTop: "20px", width: "70px" }}
             />
+           
             <div
               style={{ fontWeight: "bold", fontSize: "25px", color: "#FF6F0F" }}
             >
@@ -759,7 +994,7 @@ export default function Header() {
                 width: "100%",
                 padding: "10px 0",
                 marginBottom: "12px",
-              }} // 회색 카카오톡 버튼
+              }}
             >
               <img
                 src="/img/kakao.png"
@@ -789,59 +1024,50 @@ export default function Header() {
                 or
               </span>
             </div>
-            <FormControl
-              fullWidth
-              margin="dense"
-              variant="standard"
-              style={{ marginBottom: "4px" }}
-            >
-              <TextField
-                autoFocus
-                required
-                margin="dense"
+            {/* 아이디 입력 필드 */}
+            <div style={{ marginBottom: "12px" }}>
+              <input
+                type="text"
                 id="id"
                 name="id"
-                label="아이디"
-                type="text"
-                fullWidth
-                size="small"
-                onChange={handleChange}
-                InputProps={{
-                  style: {
-                    outline: "none",
-                    boxShadow: "none",
-                  },
-                  disableUnderline: true,
+                placeholder="아이디"
+                required
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  boxSizing: "border-box",
+                  fontSize: "14px",
+                  outline: "none",
                 }}
+                onChange={handleChange}
                 onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
                 onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
               />
-            </FormControl>
-            <FormControl
-              fullWidth
-              margin="dense"
-              variant="standard"
-              style={{ marginBottom: "4px" }}
-            >
-              <TextField
-                required
-                margin="dense"
+            </div>
+            {/* 비밀번호 입력 필드 */}
+            <div style={{ marginBottom: "12px" }}>
+              <input
+                type="password"
                 id="pw"
                 name="pw"
-                label="비밀번호"
-                type="password"
-                fullWidth
-                size="small"
-                onChange={handleChange}
-                InputProps={{
-                  style: {
-                    outline: "none",
-                    boxShadow: "none",
-                  },
-                  disableUnderline: true,
+                placeholder="비밀번호"
+                required
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  boxSizing: "border-box",
+                  fontSize: "14px",
+                  outline: "none",
                 }}
+                onChange={handleChange}
+                onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
+                onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
               />
-            </FormControl>
+            </div>
           </DialogContent>
           <DialogActions
             style={{ justifyContent: "center", paddingTop: "12px" }}
@@ -852,7 +1078,7 @@ export default function Header() {
               style={{
                 backgroundColor: "#FF6F0F",
                 color: "#fff",
-                width: "80%",
+                width: "93%",
                 padding: "10px 0",
               }}
             >
@@ -921,12 +1147,12 @@ export default function Header() {
               >
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
-                  placeholder="구명으로 검색 (ex. 서초구)"
-                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="동명(읍, 면)으로 검색 (ex. 서초동)"
+                  onChange={(e) => setSearchLoc(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault(); // 기본 Enter 동작 방지
-                      //searchNotice(); // 검색 함수 호출
+                      searchLocation(); // 검색 함수 호출
                     }
                   }}
                 />
@@ -934,37 +1160,84 @@ export default function Header() {
                   type="button"
                   sx={{ p: "10px" }}
                   aria-label="search"
-                  //onClick={searchNotice}
+                  onClick={searchLocation}
                 >
                   <SearchIcon />
                 </IconButton>
               </Paper>
             </FormControl>
             <FormControl fullWidth margin="dense">
-              <Button variant="outlined" startIcon={<MyLocationIcon />}>
+              <Button
+                onClick={(e) => getLocation(e)}
+                variant="outlined"
+                startIcon={<MyLocationIcon />}
+              >
                 현재위치로 찾기
               </Button>
             </FormControl>
             <FormControl fullWidth margin="dense">
+              동네
               <List
                 sx={{
                   overflow: "auto",
                   maxHeight: 300,
                 }}
               >
-                {[0, 1, 2, 3, 4].map((sectionId, i) => (
-                  <div key={`item-${sectionId}-hihi`}>
-                    <ListItem>
-                      <ListItemText primary="hihi" />
-                    </ListItem>
-                    <ListDivider inset="gutter" />
+                {searchHere && searchHere.length > 0 ? (
+                  <div>
+                    {searchHere.map((loc, i) => {
+                      return (
+                        <div key={i}>
+                          <ListItem
+                            button
+                            onClick={(e) =>
+                              changeLoc(
+                                prevAddrKey,
+                                loc.region1,
+                                loc.region2,
+                                loc.region3,
+                                0,
+                                loc
+                              )
+                            }
+                          >
+                            <ListItemText
+                              primary={
+                                loc.region1
+                                  ? loc.region1 +
+                                    " " +
+                                    loc.region2 +
+                                    " " +
+                                    loc.region3
+                                  : loc.join(" ")
+                              }
+                            />
+                          </ListItem>
+                          <ListDivider inset="gutter" />
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "150px", // 원하는 높이로 조절
+                      width: "100%",
+                      padding: "20px", // 내부 여백 추가
+                      boxSizing: "border-box", // 패딩 포함 크기 조절
+                    }}
+                  >
+                    <span>검색 결과 없음</span>
+                  </div>
+                )}
               </List>
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button type="submit">선택 완료</Button>
+            {/* <Button type="submit">선택 완료</Button> */}
             <Button onClick={locationClose}>취소</Button>
           </DialogActions>
         </Dialog>

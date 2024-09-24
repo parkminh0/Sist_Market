@@ -18,4 +18,7 @@ public interface TownMapper {
     TownVO searchTownByKey(int key);
 
     List<String> searchTownByRegion(Map<String, Object> map);
+
+    List<TownVO> getNearTown(String region1, String region2);
+
 }

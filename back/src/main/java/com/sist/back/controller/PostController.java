@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
+import com.sist.back.service.SearchlogService;
 import com.sist.back.service.TownService;
 import com.sist.back.service.OfferService;
 import com.sist.back.service.WishlistService;
@@ -57,6 +58,9 @@ public class PostController {
 
     @Autowired
     WishlistService w_service;
+
+    @Autowired
+    SearchlogService searchlogService;
 
     @Value("${server.upload.post.image}")
     private String postImgPath;
@@ -366,14 +370,23 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String userkey, String lastPostKey, String loc1, String[] loc2, String sort,
+    public Map<String, Object> search(String userkey, String onsale, String search, String lastPostKey, String loc1,
+            String[] loc2,
+            String sort,
             String category,
             String minPrice,
             String maxPrice) {
         int howManyPost = 15;
         Map<String, Object> res = new HashMap<>();
-        PostVO[] ar = p_service.search(userkey, lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice,
+        PostVO[] ar = p_service.search(userkey, onsale, search, lastPostKey, howManyPost, loc1, loc2, sort, category,
+                minPrice,
                 maxPrice);
+
+        // 검색어 저장
+        if (search != null && !search.equals("") && !search.trim().equals("")) {
+            searchlogService.addSearchlog(search);
+        }
+
         String lastKey = null;
         try {
             lastKey = ar[ar.length - 1].getPostkey();
@@ -385,10 +398,20 @@ public class PostController {
         return res;
     }
 
+    // 사용자 - 임시저장 게시글 불러오기
+    @GetMapping("/searchTemp")
+    public Map<String, Object> searchTemp(String userkey) {
+        Map<String, Object> res = new HashMap<>();
+        PostVO vo = p_service.searchTemp(userkey);
+
+        res.put("res_searchTemp", vo);
+
+        return res;
+    }
+
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
-    public Map<String, Object> main() {
-
+    public Map<String, Object> main(String region1, String region2) {
         categoryVO[] c_list = categoryService.all();
         // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
         List<Integer> randomCategories = new ArrayList<>();
@@ -405,12 +428,12 @@ public class PostController {
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
         // 배열을 리스트로 변환하여 할당
-        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0))));
-        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1))));
-        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2))));
+        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0)), region1, region2));
+        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1)), region1, region2));
+        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2)), region1, region2));
 
         Map<String, Object> res = new HashMap<>();
-        res.put("free_list", p_service.main("free"));
+        res.put("free_list", p_service.main("free", region1, region2));
         res.put("cate_list", tmp);
         return res;
     }
@@ -425,4 +448,12 @@ public class PostController {
         return map;
     }
 
+    @RequestMapping("/hidePost")
+    @ResponseBody
+    public Map<String, Object> hidePost(String postkey) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = p_service.hidePost(postkey);
+        map.put("cnt", cnt);
+        return map;
+    }
 }

@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.PostMapper;
-
-import com.sist.back.vo.ChatroomVO;
+import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
@@ -53,7 +52,7 @@ public class PostService {
         return p_mapper.getOfferByPostKey(postkey);
     }
 
-    public List<ChatroomVO> getChatroomByPostKey(int postkey) {
+    public List<ChatRoomVO> getChatroomByPostKey(int postkey) {
         return p_mapper.getChatroomByPostKey(postkey);
     }
 
@@ -109,10 +108,14 @@ public class PostService {
         return p_mapper.deletePostImg(postkey);
     }
 
-    public PostVO[] search(String userkey, String lastPostKey, int howManyPost, String loc1, String[] loc2, String sort,
+    public PostVO[] search(String userkey, String onsale, String search, String lastPostKey, int howManyPost,
+            String loc1,
+            String[] loc2, String sort,
             String category, String minPrice, String maxPrice) {
         Map<String, Object> map = new HashMap<>();
         map.put("userkey", userkey);
+        map.put("onsale", onsale);
+        map.put("search", search);
         map.put("lastPostKey", lastPostKey);
         map.put("howManyPost", howManyPost);
         map.put("loc1", loc1);
@@ -131,8 +134,13 @@ public class PostService {
         return ar;
     }
 
-    public PostVO[] main(String param) {
-        return p_mapper.main(param);
+    // 임시저장 게시글
+    public PostVO searchTemp(String userkey) {
+        return p_mapper.searchTemp(userkey);
+    }
+
+    public PostVO[] main(String param, String region1, String region2) {
+        return p_mapper.main(param, region1, region2);
     }
 
     public PostCountVO postForPostAdmin() {
@@ -153,4 +161,7 @@ public class PostService {
         return p_mapper.pImg_list(postkey); // PostMapper에서 pImg_list 메서드 호출
     }
 
+    public int hidePost(String postkey) {
+        return p_mapper.hidePost(postkey);
+    }
 }

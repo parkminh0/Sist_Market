@@ -166,7 +166,7 @@ export default function Page() {
 
   return (
     <div className={styles.signupContainer}>
-      <h1 className={styles.title}>Join Us</h1>
+      <h1 className={styles.title}>회원가입</h1>
       
       <form className={styles.form}>
         <div className={styles.inputGroup}>
@@ -176,7 +176,7 @@ export default function Page() {
             id="id" 
             name="id" 
             className={styles.input} 
-            placeholder="Enter your ID" 
+            placeholder="아이디를 입력하세요." 
             value={id}
             onChange={(e) => setId(e.target.value)}
           />
@@ -193,7 +193,7 @@ export default function Page() {
             id="pw" 
             name="pw" 
             className={styles.input} 
-            placeholder="Enter your password" 
+            placeholder="비밀번호를 입력하세요." 
             value={pw}
             onChange={pwChange} 
           />
@@ -206,7 +206,7 @@ export default function Page() {
             id="confirmPassword" 
             name="confirmPassword" 
             className={styles.input} 
-            placeholder="Confirm your password" 
+            placeholder="비밀번호를 확인하세요." 
             value={confirmPw}
             onChange={confirmPwChange} 
           />
@@ -219,7 +219,7 @@ export default function Page() {
             id="name" 
             name="name" 
             className={styles.input} 
-            placeholder="Enter your name" 
+            placeholder="이름을 입력하세요." 
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -232,7 +232,7 @@ export default function Page() {
             id="nickname" 
             name="nickname" 
             className={styles.input} 
-            placeholder="Enter your nickname" 
+            placeholder="닉네임을 입력하세요." 
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
           />
@@ -245,7 +245,7 @@ export default function Page() {
             id="phone" 
             name="phone" 
             className={styles.input} 
-            placeholder="Enter your phone number" 
+            placeholder="전화번호를 입력하세요." 
             value={phone}
             onChange={handlePhoneChange}
             ref={phoneInputRef}
@@ -262,7 +262,7 @@ export default function Page() {
             id="email" 
             name="email" 
             className={styles.input} 
-            placeholder="Enter your email" 
+            placeholder="이메일을 입력하세요." 
             value={email}
             onChange={handleEmailChange}
             ref={emailInputRef}
@@ -272,12 +272,9 @@ export default function Page() {
           </button> 
         </div>
 
-        <button type="button" onClick={signup} className={styles.signupButton}>Sign Up</button>
+        <button type="button" onClick={signup} className={styles.signupButton}>회원가입</button>
       </form>
 
-      <p className={styles.footerText}>
-        Already have an account? <Link href="/login" className={styles.link}>Log in</Link>
-      </p>
     </div>
   );
 }

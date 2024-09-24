@@ -151,30 +151,46 @@ export default function Page() {
   };
 
   const phoneChange = (e) => {
-    let input = e.target.value.replace(/[^0-9]/g, ''); //숫자만 남기기
+    // let input = e.target.value.replace(/[^0-9]/g, ''); //숫자만 남기기
+    
+    const check = /[0-9]/g;
+    if(check.test(e.nativeEvent.data)||e.nativeEvent.inputType!="inputText"){
+      let input = e.target.value;
 
-    //'010-' 부분이 지워지지 않도록 강제
-    if (input.startsWith('010')) {
-        //010 이후의 번호만 처리
-        if (input.length <= 7) {
-            input = input.replace(/(\d{3})(\d{1,4})/, '010-$2'); //010-XXXX
-        } else {
-            input = input.replace(/(\d{3})(\d{4})(\d{1,4})/, '010-$2-$3'); //010-XXXX-XXXX
-        }
-    } else {
-        input = '010'; //'010'까지만 유지하고 '-'는 추가하지 않음
+      //'010-' 부분이 지워지지 않도록 강제
+      if (input.startsWith('010')) {
+          //010 이후의 번호만 처리
+          if (input.length <= 7) {
+              input = input.replace(/(\d{3})(\d{1,4})/, '010-$2'); //010-XXXX
+          } else {
+              input = input.replace(/(\d{3})(\d{4})(\d{1,4})/, '010-$2-$3'); //010-XXXX-XXXX
+          }
+      } else {
+          input = '010'; //'010'까지만 유지하고 '-'는 추가하지 않음
+      }
+      setPhone(input.slice(0, 13)); //최대 13자까지만 설정
     }
-    setPhone(input.slice(0, 13)); //최대 13자까지만 설정
   };
 
+  // useEffect(() => {
+  //   if (phone && phone.length === 10) {
+  //     setPhone(phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'));
+  //   }
+  //   if (phone && phone.length === 13) {
+  //     setPhone(phone.replace(/-/g, '').replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3'));
+  //   }
+  // }, [phone]);
+  
+
   useEffect(() => {
-    if (phone.length === 10) {
-        setPhone(phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'));
+    if (phone && phone.length === 10) {
+      setPhone(phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'));
     }
-    if (phone.length === 13) {
-        setPhone(phone.replace(/-/g, '').replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3'));
+    if (phone && phone.length === 13) {
+      setPhone(phone.replace(/-/g, '').replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3'));
     }
   }, [phone]);
+  
 
   function changeUser(key, value) {
     axios({
@@ -325,7 +341,9 @@ export default function Page() {
                       이름
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <TextField id="standard-basic2" defaultValue={uvo.name} variant="standard" placeholder={uvo.name ? `${uvo.name}` : ''} style={{ flex: '0 0 90%' }} disabled />
+                      <TextField
+                        value={uvo.name === null || uvo.name === '' ? 'SNS 로그인 회원' : uvo.name}
+                        variant="standard" placeholder={uvo.name ? `${uvo.name}` : ''} style={{ flex: '0 0 90%' }} disabled />
                       <div style={{ flex: '0 0 10%' }}></div>
                     </div>
                   </div>
@@ -372,10 +390,10 @@ export default function Page() {
                       새 비밀번호
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="newPw" type="password" value={pw} onChange={pwChange} variant="standard" style={{ flex: '0 0 90%' }} />
-                      <div style={{ flex: '0 0 10%' }}></div>
+                    <TextField value={pw} variant="standard" placeholder={uvo.pw === null ? 'SNS 로그인 회원' : ''}
+                            style={{ flex: '0 0 90%' }} disabled={uvo.pw === null} type="password" onChange={pwChange}/>
+                       <div style={{ flex: '0 0 10%' }}></div>
                     </div>
-
                     <h5 data-v-0c9f3f9e="" className="title" style={{marginTop: '10px'}}>
                       비밀번호 확인
                       <span style={{ color: pwMatch == '[일치]' ? 'blue' : pwMatch == '[불일치]' ? 'red' : 'inherit' }}>
@@ -383,7 +401,8 @@ export default function Page() {
                       </span>
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField id="confirmPw" type="password" value={confirmPw} onChange={confirmPwChange} variant="standard" style={{ flex: '0 0 90%' }} />
+                    <TextField id="confirmPw" value={confirmPw} variant="standard" placeholder={uvo.pw === null ? 'SNS 로그인 회원' : ''}
+                            style={{ flex: '0 0 90%' }} disabled={uvo.pw === null} type="password" onChange={confirmPwChange}/>
                       <div style={{ flex: '0 0 2%' }}></div>
                       <Button variant="outlined" style={{ flex: '0 0 3%' }} onClick={() => changeUser('pw', pw)} disabled={pwMatch !== '[일치]'}>변경</Button>
                     </div>
@@ -399,7 +418,7 @@ export default function Page() {
                       휴대폰 번호
                     </h5>
                     <div data-v-0c9f3f9e="" className="unit_content" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <TextField value={phone} onChange={phoneChange} variant="standard" placeholder="010-0000-0000" 
+                      <TextField value={phone} onChange={phoneChange} variant="standard" placeholder={phone === null || phone === '' ? '휴대폰 번호를 입력해주세요' : ''}
                                 style={{ flex: '0 0 90%' }} />
                       <div style={{ flex: '0 0 2%' }}></div>
                       <Button variant="outlined" style={{ flex: '0 0 3%' }} onClick={() => changeUser('phone', phone)} disabled={phone === uvo.phone || phone.length !== 13}>

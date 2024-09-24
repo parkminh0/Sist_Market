@@ -53,6 +53,19 @@
           region2
     </select>
 
+    <select id="getNearTown" parameterType="map" resultType="com.sist.back.vo.TownVO">
+      SELECT * FROM `town`
+      WHERE 1 = 1
+      <if test="region1 != ''">
+      AND region1 = #{region1}
+      AND region2 = #{region2}
+      </if>
+      <if test="region1 == null or region1 == ''">
+      AND (region2 LIKE CONCAT('%', #{region2}, '%') or region3 LIKE CONCAT('%', #{region2}, '%'))
+      </if>
+      ORDER BY region2, region3
+    </select>
+
     <!-- <select id="searchNearRegion" resultType="String" parameterType="map">
       SELECT DISTINCT
         region2
