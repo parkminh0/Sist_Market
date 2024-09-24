@@ -30,25 +30,13 @@ export default function Footer() {
           <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9vn">
             <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy834 _1h4pbgy9w0">
               <div className="_1h4pbgy828">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="78"
-                  fill="none"
-                  viewBox="0 0 300 100"
-                >
-                  <path
-                    fill="#FF6F0F"
-                    d="M149.338 86.5v-4.89l-.3-.116c-2.755 3.25-6.825 6-12.335 6-11.525 0-20.545-9.315-20.545-21.825s8.85-21.79 20.375-21.79a16.16 16.16 0 0 1 12.5 6l.3-.11v-4.92h10.965V86.5zm-21.84-20.84c0 6.364 4.715 11.93 11.29 11.93 6.41 0 11.085-5.35 11.085-11.93s-4.675-11.726-11.085-11.726c-6.6 0-11.29 5.36-11.29 11.725M272.466 65.66c0 12.554-9.555 21.824-22.54 21.824s-22.43-9.27-22.43-21.825 9.5-21.79 22.455-21.79 22.515 9.235 22.515 21.79m-33.5 0c0 6.94 4.66 12.384 11 12.384s11-5.445 11-12.385-4.66-12.365-11-12.365-11.02 5.425-11.02 12.365zM286.675 54.334V72.14c0 3.836 2.76 5.325 5.235 5.54a13.34 13.34 0 0 0 7.825-1.58l.26 9.63a24.5 24.5 0 0 1-10.47 1.735c-8.88-.5-14.105-4.725-14.105-14.07V37.08l11.255-3.685V44.85h12.105v9.5zM194.332 44.654l-.245 11.645a17.34 17.34 0 0 0-7.96-1.275c-4.45.355-8.365 2.265-8.365 8.455V86.5h-11.33V44.85h11v6.59l.33.08c1.785-3.56 5.085-7 10.91-7.605a12.1 12.1 0 0 1 5.66.74M226.912 44.654l-.245 11.645a17.4 17.4 0 0 0-7.965-1.275c-4.445.355-8.36 2.265-8.36 8.455V86.5h-11.345V44.85h11v6.59l.33.08c1.785-3.56 5.09-7 10.915-7.605a12.14 12.14 0 0 1 5.67.74"
-                  ></path>
-                  <path
-                    fill="#FF6F0F"
-                    d="M105.584 86.5h14.765l-19.385-22.755c6.66-3.37 14.115-10.795 16.855-18.91h-13.415c-2.64 6.544-7.595 12.444-14.5 14.5l-.2-.13V27.5H78.499v59h11.2V67.55h.29zM29.24 36.894C13.09 36.894 0 49.71 0 65.86c0 22.325 29.32 34.174 29.24 34.14-.08-.036 29.259-11.815 29.259-34.14 0-16.15-13.115-28.965-29.26-28.965m0 40.685a11.07 11.07 0 1 1-.01-22.139 11.07 11.07 0 0 1 .01 22.139"
-                  ></path>
-                  <path
-                    fill="#00A05B"
-                    d="M35.82 0C28.995 0 24.245 4.77 23.5 10.38c-9.1-2.5-16.23 4.385-16.23 12 0 5.82 4 10.525 9.335 12.05 4.3 1.225 12.045.315 12.045.315-.04-1.885 1.69-3.95 4.365-5.83 7.595-5.345 13.54-7.86 14.46-15.15C48.435 6.16 42.775 0 35.82 0"
-                  ></path>
-                </svg>
+               
+                  <img
+                    src="/img/Orange_logo_final.png"
+                    alt="당근마켓 로고"
+                    style={{ width: "100px", height: "auto" }}
+                  />
+                
               </div>
               <div className="_1h4pbgy9ug">
                 <Link
@@ -121,7 +109,7 @@ export default function Footer() {
               <div className="dmu53n2">
                 <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
                   <font>
-                    <font>쌍용마켙</font>
+                    <font>오렌지마켙</font>
                   </font>
                 </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9vs">
@@ -148,7 +136,7 @@ export default function Footer() {
 
               <div className="dmu53n2">
               <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
-                <font>쌍용소식</font>
+                <font>오렌지소식</font>
               </div>
               <div className="_1h4pbgy9ug _1h4pbgy9vs">
                 {bclist.length > 0 ? (
@@ -179,8 +167,7 @@ export default function Footer() {
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/wv/faqs?kind=trading_buying"
-                    target="_blank"
+                    href="/customer"
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -190,8 +177,8 @@ export default function Footer() {
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/wv/faqs?kind=trading_selling"
-                    target="_blank"
+                    href="/customer/question"
+                   
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -210,8 +197,7 @@ export default function Footer() {
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/wv/faqs"
-                    target="_blank"
+                    href="/Board/terms"
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -219,10 +205,9 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
+                    href={{ pathname: '/Board/terms', query: { term: '개인정보 처리방침' } }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="mailto:help@karrotmarket.com"
-                    target="_blank"
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -230,10 +215,9 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
+                    href={{ pathname: '/Board/terms', query: { term: '위치기반 서비스 이용약관' } }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/policy/terms"
-                    target="_blank"
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -249,7 +233,7 @@ export default function Footer() {
             <div className="_1h4pbgy82o _1h4pbgy803 _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9vn">
               <div className="_1h4pbgy76o _1h4pbgy7ag _1h4pbgy7s _1h4pbgy80w _1h4pbgy8ao">
                 <font>
-                  <font>주식회사 쌍용마켙</font>
+                  <font>주식회사 오렌지마켙</font>
                 </font>
               </div>
               <div className="_1h4pbgy76o _1h4pbgy7s"></div>

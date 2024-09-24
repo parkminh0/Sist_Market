@@ -23,6 +23,7 @@ export default function EditPostModal(props) {
   const [tmpRegion2, setTmpRegion2] = useState("");
   const [tmpRegion3, setTmpRegion3] = useState("");
 
+
   const locationHandleSubmit = (event) => {
     event.preventDefault();
     setHope_place(tmpHope_place);
@@ -404,6 +405,103 @@ export default function EditPostModal(props) {
     },[open]);
 
 
+    
+  // #region 이미지 드래그
+  let dragIdx = null;
+  const containerRef = useRef(null); // ref로 container 관리
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    // 드래그 시작 시 실행될 함수
+    const handleDragStart = (e) => {
+      const draggable = e.target;
+      draggable.classList.add("dragging");
+      dragIdx = Array.prototype.indexOf.call(container.children, draggable) - 1;
+    };
+
+    // 드래그 종료 시 실행될 함수
+    const handleDragEnd = (e) => {
+      const draggable = e.target;
+      draggable.classList.remove("dragging");
+
+      const afterElement = getDragAfterElement(container, e.clientX);
+      let toIndex;
+      if (afterElement == null || afterElement == undefined) {
+        toIndex = container.children.length - 2;
+      } else {
+        toIndex = Array.prototype.indexOf.call(
+          container.children,
+          afterElement
+        );
+        if (dragIdx >= toIndex) toIndex -= 1;
+        else toIndex -= 2;
+      }
+
+      if (toIndex !== -1) {
+        setPreviewImages((prevPreviewImages) => {
+          const tmpImages = [...prevPreviewImages]; // 얕은 복사
+
+          // 순서 변경 로직
+          const [movedItem] = tmpImages.splice(dragIdx, 1);
+          tmpImages.splice(toIndex, 0, movedItem);
+
+          // 각 이미지의 id 값을 다시 설정
+          tmpImages.forEach((img, index) => {
+            img.id = index;
+          });
+
+          return [...tmpImages]; // 깊은 복사하여 새로운 배열로 반환
+        });
+      }
+    };
+
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      // DOM 조작을 하지 않고 드래그 위치 계산만 수행
+    };
+
+    if (container) {
+      container.addEventListener("dragover", handleDragOver);
+
+      const draggables = container.querySelectorAll(".draggable");
+      draggables.forEach((draggable) => {
+        draggable.addEventListener("dragstart", handleDragStart);
+        draggable.addEventListener("dragend", handleDragEnd);
+      });
+
+      return () => {
+        container.removeEventListener("dragover", handleDragOver);
+        draggables.forEach((draggable) => {
+          draggable.removeEventListener("dragstart", handleDragStart);
+          draggable.removeEventListener("dragend", handleDragEnd);
+        });
+      };
+    }
+  }, [previewImages]);
+
+  // 드래그 위치를 계산하는 함수
+  function getDragAfterElement(container, x) {
+    const draggableElements = [
+      ...container.querySelectorAll(".draggable:not(.dragging)"),
+    ];
+
+    return draggableElements.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      },
+      { offset: Number.NEGATIVE_INFINITY }
+    ).element;
+  }
+  // #endregion
+
+
     return (
     <Fragment>
         <Dialog
@@ -425,7 +523,12 @@ export default function EditPostModal(props) {
           </DialogTitle>
           <DialogContent>
             <FormControl fullWidth margin="dense">
-              <ImageList cols={11} gap={8}>
+              <ImageList
+                cols={11}
+                gap={8}
+                id="dragImageList"
+                ref={containerRef}
+              >
                 <ImageListItem
                   style={{
                     width: 100,
@@ -438,6 +541,7 @@ export default function EditPostModal(props) {
                     ref={fileInputRef}
                     name="file"
                     onChange={handleChange}
+                    accept="image/*" // 이미지 파일만 허용
                     style={{ display: "none" }}
                     multiple
                   />
@@ -467,8 +571,7 @@ export default function EditPostModal(props) {
                     {`${previewImages.length}/10`}
                   </Typography>
                 </ImageListItem>
-                {previewImages.map((img, i) => {
-                    return(
+                {previewImages.map((img, i) => (
                   <ImageListItem
                     key={i}
                     style={{
@@ -477,6 +580,8 @@ export default function EditPostModal(props) {
                       border: "2px solid #ccc", // 이미지에 보더 추가
                       position: "relative",
                     }}
+                    draggable="true"
+                    className="draggable"
                   >
                     <IconButton
                       aria-label="delete"
@@ -520,7 +625,7 @@ export default function EditPostModal(props) {
                       </Typography>
                     )}
                   </ImageListItem>
-                )})}
+                ))}
               </ImageList>
             </FormControl>
             <FormControl fullWidth margin="dense">
@@ -597,8 +702,9 @@ export default function EditPostModal(props) {
                 disabled={isFree}
                 value={isFree ? 0 : price}
                 onChange={(e) => {
+                  console.log(e.nativeEvent)
                   const check = /[0-9]/g;
-                  if(check.test(e.nativeEvent.data)){
+                  if(check.test(e.nativeEvent.data)||e.nativeEvent.inputType!="insertText"){
                     setPrice(e.target.value);
                   }
 

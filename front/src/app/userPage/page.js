@@ -95,7 +95,7 @@ export default function page() {
          }
       }
     ).then((res) => {
-      console.log(res.data.cellList);
+      // console.log(res.data.cellList);
       setLastpostkey(res.data.lastpostkey);
       setCellList([...cellList,...res.data.cellList]);
       setIsnextexist(res.data.isnextexist);
