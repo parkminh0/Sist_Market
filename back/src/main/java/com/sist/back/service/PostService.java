@@ -164,4 +164,8 @@ public class PostService {
     public int hidePost(String postkey) {
         return p_mapper.hidePost(postkey);
     }
+
+    public PostImgVO getPostImgThumbnail(String postkey){
+        return p_mapper.getPostImgThumbnail(postkey);
+    }
 }
