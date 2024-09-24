@@ -536,7 +536,7 @@ export default function Page() {
                             alt="Brit profile"
                             className="kh8p7ux"
                             aria-hidden="true"
-                            src="https://dtxw8q4qct0d4.cloudfront.net/origin/profile/202403/bdb648b6da2457f3402166c3ea5a17c9e98b4b04a8e0ceefd3270d70b0c6aa8a.jpg?f=webp&amp;q=82&amp;s=640x640&amp;t=crop"
+                            src={userVO.imgurl}
                           />
                         </span>
                       </Link>
@@ -896,9 +896,7 @@ export default function Page() {
           >
               {popCate.length > 0
                 ? popCate.map((pcvo, index) => {return(
-                    <div key={index}>
-                     <PopCateList2 pvo={pcvo} />
-                    </div>
+                     <PopCateList2 key={index} pvo={pcvo} />
                     )
                   })
                 : ""}
