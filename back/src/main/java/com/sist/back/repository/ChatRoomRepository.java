@@ -38,7 +38,6 @@ public class ChatRoomRepository {
 
     public List<ChatRoomVO> findAll(String userkey) {
         List<ChatRoomVO> chatRooms = opsHashChatRoom.get(CHAT_ROOMS, userkey); // 목록에 채팅방 리스트를(중요) 불러올 때 캐시로 확인
-        System.out.println(chatRooms);
         if (chatRooms == null) {
             opsHashChatRoom.put(CHAT_ROOMS, userkey, cr_service.chatAll(userkey));
             chatRooms = cr_service.chatAll(userkey);

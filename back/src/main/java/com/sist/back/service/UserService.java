@@ -93,6 +93,11 @@ public class UserService {
 
         return mapper.countForAdmin();
     }
+    
+    public userVO getUserInfo(String userkey) {
+
+        return mapper.getUserInfo(userkey);
+    }
 
     public int searchForAdminPaging(Map iMap) {
 
