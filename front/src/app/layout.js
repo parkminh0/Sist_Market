@@ -14,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children, session }) {
   const pathname = usePathname();
-  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminRoute = pathname.startsWith("/ad");
 
   return (
     <html lang="en">
