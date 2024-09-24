@@ -4,9 +4,11 @@ import MyPageSide from "@/component/user/layout/MyPageSide";
 import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
+import EventIcon from '@mui/icons-material/Event';
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -32,7 +34,7 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data.ar);
+      // console.log(res.data.ar);
       setUvo(res.data.ar);
       const cell_list = res.data.ar.cell_list;
       var sell1 = 0;
@@ -59,7 +61,7 @@ export default function page() {
       setSell_2(sell2);
       setSell_3(sell3);
       setSell_4(sell4);
-      console.log([sell1, sell2, sell3, sell4]);
+      // console.log([sell1, sell2, sell3, sell4]);
     });
   }
 
@@ -164,25 +166,7 @@ export default function page() {
               >
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/manner"
-                  className="menu-item"
-                >
-                  <div data-v-247cd1ce="" className="icon-wrap">
-                    <ThermostatIcon sx={{ width: 28, height: 28 }} />
-                  </div>
-                  <p
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-247cd1ce=""
-                    className="text-lookup name display_paragraph"
-                    style={{ color: "rgb(34, 34, 34)" }}
-                  >
-                    매너온도
-                  </p>
-                </Link>
-                <Link
-                  data-v-247cd1ce=""
-                  href="/myPage/badge"
+                  href="/myPage/profile"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -217,10 +201,28 @@ export default function page() {
                     가계부
                   </p>
                 </Link>
-                <Link data-v-247cd1ce="" href="/notice" className="menu-item">
+                <Link data-v-247cd1ce="" href="/myPage/questions" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <CampaignIcon sx={{ width: 28, height: 28 }} />
+                    <LiveHelpOutlinedIcon sx={{ width: 28, height: 28 }} />
                     <span data-v-247cd1ce="" className="badge"></span>
+                  </div>
+                  <p
+                    data-v-09bea70c=""
+                    data-v-7d3b6402=""
+                    data-v-247cd1ce=""
+                    className="text-lookup name display_paragraph"
+                    style={{ color: "rgb(34, 34, 34)" }}
+                  >
+                    문의사항
+                  </p>
+                </Link>
+                <Link
+                  data-v-247cd1ce=""
+                  href="/Board/list/1"
+                  className="menu-item"
+                >
+                  <div data-v-247cd1ce="" className="icon-wrap">
+                    <EventIcon sx={{ width: 28, height: 28 }}/>
                   </div>
                   <p
                     data-v-09bea70c=""
@@ -232,6 +234,7 @@ export default function page() {
                     공지사항/이벤트
                   </p>
                 </Link>
+
               </div>
               {/* 구매 내역 */}
               <div
@@ -627,13 +630,11 @@ export default function page() {
                   {uvo.w_list ? (
                     uvo.w_list.length > 0 ? (
                       uvo.w_list.map((wlvo, index) => {
-                        console.log(`wlvo[${index}]: `);
-                        console.log(wlvo);
                         if (index > 7) {
                           return;
                         }
                         return (
-                          <UserCellList2 key={index} pvo={wlvo.pvo} />
+                            <UserCellList2 key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (

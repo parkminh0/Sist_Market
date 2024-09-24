@@ -417,8 +417,7 @@ public class UserController {
         int nowPage = 1;
         if (cPage != null) {
             nowPage = Integer.parseInt(cPage);
-        } else {
-        }
+        } 
         page.setNowPage(nowPage);
 
         int begin = page.getBegin();
