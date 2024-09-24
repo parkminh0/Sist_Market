@@ -484,10 +484,8 @@ export default function Header() {
         Cookies.remove("next-auth.session-token");
         Cookies.remove("next-auth.csrf-token");
 
-
         signOut({ redirect: false });
         window.location.href = "/";
-
       }
     });
   }
@@ -597,7 +595,8 @@ export default function Header() {
                   src="/img/orange_logo3.png"
                   alt="당근마켓 로고"
                   style={{ width: "30px", height: "auto" }}
-                /><br/>
+                />
+                <br />
                 <img
                   src="/img/orange_text_logo3.png"
                   alt="당근마켓 로고"
@@ -974,7 +973,7 @@ export default function Header() {
               alt="당근마켓 로고"
               style={{ marginTop: "20px", width: "70px" }}
             />
-           
+
             <div
               style={{ fontWeight: "bold", fontSize: "25px", color: "#FF6F0F" }}
             >
