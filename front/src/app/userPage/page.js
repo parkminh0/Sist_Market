@@ -17,7 +17,7 @@ import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
 import PraiseModal from "@/component/user/userPage/PraiseModal";
 import UserReport from "@/component/user/userPage/UserReport";
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Box, Button, LinearProgress, Typography } from '@mui/material';
 import Cookies from "js-cookie";
 
 
@@ -25,7 +25,7 @@ export default function page() {
   const API_URL = "/user/api/getUser";
 
   const [selectedTab, setSelectedTab] = useState('');
-  const [whatNow, setWhatNow] = useState('badge');
+  const [whatNow, setWhatNow] = useState('cell');
   const [status, setStatus] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [isNosee, setIsNosee] = useState(false);
@@ -41,14 +41,72 @@ export default function page() {
   const params = useSearchParams();
   const userkey = params.get("userkey");
 
+
+  const date_today = new Date();
+  const date_end = yyyymmdd(date_today,0);
+  const date_start = yyyymmdd(date_today,1);
+
+  function yyyymmdd(date, month){
+    var yyyy = date.getFullYear();
+    var mm = date.getMonth()+(1-month);
+    var dd = date.getDate();
+    return yyyy+"-"+mm+"-"+dd;
+  }
+
+  
+
   const categoryList = ['cell','badge','manner','review'];
   
+  const [canPoN, setCanPoN] = useState(false);
+  const [limitpostkey, setLimitpostkey] = useState(0);
+  const [lastpostkey, setLastpostkey] = useState(0);
+  const [isnextexist, setIsnextexist] = useState(true);
 
   const [ifReport, setIfReport] = useState(false);
   const [praiseOpen, setPraiseOpen] = useState(false);
   const [disapproveOpen, setDisapproveOpen] = useState(false);
 
+
+  function getCanPoN(){
+    axios.get(
+      "/user/userPage/canPoN", {
+        params: { 
+          userkey_me: Cookies.get("userkey"),
+          userkey_you: userkey,
+          date_start: date_start,
+          date_end: date_end,
+         }
+      }
+    ).then((res) => {
+      // console.log(res.data.result);
+      if(res.data.result>0){
+        setCanPoN(true);
+      }
+    });
+  }
+
+  function showMorePost(){
+    axios.get(
+      "/user/userPage/getMorePost", {
+        params: { 
+          userkey: userkey,
+          limitpostkey: limitpostkey,
+          lastpostkey: lastpostkey,
+         }
+      }
+    ).then((res) => {
+      // console.log(res.data.cellList);
+      setLastpostkey(res.data.lastpostkey);
+      setCellList([...cellList,...res.data.cellList]);
+      setIsnextexist(res.data.isnextexist);
+    });
+  }
+
   function openPraise(){
+    if(!canPoN){
+      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
+      return;
+    }
     if(Cookies.get("userkey")==undefined){
       alert("로그인이 필요한 서비스입니다.");
       return;
@@ -56,6 +114,10 @@ export default function page() {
     setPraiseOpen(true);
   }
   function openDisapprove(){
+    if(!canPoN){
+      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
+      return;
+    }
     if(Cookies.get("userkey")==undefined){
       alert("로그인이 필요한 서비스입니다.");
       return;
@@ -99,14 +161,17 @@ export default function page() {
 
   function getData() {
     axios.get(
-      API_URL, {
+      "/user/userPage/getData", {
         params: { userkey: userkey }
       }
     ).then((res) => {
-      console.log(res.data.uvo);
+      // console.log(res.data.uvo);
       setVo(res.data.uvo);
-      setCellList(res.data.uvo.cell_list);
-      handleCellCount(res.data.uvo.cell_list.length);
+      setCellList(res.data.cellList);
+      handleCellCount(res.data.cellCount);
+      setLimitpostkey(res.data.limitpostkey);
+      setLastpostkey(res.data.lastpostkey);
+      setIsnextexist(res.data.isnextexist);
     });
   }
 
@@ -118,6 +183,7 @@ export default function page() {
             window.location.replace("/myPage");
         }
     }
+    getCanPoN();
     axios.get("/user/api/FHRBCheck", {
       params: {
         me: me,
@@ -286,7 +352,7 @@ export default function page() {
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
-                          {cellList.length}
+                          {cellCount}
                         </dt>
                         <dd data-v-2cbb289b="" className="count">
                           판매 목록
@@ -341,6 +407,18 @@ export default function page() {
                                     return <UserCellList2 key={index} pvo={clvo} />;
                                 }) : ""}
                                 </div>
+                                {isnextexist ?
+                                <Button
+                                  variant="contained"
+                                  style={{ width: "100%", marginTop: "15px" }}
+                                  className="seed-box-button"
+                                  data-size="medium"
+                                  data-variant="secondary"
+                                  onClick={showMorePost}
+                                >
+                                  더보기
+                                </Button>
+                                : ''}
                             </p>
                         )}
                         {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/></p>)}

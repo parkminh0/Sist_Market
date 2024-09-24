@@ -68,7 +68,6 @@ export default function UcerCellList2(props) {
   const post = props.pvo;
   return (
     <Link
-      key={props.key}
       data-gtm="search_article"
       className="_1h4pbgy9ug"
       href={`/post/detail?postkey=${post.postkey}`}

@@ -48,7 +48,7 @@
         <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back.vo.userVO"/>
     </resultMap>
 
-    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatroomVO">
+    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatRoomVO">
       <id column="chatroomkey" property="chatroomkey" />
           <result column="chatuserkey" property="chatuserkey" />
           <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back.vo.userVO"/>
@@ -467,13 +467,14 @@
         SELECT * FROM 
         (SELECT (SELECT COUNT(*) FROM wishlist WHERE postkey = p.postkey) likedqty, p.* FROM `post` p
           JOIN `town` t ON t.townkey = p.townkey
+          JOIN `category` c ON c.categorykey = p.categorykey
           <!-- 게시글미노출 -->
          <if test="userkey != null and userkey != ''">
           LEFT JOIN `nosee` n ON n.userkey = #{userkey} AND n.noseeuserkey != p.userkey
           LEFT JOIN `blocked` b ON b.userkey = #{userkey} AND b.blockeduserkey != p.userkey
           LEFT JOIN `noseepost` np ON np.userkey = #{userkey} AND np.postkey != p.postkey
          </if>
-         WHERE 1 = 1
+         WHERE p.isdeleted = 0
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
          </if>
@@ -483,6 +484,13 @@
                 t.region2 = #{item}
                 </foreach>
             )
+        </if>
+           AND p.poststatus IN (1, 2, 3)
+        <if test="onsale != null and onsale != '' and onsale == 'true'">
+           AND p.poststatus = 1
+        </if>
+        <if test="search != null and search != ''">
+            AND (p.title LIKE CONCAT('%', #{search}, '%') OR c.categoryname LIKE CONCAT('%', #{search}, '%'))
         </if>
         <if test="category != null and category != ''">
             AND p.categorykey = #{category}
@@ -514,17 +522,26 @@
         limit #{howManyPost}
     </select>
 
+    <select id="searchTemp" resultMap="postMap" parameterType="String">
+        SELECT * FROM post 
+         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
+    </select>
+
     <select id="main" resultMap="postMap" parameterType="String">
-        select * from `post`
-         where 1 = 1
+        select p.* from `post` p
+         LEFT JOIN `town` t ON p.townkey = t.townkey
+         where p.isdeleted = 0 AND p.poststatus = 1
           <if test ="param == 'free'">
-            AND method = 1 AND price = 0
+            AND p.method = 1 AND p.price = 0
           </if>
           <if test="param != 'free'">
-            AND categorykey = #{param}
+            AND p.categorykey = #{param}
+          </if>
+          <if test="region1 != 'undefined' and region2 != 'undefined'">
+            AND t.region1 = #{region1} AND t.region2 = #{region2}
           </if>
 
-          ORDER BY remind_dtm DESC
+          ORDER BY p.remind_dtm DESC
           limit 10
     </select>
 
@@ -554,5 +571,17 @@
         SELECT * FROM post WHERE poststatus = #{poststatus}
     </select>
 
+
+
+
+
+
+
+    <!-- 게시글 숨기기 -->
+    <update id="hidePost" parameterType="String">
+        UPDATE `post`
+        SET poststatus = 4
+        WHERE postkey = #{postkey}
+    </update>
 </mapper>
 

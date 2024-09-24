@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import com.sist.back.vo.ChatroomVO;
+
+import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.PostCountVO;
@@ -29,7 +30,7 @@ public interface PostMapper {
 
     List<OfferVO> getOfferByPostKey(int postkey);
 
-    List<ChatroomVO> getChatroomByPostKey(int postkey);
+    List<ChatRoomVO> getChatroomByPostKey(int postkey);
 
     int insertRemindPost(String postkey);
 
@@ -51,7 +52,9 @@ public interface PostMapper {
 
     List<PostVO> search(Map<String, Object> map);
 
-    PostVO[] main(String param);
+    PostVO searchTemp(String userkey);
+
+    PostVO[] main(String param, String region1, String region2);
 
     PostCountVO countpostForAdmin();
 
@@ -64,4 +67,6 @@ public interface PostMapper {
     List<PostVO> findByPoststatus(int poststatus);
 
     List<PostImgVO> pImg_list(int postkey);
+
+    int hidePost(String postkey);
 }

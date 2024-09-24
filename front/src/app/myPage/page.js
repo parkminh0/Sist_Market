@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import MyPageSide from "@/component/user/layout/MyPageSide";
+import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import "/public/css/myPage.css";
-import Link from "next/link";
-import MyPageSide from "@/component/user/layout/MyPageSide";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import "/public/css/myPage.css";
 
 export default function page() {
   const API_URL = "/user/api/admin/userEdit";
@@ -31,7 +32,7 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data.ar);
+      // console.log(res.data.ar);
       setUvo(res.data.ar);
       const cell_list = res.data.ar.cell_list;
       var sell1 = 0;
@@ -58,12 +59,12 @@ export default function page() {
       setSell_2(sell2);
       setSell_3(sell3);
       setSell_4(sell4);
-      console.log([sell1, sell2, sell3, sell4]);
+      // console.log([sell1, sell2, sell3, sell4]);
     });
   }
 
   useEffect(() => {
-    if(Cookies.get("userkey")==undefined){
+    if (Cookies.get("userkey") == undefined) {
       alert("로그인이 필요한 서비스입니다.");
       window.location.replace("/");
     }
@@ -200,6 +201,7 @@ export default function page() {
                 <Link
                   data-v-247cd1ce=""
                   href="/myPage/moneybook"
+                  target="_blank"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -620,7 +622,7 @@ export default function page() {
                 </Link>
               </div>
               <div data-v-7b7d73d2="" className="interest_product">
-                <div data-v-7b7d73d2="" className="product_list">
+                <div data-v-7b7d73d2="" className="wishlistGrid">
                   {/* 여기서 FOREACH로 8개 뿌리기 */}
                   {uvo.w_list ? (
                     uvo.w_list.length > 0 ? (
@@ -628,127 +630,9 @@ export default function page() {
                         if (index > 7) {
                           return;
                         }
-                        const price =
-                          wlvo.pvo.price
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
                         return (
-                          <div
-                            key={index}
-                            data-v-2c8107bc=""
-                            data-v-7b7d73d2=""
-                            className="product_item"
-                          >
-                            <Link
-                              data-v-2c8107bc=""
-                              href={`/post/detail?postkey=${wlvo.pvo.postkey}`}
-                              className="item_inner"
-                            >
-                              <div data-v-2c8107bc="" className="thumb_box">
-                                <div
-                                  data-v-16369cf2=""
-                                  data-v-2c8107bc=""
-                                  className="product"
-                                  style={{
-                                    backgroundColor: "rgb(235, 240, 245)",
-                                  }}
-                                >
-                                  <div
-                                    data-v-17ca498c=""
-                                    data-v-16369cf2=""
-                                    className="display_tag_item product_inner_tag tag--default"
-                                  >
-                                    <div
-                                      data-v-17ca498c=""
-                                      data-v-a7793886=""
-                                      className="tag display_tag_item"
-                                      style={{
-                                        backgroundColor: "rgb(242, 249, 246)",
-                                        color: "rgb(49, 180, 110)",
-                                      }}
-                                    >
-                                      <span
-                                        data-v-17ca498c=""
-                                        className="tag_text"
-                                      >
-                                        {" "}
-                                        빠른배송{" "}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <picture
-                                    data-v-82b93d2c=""
-                                    data-v-16369cf2=""
-                                    className="picture product_img"
-                                  >
-                                    {wlvo.pvo.pimg_list &&
-                                    wlvo.pvo.pimg_list.length > 0 &&
-                                    wlvo.pvo.pimg_list[0].imgurl !=
-                                      undefined ? (
-                                      <img
-                                        alt={wlvo.pvo.title}
-                                        src={wlvo.pvo.pimg_list[0].imgurl}
-                                        loading="lazy"
-                                        style={{
-                                          backgroundColor: "#ebf0f5",
-                                          width: "100%",
-                                          height: "100%",
-                                        }}
-                                        data-v-53e92c51=""
-                                      />
-                                    ) : (
-                                      <ImageNotSupportedRoundedIcon
-                                        style={{
-                                          backgroundColor: "#ebf0f5",
-                                          width: "100%", // 아이콘의 너비를 100%로 설정
-                                          height: "100%", // 아이콘의 높이를 100%로 설정
-                                        }}
-                                      />
-                                    )}
-                                  </picture>
-                                  <span
-                                    data-v-4382eb99=""
-                                    data-v-2c8107bc=""
-                                    aria-label="관심상품"
-                                    role="button"
-                                    className="btn_wish"
-                                    data-v-16369cf2=""
-                                  >
-                                    <svg
-                                      data-v-4382eb99=""
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className="icon sprite-icons ico-wish-on"
-                                    >
-                                      {/* <use data-v-4382eb99="" href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-wish-on" xlink:href="/_nuxt/902a7eb5512d7d4f25543902cfd1ccdc.svg#i-ico-wish-on"></use> */}
-                                    </svg>
-                                  </span>
-                                </div>
-                              </div>
-                              <div data-v-2c8107bc="" className="info_box">
-                                <div data-v-2c8107bc="" className="brand">
-                                  <p data-v-2c8107bc="" className="brand-text">
-                                    {" "}
-                                    {wlvo.pvo.title}{" "}
-                                  </p>
-                                </div>
-                                <p data-v-2c8107bc="" className="name">
-                                  {wlvo.pvo.cvo.categoryname}
-                                </p>
-                                <div data-v-2c8107bc="" className="price">
-                                  <div data-v-2c8107bc="" className="amount lg">
-                                    <em data-v-2c8107bc="" className="num">
-                                      {" "}
-                                      {price}{" "}
-                                    </em>
-                                  </div>
-                                  <div data-v-2c8107bc="" className="desc">
-                                    <p data-v-2c8107bc="">
-                                      {wlvo.pvo.hope_place}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </Link>
+                          <div key={index}>
+                            <UserCellList2 pvo={wlvo.pvo} />
                           </div>
                         );
                       })
@@ -768,110 +652,6 @@ export default function page() {
           </section>
         </div>
       </article>
-      {/* 아래 광고 이미지 */}
-      <div className="_588sy4rk _588sy4rr _588sy4ry _588sy4s5">
-        <div className="_1h4pbgy14w _1h4pbgy9ug _1h4pbgy9xc _1h4pbgya2w">
-          <div className="a1nvr40 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy14w _1h4pbgy8jc">
-            <div className="a1nvr41">
-              <div className="a1nvr42 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9wi _1h4pbgy9vs _1h4pbgya0o">
-                <div
-                  className="a1nvr43 _1h4pbgy78g _1h4pbgy78p _1h4pbgy796 _1h4pbgy79n _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy48 _1h4pbgya54 _1h4pbgya4i _19xafot0 _19xafot4 _19xafot5"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "500ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                >
-                  <font>
-                    <font>오늘 대단한 발견을 해보세요!</font>
-                  </font>
-                </div>
-                <div
-                  className="a1nvr44 _1h4pbgy79c _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy8g _1h4pbgy81k _19xafot0 _19xafot4 _19xafot5"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "500ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                >
-                  <font>
-                    <font>앱을 받으세요</font>
-                  </font>
-                </div>
-                <div className="a1nvr45 _1h4pbgy9vc _1h4pbgy90g _1h4pbgy90r">
-                  <Link
-                    href="#"
-                    className="_19xafot0 _19xafot4 _19xafot5"
-                    style={{
-                      _19xafot2: "0ms",
-                      _19xafot1: "500ms",
-                      _19xafot3: "translateY(1rem)",
-                    }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/49380c1c7e70e49f0f93baf0f790925eefc69082-120x40.svg"
-                      alt="앱스토어에서 다운로드"
-                    />
-                  </Link>
-                  <Link
-                    href="#"
-                    className="_19xafot0 _19xafot4 _19xafot5"
-                    style={{
-                      _19xafot2: "0ms",
-                      _19xafot1: "500ms",
-                      _19xafot3: "translateY(1rem)",
-                    }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/0d8f72b8e4cdb98af115a7c1f04c4abf19f5c419-180x53.svg"
-                      alt="Google Play에서 받으세요"
-                    />
-                  </Link>
-                </div>
-              </div>
-              <div className="a1nvr46">
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/bff14eb869318da13eeb329ac060450dfe1ecadf-750x1624.png"
-                  className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
-                  alt="홈 피드 화면의 스크린샷"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                />
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/5cfdb708e8491051b4765819e796ca373e58fc44-753x1637.png"
-                  className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
-                  alt="상세 페이지의 스크린샷"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(-1rem)",
-                  }}
-                />
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/1da74f52dfcb54be6b1ec40af8d8480ed6abc4c0-900x339.png"
-                  className="a1nvr4b _19xafot0 _19xafot4 _19xafot5"
-                  alt="홈 피드 항목의 스크린샷"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                />
-                <div className="a1nvr47"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

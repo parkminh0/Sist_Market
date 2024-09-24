@@ -248,10 +248,10 @@ export default function page() {
                   </div>
                 </div>
                 <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
-                    <div data-v-24868902="" data-v-eff62a72="" className="empty_area" style={{paddingTop: '50px'}}>
-                        {selectedTab == '1' && ( <p data-v-24868902="" className="desc"><BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/></p>)}
-                        {selectedTab == '2' && ( <p data-v-24868902="" className="desc"><Manner userKey={userkey} onMannerCountChange={handleMannerCount} /></p>)}
-                        {selectedTab == '3' && ( <p data-v-24868902="" className="desc"><Review userKey={userkey} onReviewCountChange={handleReviewCount}/></p>)}
+                    <div data-v-24868902="" className="empty_area" style={{paddingTop: '50px'}}>
+                      {selectedTab == '1' && <BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/>}
+                      {selectedTab == '2' && <Manner userKey={userkey} onMannerCountChange={handleMannerCount} />}
+                      {selectedTab == '3' && <Review userKey={userkey} onReviewCountChange={handleReviewCount}/>}
                     </div>
                 </div>
               </div>
