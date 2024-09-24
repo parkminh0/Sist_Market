@@ -1,14 +1,18 @@
+'use client'
 import Link from "next/link";
 import React from "react";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import { useRouter } from "next/navigation";
+
 
 export default function BuyList(props) {
   const buylist = props.buylist;
+  const router = useRouter();
 
   return buylist.map((blvo, index) => {
     const detailLink = `/myPage/buylist/detail/${blvo.postkey}`;
     return (
-      <div key={index} data-v-eff62a72="">
+      <div key={index} data-v-eff62a72="" onClick={()=>{router.push(`/post/detail?postkey=${blvo.postkey}`)}}>
         {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
         <div data-v-53e92c51="" data-v-eff62a72="">
           <div

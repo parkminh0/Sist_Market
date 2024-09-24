@@ -6,6 +6,7 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
+import ThermostatIcon from "@mui/icons-material/Thermostat";
 import EventIcon from '@mui/icons-material/Event';
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -632,9 +633,7 @@ export default function page() {
                           return;
                         }
                         return (
-                          <div key={index}>
-                            <UserCellList2 pvo={wlvo.pvo} />
-                          </div>
+                            <UserCellList2 key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (

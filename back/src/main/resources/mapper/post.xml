@@ -48,7 +48,7 @@
         <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back.vo.userVO"/>
     </resultMap>
 
-    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatroomVO">
+    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatRoomVO">
       <id column="chatroomkey" property="chatroomkey" />
           <result column="chatuserkey" property="chatuserkey" />
           <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back.vo.userVO"/>
