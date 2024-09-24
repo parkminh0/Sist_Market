@@ -32,14 +32,9 @@ export default function Footer() {
               <div className="_1h4pbgy828">
                
                   <img
-                    src="/img/orange_logo3.png"
+                    src="/img/Orange_logo_final.png"
                     alt="당근마켓 로고"
-                    style={{ width: "30px", height: "auto" }}
-                  />
-                  <img
-                    src="/img/orange_text_logo3.png"
-                    alt="당근마켓 로고"
-                    style={{ width: "70px", height: "auto" }}
+                    style={{ width: "100px", height: "auto" }}
                   />
                 
               </div>
