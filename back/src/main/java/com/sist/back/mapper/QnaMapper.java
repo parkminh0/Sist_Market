@@ -21,6 +21,10 @@ public interface QnaMapper {
 
     List<QnaVO> all(Map<String, Object> q_map);
 
+    List<QnaVO> userAll(Map<String, Object> q_map);
+
+    int userCount(String userkey);
+
     int count();
 
     QnaVO getQuestion(String qnakey);

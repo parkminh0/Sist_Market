@@ -45,6 +45,14 @@ public class QnaService {
         return q_ar;
     }
 
+    public List<QnaVO> userAll(Map<String, Object> q_map) {
+        return q_mapper.userAll(q_map);
+    }
+
+    public int userCount(String userkey) {
+        return q_mapper.userCount(userkey);
+    }
+
     public int count() {
         return q_mapper.count();
     }

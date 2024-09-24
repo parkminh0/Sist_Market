@@ -200,5 +200,37 @@ public class QnaController {
         map.put("qvo", qvo);
         return map;
     }
+
+    @RequestMapping("/userAll")
+    @ResponseBody
+    public Map<String, Object> userAll(String cPage, String userkey) {
+        Map<String, Object> b_map = new HashMap<>();
+        b_map.put("userkey", userkey);
+        
+        int totalRecord = q_service.userCount(userkey);
+        Paging page = new Paging(5, 3);
+        page.setTotalRecord(totalRecord);
+
+        int nowPage = 1;
+        if (cPage != null) {
+            page.setNowPage(Integer.parseInt(cPage));
+        } else {
+            page.setNowPage(1);
+        }
+        nowPage = page.getNowPage();
+
+        int begin = page.getBegin();
+        int end = page.getEnd();
+        b_map.put("begin", begin);
+        b_map.put("end", end);
+
+        List<QnaVO> q_list = q_service.userAll(b_map);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("q_list", q_list);
+        map.put("page", page);
+        map.put("nowPage", nowPage);
+        return map;
+    }
 }
 

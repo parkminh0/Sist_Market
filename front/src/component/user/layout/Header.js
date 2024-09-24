@@ -594,14 +594,9 @@ export default function Header() {
                 className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9yw"
               >
                 <img
-                  src="/img/orange_logo3.png"
+                  src="/img/Orange_logo_final.png"
                   alt="당근마켓 로고"
-                  style={{ width: "30px", height: "auto" }}
-                /><br/>
-                <img
-                  src="/img/orange_text_logo3.png"
-                  alt="당근마켓 로고"
-                  style={{ width: "70px", height: "auto" }}
+                  style={{ width: "100px", height: "auto" }}
                 />
               </Link>
             </div>
@@ -970,8 +965,8 @@ export default function Header() {
             </Button>
 
             <img
-              src="/img/orange_logo2.png"
-              alt="당근마켓 로고"
+              src="/img/Orange_img.png"
+              alt="당근마켓 로고 로그인"
               style={{ marginTop: "20px", width: "70px" }}
             />
            
