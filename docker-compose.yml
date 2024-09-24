@@ -9,7 +9,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://sist-market.chuem8s28k9k.ap-northeast-2.rds.amazonaws.com:3306/market?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://13.125.170.142:3306/market?useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=qweasd123!
     #      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
@@ -37,6 +37,7 @@ services:
     depends_on:
       - back
       - front
+
 networks:
   my-net1:
     driver: bridge

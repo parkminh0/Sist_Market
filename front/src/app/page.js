@@ -1,5 +1,6 @@
 "use client";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 import Category from "@/component/user/index/Category";
 import axios from "axios";
@@ -337,7 +338,8 @@ export default function Home() {
                       style={{ width: "100%", display: "inline-block" }}
                     >
                       <h1 className="_12vdq0bm _1h4pbgy794 _1h4pbgy79d _1h4pbgy79m _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgya4g _1h4pbgy7xc _1h4pbgy7xl _1h4pbgy7ya _1h4pbgy7yr _1h4pbgy7ys _1h4pbgy81k _12vdq0bn">
-                        <font>당신 근처의 지역 생활 커뮤니티</font>
+                        <font>당신의 소중한 물건을 나누고</font><br/>
+                        <font>새로운 가치를 만들어보세요!</font>
                       </h1>
                       <h2 className="_12vdq0bp _1h4pbgy9u0 _1h4pbgy9ua _1h4pbgy77u _1h4pbgy78j _1h4pbgy78s _1h4pbgy7ag _1h4pbgy7c0 _1h4pbgy7bk _1h4pbgya4g _12vdq0bq"></h2>
                     </div>
@@ -357,7 +359,7 @@ export default function Home() {
                       style={{ width: "100%", display: "inline-block" }}
                     >
                       <h3 className="_12vdq0bm _1h4pbgy794 _1h4pbgy79d _1h4pbgy79m _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgya4g _1h4pbgy7xc _1h4pbgy7xl _1h4pbgy7ya _1h4pbgy7yr _1h4pbgy7ys _1h4pbgy81k _12vdq0bn">
-                        <font>믿을만한 이웃 간 중고거래</font>
+                        <font>믿을 수 있는 이웃과 안전하게 거래하세요!</font>
                       </h3>
                       <h4 className="_12vdq0bp _1h4pbgy9u0 _1h4pbgy9ua _1h4pbgy77u _1h4pbgy78j _1h4pbgy78s _1h4pbgy7ag _1h4pbgy7c0 _1h4pbgy7bk _1h4pbgya4g _12vdq0bq"></h4>
                     </div>
@@ -377,7 +379,8 @@ export default function Home() {
                       style={{ width: "100%", display: "inline-block" }}
                     >
                       <h3 className="_12vdq0bm _1h4pbgy794 _1h4pbgy79d _1h4pbgy79m _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgya4g _1h4pbgy7xc _1h4pbgy7xl _1h4pbgy7ya _1h4pbgy7yr _1h4pbgy7ys _1h4pbgy81k _12vdq0bn">
-                        <font>이웃만 아는 동네 정보와 이야기</font>
+                        <font>쓸모 없는 물건이 아닌</font><br/>
+                        <font>새로운 시작을 만들어 보세요!</font>
                       </h3>
                       <h4 className="_12vdq0bp _1h4pbgy9u0 _1h4pbgy9ua _1h4pbgy77u _1h4pbgy78j _1h4pbgy78s _1h4pbgy7ag _1h4pbgy7c0 _1h4pbgy7bk _1h4pbgya4g _12vdq0bq"></h4>
                     </div>
@@ -555,14 +558,31 @@ export default function Home() {
                                         className="_1b153uwe _1h4pbgya3k"
                                         src={post.pimg_list[0].imgurl}
                                         alt="썸네일"
+                                        onError={(e) => {
+                                          // 부모 span 태그를 DOM에서 제거
+                                          const parentSpan =
+                                            e.target.parentNode;
+
+                                          // 새로운 div를 생성하고 아이콘을 삽입
+                                          const fallbackIcon =
+                                            document.createElement("div");
+                                          fallbackIcon.innerHTML = `
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="LocalMallIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1; color: rgb(255, 111, 97); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; background-color: rgb(249, 249, 249);"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3m0 10c-2.76 0-5-2.24-5-5h2c0 1.66 1.34 3 3 3s3-1.34 3-3h2c0 2.76-2.24 5-5 5"></path></svg>`;
+                                          parentSpan.parentNode.appendChild(
+                                            fallbackIcon
+                                          );
+                                          parentSpan.remove();
+                                        }}
                                       />
                                     </span>
                                   ) : (
-                                    <ImageNotSupportedRoundedIcon
+                                    <LocalMallIcon
                                       style={{
                                         width: "100%", // 아이콘의 너비를 100%로 설정
                                         height: "100%", // 아이콘의 높이를 100%로 설정
                                         zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                        color: "#ff6f61", // 이쁜 코랄 계열 색상
+                                        backgroundColor: "#f9f9f9", // 아이콘 뒤 배경 색상
                                       }}
                                     />
                                   )}
@@ -968,14 +988,31 @@ export default function Home() {
                                             className="_1b153uwe _1h4pbgya3k"
                                             src={post.pimg_list[0].imgurl}
                                             alt="썸네일"
+                                            onError={(e) => {
+                                              // 부모 span 태그를 DOM에서 제거
+                                              const parentSpan =
+                                                e.target.parentNode;
+
+                                              // 새로운 div를 생성하고 아이콘을 삽입
+                                              const fallbackIcon =
+                                                document.createElement("div");
+                                              fallbackIcon.innerHTML = `
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="LocalMallIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1; color: rgb(255, 111, 97); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; background-color: rgb(249, 249, 249);"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3m0 10c-2.76 0-5-2.24-5-5h2c0 1.66 1.34 3 3 3s3-1.34 3-3h2c0 2.76-2.24 5-5 5"></path></svg>`;
+                                              parentSpan.parentNode.appendChild(
+                                                fallbackIcon
+                                              );
+                                              parentSpan.remove();
+                                            }}
                                           />
                                         </span>
                                       ) : (
-                                        <ImageNotSupportedRoundedIcon
+                                        <LocalMallIcon
                                           style={{
                                             width: "100%", // 아이콘의 너비를 100%로 설정
                                             height: "100%", // 아이콘의 높이를 100%로 설정
                                             zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                            color: "#ff6f61", // 이쁜 코랄 계열 색상
+                                            backgroundColor: "#f9f9f9", // 아이콘 뒤 배경 색상
                                           }}
                                         />
                                       )}
