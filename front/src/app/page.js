@@ -337,7 +337,8 @@ export default function Home() {
                       style={{ width: "100%", display: "inline-block" }}
                     >
                       <h1 className="_12vdq0bm _1h4pbgy794 _1h4pbgy79d _1h4pbgy79m _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgya4g _1h4pbgy7xc _1h4pbgy7xl _1h4pbgy7ya _1h4pbgy7yr _1h4pbgy7ys _1h4pbgy81k _12vdq0bn">
-                        <font>당신 근처의 지역 생활 커뮤니티</font>
+                        <font>당신의 소중한 물건을 나누고</font><br/>
+                        <font>새로운 가치를 만들어보세요!</font>
                       </h1>
                       <h2 className="_12vdq0bp _1h4pbgy9u0 _1h4pbgy9ua _1h4pbgy77u _1h4pbgy78j _1h4pbgy78s _1h4pbgy7ag _1h4pbgy7c0 _1h4pbgy7bk _1h4pbgya4g _12vdq0bq"></h2>
                     </div>
@@ -357,7 +358,7 @@ export default function Home() {
                       style={{ width: "100%", display: "inline-block" }}
                     >
                       <h3 className="_12vdq0bm _1h4pbgy794 _1h4pbgy79d _1h4pbgy79m _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgya4g _1h4pbgy7xc _1h4pbgy7xl _1h4pbgy7ya _1h4pbgy7yr _1h4pbgy7ys _1h4pbgy81k _12vdq0bn">
-                        <font>믿을만한 이웃 간 중고거래</font>
+                        <font>믿을 수 있는 이웃과 안전하게 거래하세요!</font>
                       </h3>
                       <h4 className="_12vdq0bp _1h4pbgy9u0 _1h4pbgy9ua _1h4pbgy77u _1h4pbgy78j _1h4pbgy78s _1h4pbgy7ag _1h4pbgy7c0 _1h4pbgy7bk _1h4pbgya4g _12vdq0bq"></h4>
                     </div>
@@ -377,7 +378,8 @@ export default function Home() {
                       style={{ width: "100%", display: "inline-block" }}
                     >
                       <h3 className="_12vdq0bm _1h4pbgy794 _1h4pbgy79d _1h4pbgy79m _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgya4g _1h4pbgy7xc _1h4pbgy7xl _1h4pbgy7ya _1h4pbgy7yr _1h4pbgy7ys _1h4pbgy81k _12vdq0bn">
-                        <font>이웃만 아는 동네 정보와 이야기</font>
+                        <font>쓸모 없는 물건이 아닌</font><br/>
+                        <font>새로운 시작을 만들어 보세요!</font>
                       </h3>
                       <h4 className="_12vdq0bp _1h4pbgy9u0 _1h4pbgy9ua _1h4pbgy77u _1h4pbgy78j _1h4pbgy78s _1h4pbgy7ag _1h4pbgy7c0 _1h4pbgy7bk _1h4pbgya4g _12vdq0bq"></h4>
                     </div>
