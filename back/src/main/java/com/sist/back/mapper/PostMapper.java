@@ -69,4 +69,6 @@ public interface PostMapper {
     List<PostImgVO> pImg_list(int postkey);
 
     int hidePost(String postkey);
+    
+    PostImgVO getPostImgThumbnail(String postkey);
 }

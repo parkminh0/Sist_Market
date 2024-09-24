@@ -86,6 +86,9 @@
         SELECT * FROM `postimg`
         WHERE postkey = #{postkey}
     </select>
+    <select id="getPostImgThumbnail" parameterType="String" resultType="com.sist.back.vo.PostImgVO">
+        SELECT a.title, b.imgurl FROM post as a LEFT JOIN postimg as b ON a.postkey = b.postkey where a.postkey = #{postkey} LIMIT 1
+    </select>
     <select id="getPInfo_listByPostKey" resultType="com.sist.back.vo.PostInfoVO" parameterType="int">
         SELECT * FROM `post_info`
         WHERE postkey = #{postkey}
@@ -207,7 +210,6 @@
         WHERE postkey = #{postkey}
     </update>
 
-
     <insert id="insertRemindPost" parameterType="String">
         INSERT
         INTO `post_info`(postkey,isupdate,dtm)
@@ -225,7 +227,6 @@
         SET poststatus = '1', update_dtm = NOW()
         WHERE postkey = #{postkey}
     </update>
-
 
     <delete id="delWishlistByKey" parameterType="String">
         DELETE
