@@ -74,9 +74,6 @@ public class PostController {
 
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
-        // 요청 파라미터 확인 (디버깅용)
-        System.out.println("Received search parameters: " + searchParams);
-
         // searchParams에서 poststatus를 추출
         String poststatus = searchParams.get("poststatus") != null ? searchParams.get("poststatus").toString() : "";
 
