@@ -29,6 +29,10 @@ const nextConfig = {
         destination: "http://localhost:8080/admin/board/:path*",
       },
       {
+        source: "/chat/:path*",
+        destination: "http://localhost:8080/chat/:path*",
+      },
+      {
         source: "/town/:path*",
         destination: "http://localhost:8080/town/:path*",
       },
@@ -39,6 +43,18 @@ const nextConfig = {
       {
         source: "/searchlog/:path*",
         destination: "http://localhost:8080/searchlog/:path*",
+      },
+      {
+          source: "/sub/:path*",
+          destination: "http://localhost:8080/sub/:path*"
+      },
+      {
+          source: "/ws-stomp/:path*",
+          destination: "http://localhost:8080/ws-stomp/:path*"
+      },
+      {
+          source: "/pub/:path*",
+          destination: "http://localhost:8080/pub/:path*"
       },
     ];
   },

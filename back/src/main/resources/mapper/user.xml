@@ -84,6 +84,11 @@
       WHERE userkey = #{userkey}
     </select>
 
+    <!-- 유저 img_url 가져오기 -->
+    <select id="getUserInfo" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT * FROM user WHERE userkey = #{userkey}
+    </select>
+
     <!-- Address 테이블에서 데이터를 가져오는 select 쿼리 -->
     <select id="getAddressByUserKey" resultType="com.sist.back.vo.AddressVO" parameterType="String">
         SELECT * FROM address WHERE userkey = #{userkey}

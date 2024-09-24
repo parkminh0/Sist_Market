@@ -35,12 +35,14 @@ public interface UserMapper {
     int blockI(String me, String you);
 
     userVO getUserForAdmin(String userkey);
-
+    
     int userDelForAdmin(String userkey);
 
     int userEditForAdmin(userVO vo);
 
     userVO findByid(String id);
+    
+    userVO getUserInfo(String userkey);
 
     int saveUser(userVO vo);
 
