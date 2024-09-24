@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.PostMapper;
-
-import com.sist.back.vo.ChatroomVO;
+import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
@@ -53,7 +52,7 @@ public class PostService {
         return p_mapper.getOfferByPostKey(postkey);
     }
 
-    public List<ChatroomVO> getChatroomByPostKey(int postkey) {
+    public List<ChatRoomVO> getChatroomByPostKey(int postkey) {
         return p_mapper.getChatroomByPostKey(postkey);
     }
 

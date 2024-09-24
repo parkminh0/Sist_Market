@@ -20,7 +20,7 @@ export default function FooterBanner() {
                 >
                   <font style={{ verticalAlign: "inherit" }}>
                     <font style={{ verticalAlign: "inherit" }}>
-                      오늘 대단한 발견을 해보세요!
+                      <span style={{fontSize: 50,}}>오렌지</span>로 시작하세요!
                     </font>
                   </font>
                 </div>
@@ -34,7 +34,7 @@ export default function FooterBanner() {
                 >
                   <font style={{ verticalAlign: "inherit" }}>
                     <font style={{ verticalAlign: "inherit" }}>
-                      앱을 받으세요
+                      내 주변의 숨은 보물 찾기!
                     </font>
                   </font>
                 </div>
@@ -75,7 +75,7 @@ export default function FooterBanner() {
               </div>
               <div className="a1nvr46">
                 <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/bff14eb869318da13eeb329ac060450dfe1ecadf-750x1624.png"
+                  src="/img/FooterBannerimg1.png"
                   className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
                   alt="홈 피드 화면의 스크린샷"
                   style={{
@@ -85,23 +85,13 @@ export default function FooterBanner() {
                   }}
                 />
                 <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/5cfdb708e8491051b4765819e796ca373e58fc44-753x1637.png"
+                  src="/img/FooterBannerimg2.png"
                   className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
                   alt="상세 페이지의 스크린샷"
                   style={{
                     _19xafot2: "0ms",
                     _19xafot1: "1000ms",
                     _19xafot3: "translateY(-1rem)",
-                  }}
-                />
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/1da74f52dfcb54be6b1ec40af8d8480ed6abc4c0-900x339.png"
-                  className="a1nvr4b _19xafot0 _19xafot4 _19xafot5"
-                  alt="홈 피드 항목의 스크린샷"
-                  style={{
-                    _19xafot2: "300ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(1rem)",
                   }}
                 />
                 <div className="a1nvr47"></div>
