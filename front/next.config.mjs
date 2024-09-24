@@ -56,6 +56,10 @@ const nextConfig = {
           source: "/pub/:path*",
           destination: "http://localhost:8080/pub/:path*"
       },
+      {
+        source: "/qna/:path*",
+        destination: "http://localhost:8080/qna/:path*"
+      },
     ];
   },
 };

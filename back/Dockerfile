@@ -1,4 +1,3 @@
-
 # Maven을 사용하여 빌드하는 단계
 FROM maven:3.8.6-eclipse-temurin-17 AS build
 

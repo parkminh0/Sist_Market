@@ -75,7 +75,7 @@ export default function FooterBanner() {
               </div>
               <div className="a1nvr46">
                 <img
-                  src="/img/FooterBannerimg1.png"
+                  src="/img/FB_Image_1.png"
                   className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
                   alt="홈 피드 화면의 스크린샷"
                   style={{
@@ -85,7 +85,7 @@ export default function FooterBanner() {
                   }}
                 />
                 <img
-                  src="/img/FooterBannerimg2.png"
+                  src="/img/FB_Image_2.png"
                   className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
                   alt="상세 페이지의 스크린샷"
                   style={{
