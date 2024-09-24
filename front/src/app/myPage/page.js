@@ -4,6 +4,7 @@ import MyPageSide from "@/component/user/layout/MyPageSide";
 import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
@@ -200,9 +201,9 @@ export default function page() {
                     가계부
                   </p>
                 </Link>
-                <Link data-v-247cd1ce="" href="/Board/list/1" className="menu-item">
+                <Link data-v-247cd1ce="" href="/myPage/questions" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <CampaignIcon sx={{ width: 28, height: 28 }} />
+                    <LiveHelpOutlinedIcon sx={{ width: 28, height: 28 }} />
                     <span data-v-247cd1ce="" className="badge"></span>
                   </div>
                   <p
@@ -212,12 +213,12 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    공지사항
+                    문의사항
                   </p>
                 </Link>
                 <Link
                   data-v-247cd1ce=""
-                  href="/Board/list/2"
+                  href="/Board/list/1"
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -230,7 +231,7 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    이벤트
+                    공지사항/이벤트
                   </p>
                 </Link>
 
