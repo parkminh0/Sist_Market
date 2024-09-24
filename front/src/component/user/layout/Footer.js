@@ -202,8 +202,7 @@ export default function Footer() {
                   <Link
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/wv/faqs"
-                    target="_blank"
+                    href="/Board/terms"
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -211,10 +210,9 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
+                    href={{ pathname: '/Board/terms', query: { term: '개인정보 처리방침' } }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="mailto:help@karrotmarket.com"
-                    target="_blank"
                     rel="noreferrer noopener"
                   >
                     <font>
@@ -222,10 +220,9 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
+                    href={{ pathname: '/Board/terms', query: { term: '위치기반 서비스 이용약관' } }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="https://us.karrotmarket.com/policy/terms"
-                    target="_blank"
                     rel="noreferrer noopener"
                   >
                     <font>
