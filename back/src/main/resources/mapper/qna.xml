@@ -61,6 +61,27 @@
         SELECT COUNT(*) FROM qna
     </select>
 
+
+    <select id="userAll" resultType="com.sist.back.vo.QnaVO" parameterType="map">
+        SELECT * 
+        FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.*
+            FROM (
+                SELECT q.*
+                FROM qna q
+                WHERE userkey = #{userkey}
+                ORDER BY q.qnakey DESC
+            ) a, (SELECT @RN:=0) r
+        ) c
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    <select id="userCount" resultType="int">
+        SELECT COUNT(*)
+        FROM qna
+        WHERE userkey = #{userkey}
+    </select>
+
 	<!-- 선택한 문의 가져오기 -->
 	<select id="getQuestion" parameterType="String" resultType="com.sist.back.vo.QnaVO">
 		SELECT * FROM qna
