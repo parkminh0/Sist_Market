@@ -5,8 +5,11 @@ import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import axios from "axios";
 
-export default function MyPageSide() {
-  const pathname = usePathname();
+export default function MyPageSide(props) {
+  var pathname = usePathname();
+  if(props.pathname != undefined){
+    pathname = props.pathname;
+  }
   const searchParams = useSearchParams();
 
   const BC_URL = "/admin/board/getAllBc";
@@ -115,10 +118,10 @@ export default function MyPageSide() {
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/myPage/userManage?category=likeUser" className="menu_link"
                     data-href="/myPage/userManage?category=likeUser">
-                모아보기 사용자 관리
+                사용자 관리
               </Link>
             </li>
-            <li data-v-7a824f04="" className="menu_item">
+            {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/myPage/userManage?category=blockedUser" className="menu_link"
                     data-href="/myPage/userManage?category=blockedUser">
                 차단 사용자 관리
@@ -129,7 +132,7 @@ export default function MyPageSide() {
                     data-href="/myPage/userManage?category=noseeUser">
                 게시글 미노출 사용자 관리
               </Link>
-            </li>
+            </li> */}
             {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 관심 카테고리 설정
@@ -138,6 +141,15 @@ export default function MyPageSide() {
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 알림 설정
+              </Link>
+            </li>
+            <li data-v-7a824f04="" className="menu_item">
+              <Link
+                data-href="/myPage/qna"
+                data-v-7a824f04=""
+                href="/myPage/qna"
+                className="menu_link">
+                문의사항
               </Link>
             </li>
             {/* <li data-v-7a824f04="" className="menu_item">

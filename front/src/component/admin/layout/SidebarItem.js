@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import HelpCenterIcon from '@mui/icons-material/HelpCenter';
 
 function parentChildPath(link_item,pathname){
   var parent_path = pathname;
@@ -93,6 +94,17 @@ export default function SidebarItem(parentItem) {
           path: "/admin/user/userEdit",
         },
       
+      ],
+    },
+    {
+      title: "Q&A",
+      path: "/admin/qna",
+      class: "link message",
+      child: [
+        {
+          title: "Q&A",
+          path: "/admin/qna",
+        },
       ],
     },
     /////////////////////////////
@@ -192,6 +204,15 @@ export default function SidebarItem(parentItem) {
                     className="link member"
                   >
                     고객
+                  </a>
+                </li>
+                <li className="hasChild ">
+                  <a
+                    id="QA_Lnb_Menu65"
+                    href="/admin/qna"
+                    className="link message"
+                  >
+                    Q&A
                   </a>
                 </li>
                 {/* ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ */}
