@@ -13,13 +13,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoomVO implements Serializable {
-    private String chatroomkey, postkey, offerkey, buyer_userkey, seller_userkey, appointkey, isalarm, istop, isoffer, create_dtm, update_dtm, delete_dtm, isdeleted;
+    private String chatroomkey, postkey, offerkey, buyer_userkey, seller_userkey, appointkey, isalarm, istop, isoffer,
+            create_dtm, update_dtm, delete_dtm, isdeleted;
 
-    private String 
-            appointdate, appointplace, appintlati, appointlong,
+    private String appointdate, appointplace, appintlati, appointlong,
             appointcreate_dtm, appointupdate_dtm;
 
-    
     private userVO cuvo;
 
     private List<ChattingVO> c_list;
