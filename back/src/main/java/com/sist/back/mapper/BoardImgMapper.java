@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.sist.back.vo.BoardImgVO;
-
 @Mapper
 public interface BoardImgMapper {
     int BoardImgSave(String boardkey, String fname, String imgweburl);
