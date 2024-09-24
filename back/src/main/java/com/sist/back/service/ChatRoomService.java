@@ -45,4 +45,8 @@ public class ChatRoomService {
         return res;
     }
 
+    public String searchPostkey(String chatroomkey){
+        return cr_mapper.searchPostkey(chatroomkey);
+    }
+
 }
