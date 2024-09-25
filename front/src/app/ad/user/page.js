@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { Modal } from "@mui/material";
 import "/public/css/admin/user.css";
 import Link from "next/link";
 import axios from "axios";
@@ -33,6 +34,7 @@ import {
 } from "@mui/material";
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   //유저 카운트
@@ -45,8 +47,8 @@ export default function Page() {
   const [type, setType] = useState("");
   const [regist_start_date, setRegist_start_date] = useState("");
   const [regist_end_date, setRegist_end_date] = useState("");
-  const [isdeleted, setIsdeleted] = useState(0);
-  const [isauthorized, setIsauthorized] = useState(0);
+  const [isdeleted, setIsdeleted] = useState("");
+  const [isauthorized, setIsauthorized] = useState("");
   const [recent_login_start_date, setRecent_login_start_date] = useState("");
   const [recent_login_end_date, setRecent_login_end_date] = useState("");
 
@@ -57,7 +59,7 @@ export default function Page() {
   //페이징
   const [totalPage, setTotalPage] = useState(0);
   const [page, setPage] = useState({});
-
+  const router = useRouter();
   //체크한 유저 삭제
   const DEL_URL = "/user/api/admin/checkUserDel";
   const [allChecked, setAllChecked] = useState(false); // 전체 선택 체크박스
@@ -142,6 +144,10 @@ export default function Page() {
   }
 
   function delete_choice() {
+    const confirmed = window.confirm("정말로 삭제하시겠습니까?");
+    if (!confirmed) {
+      return; 
+    }
     console.log("delete_choice 함수 호출됨");
     console.log("DEL_URL:", DEL_URL);
     axios
@@ -159,6 +165,124 @@ export default function Page() {
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
+
+  //모달창
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 1200,
+    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
+    overflowY: 'auto',  // 세로 스크롤 추가
+    bgcolor: 'background.paper',
+    border: '2px solid #blue',
+    boxShadow: 24,
+    p: 4,
+  };
+  
+  
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); 
+
+  // 모달 열기/닫기 핸들러
+  const handleOpen = (userkey) => {
+    setUserkey(userkey); 
+    setOpen(true); 
+  };
+  const handleClose = () => setOpen(false);
+ 
+  const [userkey, setUserkey] = useState(0);
+  const [ar, setAR] = useState({});
+  const [pw, setPW] = useState("");
+  const [name, setNAME] = useState("");
+  const [email, setEMAIL] = useState("");
+  const [phone, setPHONE] = useState("");
+
+  const [p_list, setP_list] = useState([]);
+  const [m_list, setM_list] = useState([]);
+  const [l_list, setL_list] = useState([]);
+  const [ub_list, setUb_list] = useState([]);
+  const [b_list, setB_list] = useState([]);
+  const [n_list, setN_list] = useState([]);
+  const [a_list, setA_list] = useState([]);
+  const [s_list, setS_list] = useState([]);
+  const [w_list, setW_list] = useState([]);
+  const [k_list, setK_list] = useState([]);
+
+  function editUser(userkey){
+    setUserkey(userkey);
+    setOpen(true); 
+
+    if (userkey) {
+      
+      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}`;
+      axios.get(API_URL).then((res) => {
+        setAR(res.data.ar);
+        setPW(res.data.ar.pw || "");
+        setNAME(res.data.ar.name || "");
+        setEMAIL(res.data.ar.email || "");
+        setPHONE(res.data.ar.phone || "");
+
+        setP_list(res.data.ar.p_list || []);
+        setM_list(res.data.ar.m_list || []);
+        setL_list(res.data.ar.l_list || []);
+        setUb_list(res.data.ar.ub_list || []);
+        setB_list(res.data.ar.b_list || []);
+        setN_list(res.data.ar.n_list || []);
+        setA_list(res.data.ar.a_list || []);
+        setS_list(res.data.ar.s_list || []);
+        setW_list(res.data.ar.w_list || []);
+        setK_list(res.data.ar.k_list || []);
+      });
+    }
+  }
+
+  //모달창 딜유저
+  const DEL_URL1 = `/user/api/admin/userDel?userkey=${userkey}`;
+  function deleteUser(userkey) {
+    axios.get(DEL_URL1).then((res) => {
+      if (res.data.str === "success") {
+        const userConfirmed = window.confirm(
+          "회원 탈퇴가 완료되었습니다. 페이지를 이동하시겠습니까?"
+        );
+        if (userConfirmed) {
+          router.push("/user/admin/user");
+          setOpen(false);
+        } else {
+          alert("탈퇴가 불가능 합니다.");
+        }
+      }
+    });
+  }
+  function editUser1(userkey) {
+    const EDIT_URL = `/user/api/admin/userEditReal?userkey=${userkey}`;
+    axios({
+      url: EDIT_URL,
+      method: "post",
+      params: {
+        pw: pw,
+        name: name,
+        email: email,
+        phone: phone,
+      },
+    }).then((res) => {
+      if (res.data.str === "success") {
+        alert("회원정보가 수정되었습니다.");
+        const userConfirmed = window.confirm(
+          "회원 수정이 완료되었습니다. 페이지를 이동하시겠습니까?"
+        );
+        if (userConfirmed) {
+          setOpen(false);
+          router.push("/ad/user");
+          
+        }
+      } else {
+        alert("수정이 불가능 합니다.");
+      }
+    });
+  }
+
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -448,10 +572,20 @@ export default function Page() {
                 <Button
                   variant="contained"
                   color="inherit"
-                  onClick={delete_choice}
                   className="btnNormal"
                   sx={{ ml: 1 }}
                   startIcon={<EditIcon />}
+                  onClick={() => {
+                    if (checkedItems.length === 0) {
+                      alert("수정할 유저를 선택하세요.");
+                      return;
+                    } else if (checkedItems.length > 1) {
+                      alert("한명만 선택하세요.");
+                      return;
+                    } else {
+                      editUser(checkedItems[0]); 
+                    }
+                  }}
                 >
                   수정
                 </Button>
@@ -467,7 +601,7 @@ export default function Page() {
                 </Button>
               </Box>
               <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
-                <Table sx={{ minWidth: 1000 }}>
+                <Table sx={{ tableLayout: "auto" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell padding="checkbox">
@@ -588,6 +722,691 @@ export default function Page() {
           </Grid>
         </Grid>
       </Box>
+
+      {/*모달창 */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+        <div id="wrap">
+      <style jsx>{`
+        #wrap {
+          margin: 0 auto;
+          max-width: 1200px;
+        }
+
+        #container {
+          margin: 0 auto;
+          padding-left: 20px;
+        }
+      `}</style>
+
+      <div id="content">
+        
+        <div className="section" id="QA_register2">
+          <div className="mToggleBar eToggle selected" id="basic">
+            <h2 className="eToggleTitle">기본 정보</h2>
+          </div>
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <form id="editForm" name="editForm" action="#" method="post">
+                <table summary="회원 기본 정보">
+                  <caption>회원 기본 정보</caption>
+                  <colgroup>
+                    <col className="product" />
+                    <col style={{ width: "auto" }} />
+                  </colgroup>
+                  <tbody>
+                    <tr>
+                      <th scope="row">유저번호</th>
+                      <td>
+                        <span
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ width: "400px", display: "inline-block" }}
+                        >
+                          {ar.userkey || ""}
+                        </span>
+                      </td>
+
+                    </tr>
+                    <tr>
+                      <th scope="row">회원 사진</th>
+                      <td>
+                        <img
+                          src={ar.imgurl || "/path/to/default-image.jpg"}
+                          alt="회원 사진"
+                          style={{ width: "100px", height: "100px"}}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">아이디</th>
+                      <td>
+                        <span
+                          className="fText eMarketChecker"
+                          style={{ width: "400px", display: "inline-block" }}
+                        >
+                          {ar.id || ""}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">비밀번호</th>
+                      <td>
+                        <input
+                          type="text"
+                          name="pw"
+                          className="fText eMarketChecker"
+                          style={{ width: "150px" }}
+                          value={pw}
+                          onChange={(e) => {
+                            setPW(e.target.value);
+                          }}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">이름</th>
+                      <td>
+                        <input
+                          type="text"
+                          name="name"
+                          className="fText eMarketChecker"
+                          style={{ width: "150px" }}
+                          value={name}
+                          onChange={(e) => {
+                            setNAME(e.target.value);
+                          }}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">이메일</th>
+                      <td>
+                        <input
+                          type="text"
+                          name="email"
+                          className="fText eMarketChecker"
+                          style={{ width: "150px" }}
+                          value={email}
+                          onChange={(e) => {
+                            setEMAIL(e.target.value);
+                          }}
+                          onBlur={() => {
+                            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            if (!emailPattern.test(email)) {
+                              alert("올바른 이메일 주소를 입력하세요.");
+                              setEMAIL("");
+                            }
+                          }}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">전화번호</th>
+                      <td>
+                        <input
+                          type="tel"
+                          name="phone"
+                          className="fText eMarketChecker"
+                          style={{ width: "150px" }}
+                          value={phone}
+                          onChange={(e) => {
+                            setPHONE(e.target.value);
+                          }}
+                          onKeyPress={(e) => {
+                            const charCode = e.which ? e.which : e.keyCode;
+                            if (charCode < 48 || charCode > 57) {
+                              e.preventDefault();
+                              alert("숫자만 입력할 수 있습니다.");
+                            }
+                          }}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                    <th scope="row">가입일</th>
+                    <td>
+                      <span
+                        className="fText eMarketChecker"
+                        style={{ width: "400px", display: "inline-block" }}
+                      >
+                        {ar.create_dtm || ""}
+                      </span>
+                    </td>
+                   
+                    </tr>
+                    <tr>
+                      <th scope="row">삭제일</th>
+                      <td>
+                        <span
+                          className="fText eMarketChecker"
+                          style={{ width: "400px", display: "inline-block" }}
+                        >
+                          {ar.del_dtm || ""}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div className="mButton gCenter" style={{ marginBottom: "20px" }}>
+          <a onClick={() => {editUser1(userkey); }} className="btnSubmit" id="eProductRegister">
+            <span>회원수정</span>
+          </a>
+          <a
+            onClick={() => {deleteUser(userkey); }}
+            className="btnEm btnPreview"
+            id="eProductRegister"
+          >
+            <span>회원탈퇴</span>
+          </a>
+        </div>
+
+        {/* 게시글 정보 테이블 */}
+        <div className="section" id="QA_register2">
+          
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="게시글 정보">
+                <caption>게시글 정보</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">게시글 키</th>
+                    <th scope="col">제목</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {p_list.length > 0 ? (
+                    p_list.map((post, postkey) => (
+                      <tr key={postkey}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {post.postkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {post.title || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        게시글이 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        
+
+        {/* 매너 평가 테이블 */}
+        <div className="section" id="QA_register2">
+          
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="매너 평가 목록">
+                <caption>매너 평가 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">평가자 키</th>
+                    <th scope="col">매너</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {m_list.length > 0 ? (
+                    m_list.map((manner, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {manner.estimateuserkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {manner.ismanner ? "좋음" : "나쁨"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        매너 평가가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 좋아요 사용자 목록 테이블 */}
+        <div className="section" id="QA_register2">
+          
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="좋아하는 사용자 목록">
+                <caption>좋아하는 사용자 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">사용자 키</th>
+                    <th scope="col">생성 날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {l_list.length > 0 ? (
+                    l_list.map((likeUser, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {likeUser.likeuserkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {likeUser.create_dtm || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        좋아요 사용자가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 사용자 뱃지 목록 테이블 */}
+        <div className="section" id="QA_register2">
+          
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="사용자 뱃지 목록">
+                <caption>사용자 뱃지 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">뱃지 키</th>
+                    <th scope="col">생성 날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ub_list.length > 0 ? (
+                    ub_list.map((badge, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {badge.badgekey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {badge.create_dtm || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        사용자 뱃지가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 차단 사용자 목록 테이블 */}
+        <div className="section" id="QA_register2">
+         
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="차단 사용자 목록">
+                <caption>차단 사용자 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">차단 사용자 키</th>
+                    <th scope="col">차단 날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {b_list.length > 0 ? (
+                    b_list.map((blockedUser, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {blockedUser.blockeduserkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {blockedUser.create_dtm || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        차단된 사용자가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 미노출 사용자 목록 테이블 */}
+        <div className="section" id="QA_register2">
+         
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="게시글 미노출 사용자 목록">
+                <caption>게시글 미노출 사용자 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">미노출 사용자 키</th>
+                    <th scope="col">생성 날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {n_list.length > 0 ? (
+                    n_list.map((noseeUser, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {noseeUser.noseeuserkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {noseeUser.create_dtm || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        미노출 사용자가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 주소 정보 테이블 */}
+        <div className="section" id="QA_register2">
+         
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="주소 정보">
+                <caption>주소 정보</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">주소 키</th>
+                    <th scope="col">범위</th>
+                    <th scope="col">알림 여부</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {a_list.length > 0 ? (
+                    a_list.map((address, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {address.addresskey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {address.range || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {address.isalarm ===0 ? "예" : "아니오"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
+                        주소 정보가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 알람 설정 정보 테이블 */}
+        <div className="section" id="QA_register2">
+        
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="알람 설정 정보">
+                <caption>알람 설정 정보</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">알람 키</th>
+                    <th scope="col">알람 여부</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {s_list.length > 0 ? (
+                    s_list.map((setAlarm, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {setAlarm.setalarmkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {setAlarm.isalarm ? "예" : "아니오"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        알람 설정 정보가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 관심 목록 테이블 */}
+        <div className="section" id="QA_register2">
+          
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="관심 목록">
+                <caption>관심 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">위시리스트 키</th>
+                    <th scope="col">생성 날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {w_list.length > 0 ? (
+                    w_list.map((wishlist, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {wishlist.wishlistkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {wishlist.create_dtm || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        관심 목록이 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 키워드 정보 테이블 */}
+        <div className="section" id="QA_register2">
+         
+          <div className="toggleArea" style={{ display: "block" }}>
+            <div className="mBoard typeProduct">
+              <table summary="키워드 목록">
+                <caption>키워드 목록</caption>
+                <colgroup>
+                  <col className="product" />
+                  <col style={{ width: "auto" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">키워드 키</th>
+                    <th scope="col">키워드 내용</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {k_list.length > 0 ? (
+                    k_list.map((keyword, index) => (
+                      <tr key={index}>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {keyword.keywordkey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {keyword.content || ""}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
+                        키워드가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+        </Box>
+      </Modal>
+
+      
     </PageContainer>
   );
 }
+
