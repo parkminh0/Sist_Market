@@ -9,10 +9,6 @@ export default function ChatroomInfo(props) {
             <TableRow>
               <TableCell className="th">채팅방 번호</TableCell>
               <TableCell className="th">거래자</TableCell>
-              <TableCell className="th">약속장소</TableCell>
-              <TableCell className="th">약속일자</TableCell>
-              <TableCell className="th">상단고정여부</TableCell>
-              <TableCell className="th">가격제안여부</TableCell>
               <TableCell className="th">생성일자</TableCell>
             </TableRow>
             {cr_list.length > 0 ?
@@ -31,16 +27,12 @@ export default function ChatroomInfo(props) {
                 <TableRow key={index}>
                   <TableCell className="td">{crvo.chatroomkey}</TableCell>
                   <TableCell className="td">{crvo.cuvo.nickname}</TableCell>
-                  <TableCell className="td">{crvo.appointplace}</TableCell>
-                  <TableCell className="td">{crvo.appointdate}</TableCell>
-                  <TableCell className="td">{istop}</TableCell>
-                  <TableCell className="td">{isoffer}</TableCell>
                   <TableCell className="td">{crvo.create_dtm}</TableCell>
                 </TableRow>
               )})
               :
               <TableRow>
-                <TableCell className="td" colSpan={7}>채팅방이 존재하지 않습니다.</TableCell>
+                <TableCell className="td" colSpan={3}>채팅방이 존재하지 않습니다.</TableCell>
               </TableRow>
             }
           </TableBody>
