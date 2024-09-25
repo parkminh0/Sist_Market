@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import "/public/css/admin/post.css";
 import axios from "axios";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import { TextField } from "@mui/material";
 
 export default function Page() {
   const [list, setList] = useState([]);
@@ -119,7 +120,7 @@ export default function Page() {
                   <div className="MuiStack-root css-1itc13n">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        전체 게시글
+                        전체
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
@@ -136,7 +137,7 @@ export default function Page() {
                   <div className="MuiStack-root css-1itc13n">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        임시 저장 게시글
+                        임시 저장
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
@@ -154,7 +155,7 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        판매중 게시물
+                        판매중
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
@@ -172,7 +173,7 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        예약중(거래중) 게시물
+                        예약중
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
@@ -189,7 +190,7 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        거래완료 게시물
+                        거래완료
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
@@ -206,7 +207,7 @@ export default function Page() {
                   <div className="MuiStack-root css-1ima9n7">
                     <div className="MuiStack-root css-1bew4d0">
                       <span className="MuiTypography-root MuiTypography-custom.subTitle3MH css-1y2y1ny">
-                        숨김 게시물
+                        숨김
                       </span>
                     </div>
                     <div className="MuiStack-root css-1h3carr">
@@ -258,13 +259,19 @@ export default function Page() {
                           <option value="townkey">동네명</option>
                           <option value="userkey">회원번호</option>
                         </select>
-                        <input
+                        <TextField
                           id="searchCategoryText"
+                          label="검색어 입력"
+                          variant="outlined"
+                          fullWidth
+                          name="searchCategoryText"
+                          style={{ width: "500px" }}
+                        />
+                        {/* <input
                           type="text"
                           className="fText eSearchText"
                           style={{ width: "500px" }}
-                          name="searchCategoryText"
-                        />
+                        /> */}
                       </li>
                     </ul>
                   </td>
@@ -334,7 +341,7 @@ export default function Page() {
                         checked={postStatus === "2"}
                         onChange={(e) => setPostStatus(e.target.value)}
                       />{" "}
-                      예약중(거래중)
+                      예약중
                     </label>
                     <label className="gSingleLabel">
                       <input

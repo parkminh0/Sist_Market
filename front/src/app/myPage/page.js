@@ -201,10 +201,9 @@ export default function page() {
                     가계부
                   </p>
                 </Link>
-                <Link data-v-247cd1ce="" href="/myPage/questions" className="menu-item">
+                <Link data-v-247cd1ce="" href="/myPage/qna" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
                     <LiveHelpOutlinedIcon sx={{ width: 28, height: 28 }} />
-                    <span data-v-247cd1ce="" className="badge"></span>
                   </div>
                   <p
                     data-v-09bea70c=""
