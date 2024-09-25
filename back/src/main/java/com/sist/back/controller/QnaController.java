@@ -12,7 +12,6 @@ import com.sist.back.service.QnaImgService;
 import com.sist.back.service.QnaService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
-import com.sist.back.vo.BoardVO;
 import com.sist.back.vo.QnaVO;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.RequestMethod;
-
 
 @Controller
 @RequestMapping("/qna")
@@ -44,9 +41,6 @@ public class QnaController {
 
     @Autowired
     private QnaImgService qi_service;
-
-    @Autowired
-    private HttpServletRequest request;
 
     @RequestMapping("/empty")
     @ResponseBody
@@ -125,38 +119,27 @@ public class QnaController {
         map.put("cnt", q_service.delete(qnakey));
         return map;
     }
+
+    @RequestMapping("/chkDelete")
+    @ResponseBody
+    public Map<String, Object> chkDelete(@RequestBody List<String> chkList) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = 0;
+        for (String qnakey : chkList) {
+            int result = q_service.delete(qnakey);
+            if (result > 0) {
+                cnt++;
+            }
+        }
+        map.put("cnt", cnt);
+        return map;
+    }
     
     @RequestMapping("/answer")
     @ResponseBody
-    public Map<String, Object> answer(QnaVO qvo) {
+    public Map<String, Object> answer(@RequestBody QnaVO qvo) {
         Map<String, Object> map = new HashMap<>();
- 
-        List<String> list = new ArrayList<>();
-        String regex = "<img[^>]+src=\"([^\"]+)\"";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(qvo.getContent());
-        while (matcher.find()) {
-            list.add(matcher.group(1));
-        }
-        qi_service.questionImgDelete(list, qvo.getQnakey());
-
         int cnt = q_service.answer(qvo);
-    
-        if (qvo.getContent() != null) {
-            matcher = pattern.matcher(qvo.getContent());
-            List<String> newImgList = new ArrayList<>();
-            while (matcher.find()) {
-                String imgUrl = matcher.group(1);
-                newImgList.add(imgUrl);
-                String fname = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);
-                qi_service.questionImgSave(qvo.getQnakey(), fname, imgUrl);
-            }
-        }
-        if (cnt > 0) {
-            map.put("chk", 1);
-        } else {
-            map.put("chk", 0);
-        }
         map.put("cnt", cnt);
         return map;
     }
@@ -184,6 +167,38 @@ public class QnaController {
         b_map.put("end", end);
 
         QnaVO[] q_ar = q_service.all(b_map);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("q_ar", q_ar);
+        map.put("page", page);
+        map.put("nowPage", nowPage);
+        return map;
+    }
+
+    @RequestMapping("/select")
+    @ResponseBody
+    public Map<String, Object> select(String cPage, String isanswered) {
+        Map<String, Object> b_map = new HashMap<>();
+        
+        int totalRecord = q_service.selectCount(isanswered);
+        Paging page = new Paging(5, 3);
+        page.setTotalRecord(totalRecord);
+
+        int nowPage = 1;
+        if (cPage != null) {
+            page.setNowPage(Integer.parseInt(cPage));
+        } else {
+            page.setNowPage(1);
+        }
+        nowPage = page.getNowPage();
+
+        int begin = page.getBegin();
+        int end = page.getEnd();
+        b_map.put("begin", begin);
+        b_map.put("end", end);
+        b_map.put("isanswered", isanswered);
+
+        QnaVO[] q_ar = q_service.select(b_map);
 
         Map<String, Object> map = new HashMap<>();
         map.put("q_ar", q_ar);
