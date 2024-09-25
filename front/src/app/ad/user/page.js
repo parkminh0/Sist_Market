@@ -467,7 +467,7 @@ export default function Page() {
                 </Button>
               </Box>
               <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
-                <Table sx={{ minWidth: 1000 }}>
+                <Table sx={{ tableLayout: "auto" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell padding="checkbox">
