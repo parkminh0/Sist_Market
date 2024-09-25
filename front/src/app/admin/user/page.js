@@ -15,8 +15,8 @@ export default function Page() {
   const [type,setType] = useState("");
   const [regist_start_date,setRegist_start_date] = useState("");
   const [regist_end_date,setRegist_end_date] = useState("");
-  const [isdeleted,setIsdeleted] = useState(0);
-  const [isauthorized,setIsauthorized] = useState(0);
+  const [isdeleted,setIsdeleted] = useState("");
+  const [isauthorized,setIsauthorized] = useState("");
   const [recent_login_start_date,setRecent_login_start_date] = useState("");
   const [recent_login_end_date,setRecent_login_end_date] = useState("");
 
