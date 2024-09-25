@@ -111,6 +111,26 @@ export default function Page() {
     });
   }
 
+  const chatconnect = () => {
+    axios.get('/chat/createroom', {
+      params: {
+        postkey: postKey,
+        buyer_userkey: userkey,
+        seller_userkey: postVO.userkey,
+      }
+    }).then(response => {
+      const res = response.data;
+      axios.get('/chat/adminsend', {
+        params: {
+          chatroomkey: res.chatroomkey,
+          userkey1: res.seller_userkey,
+          userkey2: res.buyer_userkey,
+          content: "7KCI64yA7LmY7KeA66eI7ZmY7JiB7ZWp64uI64uk7ZmY7JiB7ZW07JqU7ZmY7JiB7ZW07ZmY7JiB7KCI64yA7LmY7KeA66eI",
+        }
+      })
+    })
+  };
+
   function incViewqty(postkey) {
     var userkey = Cookies.get("userkey");
     if (userkey == undefined) {
@@ -122,12 +142,12 @@ export default function Page() {
         // 유저가 있을 때
         var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
         // console.log(`userCookieTmp: ${userCookieTmp}`);
-        var beforeCookie = cookie.substring(0,cookie.indexOf(`/${userkey}`));
+        var beforeCookie = cookie.substring(0, cookie.indexOf(`/${userkey}`));
         // console.log(`beforeCookie: ${beforeCookie}`);
         var userCookie = userCookieTmp;
         var afterCookie = "";
-        if(userCookieTmp.indexOf("/")>0){
-          userCookie = userCookieTmp.substring(0,userCookieTmp.indexOf("/"));
+        if (userCookieTmp.indexOf("/") > 0) {
+          userCookie = userCookieTmp.substring(0, userCookieTmp.indexOf("/"));
           afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
         }
         // console.log(`userCookie: ${userCookie}`);
@@ -137,7 +157,7 @@ export default function Page() {
           updateViewqty(postkey);
           Cookies.remove("viewedPost");
           Cookies.set("viewedPost", `${beforeCookie}${userCookie}_[${postkey}]${afterCookie}`, {
-            expires: 1/(24*60) , // 1분
+            expires: 1 / (24 * 60), // 1분
             // expires: 1, // 하루(24시간)
           });
         } // 이미 본 페이지 일 때는 다른 작업없음
@@ -145,7 +165,7 @@ export default function Page() {
         // 새로운 유저
         updateViewqty(postkey);
         Cookies.set("viewedPost", `${cookie}/${userkey}_[${postkey}]`, {
-          expires: 1/(24*60) , // 1분
+          expires: 1 / (24 * 60), // 1분
           // expires: 1, // 하루(24시간)
         });
       }
@@ -153,7 +173,7 @@ export default function Page() {
       // 쿠키가 아예 없을 때
       updateViewqty(postkey);
       Cookies.set("viewedPost", `/${userkey}_[${postkey}]`, {
-        expires: 1/(24*60) , // 1분
+        expires: 1 / (24 * 60), // 1분
         // expires: 1, // 하루(24시간)
       });
     }
@@ -227,7 +247,7 @@ export default function Page() {
       if (Cookies.get("userkey") != undefined) {
         isLike(res.data.pvo.postkey);
       }
-      
+
       setViewqty(res.data.pvo.viewqty);
       incViewqty(res.data.pvo.postkey);
       setPostVO(res.data.pvo);
@@ -239,7 +259,7 @@ export default function Page() {
         getLocation(res.data.pvo);
 
       if (param.get("edit") != null) {
-        editPost(res.data.pvo.userkey,res.data.pvo.poststatus);
+        editPost(res.data.pvo.userkey, res.data.pvo.poststatus);
       }
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
@@ -315,12 +335,12 @@ export default function Page() {
   }
   // #endregion
 
-  function editPost(userkey,poststatus) {
+  function editPost(userkey, poststatus) {
     if (userkey != Cookies.get("userkey")) {
       alert("수정 권한이 없습니다.");
-    } else if(poststatus==3){
+    } else if (poststatus == 3) {
       alert("구매완료된 게시글은 수정하실 수 없습니다.");
-    }else {
+    } else {
       setOpen(true);
     }
   }
@@ -608,12 +628,12 @@ export default function Page() {
                 >
 
                   {/* poststatus 관련 수정 */}
-                  <h1 style={{ color: postVO.poststatus == 2 ? 'green' : postVO.poststatus == 3 ? 'gray' : 'black'}}>
-                    {`${postVO.poststatus == 2 ? '예약중' : postVO.poststatus == 3 ? '거래완료': ''}`}
+                  <h1 style={{ color: postVO.poststatus == 2 ? 'green' : postVO.poststatus == 3 ? 'gray' : 'black' }}>
+                    {`${postVO.poststatus == 2 ? '예약중' : postVO.poststatus == 3 ? '거래완료' : ''}`}
                   </h1>
                   &nbsp;
                   <h1 className="_1h4pbgy9uo">{`${postVO.title}`}</h1>
-                  
+
 
                   {like ? (
                     <FavoriteIcon
@@ -705,7 +725,7 @@ export default function Page() {
                     <span>{postVO.hope_place}</span>
                   </li>
                   <div
-                    id="mapDetail" 
+                    id="mapDetail"
                     style={{
                       border: "0.5px solid black",
                       marginTop: "10px",
@@ -721,12 +741,12 @@ export default function Page() {
                 <span>조회 {viewqty}</span>
               </div>
               <button onClick={() => {
-                  if (!userkey) {
-                    alert("로그인이 필요한 서비스입니다.");
-                  } else {
-                    handleChkOpen();
-                  }
-                }} 
+                if (!userkey) {
+                  alert("로그인이 필요한 서비스입니다.");
+                } else {
+                  handleChkOpen();
+                }
+              }}
                 className="_1h4pbgy76o" style={{ cursor: 'pointer', textAlign: 'left' }}>
                 <span style={{ borderBottom: '0.5px solid gray' }}>이 게시글 신고하기</span>
               </button>
@@ -741,12 +761,12 @@ export default function Page() {
                   <Button onClick={() => handleChkClose(false)} style={{ backgroundColor: '#ff5722', color: 'white' }} autoFocus>취소</Button>
                 </DialogActions>
               </Dialog>
-              <ReportModal reportOpen={reportOpen} handleReportClose={handleReportClose} handleReportOpen={handleReportOpen} pvo={postVO}/>
+              <ReportModal reportOpen={reportOpen} handleReportClose={handleReportClose} handleReportOpen={handleReportOpen} pvo={postVO} />
               <div className="nfm9bo0 _1h4pbgy7e8 _1h4pbgy7cj _1h4pbgy7iw _1h4pbgy7h7 _1h4pbgy7nk _1h4pbgy7lv _1h4pbgy7s8 _1h4pbgy7qj _1h4pbgy9u8 _1h4pbgya14 _1h4pbgya0r _1h4pbgy9e0 _1h4pbgy9jc _1h4pbgy9oo _1h4pbgy1u0">
                 {canEdit ? (
                   <Button
                     onClick={() => {
-                      editPost(postVO.userkey,postVO.poststatus);
+                      editPost(postVO.userkey, postVO.poststatus);
                     }}
                     color="success"
                     variant="contained"
@@ -762,7 +782,11 @@ export default function Page() {
                   style={{ width: "100%", backgroundColor: "#fa5050" }}
                   onClick={() => {
                     if (loggedIn) {
-                      alert("채팅방 이동");
+                      if (userkey != postVO.userkey) {
+                        chatconnect();
+                      } else{
+                        alert("본인에게 채팅 할 수 없습니다.");
+                      }
                     } else {
                       alert("로그인이 필요한 서비스입니다.");
                     }
@@ -775,7 +799,7 @@ export default function Page() {
           </div>
         </div>
         <div className="vqbuc99 _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp vqbuc9b"></div>
-        <section style={{minWidth:450}} className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
+        <section style={{ minWidth: 450 }} className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb">
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
               {userVO.nickname}님의 판매 물품
@@ -827,79 +851,80 @@ export default function Page() {
               ""
             )}
           </header>
-          <div 
+          <div
             className="PopCateGrid"
-            >
-              {cellList.length > 0
-                ? cellList.map((clvo, index) => {
-                    if (index < 5) {
-                      return <UserCellList2 key={index} pvo={clvo} />;
-                    }
-                  })
-                : ""}
+          >
+            {cellList.length > 0
+              ? cellList.map((clvo, index) => {
+                if (index < 5) {
+                  return <UserCellList2 key={index} pvo={clvo} />;
+                }
+              })
+              : ""}
           </div>
         </section>
         <section
           className="vqbuc9d _9rcp1w0 _588sy4zw _588sy4109 _588sy410s _588sy411b _588sy411i _588sy411v _588sy4wq _588sy4x3 _588sy4xm _588sy4y5 _588sy4yc _588sy4yp _1h4pbgy7vc _1h4pbgy7wi _1h4pbgy7yb"
-          style={{minWidth:450}}
-          >
+          style={{ minWidth: 450 }}
+        >
           <header className="_1h4pbgy7xc _1h4pbgy7xv _1h4pbgy828 _1h4pbgy82r _1h4pbgy9ug _1h4pbgy9xs">
             <div className="_1h4pbgy8g _1h4pbgy7ag _1h4pbgy78o _1h4pbgy797 _1h4pbgy9w0">
               관련상품
             </div>
             <Link
-                className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
-                href={`/post`}
+              className="_1h4pbgy9ug _1h4pbgy76o _1h4pbgy78j _1h4pbgy784 _1h4pbgy78l _1h4pbgy7ao"
+              href={`/post`}
+            >
+              <span
+                data-gtm="buy_sell_detail_user_article_see_all"
+                className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
               >
+                더보기
+              </span>
+              <span className="_1h4pbgy9ug _1h4pbgy9wo">
                 <span
-                  data-gtm="buy_sell_detail_user_article_see_all"
-                  className="m79qaj0 _1h4pbgyu0 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8zs"
+                  style={{
+                    display: "inline-flex",
+                    width: "16px",
+                    height: "16px",
+                    marginLeft: 'auto'
+                  }}
+                  className="_1h4pbgyu0"
+                  data-seed-icon="icon_chevron_right_fill"
+                  data-seed-icon-version="0.2.1"
                 >
-                  더보기
-                </span>
-                <span className="_1h4pbgy9ug _1h4pbgy9wo">
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      width: "16px",
-                      height: "16px",
-                      marginLeft: 'auto'
-                    }}
-                    className="_1h4pbgyu0"
-                    data-seed-icon="icon_chevron_right_fill"
-                    data-seed-icon-version="0.2.1"
+                  <svg
+                    id="icon_chevron_right_fill"
+                    width="100%"
+                    height="100%"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    data-karrot-ui-icon="true"
                   >
-                    <svg
-                      id="icon_chevron_right_fill"
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-karrot-ui-icon="true"
-                    >
-                      <g>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </span>
+                    <g>
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M8.64948 3.27994L16.6995 11.3299C17.0695 11.6999 17.0695 12.2999 16.6995 12.6699L8.64948 20.7199C8.27948 21.0899 7.67948 21.0899 7.30948 20.7199C6.93948 20.3499 6.93948 19.7499 7.30948 19.3799L14.6895 11.9999L7.30948 4.61994C6.93948 4.24994 6.93948 3.64994 7.30948 3.27994C7.67948 2.90994 8.27948 2.90994 8.64948 3.27994Z"
+                        fill="currentColor"
+                      ></path>
+                    </g>
+                  </svg>
                 </span>
-              </Link>
+              </span>
+            </Link>
           </header>
-          <div 
+          <div
             className="PopCateGrid"
           >
-              {popCate.length > 0
-                ? popCate.map((pcvo, index) => {return(
-                     <PopCateList2 key={index} pvo={pcvo} />
-                    )
-                  })
-                : ""}
+            {popCate.length > 0
+              ? popCate.map((pcvo, index) => {
+                return (
+                  <PopCateList2 key={index} pvo={pcvo} />
+                )
+              })
+              : ""}
           </div>
         </section>
       </article>
