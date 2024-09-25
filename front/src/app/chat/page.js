@@ -50,7 +50,7 @@ const ChatApp = () => {
   const emoticonTotalPage = Math.ceil(emoticonTotal / emoticonPerPage);
   const currentEmoticon = useRef(null);
   const currentEmoticonkey = useRef(0);
-  
+
   // 내 정보
   const myImageUrl = useRef(null);
   const myName = useRef(null);
@@ -438,6 +438,21 @@ const ChatApp = () => {
             <img className="chat-header-image" src={postImg_Url.current} alt="당근" />
             <div className="main-title">
               <span>{postTitle.current}</span>
+              <button
+                id="logout"
+                style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }}
+                className="seed-box-button"
+                data-scope="button"
+                data-part="root"
+                type="button"
+                data-gtm="gnb_app_download"
+                data-size="xsmall"
+                data-variant="primaryLow"
+              >
+                <span className="seed-semantic-typography-label4-bold">
+                  <font>로그아웃</font>
+                </span>
+              </button>
             </div>
           </div>
 
