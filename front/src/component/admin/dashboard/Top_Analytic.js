@@ -13,6 +13,7 @@ import FallOutlined from "@ant-design/icons/FallOutlined";
 
 // project import
 import DashboardCard from "../shared/DashboardCard";
+import { useState } from "react";
 
 const iconSX = {
   fontSize: "0.75rem",
@@ -32,9 +33,11 @@ export default function AnalyticEcommerce({
   return (
     <DashboardCard>
       <Stack spacing={0.5}>
-        <Typography variant="h6" color="text.secondary">
-          {title}
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6" color="text.secondary">
+            {title}
+          </Typography>
+        </Box>
         <Grid container alignItems="center">
           <Grid item>
             <Typography variant="h4" color="inherit">
