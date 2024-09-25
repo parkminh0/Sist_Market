@@ -49,16 +49,8 @@
     </resultMap>
 
     <resultMap id="chatroomMap" type="com.sist.back.vo.ChatRoomVO">
-      <id column="chatroomkey" property="chatroomkey" />
-          <result column="chatuserkey" property="chatuserkey" />
-          <association property="cuvo" select="getUserByChatUserKey" column="chatuserkey" javaType="com.sist.back.vo.userVO"/>
-        <collection property="c_list" select="getChattingByChatroomKey" column="chatroomkey" ofType="com.sist.back.vo.ChattingVO" />
-    </resultMap>
-    <resultMap id="chattingMap" type="com.sist.back.vo.ChattingVO">
-      <id column="chattingkey" property="chattingkey" />
-          <result column="chattingemozikey" property="chattingemozikey" />
-          <association property="cevo" select="getChattingemoziByChattingemoziKey" column="chattingemozikey" javaType="com.sist.back.vo.ChattingEmoziVO"/>
-          <collection property="ci_list" select="getChatimgByChattingKey" column="chattingkey" ofType="com.sist.back.vo.ChatImgVO"/>
+        <result column="buyer_userkey" property="buyer_userkey" />
+        <association property="cuvo" select="getUserByChatUserKey" column="buyer_userkey" javaType="com.sist.back.vo.userVO"/>
     </resultMap>
 
     <select id="all" resultType="com.sist.back.vo.PostVO">
@@ -122,23 +114,10 @@
 
     <select id="getUserByChatUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
         SELECT * FROM `user`
-        WHERE userkey = #{chatuserkey}
+        WHERE userkey = #{buyer_userkey}
     </select>
 
-    <select id="getChattingByChatroomKey" resultMap="chattingMap" parameterType="int">
-        SELECT * FROM `chatting`
-        WHERE chatroomkey = #{chatroomkey}
-    </select>
 
-    <select id="getChatimgByChattingKey" resultType="com.sist.back.vo.ChatImgVO" parameterType="int">
-        SELECT * FROM `chatimg`
-        WHERE chattingkey = #{chattingkey}
-    </select>
-
-    <select id="getChattingemoziByChattingemoziKey" resultType="com.sist.back.vo.ChattingEmoziVO" parameterType="int">
-        SELECT * FROM `chattingemozi`
-        WHERE chattingemozikey = #{chattingemozikey}
-    </select>
 
 
     <!-- 게시글 상세 필요 데이터 추가본 -->
