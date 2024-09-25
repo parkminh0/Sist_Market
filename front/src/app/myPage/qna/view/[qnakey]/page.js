@@ -8,6 +8,7 @@ import axios from "axios";
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Divider, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 
 export default function () {
     const [qvo, setQvo] = useState([]);
@@ -17,7 +18,7 @@ export default function () {
     const router = useRouter();
 
     function toList(){
-        router.back();
+        router.push("/myPage/qna");
     }
 
     // 페이지 변경시 모든 공지사항 로드
