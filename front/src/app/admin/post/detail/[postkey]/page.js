@@ -75,14 +75,14 @@ export default function Page(props) {
             <Grid item xs={12}>
               <PostInfo pvo={pvo} handleOpen={handleOpen} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={4}>
               <CategoryInfo cvo={pvo.cvo} />
             </Grid>
             <Grid item xs={8}>
-              <UserInfo uvo={pvo.uvo} handleOpen={handleOpen} />
-            </Grid>
-            <Grid item xs={4}>
               <TownInfo tvo={tvo} />
+            </Grid>
+            <Grid item xs={12}>
+              <UserInfo uvo={pvo.uvo} handleOpen={handleOpen} />
             </Grid>
             <Grid item xs={6}>
               <OfferInfo o_list={o_list} />
