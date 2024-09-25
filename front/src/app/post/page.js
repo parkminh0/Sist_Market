@@ -2033,18 +2033,40 @@ export default function page() {
             }}
           >
             내 물건 팔기
-            <Button
-              variant="outlined"
-              type="submit"
-              onClick={(e) =>
-                (e.currentTarget.closest("form").dataset.mode = "save")
-              }
-              style={{
-                marginLeft: "auto",
-              }}
-            >
-              임시저장
-            </Button>
+            {
+              tempPost
+              ?
+                <Button
+                  variant="outlined"
+                  type="button"
+                  style={{
+                    marginLeft: "auto",
+                    backgroundColor: "#efefef",
+                    color: "#a0a0a0",
+                    border: 0,
+                    cursor: "default",
+                  }}
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    alert("임시저장 중인 문서가 이미 존재합니다.");
+                  }}
+                >
+                  임시저장
+                </Button>
+              :
+                <Button
+                  variant="outlined"
+                  type="submit"
+                  onClick={(e) =>
+                    (e.currentTarget.closest("form").dataset.mode = "save")
+                  }
+                  style={{
+                    marginLeft: "auto",
+                  }}
+                >
+                  임시저장
+                </Button>
+            }
           </DialogTitle>
           <DialogContent dividers="paper">
             <FormControl fullWidth margin="dense">
@@ -2406,7 +2428,7 @@ export default function page() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {`'${tempPost.title}' 글을 이어서 작성하시겠습니까?`}
+            {`'${tempPost?tempPost.title:''}' 글을 이어서 작성하시겠습니까?`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -2415,7 +2437,7 @@ export default function page() {
         </DialogActions>
       </Dialog>
       {/* 임시저장 게시글 작성 모달 */}
-      <EditPostModal open={isTemp} handleClose={handleClose} pvo={tempPost} />
+      <EditPostModal open={isTemp} isTemp={true} handleClose={handleClose} pvo={tempPost} />
     </>
   );
 }
