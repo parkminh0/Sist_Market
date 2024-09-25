@@ -50,11 +50,7 @@
 }
 
 .mDashPannel .header {
-    display: -webkit-flex;
-    display: -ms-flex;
     display: flex;
-    -webkit-align-items: stretch;
-    -ms-align-items: stretch;
     align-items: stretch;
     width: 100%;
     padding: 0 8px 0 0;
@@ -65,8 +61,6 @@
 }
 
 .mDashPannel .header > .title {
-    -webkit-flex: 1;
-    -ms-flex: 1;
     flex: 1;
     float: left;
     padding: 10px 10px 8px;
@@ -80,70 +74,13 @@
 }
 
 .mDashPannel .header .more {
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    -webkit-align-self: stretch;
-    -ms-align-self: stretch;
     align-self: stretch;
     position: relative;
     float: right;
     padding: 10px 0 8px 8px;
     font-size: 11px;
-    letter-spacing: 0;
     color: #fff;
     box-sizing: border-box;
-}
-
-div {
-    display: block;
-    unicode-bidi: isolate;
-}
-
-table {
-    table-layout: fixed;
-    width: 100%;
-    border: 0;
-    border-spacing: 0;
-    border-collapse: collapse;
-}
-
-colgroup {
-    display: table-column-group;
-    unicode-bidi: isolate;
-}
-
-thead {
-    display: table-header-group;
-    vertical-align: middle;
-    unicode-bidi: isolate;
-    border-color: inherit;
-}
-
-tr {
-    display: table-row;
-    vertical-align: inherit;
-    unicode-bidi: isolate;
-    border-color: inherit;
-}
-
-th, td {
-    border: 0;
-    word-wrap: break-word;
-}
-
-.mDashPannel thead tr th:first-child {
-    border-left: 1px solid #cdcdcd;
-}
-
-.mDashPannel thead th,
-.mDashPannel tbody th[scope*='col'] {
-    padding: 11px 10px 8px;
-    font-size: 14px;
-    border-right: 1px solid #cdcdcd;
-    border-bottom: 1px solid #cdcdcd;
-    color: #354c84;
-    background: #e4e7f1;
 }
 
 .mTooltip {
@@ -165,7 +102,6 @@ th, td {
     top: 30px;
     text-align: left;
     font-weight: normal;
-    letter-spacing: normal;
     border: 1px solid #d6dae1;
     background-color: #fff;
     border-radius: 2px;
@@ -246,26 +182,7 @@ body, code {
     font-size: 12px;
     font-family: "Noto Sans KR", "맑은 고딕", "malgun gothic", "Apple SD Gothic Neo", sans-serif;
     color: #1b1e26;
-    -webkit-text-size-adjust: none;
     background-color: #f4f5f8;
-}
-
-.mDashPannel td .txtEm.underline {
-    border-bottom: 1px solid #568cd0;
-}
-
-.mDashPannel td .underline {
-    margin-bottom: 5px;
-    font-family: Verdana, sans-serif;
-    font-weight: normal;
-    font-size: 22px;
-    line-height: 1.25;
-    text-decoration: none;
-}
-
-.txtEm, .txtEm a {
-    color: #3971ff;
-    font-style: normal;
 }
 
 #content {
@@ -296,3 +213,156 @@ body, code {
     display: none;
     margin: -1px 0 0;
 }
+
+/* 사용자 정보 영역 */
+#wrap {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+  
+#content {
+    margin: 0 auto;
+    padding-left: 20px;
+}
+
+.mBoard {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.mBoard table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.mBoard th, .mBoard td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+}
+
+.mBoard th {
+    background-color: #f5f5f5;
+    text-align: left;
+}
+
+.mBoard td {
+    background-color: #fff;
+    text-align: center;
+}
+
+.mBoard img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 버튼 영역 */
+.mButton {
+    text-align: center;
+}
+
+.mButton a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.mButton a.btnEm {
+    background-color: #007bff;
+    cursor: pointer;
+}
+
+/* 게시글 정보 테이블 */
+.mBoard.typeProduct table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.mBoard.typeProduct th, .mBoard.typeProduct td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    
+}
+
+.mBoard.typeProduct th {
+    background-color: #f0f0f0;
+}
+
+.mBoard.typeProduct td {
+    background-color: #fff;
+}
+
+.mBoard.typeProduct tbody tr:nth-child(odd) {
+    background-color: #fafafa;
+}
+
+.mBoard.typeProduct caption {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.mToggleBar h2 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.mToggleBar {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 모달 내부 */
+.modal-container {
+    width: 80%;
+    max-height: 80vh;
+    margin: auto;
+    overflow-y: auto;
+}
+
+.modal-container table {
+    width: 100%;
+}
+
+.modal-container th, .modal-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.modal-container th {
+    background-color: #f5f5f5;
+}
+
+.modal-container td {
+    background-color: #fff;
+}
+
+/* 모달 내부 버튼 */
+.modal-container .mButton {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin-top: 20px;
+}
+
+.modal-container .mButton a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff; /* 파란색 계열 */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-left: 10px; /* 버튼 간 간격 */
+    transition: background-color 0.3s ease;
+}
+
+

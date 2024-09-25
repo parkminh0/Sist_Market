@@ -54,7 +54,7 @@ const Menuitems = [
   {
     title: "게시판 목록",
     icon: IconMoodHappy,
-    href: "/icons",
+    href: "/ad/bbs",
   },
   {
     title: "카테고리 관리",
