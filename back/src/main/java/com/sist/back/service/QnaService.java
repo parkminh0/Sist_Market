@@ -45,6 +45,16 @@ public class QnaService {
         return q_ar;
     }
 
+    public QnaVO[] select(Map q_map) {
+        List<QnaVO> q_list = q_mapper.select(q_map);
+        QnaVO[] q_ar = null;
+        if (q_list != null && !q_list.isEmpty()) {
+            q_ar = new QnaVO[q_list.size()];
+            q_list.toArray(q_ar);
+        }
+        return q_ar;
+    }
+
     public List<QnaVO> userAll(Map<String, Object> q_map) {
         return q_mapper.userAll(q_map);
     }
@@ -55,6 +65,10 @@ public class QnaService {
 
     public int count() {
         return q_mapper.count();
+    }
+
+    public int selectCount(String isanswered) {
+        return q_mapper.selectCount(isanswered);
     }
 
     public QnaVO getQuestion(String qnakey) {

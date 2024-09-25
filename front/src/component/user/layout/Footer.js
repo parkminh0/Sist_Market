@@ -215,10 +215,11 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
-                    href={{ pathname: '/Board/terms', query: { term: '위치기반 서비스 이용약관' } }}
+                    href={{ pathname: '/Board/terms', query: { term: '위치기반서비스 이용약관' } }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
                     rel="noreferrer noopener"
+                    style={{ whiteSpace: 'nowrap' }}
                   >
                     <font>
                       <font>위치기반서비스 이용약관</font>
