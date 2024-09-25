@@ -182,7 +182,7 @@
       SELECT COUNT(*)
       FROM user
       <where>
-        <if test= "type != ''">
+        <if test="type != ''">
           <choose>
             <when test="search_type == 'name'">AND name LIKE CONCAT('%', #{type}, '%')</when>
             <when test="search_type == 'id'">AND id LIKE CONCAT('%', #{type}, '%')</when>
@@ -212,11 +212,11 @@
           AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
         </if>
 
-        <if test="isdeleted != '2'">
+        <if test="isdeleted != ''">
           AND isdeleted = #{isdeleted}
         </if>
 
-        <if test="isauthorized != '2'">
+        <if test="isauthorized != ''">
           AND isauthorized = #{isauthorized}
         </if>
       </where>
@@ -257,11 +257,11 @@
           AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
         </if>
 
-        <if test="isdeleted != '2'">
+        <if test="isdeleted != ''">
           AND isdeleted = #{isdeleted}
         </if>
 
-        <if test="isauthorized != '2'">
+        <if test="isauthorized != ''">
           AND isauthorized = #{isauthorized}
         </if>
        </where> 
