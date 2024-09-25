@@ -54,6 +54,7 @@ export default function Page() {
     const checked = e.target.checked;
     let updatedCheckedItems = [...checkedItems];
     if (checked) {
+      console.log(value);
       updatedCheckedItems.push(value);
     } else {
       updatedCheckedItems = updatedCheckedItems.filter(

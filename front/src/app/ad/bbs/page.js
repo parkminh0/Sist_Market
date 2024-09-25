@@ -37,7 +37,7 @@ export default function Page() {
   const ADD_URL = "/admin/board/addBc";
   const EDIT_URL = "/admin/board/editBc";
   const DEL_CATE_URL = "/admin/board/chkDelBc";
-  const DEL_BBS_URL = "/admin/board/chkDelBc";
+  const DEL_BBS_URL = "/admin/board/chkDel";
 
   // #region 카테고리 CRUD
   const [allCateChecked, setAllCateChecked] = useState(false);
@@ -63,31 +63,6 @@ export default function Page() {
   useEffect(() => {
     getCateData();
   }, []);
-
-  const handleAllCateCheck = (e) => {
-    const checked = e.target.checked;
-    setAllCateChecked(checked);
-    if (checked) {
-      const allCheckedItems = list.map((item) => item.value);
-      setCheckedCateItems(allCheckedItems);
-    } else {
-      setCheckedCateItems([]);
-    }
-  };
-
-  const handleRowCateCheck = (e, value) => {
-    const checked = e.target.checked;
-    let updatedCheckedItems = [...checkedCateItems];
-    if (checked) {
-      updatedCheckedItems.push(value);
-    } else {
-      updatedCheckedItems = updatedCheckedItems.filter(
-        (item) => item !== value
-      );
-    }
-    setCheckedCateItems(updatedCheckedItems);
-    setAllCateChecked(updatedCheckedItems.length == bc_list.length);
-  };
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
@@ -138,11 +113,12 @@ export default function Page() {
       return;
     }
     axios
-      .post(DEL_URL, checkedCateItems)
+      .post(DEL_CATE_URL, checkedCateItems)
       .then((res) => {
         alert("삭제 완료");
         getCateData();
         setCheckedCateItems([]);
+        setModalOpen(false);
       })
       .catch((error) => {
         console.error("삭제 중 오류가 발생했습니다.", error);
@@ -151,8 +127,7 @@ export default function Page() {
 
   function openModalForEdit(key, value) {
     let updatedCheckedItems = [...checkedCateItems];
-    updatedCheckedItems.push(key);
-    console.log(key);
+    updatedCheckedItems.push(value);
     setCheckedCateItems(updatedCheckedItems);
     setKey(key);
     setValue(value);
@@ -230,7 +205,7 @@ export default function Page() {
       return;
     }
     axios
-      .post(DEL_URL, checkedBbsItems)
+      .post(DEL_BBS_URL, checkedBbsItems)
       .then((res) => {
         alert("삭제 완료");
         getBbsData(0);
@@ -260,7 +235,27 @@ export default function Page() {
             style={{ marginBottom: "50px" }}
           >
             <Grid item xs={12} sx={{ mb: -2.25 }}>
-              <Typography variant="h5">게시판 현황</Typography>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="h5">게시판 현황</Typography>
+                <Button
+                  variant="contained"
+                  color="inherit"
+                  onClick={() => {
+                    setModalMode("add");
+                    setValue("");
+                    setModalOpen(true);
+                  }}
+                  className="btnNormal"
+                  sx={{ ml: 1 }}
+                  startIcon={<AddIcon />}
+                >
+                  추가
+                </Button>
+              </Box>
             </Grid>
             <Grid
               item
@@ -360,13 +355,13 @@ export default function Page() {
                       <FormControl size="small">
                         <Select
                           sx={{ minWidth: 120 }}
-                          defaultValue=""
+                          defaultValue="null"
                           className="fSelect"
                           id="sel_board_no"
                           name="sel_board_no"
                           onChange={(e) => setCategoryName(e.target.value)}
                         >
-                          <MenuItem value="">전체</MenuItem>
+                          <MenuItem value="null">전체</MenuItem>
                           {bc_list.map((bc, i) => (
                             <MenuItem key={i} value={bc.value}>
                               {bc.value}
