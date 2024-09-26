@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ChattingVO implements Serializable {
 
-    private String chattingkey, chatroomkey, chattingimgkey, chattingemojikey, hope_lati, hope_long, appointkey, content, userkey1, userkey2, isbuyerread, issellerread, create_dtm, update_dtm, delete_dtm, isdeleted;
+    private String chattingkey, chatroomkey, chattingimgkey, chattingemojikey, hope_lati, hope_long, hope_place, hope_time, appointkey, content, userkey1, userkey2, isbuyerread, issellerread, create_dtm, update_dtm, delete_dtm, isdeleted;
 
     private String userkey;
     private String img_url;

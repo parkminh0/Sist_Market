@@ -9,6 +9,9 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText,
 import Link from "next/link";
 import "/public/css/chat.css";
 import Cookies from "js-cookie";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -76,6 +79,12 @@ const ChatApp = () => {
   const [region1, setRegion1] = useState("");
   const [region2, setRegion2] = useState("");
   const [region3, setRegion3] = useState("");
+
+  // 날짜 관련
+  const today = dayjs();
+  const yesterday = dayjs().subtract(1, 'day');
+  const todayStartOfTheDay = today.startOf('day');
+
   useEffect(() => {
     if (oneTime.current) {
       return;
@@ -141,68 +150,115 @@ const ChatApp = () => {
             </div>
           </div>
         );
-      } else if (item.content === "7KCI64yA7LmY7KeA66eI7JW97IaN7ZWp64uI64uk7JW97IaN7ZW07JqU7JW97IaN7ZW07KCI64yA7LmY7KeA66eI") {
-        result = (
-          <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
-            <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
-              <span className="_1h4pbgy8g _1h4pbgy7ag">
-                거래 희망 장소
-              </span>
-              <span>{hope_place}</span>
-            </li>
-            <div
-              id="mapDetail"
-              style={{
-                border: "0.5px solid black",
-                marginTop: "10px",
-                width: "100%",
-                height: "350px",
-              }}
-            ></div>
-          </ul>
-        );
       } else {
         // 일반 메시지 로직
         const isFirstReceived = item.userkey1 !== sender && (index === 0 || recv[index - 1]?.userkey1 === sender);
         if (item.userkey1 == sender) {
-          result = (
-            <div className="message-container sent">
-              <div className="message">
-                {item.chattingimg_url ? (
-                  <img src={item.chattingimg_url} style={{ width: '196px', height: '196px' }} />
-                ) : item.img_url ? (
-                  <img src={item.img_url} style={{ width: '196px', height: '196px' }} />
-                ) : (
-                  <p>{item.content}</p>
-                )}
-                <span className="timestamp">{dayjs(item.create_dtm).format('hh:mm A')}</span>
-              </div>
-            </div>
-          );
-        } else {
-          result = (
-            <div className="message-container received">
-              {isFirstReceived && (
-                <div className="profile-wrapper">
-                  <img
-                    className="profile-image"
-                    src={chatRooms[currentUserIndex].user_img_url}
-                    alt="profile"
-                  />
+          if (item.content === "7KCI64yA7LmY7KeA66eI7JW97IaN7ZWp64uI64uk7JW97IaN7ZW07JqU7JW97IaN7ZW07KCI64yA7LmY7KeA66eI") {
+            getLocationForChat(item);
+            result = (
+              <div className="message-container sent">
+                <div className="message">
+                  <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
+                    <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
+                      <span className="_1h4pbgy8g _1h4pbgy7ag">
+                        약속 장소
+                      </span>
+                    </li>
+                    <div
+                      id="mapDetail"
+                      style={{
+                        border: "0.5px solid black",
+                        marginTop: "10px",
+                        width: "400px",
+                        height: "250px",
+                      }}
+                    ></div>
+                    날짜 및 시간 : {item.create_dtm}<br />
+                    장소 : {item.hope_place}
+                  </ul>
+                  <span className="timestamp">{dayjs(item.create_dtm).format('hh:mm A')}</span>
                 </div>
-              )}
-              <div className="message">
-                {item.chattingimg_url ? (
-                  <img src={item.chattingimg_url} style={{ width: '196px', height: '196px' }} />
-                ) : item.img_url ? (
-                  <img src={item.img_url} style={{ width: '196px', height: '196px' }} />
-                ) : (
-                  <p>{item.content}</p>
-                )}
-                <span className="timestamp">{dayjs(item.create_dtm).format('hh:mm A')}</span>
               </div>
-            </div>
-          );
+            );
+          } else {
+            result = (
+              <div className="message-container sent">
+                <div className="message">
+                  {item.chattingimg_url ? (
+                    <img src={item.chattingimg_url} style={{ width: '196px', height: '196px' }} />
+                  ) : item.img_url ? (
+                    <img src={item.img_url} style={{ width: '196px', height: '196px' }} />
+                  ) : (
+                    <p>{item.content}</p>
+                  )}
+                  <span className="timestamp">{dayjs(item.create_dtm).format('hh:mm A')}</span>
+                </div>
+              </div>
+            );
+          }
+        } else {
+          if (item.content === "7KCI64yA7LmY7KeA66eI7JW97IaN7ZWp64uI64uk7JW97IaN7ZW07JqU7JW97IaN7ZW07KCI64yA7LmY7KeA66eI") {
+            getLocationForChat(item);
+            result = (
+              <div className="message-container received">
+                {isFirstReceived && (
+                  <div className="profile-wrapper">
+                    <img
+                      className="profile-image"
+                      src={chatRooms[currentUserIndex].user_img_url}
+                      alt="profile"
+                    />
+                  </div>
+                )}
+                <div className="message">
+                  <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
+                    <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
+                      <span className="_1h4pbgy8g _1h4pbgy7ag">
+                        약속 장소
+                      </span>
+                    </li>
+                    <div
+                      id="mapDetail"
+                      style={{
+                        border: "0.5px solid black",
+                        marginTop: "10px",
+                        width: "400px",
+                        height: "250px",
+                      }}
+                    ></div>
+                    날짜 및 시간 : {item.create_dtm}<br />
+                    장소 : {item.hope_place}
+                  </ul>
+                  <span className="timestamp">{dayjs(item.create_dtm).format('hh:mm A')}</span>
+                </div>
+              </div>
+            );
+          } else {
+            result = (
+              <div className="message-container received">
+                {isFirstReceived && (
+                  <div className="profile-wrapper">
+                    <img
+                      className="profile-image"
+                      src={chatRooms[currentUserIndex].user_img_url}
+                      alt="profile"
+                    />
+                  </div>
+                )}
+                <div className="message">
+                  {item.chattingimg_url ? (
+                    <img src={item.chattingimg_url} style={{ width: '196px', height: '196px' }} />
+                  ) : item.img_url ? (
+                    <img src={item.img_url} style={{ width: '196px', height: '196px' }} />
+                  ) : (
+                    <p>{item.content}</p>
+                  )}
+                  <span className="timestamp">{dayjs(item.create_dtm).format('hh:mm A')}</span>
+                </div>
+              </div>
+            );
+          }
         }
       }
       setChatLog((prevChatLog) => [...prevChatLog, result]);
@@ -253,6 +309,9 @@ const ChatApp = () => {
           create_dtm: item.create_dtm,
           img_url: item.img_url,
           chattingimg_url: item.chattingimg_url,
+          hope_lati: item.hope_lati,
+          hope_long: item.hope_long,
+          hope_place: item.hope_place
         })))
       });
     }
@@ -278,6 +337,84 @@ const ChatApp = () => {
       }
     }
   }, [beforeChat]);
+
+  function getLocationForChat(item) {
+    const kakaoMapScript = document.createElement("script");
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.async = false;
+    document.head.appendChild(kakaoMapScript);
+
+    kakaoMapScript.onload = () => {
+      // Kakao Maps API가 완전히 초기화된 후에 실행
+      window.kakao.maps.load(() => {
+        if (!window.kakao.maps.services) {
+          return;
+        }
+        setMapForChat(item); // API 로드 후에 함수 호출
+      });
+    };
+  }
+
+  // #region 지도
+  function setMapForChat(item) {
+    // Geolocation API 지원 여부 확인
+    try {
+      let hope_place = item.hope_place;
+      let latitude = item.hope_lati;
+      let longitude = item.hope_long;
+      // 주소-좌표 변환 객체를 생성합니다
+      let locPosition = new kakao.maps.LatLng(latitude, longitude);
+
+      // 인포윈도우를 생성합니다
+      let infowindow = new kakao.maps.InfoWindow({
+        content:
+          '<span id="info-title" style="display: block; background: black; color: #fff; text-align: center; height: 24px; line-height:22px; border-radius:4px; padding:0px 10px; ">' +
+          hope_place +
+          "</span>",
+      });
+
+      let mapContainer = document.getElementById("mapDetail"); // 지도를 표시할 div
+      let mapOption = {
+        center: locPosition, // 지도의 중심좌표
+        level: 5, // 지도의 확대 레벨
+      };
+      let map = new kakao.maps.Map(mapContainer, mapOption);
+      map.setDraggable(false);
+      map.setZoomable(false);
+
+      // 마커를 생성합니다
+      let marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(latitude, longitude),
+      });
+
+      // 인포윈도우를 마커위에 표시합니다
+      infowindow.open(map, marker);
+
+      marker.setMap(map);
+
+      let infoTitle = document.getElementById("info-title");
+      let w = infoTitle.offsetWidth + 10;
+      let ml = w / 2;
+      infoTitle.parentElement.style.top = "82px";
+      infoTitle.parentElement.style.left = "50%";
+      infoTitle.parentElement.style.marginLeft = -ml + "px";
+      infoTitle.parentElement.style.width = w + "px";
+      infoTitle.parentElement.previousSibling.style.display = "none";
+      infoTitle.parentElement.parentElement.style.border = "0px";
+      infoTitle.parentElement.parentElement.style.background = "unset";
+
+      kakao.maps.event.addListener(map, "click", function () {
+        window.open(
+          `https://map.kakao.com/link/map/${hope_place},${latitude},${longitude}`,
+          "_blank"
+        );
+      });
+    } catch (Exception) {
+      return;
+    }
+  }
+  // #endregion
+
 
   function getLocation() {
     const kakaoMapScript = document.createElement("script");
@@ -462,11 +599,13 @@ const ChatApp = () => {
         content: "7KCI64yA7LmY7KeA66eI7JW97IaN7ZWp64uI64uk7JW97IaN7ZW07JqU7JW97IaN7ZW07KCI64yA7LmY7KeA66eI",
         hope_long: hope_long,
         hope_lati: hope_lati,
+        hope_place: hope_place,
         create_dtm: currentTime,
       })
     );
     setHope_lati(null);
     setHope_long(null);
+    setHope_place(null);
     setMessage("");
 
   }
@@ -698,8 +837,20 @@ const ChatApp = () => {
                   alignItems: "center",
                 }}
               >
-                위치 추가
+                약속 추가
               </DialogTitle>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DialogContent dividers>
+                  <Typography gutterBottom>
+                    이웃과 만날 시간을 선택해주세요.
+                  </Typography>
+                  <DemoItem>
+                    <DateTimePicker defaultValue={today} disablePast views={['year', 'month', 'day', 'hours', 'minutes']} onChange={(e) => {
+                      console.log(dayjs(e.$d).format('YYYY-MM-DD HH:mm:ss'));
+                    }}/>
+                  </DemoItem>
+                </DialogContent>
+              </LocalizationProvider>
               <IconButton
                 aria-label="close"
                 onClick={locationClose}
