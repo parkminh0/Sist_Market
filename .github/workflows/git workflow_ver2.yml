@@ -1,0 +1,65 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: ["heo"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Maven 의존성 캐싱
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Node.js 의존성 캐싱
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "adopt"
+          cache: maven
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+
+      # 파일을 압축하여 EC2에 전송
+      - name: Compress and copy files to EC2
+        run: |
+          tar -czf market.tar.gz ./*
+          scp -o StrictHostKeyChecking=no market.tar.gz ubuntu@${{ secrets.HOST }}:/home/ubuntu/
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} 'tar -xzf /home/ubuntu/market.tar.gz -C /home/ubuntu/market && rm /home/ubuntu/market.tar.gz'
+
+      - name: Add user in the Docker group
+        run: |
+          sudo usermod -aG docker $USER
+
+      - name: Reload Docker session
+        run: |
+          sudo chmod 666 /var/run/docker.sock
+
+      - name: SSH into EC2 and run Docker Compose with caching
+        run: |
+          ssh -t -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
+            cd /home/ubuntu/market
+            docker-compose build --pull --no-cache
+            docker-compose up -d --build
+          EOF
