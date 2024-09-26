@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.AdminMapper">
+    <select id="getTotal" resultType="com.sist.back.vo.admin.TotalVO">
+   SELECT 
+        COUNT(*) AS cntPost, 
+        (SELECT COUNT(*) FROM `user` WHERE isdeleted = 0) AS cntUser,
+        (SELECT COUNT(*) FROM `board` WHERE isdeleted = 0) AS cntBbs,
+        (SELECT COUNT(*) FROM `qna` WHERE isdeleted = 0) AS cntQna
+    FROM post
+    where isdeleted = 0;
+    </select>
+</mapper>
