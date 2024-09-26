@@ -1,11 +1,10 @@
 import {
-  IconAperture,
-  IconCopy,
-  IconLayoutDashboard,
-  IconLogin,
-  IconMoodHappy,
-  IconTypography,
-  IconUserPlus,
+  IconHome,
+  IconInbox,
+  IconCategory,
+  IconUser,
+  IconClipboardText,
+  IconMessageChatbot,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -15,8 +14,8 @@ const Menuitems = [
   },
 
   {
-    title: "대시보드",
-    icon: IconLayoutDashboard,
+    title: "메인",
+    icon: IconHome,
     href: "/ad",
   },
   {
@@ -24,13 +23,13 @@ const Menuitems = [
     subheader: "게시글",
   },
   {
-    title: "게시글 목록",
-    icon: IconTypography,
+    title: "게시글 관리",
+    icon: IconInbox,
     href: "/ad/post",
   },
   {
     title: "카테고리 관리",
-    icon: IconCopy,
+    icon: IconCategory,
     href: "/ad/post/category",
   },
   {
@@ -38,28 +37,27 @@ const Menuitems = [
     subheader: "사용자",
   },
   {
-    title: "사용자 목록",
-    icon: IconLogin,
+    title: "사용자 관리",
+    icon: IconUser,
     href: "/ad/user",
-  },
-  {
-    title: "Register",
-    icon: IconUserPlus,
-    href: "/authentication/register",
   },
   {
     navlabel: true,
     subheader: "게시판",
   },
   {
-    title: "게시판 목록",
-    icon: IconMoodHappy,
-    href: "/icons",
+    title: "게시판 관리",
+    icon: IconClipboardText,
+    href: "/ad/bbs",
   },
   {
-    title: "카테고리 관리",
-    icon: IconAperture,
-    href: "/sample-page",
+    navlabel: true,
+    subheader: "고객센터",
+  },
+  {
+    title: "문의사항",
+    icon: IconMessageChatbot,
+    href: "/ad/qna",
   },
 ];
 

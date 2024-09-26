@@ -189,6 +189,7 @@ export default function EditPostModal(props) {
     }
   }
 
+    const isTemp = props.isTemp;
 
     const open = props.open;
     const handleClose = props.handleClose;
@@ -329,7 +330,8 @@ export default function EditPostModal(props) {
         
         // 1: 수정
         const mode = event.currentTarget.dataset.mode;
-        formData.append("poststatus", pvo.poststatus);
+        // formData.append("poststatus", pvo.poststatus);
+        formData.append("poststatus", mode === "save" ? 0: mode === "write" ? 1 : pvo.poststatus);
         
         // price가 공백("")이면 null 또는 0으로 변환
         formData.set("price", price === "" ? 0 : price);
@@ -357,6 +359,8 @@ export default function EditPostModal(props) {
         
         formData.set("canBargain", canBargain);
         formData.append("isPostPage", 1);
+
+        
         axios
         .post(
             "/adpost/edit",
@@ -369,7 +373,18 @@ export default function EditPostModal(props) {
         )
         .then((response) => {
             setSavePostKey(response.data.savePostKey);
-            alert("게시글이 수정되었습니다.")
+            switch(mode){
+              case "write":
+                alert("게시글이 저장되었습니다.");
+                break;
+              case "save":
+                alert("게시글이 임시저장되었습니다.");
+                break;
+              case "edit":
+                alert("게시글이 수정되었습니다.");
+                break;
+                
+            }
             window.location.reload();
         })
         .catch((error) => {
@@ -520,6 +535,24 @@ export default function EditPostModal(props) {
             }}
           >
             내 물건 팔기
+            {
+              isTemp
+              ?
+              <Button
+              variant="outlined"
+              type="submit"
+              onClick={(e) =>
+                (e.currentTarget.closest("form").dataset.mode = "save")
+              }
+              style={{
+                marginLeft: "auto",
+              }}
+            >
+              임시저장
+            </Button>
+            :
+            ''
+            }
           </DialogTitle>
           <DialogContent>
             <FormControl fullWidth margin="dense">
@@ -855,14 +888,27 @@ export default function EditPostModal(props) {
             </Fragment>
           </DialogContent>
           <DialogActions>
-            <Button
-              type="submit"
-              onClick={(e) =>
-                (e.currentTarget.closest("form").dataset.mode = "write")
+              {isTemp
+                ?
+                <Button
+                  type="submit"
+                  onClick={(e) =>
+                    (e.currentTarget.closest("form").dataset.mode = "write")
+                  }
+                  style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
+                >
+                  작성완료
+                </Button>
+                :
+                <Button
+                  type="submit"
+                  onClick={(e) =>
+                    (e.currentTarget.closest("form").dataset.mode = "edit")
+                  }
+                >
+                  수정
+                </Button>
               }
-            >
-              수정
-            </Button>
             <Button onClick={handleClose}>취소</Button>
           </DialogActions>
         </Dialog>
