@@ -104,7 +104,6 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      // console.log(res.data);
       if (res.data.result > 0) {
         setViewqty(res.data.viewqty);
       }
@@ -141,17 +140,13 @@ export default function Page() {
       if (cookie.includes(`/${userkey}`)) {
         // 유저가 있을 때
         var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
-        // console.log(`userCookieTmp: ${userCookieTmp}`);
         var beforeCookie = cookie.substring(0, cookie.indexOf(`/${userkey}`));
-        // console.log(`beforeCookie: ${beforeCookie}`);
         var userCookie = userCookieTmp;
         var afterCookie = "";
         if (userCookieTmp.indexOf("/") > 0) {
           userCookie = userCookieTmp.substring(0, userCookieTmp.indexOf("/"));
           afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
         }
-        // console.log(`userCookie: ${userCookie}`);
-        // console.log(`afterCookie: ${afterCookie}`);
         if (!userCookie.includes(`[${postkey}]`)) {
           // 새로운 페이지 일 때
           updateViewqty(postkey);
@@ -338,6 +333,8 @@ export default function Page() {
   function editPost(userkey, poststatus) {
     if (userkey != Cookies.get("userkey")) {
       alert("수정 권한이 없습니다.");
+    } else if (poststatus == 2) {
+      alert("예약(거래진행)중인 게시글은 수정하실 수 없습니다.");
     } else if (poststatus == 3) {
       alert("구매완료된 게시글은 수정하실 수 없습니다.");
     } else {
