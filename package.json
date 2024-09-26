@@ -3,6 +3,7 @@
     "prettier": "^3.3.3"
   },
   "dependencies": {
+    "@mui/x-date-pickers": "^7.18.0",
     "@stomp/stompjs": "^7.0.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
