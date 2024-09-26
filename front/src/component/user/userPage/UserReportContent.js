@@ -61,7 +61,6 @@ export default function UserReportContent(props) {
           noseeuserkey: userkey,
         },
       }).then((res) => {
-        console.log(res.data)
         if (res.data.msg == 'exist') {
           alert('이미 차단된 사용자입니다.');
         } else if (res.data.msg == 'new') {

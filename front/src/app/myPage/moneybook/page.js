@@ -120,7 +120,6 @@ export default function page() {
                 }
             }
         ).then((result)=>{
-            // console.log(result.data);
             setUserVO(result.data.uvo);
             setUserSell(result.data.b_list);
             setUserBuy(result.data.s_list);

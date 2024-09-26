@@ -762,11 +762,12 @@ public class UserController {
         int cell2count = service.getCell2TotalCount(userkey);
         int cellCount = cell1count+cell2count;
         List<PostVO> cellList = service.getCellListForUserPage(userkey);
-        String limitpostkey = cellList.get(0).getPostkey();
-        String lastpostkey = "9999";
+        String limitpostkey = "0";
+        String lastpostkey = "0";
         boolean isnextexist = cellCount>5;
         if(!cellList.isEmpty()){
             lastpostkey = cellList.get(cellList.size()-1).getRnum();
+            limitpostkey = cellList.get(0).getPostkey();
         }
         
         u_map.put("uvo", uvo);
