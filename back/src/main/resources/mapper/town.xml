@@ -66,6 +66,23 @@
       ORDER BY region2, region3
     </select>
 
+    <select id="getAllRegion1" resultType="String">
+    SELECT DISTINCT region1 FROM `town`
+    ORDER BY region1
+    </select>
+    
+    <select id="getAllRegion2" parameterType="String" resultType="String">
+    SELECT DISTINCT region2 FROM `town`
+    WHERE region1 = #{region1}
+    ORDER BY region2
+    </select>
+    
+    <select id="getAllRegion3" parameterType="String" resultType="String">
+    SELECT DISTINCT region3 FROM `town`
+    WHERE region2 = #{region2}
+    ORDER BY region3
+    </select>
+
     <!-- <select id="searchNearRegion" resultType="String" parameterType="map">
       SELECT DISTINCT
         region2

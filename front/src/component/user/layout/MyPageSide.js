@@ -4,6 +4,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import axios from "axios";
+import FaqModal from "@/app/customer/faq/page";
+import QnaModal from "@/app/customer/qna/page";
 
 export default function MyPageSide(props) {
   var pathname = usePathname();
@@ -40,6 +42,24 @@ export default function MyPageSide(props) {
       }
     });
   }, [pathname, searchParams]);
+
+  //FAQ
+  const [faqOpen, setFaqOpen] = useState(false);
+  const handleFaqOpen = (e) => {
+    e.preventDefault(); // 링크의 기본 동작 방지
+    setFaqOpen(true);
+  };
+  const handleFaqClose = () => { setFaqOpen(false); };
+
+  //QnA
+  const [qnaOpen, setQnaOpen] = useState(false);
+  const handleQnaOpen = (e) => {
+    if (e && e.preventDefault) {
+      e.preventDefault(); // 이벤트가 있을 때만 링크 원래 기능 막기
+    }
+    setQnaOpen(true);
+  };
+  const handleQnaClose = () => { setQnaOpen(false); };
 
   return (
     <div
@@ -81,11 +101,6 @@ export default function MyPageSide(props) {
                 className="menu_link"
               >
                 구매내역
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                중고거래 가계부
               </Link>
             </li>
           </ul>
@@ -224,9 +239,11 @@ export default function MyPageSide(props) {
         </div>
         <div data-v-7bcac446="" className="snb_list1">
           <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                자주 묻는 질문
+              <Link data-v-7a824f04="" href="#" className="menu_link" onClick={handleFaqOpen}>
+                    자주 묻는 질문
               </Link>
+              <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} />
+              <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
             </li>
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/Board/terms" className="menu_link">

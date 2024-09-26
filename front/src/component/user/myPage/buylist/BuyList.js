@@ -1,87 +1,123 @@
 'use client'
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import BuyDetail from "./BuyDetail";
+import { TableCell, TableRow } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 
 export default function BuyList(props) {
   const buylist = props.buylist;
+
   const router = useRouter();
 
-  return buylist.map((blvo, index) => {
-    const detailLink = `/myPage/buylist/detail/${blvo.postkey}`;
-    return (
-      <div key={index} data-v-eff62a72="" onClick={()=>{router.push(`/post/detail?postkey=${blvo.postkey}`)}}>
-        {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-        <div data-v-53e92c51="" data-v-eff62a72="">
-          <div
-            className="purchase_list_display_item"
-            style={{ backgroundColor: "#FFFFFF" }}
-            data-v-53e92c51=""
-          >
-            <div className="purchase_list_product" data-v-53e92c51="">
-              <div className="list_item_img_wrap" data-v-53e92c51="">
-                {blvo.pimg_list &&
-                blvo.pimg_list.length > 0 &&
-                blvo.pimg_list[0].imgurl != undefined ? (
-                  <img
-                    alt="product_image"
-                    src={blvo.pimg_list[0].imgurl}
-                    className="list_item_img"
-                    style={{ backgroundColor: "#ebf0f5" }}
-                    data-v-53e92c51=""
-                  />
-                ) : (
-                  <ImageNotSupportedRoundedIcon
-                    style={{
-                      width: "80px", // 아이콘의 너비를 100%로 설정
-                      height: "80px", // 아이콘의 높이를 100%로 설정
-                    }}
-                  />
-                )}
-              </div>
-              <div className="list_item_title_wrap" data-v-53e92c51="">
-                <p className="list_item_title" data-v-53e92c51="">
-                  {blvo.title}
-                </p>
-                <p className="list_item_description" data-v-53e92c51="">
-                  <span data-v-53e92c51="">{blvo.cvo.categoryname}</span>
-                </p>
-              </div>
-            </div>
-            <div className="list_item_status" data-v-53e92c51="">
-              <div
-                className="list_item_column column_secondary"
-                data-v-53e92c51=""
-              >
-                <p
-                  className="text-lookup secondary_title display_paragraph"
-                  style={{ color: "#22222280" }}
-                  data-v-09bea70c=""
-                  data-v-7d3b6402=""
-                  data-v-53e92c51=""
+  const[open,setOpen] = useState(false);
+  const[postkey,setPostkey] = useState(0);
+  function openDetail(postkey){
+    setPostkey(postkey);
+    setOpen(true);
+  }
+  function closeDetail(){
+    setOpen(false);
+    setPostkey(0);
+  }
+
+  return (
+    <>
+      {
+      buylist.map((blvo, index) => {
+        const lastprice =
+        blvo.lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+        return (
+          <TableRow
+            key={index}
+            onDoubleClick={()=>{router.push(`/post/detail?postkey=${blvo.postkey}`);}}>
+            
+            <TableCell colSpan={3}>
+                <div style={{
+                    display:'flex',
+                    alignItems: 'center',
+                  }}>
+                  {blvo.pimg_list &&
+                    blvo.pimg_list.length > 0 &&
+                    blvo.pimg_list[0].imgurl != undefined ? (
+                      <img
+                        alt="product_image"
+                        src={blvo.pimg_list[0].imgurl}
+                        style={{
+                          backgroundColor: "#ebf0f5",
+                          width: "80px",
+                          minWidth: "80px",
+                          height: "80px",
+                          borderRadius: 23,
+                          overflow: 'hidden',
+                          }}
+                      />
+                    ) : (
+                      <ImageNotSupportedRoundedIcon
+                        style={{
+                          width: "80px", // 아이콘의 너비를 100%로 설정
+                          height: "80px", // 아이콘의 높이를 100%로 설정
+                          borderRadius: 23,
+                          overflow: 'hidden',
+                        }}
+                      />
+                    )}
+                  <div style={{
+                    display:'flex',
+                    flexDirection: 'column',
+                    marginLeft: '10px',
+                    width:'60%'
+                  }}>
+                    <div style={{
+                      marginBottom: '5px',
+                      fontSize:'16px',
+                      fontWeight: 'bold',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      }}>{blvo.title}</div>
+                    <div style={{
+                      marginTop: '5px',
+                      fontSize:'10px',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      }}>{blvo.cvo.categoryname}</div>
+                  </div>
+                  </div>
+              </TableCell>
+              <TableCell
+                style={{color: "#22222280",
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                      }}
                 >
+                  {lastprice}
+              </TableCell>
+              <TableCell style={{color: "#22222280"}}>
                   {blvo.deal_dtm.split(" ")[0]}
-                </p>
-              </div>
-              <div className="list_item_column column_last" data-v-53e92c51="">
+              </TableCell>
+              <TableCell style={{textAlign:'right'}}>
                 <Link
-                  href={detailLink}
-                  className="text-lookup last_description display_paragraph action_named_action"
+                  href="#"
+                  onClick={()=>{
+                    openDetail(blvo.postkey);
+                  }}
+                  className="last_item_txt text-lookup last_description display_paragraph action_named_action"
                   style={{ color: "#222222CC" }}
-                  data-v-09bea70c=""
-                  data-v-7d3b6402=""
-                  data-v-53e92c51=""
                 >
                   확인
                 </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* <!-- 여기까지 FOREACH --> */}
-      </div>
+              </TableCell>
+            {/* <!-- 여기까지 FOREACH --> */}
+          </TableRow>
     );
-  });
+  })
+  }
+      <BuyDetail open={open} closeDetail={closeDetail} postkey={postkey} />
+    </>
+  )
 }

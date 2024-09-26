@@ -78,7 +78,6 @@ export default function page() {
          }
       }
     ).then((res) => {
-      // console.log(res.data.result);
       if(res.data.result>0){
         setCanPoN(true);
       }
@@ -95,7 +94,6 @@ export default function page() {
          }
       }
     ).then((res) => {
-      // console.log(res.data.cellList);
       setLastpostkey(res.data.lastpostkey);
       setCellList([...cellList,...res.data.cellList]);
       setIsnextexist(res.data.isnextexist);
@@ -165,7 +163,6 @@ export default function page() {
         params: { userkey: userkey }
       }
     ).then((res) => {
-      // console.log(res.data.uvo);
       setVo(res.data.uvo);
       setCellList(res.data.cellList);
       handleCellCount(res.data.cellCount);
@@ -401,12 +398,21 @@ export default function page() {
                     <div data-v-24868902="" data-v-eff62a72="" className={`empty_area ${selectedTab == '1' ? 'userPage' : ''}`} style={{paddingTop: '50px'}}>
                         {selectedTab == '1' && (
                             <p data-v-24868902="" className="desc">
-                                <div className="UserPageGrid" >
                                 {cellList.length > 0
-                                ? cellList.map((clvo, index) => {
+                                ? 
+                                <div className="UserPageGrid" >
+                                  {cellList.map((clvo, index) => {
                                     return <UserCellList2 key={index} pvo={clvo} />;
-                                }) : ""}
+                                })}
+                                </div> : 
+                                <div style={{
+                                  width: 'fit-content',
+                                  margin: '0 auto',
+                                  fontSize: '27px'
+                                }}>
+                                    판매 내역이 존재하지 않습니다
                                 </div>
+                                }
                                 {isnextexist ?
                                 <Button
                                   variant="contained"

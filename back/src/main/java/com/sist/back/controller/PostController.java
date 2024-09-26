@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ import com.sist.back.service.TownService;
 import com.sist.back.service.OfferService;
 import com.sist.back.service.WishlistService;
 import com.sist.back.util.FileRenameUtil;
+import com.sist.back.util.Paging;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
@@ -36,6 +38,10 @@ import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/adpost")
@@ -74,25 +80,23 @@ public class PostController {
 
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
-        // searchParams에서 poststatus를 추출
-        String poststatus = searchParams.get("poststatus") != null ? searchParams.get("poststatus").toString() : "";
+        // 페이징 처리
+        Paging p = new Paging(8, 10);
+        // 전체 페이지
+        p.setTotalRecord(p_service.searchpostTotal(searchParams));
+        if (searchParams.get("nowPage") != null && !searchParams.get("nowPage").equals("undefined")) {
+            p.setNowPage(Integer.parseInt((String) searchParams.get("nowPage")));
+        } else {
+            p.setNowPage(1);
+        }
+
+        searchParams.put("begin", p.getBegin());
+        searchParams.put("end", p.getEnd());
 
         // 결과를 담을 Map 객체 생성
         Map<String, Object> res = new HashMap<>();
-        List<PostVO> postList = new ArrayList<>();
-
-        // "전체"인 경우 1, 2, 3, 4 상태의 게시글 조회
-        if ("all".equals(poststatus)) {
-            res.put("post_list", p_service.findAllByPoststatusIn(Arrays.asList(1, 2, 3, 4)));
-        } else if (!poststatus.isEmpty()) {
-            // 선택한 특정 상태만 조회
-            res.put("post_list", p_service.findByPoststatus(Integer.parseInt(poststatus)));
-        } else {
-            // poststatus 값이 없거나 잘못된 경우 처리
-            res.put("post_list", new ArrayList<>()); // 빈 리스트 반환 또는 기본 처리
-        }
-
-        // 결과를 JSON 형태로 반환
+        res.put("post_list", p_service.searchpost(searchParams));
+        res.put("page", p);
         return res;
     }
 
@@ -454,6 +458,21 @@ public class PostController {
         Map<String, Object> map = new HashMap<>();
         int cnt = p_service.hidePost(postkey);
         map.put("cnt", cnt);
+        return map;
+    }
+
+    @RequestMapping("/updatePostStatus")
+    public void updatePostStatus(String postStatus, String postkey) {
+        p_service.updatePostStatus(postStatus, postkey);
+    }
+    
+    @GetMapping("/checkPostDel")
+    public Map<String, Object> checkPostDel(@RequestParam List<String> postkeys) {
+        Map<String, Object> map = new HashMap<>();
+        for (String postkey : postkeys) {
+            int cnt = p_service.checkPostDel(postkey);
+            map.put(postkey, cnt);
+        }
         return map;
     }
 }
