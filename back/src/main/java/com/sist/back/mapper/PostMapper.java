@@ -71,4 +71,6 @@ public interface PostMapper {
     int hidePost(String postkey);
     
     PostImgVO getPostImgThumbnail(String postkey);
+
+    void updatePostStatus(String postStatus, String postkey);
 }
