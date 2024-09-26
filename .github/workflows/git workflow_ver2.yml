@@ -41,25 +41,22 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.PRIVATE_KEY }}
 
-      # 파일을 압축하여 EC2에 전송
-      - name: Compress and copy files to EC2
+      # 변경된 파일만 복사
+      - name: Copy changed files to EC2 using rsync
         run: |
-          tar -czf market.tar.gz ./*
-          scp -o StrictHostKeyChecking=no market.tar.gz ubuntu@${{ secrets.HOST }}:/home/ubuntu/
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} 'tar -xzf /home/ubuntu/market.tar.gz -C /home/ubuntu/market && rm /home/ubuntu/market.tar.gz'
+          rsync -avz --delete --exclude="node_modules" --exclude="target" ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+        shell: bash
 
-      - name: Add user in the Docker group
+      # 전체 파일 복사 (필요한 경우 주기적으로 전체 복사를 활성화)
+      - name: Full copy to EC2 (manual or periodic)
+        if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
         run: |
-          sudo usermod -aG docker $USER
+          scp -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
 
-      - name: Reload Docker session
-        run: |
-          sudo chmod 666 /var/run/docker.sock
-
-      - name: SSH into EC2 and run Docker Compose with caching
+      - name: SSH into EC2 and run Docker Compose
         run: |
           ssh -t -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
             cd /home/ubuntu/market
-            docker-compose build --pull --no-cache
+            docker-compose down
             docker-compose up -d --build
           EOF
