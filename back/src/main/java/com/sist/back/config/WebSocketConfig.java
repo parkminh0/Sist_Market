@@ -2,6 +2,7 @@ package com.sist.back.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,6 +13,8 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 
 @Configuration
 @EnableWebSocketMessageBroker
+@Profile("!test")  // 'test' 프로파일에서는 WebSocket 설정을 로드하지 않음
+
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Bean
