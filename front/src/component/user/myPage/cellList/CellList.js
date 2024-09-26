@@ -1,8 +1,12 @@
+'use client'
 import axios from "axios";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import "/public/css/celllist.css";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import { TableCell, TableRow } from "@mui/material";
+import { useRouter } from "next/navigation";
+import CellDetail from "./CellDetail";
 
 export default function CellList(props) {
   // const param = useSearchParams();
@@ -11,6 +15,8 @@ export default function CellList(props) {
   const whatNow = props.whatNow;
   const getCellList = props.getCellList;
   const cPage = props.cPage;
+
+  const router = useRouter();
 
   function getLatestRemind(clvo) {
     var remindDate = clvo.remind_dtm ? clvo.remind_dtm : clvo.create_dtm;
@@ -45,6 +51,18 @@ export default function CellList(props) {
     return remindDate;
   }
 
+
+  const[open,setOpen] = useState(false);
+  const[postkey,setPostkey] = useState(0);
+  function openDetail(postkey){
+    setPostkey(postkey);
+    setOpen(true);
+  }
+  function closeDetail(){
+    setOpen(false);
+    setPostkey(0);
+  }
+
   function canRemindFunc(latestRemind) {
     var canRemind = true;
     const timeDiff = new Date() - new Date(latestRemind);
@@ -62,7 +80,6 @@ export default function CellList(props) {
         postkey: postkey,
       },
     }).then((res) => {
-      console.log(res);
       getCellList(cPage);
     });
   }
@@ -76,13 +93,13 @@ export default function CellList(props) {
         postkey: postkey,
       },
     }).then((res) => {
-      console.log(res.data);
       getCellList(cPage);
     });
   }
 
-  return celllist ? (
-    celllist.map((clvo, index) => {
+  return celllist.length>0 ? (
+    <>
+    {celllist.map((clvo, index) => {
       var price =
         clvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
       var latestRemind = getLatestRemind(clvo);
@@ -90,93 +107,81 @@ export default function CellList(props) {
       var canRemind = canRemindFunc(latestRemind);
       const detailLink = `/myPage/celllist/detail/${clvo.postkey}`;
       return (
-        <div key={index} data-v-eff62a72="">
-          {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-          <Link
-            href={`/post/detail?postkey=${clvo.postkey}`}
-            data-v-53e92c51=""
-            data-v-eff62a72=""
+          <TableRow
+          key={index}
+            onDoubleClick={()=>{router.push(`/post/detail?postkey=${clvo.postkey}`)}}
           >
-            <div
-              className="purchase_list_display_item"
-              style={{ backgroundColor: "#FFFFFF" }}
-              data-v-53e92c51=""
-            >
-              <div className="purchase_list_product" data-v-53e92c51="">
-                <div className="list_item_img_wrap" data-v-53e92c51="">
+            <TableCell colSpan={3}>
+                <div style={{
+                    display:'flex',
+                    alignItems: 'center',
+                  }}>
                   {clvo.pimg_list &&
-                  clvo.pimg_list.length > 0 &&
-                  clvo.pimg_list[0].imgurl != undefined ? (
-                    <img
-                      alt="product_image"
-                      src={clvo.pimg_list[0].imgurl}
-                      className="list_item_img"
-                      style={{ backgroundColor: "#ebf0f5" }}
-                      data-v-53e92c51=""
-                    />
-                  ) : (
-                    <ImageNotSupportedRoundedIcon
-                      style={{
-                        width: "80px", // 아이콘의 너비를 100%로 설정
-                        height: "80px", // 아이콘의 높이를 100%로 설정
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="list_item_title_wrap" data-v-53e92c51="">
-                  <p className="list_item_title" data-v-53e92c51="">
-                    {clvo.title}
-                  </p>
-                  <p className="list_item_description" data-v-53e92c51="">
-                    <span data-v-53e92c51="">{clvo.cvo.categoryname}</span>
-                  </p>
-                </div>
-              </div>
-              <div className="list_item_status_CL" data-v-53e92c51="">
-                <div
-                  className="list_item_column_CL column_secondary"
-                  data-v-53e92c51=""
-                >
-                  <p
-                    className="text-lookup secondary_title display_paragraph"
-                    style={{ color: "#22222280" }}
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-53e92c51=""
-                  >
+                    clvo.pimg_list.length > 0 &&
+                    clvo.pimg_list[0].imgurl != undefined ? (
+                      <img
+                        alt="product_image"
+                        src={clvo.pimg_list[0].imgurl}
+                        style={{
+                          backgroundColor: "#ebf0f5",
+                          width: "80px",
+                          minWidth: "80px",
+                          height: "80px",
+                          borderRadius: 23,
+                          overflow: 'hidden',
+                          }}
+                      />
+                    ) : (
+                      <ImageNotSupportedRoundedIcon
+                        style={{
+                          width: "80px", // 아이콘의 너비를 100%로 설정
+                          height: "80px", // 아이콘의 높이를 100%로 설정
+                          borderRadius: 23,
+                          overflow: 'hidden',
+                        }}
+                      />
+                    )}
+                  <div style={{
+                    display:'flex',
+                    flexDirection: 'column',
+                    marginLeft: '10px',
+                    width:'60%'
+                  }}>
+                    <div style={{
+                      marginBottom: '5px',
+                      fontSize:'16px',
+                      fontWeight: 'bold',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      }}>{clvo.title}</div>
+                    <div style={{
+                      marginTop: '5px',
+                      fontSize:'10px',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      }}>{clvo.cvo.categoryname}</div>
+                  </div>
+                  </div>
+              </TableCell>
+                <TableCell colSpan={2} style={{ color: "#22222280"}}>
                     {price}
-                  </p>
-                </div>
-                <div
-                  className="list_item_column_CL column_secondary"
-                  data-v-53e92c51=""
-                >
-                  <p
-                    className="text-lookup secondary_title display_paragraph"
-                    style={{ color: "#22222280" }}
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-53e92c51=""
-                  >
+                </TableCell>
+                <TableCell colSpan={2} style={{ color: "#22222280"}}>
                     {whatNow == "Hidden"
                       ? clvo.update_dtm.split(" ")[0]
                       : whatNow == "Sold"
                         ? clvo.create_dtm.split(" ")[0]
                         : clvo.create_dtm.split(" ")[0]}
-                  </p>
-                </div>
-                <div
-                  className="list_item_column_CL column_secondary"
-                  data-v-53e92c51=""
-                  style={{ textAlign: "right" }}
-                >
+                </TableCell>
+                {whatNow=="onSale"?
+                <TableCell colSpan={2}>
+                <div>
                   <div
-                    data-v-0b6ddb6a=""
-                    data-v-9ff60cb2=""
                     className="division_btn_box"
                   >
                     <button
-                      data-v-0b6ddb6a=""
                       className="btn_action"
                       style={
                         canRemind
@@ -203,20 +208,21 @@ export default function CellList(props) {
                             }
                       }
                     >
-                      <strong data-v-0b6ddb6a="" className="button_name">
+                      <strong className="button_name">
                         끌어올리기
                       </strong>
                     </button>
                   </div>
-                  <div style={{ fontSize: 10, textAlign: "right" }}>
+                  <div style={{ fontSize: 10, marginTop:'5px' }}>
                     최근일자: <br />
-                    {latestRemind}
+                    {latestRemind.substring(0,latestRemind.lastIndexOf(':'))}
                   </div>
                 </div>
-                <div
-                  className="list_item_column_CL column_last"
-                  data-v-53e92c51=""
-                >
+                </TableCell>
+                :
+                ''  
+                }
+                <TableCell colSpan={2} style={{textAlign:'right'}}>
                   {whatNow == "Hidden" ? (
                     <Link
                       href="#"
@@ -230,7 +236,18 @@ export default function CellList(props) {
                     </Link>
                   ) : whatNow == "Sold" ? (
                     <Link
-                      href={detailLink}
+                      href="#"
+                      onClick={()=>{
+                        openDetail(clvo.postkey);
+                      }}
+                      className="last_item_txt text-lookup last_description display_paragraph action_named_action"
+                      style={{ color: "#222222CC" }}
+                    >
+                      확인
+                    </Link>
+                  ) : whatNow == "Selling" ? (
+                    <Link
+                      href={`/post/detail?postkey=${clvo.postkey}`}
                       className="last_item_txt text-lookup last_description display_paragraph action_named_action"
                       style={{ color: "#222222CC" }}
                     >
@@ -244,31 +261,37 @@ export default function CellList(props) {
                     >
                       수정
                     </Link>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Link>
+                  ) 
+                }
+                </TableCell>
           {/* <!-- 여기까지 FOREACH --> */}
-        </div>
+        </TableRow>
       );
-    })
+    })}
+    <CellDetail open={open} closeDetail={closeDetail} postkey={postkey} />
+    </>
   ) : (
-    <div data-v-24868902="" data-v-eff62a72="" className="empty_area">
-      {/* <!-- 없을 경우 --> */}
-      <p data-v-24868902="" className="desc">
-        구매 내역이 없습니다.
-      </p>
-      <Link
-        data-v-420a5cda=""
-        data-v-24868902=""
-        href="/post"
-        className="btn outlinegrey small"
-      >
-        {" "}
-        SHOP 바로가기{" "}
-      </Link>
-      {/* <!--  --> */}
-    </div>
+    <TableRow data-v-24868902="" data-v-eff62a72="" className="empty_area">
+      <TableCell colSpan={whatNow=="onSale" ? 11 : 9} style={{textAlign:'center'}}>
+        {/* <!-- 없을 경우 --> */}
+        <p data-v-24868902="" className="desc">
+          {whatNow=="onSale" ? '판매중' :
+          whatNow=="Selling" ? '예약중' :
+          whatNow=="Sold" ? '거래완료' : "숨김"} 내역이 없습니다.
+        </p>
+        {whatNow=="onSale" ?
+        <Link
+          data-v-420a5cda=""
+          data-v-24868902=""
+          href="/post"
+          className="btn outlinegrey small"
+        >
+          {" "}
+          SHOP 바로가기{" "}
+        </Link>
+        : ''}
+        {/* <!--  --> */}
+      </TableCell>
+    </TableRow>
   );
 }

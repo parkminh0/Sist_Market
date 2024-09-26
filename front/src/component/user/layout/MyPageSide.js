@@ -103,11 +103,6 @@ export default function MyPageSide(props) {
                 구매내역
               </Link>
             </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                중고거래 가계부
-              </Link>
-            </li>
           </ul>
         </div>
         <div data-v-7bcac446="" className="snb_list1">
