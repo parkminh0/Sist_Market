@@ -322,8 +322,11 @@ public class PostController {
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
-            vo.setCanbargain("0");
+            vo.setCanbargain(vo.getCanbargain() != null ? "0" : "0"); // null일 경우 기본값 '0'으로 설정
         }
+        // } else {
+        //     vo.setCanbargain("0");
+        // }
 
         // 파일 데이터 처리
         // 1) 기존 존재하던 이미지 삭제
