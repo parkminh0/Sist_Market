@@ -65,16 +65,18 @@ export default function AnalyticEcommerce({
         </Grid>
       </Stack>
       <Box sx={{ pt: 2.25 }}>
-        <Typography variant="caption" color="text.secondary">
-          You made an extra{" "}
-          <Typography
-            variant="caption"
-            sx={{ color: `${color || "primary"}.main` }}
-          >
-            {extra}
-          </Typography>{" "}
-          this year
-        </Typography>
+        {extra && (
+          <Typography variant="caption" color="text.secondary">
+            You made an extra{" "}
+            <Typography
+              variant="caption"
+              sx={{ color: `${color || "primary"}.main` }}
+            >
+              {extra}
+            </Typography>{" "}
+            this year
+          </Typography>
+        )}
       </Box>
     </DashboardCard>
   );
