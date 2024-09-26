@@ -79,7 +79,7 @@
         WHERE postkey = #{postkey}
     </select>
     <select id="getPostImgThumbnail" parameterType="String" resultType="com.sist.back.vo.PostImgVO">
-        SELECT a.title, b.imgurl FROM post as a LEFT JOIN postimg as b ON a.postkey = b.postkey where a.postkey = #{postkey} LIMIT 1
+        SELECT a.title, a.postkey, a.poststatus, b.imgurl FROM post as a LEFT JOIN postimg as b ON a.postkey = b.postkey where a.postkey = #{postkey} LIMIT 1
     </select>
     <select id="getPInfo_listByPostKey" resultType="com.sist.back.vo.PostInfoVO" parameterType="int">
         SELECT * FROM `post_info`
@@ -688,6 +688,22 @@
         COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS del_posts 
     FROM post;
     </select>
+     <!-- 여러 상태를 IN 조건으로 조회 -->
+    <select id="findAllByPoststatusIn" parameterType="list" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM post WHERE poststatus IN
+        <foreach item="status" collection="list" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <!-- 특정 상태를 조회 -->
+    <select id="findByPoststatus" parameterType="int" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM post WHERE poststatus = #{poststatus}
+    </select>
+
+    <update id="updatePostStatus" parameterType="String">
+        UPDATE post SET poststatus = #{postStatus} where postkey = #{postkey}
+    </update>
 
     <!-- 게시글 숨기기 -->
     <update id="hidePost" parameterType="String">

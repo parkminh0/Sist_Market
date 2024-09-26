@@ -1,7 +1,7 @@
 /* General Layout */
 .article {
     display: flex;
-    height: 100vh;
+    height: 85vh;
     background-color: #f6f6f6;
 }
 

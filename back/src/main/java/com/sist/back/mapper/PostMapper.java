@@ -69,4 +69,6 @@ public interface PostMapper {
     int checkPostDel(String postkey);
 
     PostImgVO getPostImgThumbnail(String postkey);
+
+    void updatePostStatus(String postStatus, String postkey);
 }
