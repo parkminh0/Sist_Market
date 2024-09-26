@@ -662,22 +662,22 @@ public class UserController {
         return map;
     }
 
-    @RequestMapping("/delImage")
-    @ResponseBody
-    public Map<String, Object> delImage(String userkey) {
-        String realPath = "/img/user/";
-        userVO uvo = new userVO();
-        uvo.setUserkey(userkey);
-        uvo.setImgurl(realPath + "default_img.png");
+    // @RequestMapping("/delImage")
+    // @ResponseBody
+    // public Map<String, Object> delImage(String userkey) {
+    //     String realPath = "/img/user/";
+    //     userVO uvo = new userVO();
+    //     uvo.setUserkey(userkey);
+    //     uvo.setImgurl(realPath + "default_img.png");
 
-        Map<String, Object> map = new HashMap<>();
-        int cnt = service.delImage(userkey);
-        if (cnt > 0) {
-            service.editImage(uvo);
-        }
-        map.put("cnt", cnt);
-        return map;
-    }
+    //     Map<String, Object> map = new HashMap<>();
+    //     int cnt = service.delImage(userkey);
+    //     if (cnt > 0) {
+    //         service.editImage(uvo);
+    //     }
+    //     map.put("cnt", cnt);
+    //     return map;
+    // }
 
     @RequestMapping("/editUser")
     @ResponseBody

@@ -33,11 +33,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.PRIVATE_KEY }}
 
-      #테스트를 하지 않고 배포
-      - name: Build with Maven (skip tests)
-        run: mvn clean install -DskipTests
-        working-directory: ./back # pom.xml이 위치한 디렉토리 경로 설정
-
       - name: Copy files to EC2
         run: |
           scp -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
