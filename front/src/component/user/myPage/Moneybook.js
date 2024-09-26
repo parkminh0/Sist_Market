@@ -1,11 +1,10 @@
 'use client'
-import { Box, Card, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
+import { Box, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
+import "/public/css/moneybook.css";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
-import "/public/css/moneybook.css";
-import Button from "@mui/joy/Button";
 
 export default function Moneybook(props) {
     const open = props.open;
@@ -137,7 +136,7 @@ export default function Moneybook(props) {
         })
     },[yyyymm]); 
 
-
+  var totalTradePrice =  getTotalPrice(userSell)-getTotalPrice(userBuy);
 
   return (open ?
     <Fragment>
@@ -182,8 +181,8 @@ export default function Moneybook(props) {
                 <Table className="moneybookBody">
                 <TableBody className="userTrade">
                     <TableRow className="titleRow">
-                        <TableCell colSpan={2} className="txt title"> 전체거래 </TableCell>
-                        <TableCell colSpan={2} className="txt toRight">{priceFormat(getTotalPrice(userSell)-getTotalPrice(userBuy))}원</TableCell>
+                        <TableCell colSpan={1} className="txt title toRight"> 전체거래 </TableCell>
+                        <TableCell colSpan={3} className="txt toRight">{`${totalTradePrice>0 ? '+' : totalTradePrice==0 ? '±' : ''} ${priceFormat(totalTradePrice)}`}원</TableCell>
                     </TableRow>
                     <TableRow className="contentRow">
                         <TableCell className="title txt toRight">
@@ -201,12 +200,10 @@ export default function Moneybook(props) {
                             구매
                         </TableCell>
                         <TableCell className="txt toRight">
-                            {/* {userBuy.length}건 */}
-                            124건
+                            {userBuy.length}건
                         </TableCell>
                         <TableCell colSpan={2} className="txt toRight">
-                            {/* {userBuy.length>0 ? priceFormat(getTotalPrice(userBuy)):0}원 */}
-                            8,354,651,354원
+                            {userBuy.length>0 ? priceFormat(getTotalPrice(userBuy)):0}원
                         </TableCell>
                     </TableRow>
                     <TableRow className="contentRow">
@@ -227,7 +224,7 @@ export default function Moneybook(props) {
                     <Table className="moneybookBody">
                         <TableBody className="neighborTrade">
                             <TableRow className="titleRow">
-                                <TableCell className="txt title">이웃</TableCell>
+                                <TableCell className="txt title toRight">이웃</TableCell>
                                 <TableCell colSpan={3} className="txt toRight">
                                     {neighbor.length}명
                                 </TableCell>
@@ -240,8 +237,7 @@ export default function Moneybook(props) {
                                     {neighborTrade.length}건
                                 </TableCell>
                                 <TableCell colSpan={2} className="txt toRight">
-                                    {/* {neighborTrade.length>0 ? priceFormat(getTotalPrice(neighborTrade)):0}원 */}
-                                    8,354,651,354원
+                                    {neighborTrade.length>0 ? priceFormat(getTotalPrice(neighborTrade)):0}원
                                 </TableCell>
                             </TableRow>
                             <TableRow className="contentRow">
@@ -257,8 +253,11 @@ export default function Moneybook(props) {
                 </Card>
             </ TableContainer>
             </DialogContent>
-            <DialogActions>
-                <Button style={{backgroundColor:'#008800'}} onClick={closeMoneyBook}>나가기</Button>
+            <DialogActions
+                onClick={closeMoneyBook}
+                className="closeMbBtn"
+                >
+                나가기
             </DialogActions>
             </Dialog>
         </Fragment>
