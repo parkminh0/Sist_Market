@@ -119,11 +119,11 @@ export default function () {
                                                 <TableCell colSpan={2}>{qvo.isanswered==1 ? qvo.answer_dtm : "-"}</TableCell>
                                             </TableRow>
                                             <TableRow>
-                                                <TableCell colSpan={6} dangerouslySetInnerHTML={{__html:qvo.content}}></TableCell>
+                                                <TableCell colSpan={6} style={{height:'200px'}} dangerouslySetInnerHTML={{__html:qvo.content}}></TableCell>
                                             </TableRow>
                                             {qvo.isanswered==1 ?
                                                 <TableRow>
-                                                    <TableCell colSpan={6} dangerouslySetInnerHTML={{__html:qvo.answer}}></TableCell>
+                                                    <TableCell colSpan={6} style={{height:'200px'}} dangerouslySetInnerHTML={{__html:qvo.answer}}></TableCell>
                                                 </TableRow>
                                                 :
                                                 ""

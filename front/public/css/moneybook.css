@@ -1,38 +1,23 @@
+.mbModal .css-ypiqx9-MuiDialogContent-root{
+    padding: 20px 0;
+}
+
+.mbModal .MuiPaper-root{
+    border-radius: 15px;
+}
+
 .moneybookBody{
     margin: 0 auto;
-    width: 80%;
-    min-width: 600px;
-    max-width: 800px;
+    width: 300px;
 }
 
-.userInfo{
-    width: 70%;
-    margin: 0 auto;
-    padding: 15px 25px;
-    border-radius: 25px;
-    background-color: #4f4f4f;
-}
-
-.profile{
-    display: flex;
-}
-
-.pfp_txt{
-    font-size: 25px;
-    font-weight: bold;
-    color: #efefef;
-    margin: auto 0;
-}
 
 .pfp_txt p{
     margin-bottom: 5px;
 }
 
 .datePicker{
-    background-color: #efefef;
     width: fit-content;
-    border-radius: 5px;
-    min-width: 150px;
 }
 
 
@@ -44,72 +29,35 @@
     width: 100px;
 }
 
-.titleRow{
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    font-size: 30px;
+
+.titleRow .txt{
+    font-size: 20px;
     font-weight: bold;
     margin-top: 15px;
     margin-bottom: 15px;
+    border-bottom: none;
 }
 
-.rowTitle{
-    font-size: 20px;
-    margin: 3px 0;
-}
 
-.toCenter{
-    text-align: center;
+.contentRow .txt.title{
+    font-size: 17px;
+    border-bottom: none;
+}
+.contentRow .txt{
+    font-size: 17px;
+    border-bottom: none;
 }
 
 .toRight{
     text-align: right;
 }
 
-.userTrade{
-    width: 70%;
+.userCard{
+    width: 50%;
     margin: 0 auto;
-    padding: 15px 25px;
 }
 
-.sellRow{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-}
-
-.buyRow{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-}
-
-.giveRow{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-}
-
-.divider{
-    width: auto;
-    margin: 10px auto;
-}
-
-.neighborTrade{
-    width: 70%;
+.neighborCard{
+    width: 80%;
     margin: 0 auto;
-    padding: 15px 25px;
-}
-
-
-.tradeRow{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-}
-
-.shareRow{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
 }
