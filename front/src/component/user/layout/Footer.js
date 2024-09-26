@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import FaqModal from "@/app/customer/faq/page";
+import QnaModal from "@/app/customer/qna/page";
 export default function Footer() {
   const bcUrl = "/admin/board/getAllBc";
   const [bclist, setBclist] = useState([]);
-  //const [categorykey,setCategorykey] = useState(0);
 
   function getData() {  
     axios.get(bcUrl)
     .then((json) => {
         setBclist(json.data.bc_list);
         //setCategorykey(json.data.bc_list.key);
-        
     })
     .catch((error) => {
         console.error("데이터 로딩 오류:", error);  
@@ -21,7 +21,25 @@ export default function Footer() {
   useEffect(() => {
     getData();
     //console.log("@@@@@@@@@@@@@@@@@@@@@@@"+categorykey);
-}, []);
+  }, []);
+
+  //문의하기
+  const [qnaOpen, setQnaOpen] = useState(false);
+  const handleQnaOpen = (e) => {
+    if (e && e.preventDefault) {
+      e.preventDefault(); // 이벤트가 있을 때만 링크 원래 기능 막기
+    }
+    setQnaOpen(true);
+  };
+  const handleQnaClose = () => { setQnaOpen(false); };
+
+  //FAQ
+  const [faqOpen, setFaqOpen] = useState(false);
+  const handleFaqOpen = (e) => {
+    e.preventDefault(); // 링크의 기본 동작 방지
+    setFaqOpen(true);
+  };
+  const handleFaqClose = () => { setFaqOpen(false); };
 
   return (
     <>
@@ -164,27 +182,21 @@ export default function Footer() {
                   </font>
                 </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9vs">
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="/customer"
-                    rel="noreferrer noopener"
-                  >
+                  <Link data-gtm="footer_navigation" href="#" rel="noreferrer noopener" onClick={handleFaqOpen}
+                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28">
                     <font>
                       <font>자주 묻는 질문</font>
                     </font>
                   </Link>
-                  <Link
-                    data-gtm="footer_navigation"
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                    href="/customer/question"
-                   
-                    rel="noreferrer noopener"
-                  >
+                  <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} />
+
+                  <Link data-gtm="footer_navigation" href="#" rel="noreferrer noopener" onClick={handleQnaOpen}
+                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28">
                     <font>
                       <font>문의하기</font>
                     </font>
                   </Link>
+                  <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
                 </div>
               </div>
               <div className="dmu53n2">
