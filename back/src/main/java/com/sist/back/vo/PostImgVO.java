@@ -13,4 +13,5 @@ public class PostImgVO {
     private int postimgkey, postkey;
     private String imgurl;
     private String title;
+    private String poststatus;
 }

@@ -36,6 +36,9 @@ import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/adpost")
@@ -453,4 +456,10 @@ public class PostController {
         map.put("cnt", cnt);
         return map;
     }
+
+    @RequestMapping("/updatePostStatus")
+    public void updatePostStatus(String postStatus, String postkey) {
+        p_service.updatePostStatus(postStatus, postkey);
+    }
+    
 }

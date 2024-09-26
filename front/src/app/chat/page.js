@@ -12,6 +12,12 @@ import Cookies from "js-cookie";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import SellerReviewModal from "@/component/user/manner/SellerReviewModal";
+import { ChevronDown } from 'lucide-react'
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import EventIcon from '@mui/icons-material/Event';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -61,6 +67,8 @@ const ChatApp = () => {
   // 판매글 정보
   const postTitle = useRef(null);
   const postImg_Url = useRef(null);
+  const postkey = useRef(null);
+  const [postStatus, setPostStatus] = useState("1");
 
   const fileInputRef = useRef(null);
   const chatScrollRef = useRef(null);
@@ -85,6 +93,13 @@ const ChatApp = () => {
   const yesterday = dayjs().subtract(1, 'day');
   const todayStartOfTheDay = today.startOf('day');
   const [appointTime, setAppointTime] = useState(null);
+
+  // 후기 관련
+  const [sellerReportOpen, setSellerReportOpen] = useState(false);
+  const handleSellerReportOpen = () => setSellerReportOpen(true);
+  const handleSellerReportClose = () => setSellerReportOpen(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (oneTime.current) {
@@ -300,8 +315,11 @@ const ChatApp = () => {
       }
       await axios.get(`/chat/room/${currentchatroomkey}`).then(response => {
         const res = response.data;
+        console.log(res);
         postTitle.current = res.pvo.title;
         postImg_Url.current = res.pvo.imgurl;
+        postkey.current = res.pvo.postkey;
+        setPostStatus(res.pvo.poststatus);
         setBeforeChat(res.chattingList.map(item => ({
           content: item.content,
           userkey1: item.userkey1,
@@ -319,6 +337,7 @@ const ChatApp = () => {
     connect();
     savedChats();
     setMessage("");
+    isFirstRender.current = true;
   }, [currentchatroomkey]);
 
   useEffect(() => {
@@ -567,6 +586,21 @@ const ChatApp = () => {
     }
   }, [chatLog]);
 
+  // 후기 띄우기
+  useEffect(() => {
+    if (isFirstRender.current && postStatus === "3") {
+      setIsDisabled(true);
+      // 첫 렌더링인 경우 모달을 띄우지 않음
+      return;
+    } else if (postStatus === "3") {
+      // postStatus가 3이 될 때 모달을 띄움
+      handleSellerReportOpen();
+      setIsDisabled(true); // 셀렉트 박스 비활성화
+    } else {
+      setIsDisabled(false); // postStatus가 3이 아닐 경우 활성화
+    }
+  }, [postStatus]);
+
   // 이모티콘 페이지 변경 시 가져옴
   useEffect(() => {
     getEmoticon();
@@ -768,7 +802,7 @@ const ChatApp = () => {
 
   const locationHandleSubmit = (event) => {
     event.preventDefault();
-    if(appointTime < today){
+    if (appointTime < today) {
       alert("올바르지 않은 약속 시간입니다.")
       return;
     }
@@ -780,9 +814,27 @@ const ChatApp = () => {
     setRegion3(tmpRegion3);
     locationClose();
   };
+
+  // 판매 상태 핸들러
+  const handleChange = (event) => {
+    setPostStatus(event.target.value);
+    isFirstRender.current = false;
+    if (event.target.value) {
+      axios.get("/adpost/updatePostStatus", {
+        params: {
+          postStatus: event.target.value,
+          postkey: postkey.current
+        }
+      });
+    }
+  };
+
   return (
     <>
       <article className="article">
+        <div>
+          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} />
+        </div>
         <nav className="sidebar">
           <Link className="anchor" href="chat">
             <img className="selected profile-image" src={myImageUrl.current} alt="당근은carrot" />
@@ -815,11 +867,16 @@ const ChatApp = () => {
               <img className="chat-header-image" src={postImg_Url.current} alt="당근" />
               <div className="main-title">
                 <span>{postTitle.current}</span>
-                &nbsp;&nbsp;<button id="logout" style={{ backgroundColor: "#ff6f0f24", color: "#ff6f0f" }} className="seed-box-button" data-scope="button" data-part="root" type="button" data-gtm="gnb_app_download" data-size="xsmall" data-variant="primaryLow">
-                  <span className="seed-semantic-typography-label4-bold">
-                    <font>상태 변경</font>
-                  </span>
-                </button>
+                &nbsp;&nbsp;&nbsp;<div style={{ position: 'relative', display: 'inline-block', width: '7rem' }}>
+                  <select value={postStatus} onChange={handleChange} disabled={isDisabled} style={{ appearance: 'none', width: '100%', backgroundColor: '#FFF7ED', border: '1px solid #FECACA', color: '#9A3412', padding: '0.5rem 0.75rem', paddingRight: '2rem', borderRadius: '0.375rem', lineHeight: '1.25', outline: 'none' }}>
+                    <option value="1">판매중</option>
+                    <option value="2">예약중</option>
+                    <option value="3">거래완료</option>
+                  </select>
+                  <div style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#C2410C' }}>
+                    <ChevronDown size={18} />
+                  </div>
+                </div>
               </div>
             </div>}
 
@@ -854,9 +911,9 @@ const ChatApp = () => {
                     이웃과 만날 시간을 선택해주세요.
                   </Typography>
                   <DemoItem>
-                    <DateTimePicker defaultValue={today} disablePast views={['year', 'month', 'day', 'hours', 'minutes']} onChange={(e) => {
+                    <DateTimePicker defaultValue={today} disablePast views={['year', 'month', 'day', 'hours', 'minutes']} sx={{ borderColor: 'gray' }} onChange={(e) => {
                       setAppointTime(dayjs(e.$d).format('YYYY-MM-DD HH:mm'));
-                    }}/>
+                    }} />
                   </DemoItem>
                 </DialogContent>
               </LocalizationProvider>
@@ -919,23 +976,25 @@ const ChatApp = () => {
           {isMultiContentInputVisible && (
             <div className="multi-content-container">
               <div className="attachment-option">
-                <div className="icon photo" onClick={handleImageButton}></div>
+                <div className="icon photo" onClick={handleImageButton}> <PhotoCameraIcon style={{ fontSize: 40, color: 'green' }} /></div>
                 <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" style={{ display: "none" }} />
                 <span>사진</span>
               </div>
               <div className="attachment-option">
-                <div className="icon payment" onClick={toggleEmojiInput}></div>
+                <div className="icon payment" onClick={toggleEmojiInput}>
+                  <SentimentSatisfiedAltIcon style={{ fontSize: 40, color: 'orange' }} />
+                </div>
                 <span>이모지</span>
               </div>
               <div className="attachment-option">
-                <div className="icon emoticon" onClick={toggleEmoticonInput}></div>
+                <div className="icon emoticon" onClick={toggleEmoticonInput}><InsertEmoticonIcon style={{ fontSize: 40, color: 'blue' }} /></div>
                 <span>이모티콘</span>
               </div>
               <div className="attachment-option">
                 <div className="icon schedule" onClick={() => {
                   getLocation();
                   setLocationOpen(true);
-                }}></div>
+                }}><EventIcon style={{ fontSize: 40, color: 'purple' }} /></div>
                 <span>약속</span>
               </div>
             </div>

@@ -79,7 +79,7 @@
         WHERE postkey = #{postkey}
     </select>
     <select id="getPostImgThumbnail" parameterType="String" resultType="com.sist.back.vo.PostImgVO">
-        SELECT a.title, b.imgurl FROM post as a LEFT JOIN postimg as b ON a.postkey = b.postkey where a.postkey = #{postkey} LIMIT 1
+        SELECT a.title, a.postkey, a.poststatus, b.imgurl FROM post as a LEFT JOIN postimg as b ON a.postkey = b.postkey where a.postkey = #{postkey} LIMIT 1
     </select>
     <select id="getPInfo_listByPostKey" resultType="com.sist.back.vo.PostInfoVO" parameterType="int">
         SELECT * FROM `post_info`
@@ -551,6 +551,9 @@
         SELECT * FROM post WHERE poststatus = #{poststatus}
     </select>
 
+    <update id="updatePostStatus" parameterType="String">
+        UPDATE post SET poststatus = #{postStatus} where postkey = #{postkey}
+    </update>
 
 
 
