@@ -15,7 +15,7 @@ public class PostVO {
         String rnum;
 
         String postkey, userkey, townkey, categorykey, method, price,
-                        lastprice, range, canbargain, viewqty, dealuserkey,
+                        lastprice, range, Canbargain, viewqty, dealuserkey,
                         poststatus, isdeleted, iscellvisible, isbuyvisible;
         String title, content, hope_place, hope_lati, hope_long,
                         create_dtm, update_dtm, delete_dtm, remind_dtm,
