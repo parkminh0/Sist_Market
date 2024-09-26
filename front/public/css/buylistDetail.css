@@ -10,18 +10,20 @@
 }
 
 .detailInfos{
-    padding: 20px;
+    /* padding: 20px; */
     margin: 0 auto;
-    width: 90%;
+    /* width: 90%; */
     background-color: #fdfdfd;
-    border: 5px solid #f0f0f0;
-    border-radius: 10px;
+    /* border: 5px solid #f0f0f0; */
+    /* border-radius: 10px; */
 }
 
 .detailInfoItem{
     padding: 10px;
     margin: 5px 0;
     background-color: #f5f5f5;
+    border-bottom: 2px solid #dddddd;
+    border-radius: 10px;
 }
 
 .detailInfoPost{
@@ -195,5 +197,12 @@
 
 .MODAL .MuiPaper-root{
     width: 80%;
-    max-width: 1000px
+    min-width: 700px;
+    max-width: 1000px;
+    padding: 20px;
+    margin: 0 auto;
+    width: 90%;
+    background-color: #fdfdfd;
+    border: 5px solid #f0f0f0;
+    border-radius: 10px;
 }
