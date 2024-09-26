@@ -614,7 +614,7 @@
     <!-- 관리자 유저정보 수정 -->
     <update id="userEditForAdmin" parameterType="com.sist.back.vo.userVO">
         UPDATE user
-        SET pw = #{pw}, email = #{email}, phone = #{phone}
+        SET pw = #{pw}, email = #{email}, phone = #{phone}, name =#{name}
         WHERE userkey = #{userkey}
     </update>
 
