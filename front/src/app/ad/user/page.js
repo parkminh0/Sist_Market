@@ -241,13 +241,17 @@ export default function Page() {
   //모달창 딜유저
   const DEL_URL1 = `/user/api/admin/userDel?userkey=${userkey}`;
   function deleteUser(userkey) {
+    const confirmed = window.confirm("정말로 삭제하시겠습니까?");
+    if (!confirmed) {
+      return; 
+    }
     axios.get(DEL_URL1).then((res) => {
       if (res.data.str === "success") {
         const userConfirmed = window.confirm(
           "회원 탈퇴가 완료되었습니다. 페이지를 이동하시겠습니까?"
         );
         if (userConfirmed) {
-          router.push("/user/admin/user");
+          router.push("/admin/ad/user");
           setOpen(false);
         } else {
           alert("탈퇴가 불가능 합니다.");
@@ -256,6 +260,8 @@ export default function Page() {
     });
   }
   function editUser1(userkey) {
+    //console.log("User data being sent:", { pw, name, email, phone });
+    //console.log("userkey@@@@@@@@@"+userkey);
     const EDIT_URL = `/user/api/admin/userEditReal?userkey=${userkey}`;
     axios({
       url: EDIT_URL,
@@ -672,9 +678,12 @@ export default function Page() {
                         <TableCell align="center">{item.nickname}</TableCell>
                         <TableCell align="center">{item.phone}</TableCell>
                         <TableCell>{item.email}</TableCell>
-                        <TableCell align="center">{item.isdeleted}</TableCell>
                         <TableCell align="center">
-                          {item.isauthorized}
+                          {item.isdeleted == 0 ? "X" : "O"}
+                        </TableCell>
+                        <TableCell align="center">
+                        
+                          {item.isauthorized == 0 ? "X" : "O"}
                         </TableCell>
                         <TableCell align="right">
                           {new Date(item.login_dtm).toISOString().split("T")[0]}
@@ -1021,7 +1030,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">사용자 키</th>
+                    <th scope="col">사용자</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1069,7 +1078,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">뱃지 키</th>
+                    <th scope="col">뱃지 번호</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1117,7 +1126,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">차단 사용자 키</th>
+                    <th scope="col">차단 사용자 번호</th>
                     <th scope="col">차단 날짜</th>
                   </tr>
                 </thead>
@@ -1165,7 +1174,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">미노출 사용자 키</th>
+                    <th scope="col">미노출 사용자 번호</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1213,7 +1222,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">주소 키</th>
+                    <th scope="col">주소 번호</th>
                     <th scope="col">범위</th>
                     <th scope="col">알림 여부</th>
                   </tr>
@@ -1268,7 +1277,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">알람 키</th>
+                    <th scope="col">알람 종류</th>
                     <th scope="col">알람 여부</th>
                   </tr>
                 </thead>
@@ -1316,7 +1325,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">위시리스트 키</th>
+                    <th scope="col">관심목록 번호</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1364,7 +1373,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">키워드 키</th>
+                    <th scope="col">키워드</th>
                     <th scope="col">키워드 내용</th>
                   </tr>
                 </thead>
