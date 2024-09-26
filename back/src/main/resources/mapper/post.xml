@@ -223,93 +223,244 @@
         WHERE keywordkey = #{likeKey}
     </delete>
 
-
-    <select id="searchpost" resultMap="postMap">
-        SELECT *
-        FROM post
+    <!-- 관리자페이지 검색(토탈) -->
+    <select id="searchpostTotal" resultType="int" parameterType="map">
+      SELECT count(*) FROM post p
+        LEFT JOIN user u ON u.userkey = p.userkey
+        LEFT JOIN town t ON t.townkey = p.townkey
         WHERE 1 = 1
         <!-- 검색분류 -->
-        
-        <if test="searchCategory != null and searchCategory != '' and searchCategoryText != null and searchCategoryText != ''">
+        <if test="searchCategory != null and searchCategory != '' and searchCategory != 'null' and searchCategoryText != null and searchCategoryText != ''">
             <if test="searchCategory == 'title'">
-                AND title LIKE CONCAT('%', #{searchCategoryText}, '%')
+                AND p.title LIKE CONCAT('%', #{searchCategoryText}, '%')
             </if>
             <if test="searchCategory == 'postkey'">
-                AND postkey = #{searchCategoryText}
-            </if>
-            <if test="searchCategory == 'hope_place'">
-                AND hope_place LIKE CONCAT('%', #{searchCategoryText}, '%')
-            </if>
-            <if test="searchCategory == 'townkey'">
-                AND townkey = #{searchCategoryText}
+                AND p.postkey = #{searchCategoryText}
             </if>
             <if test="searchCategory == 'userkey'">
-                AND userkey = #{searchCategoryText}
+                AND p.userkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'id'">
+                AND u.id = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'nickname'">
+                AND u.nickname = #{searchCategoryText}
             </if>
         </if>
+        <if test="region1 != null and region1 != '' and region1 != 'null'">
+            AND t.region1 = #{region1}
+        </if>
+        <if test="region2 != null and region2 != '' and region2 != 'null'">
+            AND t.region2 = #{region2}
+        </if>
+        <if test="region3 != null and region3 != '' and region3 != 'null'">
+            AND t.region3 = #{region3}
+        </if>
         <!-- 게시글 분류 -->
-        <if test="categorykey != null and categorykey != '' and categorykey != '- 분류 선택 -'">
-            AND categorykey = #{categorykey}
+        <if test="categorykey != null and categorykey != '' and categorykey != 'null'">
+            AND p.categorykey = #{categorykey}
         </if>
         <!-- 판매상태 -->
-        <if test="poststatus != null and poststatus != ''">
-            AND poststatus = #{poststatus}
+        <if test="poststatus != 'all'">
+            <if test="poststatus == 5">
+                AND p.isdeleted = 1
+            </if>
+            <if test="poststatus != 5">
+                AND p.poststatus = #{poststatus}
+                AND p.isdeleted = 0
+            </if>
         </if>
         <!-- 거래방식 -->
-        <if test="method != null and method != ''">
-            AND method = #{method}
+        <if test="method != 'all'">
+            AND p.method = #{method}
         </if>
         <!-- 상품 가격 -->
-        <if test="minPrice != null and minPrice != ''">
-            AND price &gt;= #{minPrice}
+        <if test="price == 'price'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.price &lt;= #{maxPrice}
+            </if>
         </if>
-        <if test="maxPrice != null and maxPrice != ''">
-            AND price &lt;= #{maxPrice}
+        <if test="price == 'last_price'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.last_price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.last_price &lt;= #{maxPrice}
+            </if>
         </if>
         <!-- 흥정 가능 여부 -->
-        <if test="canbargain != null and canbargain != ''">
-            AND canbargain = #{canbargain}
+        <if test="canbargain != 'all'">
+            AND p.canbargain = #{canbargain}
         </if>
         <!-- 게시글 생성일 -->
-        <if test="create_dtm_a != null and create_dtm_a != ''">
-            AND create_dtm &gt;= #{create_dtm_a}
+        <if test="dtm == 'create_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.create_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.create_dtm &lt;= #{dtm_to}
+            </if>
         </if>
-        <if test="create_dtm_b != null and create_dtm_b != ''">
-            AND create_dtm &lt;= #{create_dtm_b}
-        </if>
-
         <!-- 게시글 수정일 -->
-        <if test="update_dtm_a != null and update_dtm_a != ''">
-            AND update_dtm &gt;= #{update_dtm_a}
+        <if test="dtm == 'update_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.update_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.update_dtm &lt;= #{dtm_to}
+            </if>
         </if>
-        <if test="update_dtm_b != null and update_dtm_b != ''">
-            AND update_dtm &lt;= #{update_dtm_b}
-        </if>
-
         <!-- 게시글 삭제일 -->
-        <if test="delete_dtm_a != null and delete_dtm_a != ''">
-            AND delete_dtm &gt;= #{delete_dtm_a}
+        <if test="dtm == 'delete_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.delete_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.delete_dtm &lt;= #{dtm_to}
+            </if>
         </if>
-        <if test="delete_dtm_b != null and delete_dtm_b != ''">
-            AND delete_dtm &lt;= #{delete_dtm_b}
-        </if>
-
         <!-- 끌어올리기 일자 -->
-        <if test="remind_dtm_a != null and remind_dtm_a != ''">
-            AND remind_dtm &gt;= #{remind_dtm_a}
+        <if test="dtm == 'remind_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.remind_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.remind_dtm &lt;= #{dtm_to}
+            </if>
         </if>
-        <if test="remind_dtm_b != null and remind_dtm_b != ''">
-            AND remind_dtm &lt;= #{remind_dtm_b}
+        <!-- 거래완료 일자 -->
+        <if test="dtm == 'deal_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.deal_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.deal_dtm &lt;= #{dtm_to}
+            </if>
         </if>
-
-        <!-- 거래 완료 일자 -->
-        <if test="deal_dtm_a != null and deal_dtm_a != ''">
-            AND deal_dtm &gt;= #{deal_dtm_a}
+    </select>
+    <!-- 관리자페이지 검색 -->
+    <select id="searchpost" resultMap="postMap" parameterType="map">
+        SELECT x.*
+      FROM ( SELECT p.*, row_number() over (order by p.postkey DESC) rnum FROM post p
+        LEFT JOIN user u ON u.userkey = p.userkey
+        LEFT JOIN town t ON t.townkey = p.townkey
+        WHERE 1 = 1
+        <!-- 검색분류 -->
+        <if test="searchCategory != null and searchCategory != '' and searchCategory != 'null' and searchCategoryText != null and searchCategoryText != ''">
+            <if test="searchCategory == 'title'">
+                AND p.title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'postkey'">
+                AND p.postkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'userkey'">
+                AND p.userkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'id'">
+                AND u.id = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'nickname'">
+                AND u.nickname = #{searchCategoryText}
+            </if>
         </if>
-        <if test="deal_dtm_b != null and deal_dtm_b != ''">
-            AND deal_dtm &lt;= #{deal_dtm_b}
+        <if test="region1 != null and region1 != '' and region1 != 'null'">
+            AND t.region1 = #{region1}
         </if>
-        
+        <if test="region2 != null and region2 != '' and region2 != 'null'">
+            AND t.region2 = #{region2}
+        </if>
+        <if test="region3 != null and region3 != '' and region3 != 'null'">
+            AND t.region3 = #{region3}
+        </if>
+        <!-- 게시글 분류 -->
+        <if test="categorykey != null and categorykey != '' and categorykey != 'null'">
+            AND p.categorykey = #{categorykey}
+        </if>
+       <!-- 판매상태 -->
+        <if test="poststatus != 'all'">
+            <if test="poststatus == 5">
+                AND p.isdeleted = 1
+            </if>
+            <if test="poststatus != 5">
+                AND p.poststatus = #{poststatus}
+                AND p.isdeleted = 0
+            </if>
+        </if>
+        <!-- 거래방식 -->
+        <if test="method != 'all'">
+            AND p.method = #{method}
+        </if>
+        <!-- 상품 가격 -->
+        <if test="price == 'price'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.price &lt;= #{maxPrice}
+            </if>
+        </if>
+        <if test="price == 'last_price'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.last_price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.last_price &lt;= #{maxPrice}
+            </if>
+        </if>
+        <!-- 흥정 가능 여부 -->
+        <if test="canbargain != 'all'">
+            AND p.canbargain = #{canbargain}
+        </if>
+        <!-- 게시글 생성일 -->
+        <if test="dtm == 'create_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.create_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.create_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 게시글 수정일 -->
+        <if test="dtm == 'update_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.update_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.update_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 게시글 삭제일 -->
+        <if test="dtm == 'delete_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.delete_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.delete_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 끌어올리기 일자 -->
+        <if test="dtm == 'remind_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.remind_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.remind_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 거래완료 일자 -->
+        <if test="dtm == 'deal_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.deal_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.deal_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        ) x
+    WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
     <insert id="writePost" parameterType="com.sist.back.vo.PostVO" useGeneratedKeys="true" keyProperty="postkey">
@@ -529,38 +680,28 @@
     <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
     SELECT 
         COUNT(*) AS all_posts, -- 전체 게시글 수
-        COUNT(CASE WHEN poststatus = 0 THEN 1 END) AS tem_save_posts, 
-        COUNT(CASE WHEN poststatus = 1 THEN 1 END) AS sale_posts, 
-        COUNT(CASE WHEN poststatus = 2 THEN 1 END) AS saleing_posts, 
-        COUNT(CASE WHEN poststatus = 3 THEN 1 END) AS saled_posts, 
-        COUNT(CASE WHEN poststatus = 4 THEN 1 END) AS hide_posts 
+        COUNT(CASE WHEN poststatus = 0 AND isdeleted = 0 THEN 1 END) AS tem_save_posts, 
+        COUNT(CASE WHEN poststatus = 1 AND isdeleted = 0 THEN 1 END) AS sale_posts, 
+        COUNT(CASE WHEN poststatus = 2 AND isdeleted = 0 THEN 1 END) AS saleing_posts, 
+        COUNT(CASE WHEN poststatus = 3 AND isdeleted = 0 THEN 1 END) AS saled_posts, 
+        COUNT(CASE WHEN poststatus = 4 AND isdeleted = 0 THEN 1 END) AS hide_posts, 
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS del_posts 
     FROM post;
     </select>
-
-
-     <!-- 여러 상태를 IN 조건으로 조회 -->
-    <select id="findAllByPoststatusIn" parameterType="list" resultType="com.sist.back.vo.PostVO">
-        SELECT * FROM post WHERE poststatus IN
-        <foreach item="status" collection="list" open="(" separator="," close=")">
-            #{status}
-        </foreach>
-    </select>
-
-    <!-- 특정 상태를 조회 -->
-    <select id="findByPoststatus" parameterType="int" resultType="com.sist.back.vo.PostVO">
-        SELECT * FROM post WHERE poststatus = #{poststatus}
-    </select>
-
-
-
-
-
-
 
     <!-- 게시글 숨기기 -->
     <update id="hidePost" parameterType="String">
         UPDATE `post`
         SET poststatus = 4
+        WHERE postkey = #{postkey}
+    </update>
+    
+    <!-- 게시글 삭제 -->
+    <update id="checkPostDel" parameterType="String">
+        UPDATE `post`
+        SET isdeleted = 1,
+        update_dtm = now(),
+        delete_dtm = now()
         WHERE postkey = #{postkey}
     </update>
 </mapper>

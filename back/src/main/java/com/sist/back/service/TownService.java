@@ -48,6 +48,36 @@ public class TownService {
         return ar;
     }
 
+    public String[] getAllRegion1() {
+        String[] ar = null;
+        List<String> list = townMapper.getAllRegion1();
+        if (list != null && list.size() > 0) {
+            ar = new String[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public String[] getAllRegion2(String region1) {
+        String[] ar = null;
+        List<String> list = townMapper.getAllRegion2(region1);
+        if (list != null && list.size() > 0) {
+            ar = new String[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public String[] getAllRegion3(String region2) {
+        String[] ar = null;
+        List<String> list = townMapper.getAllRegion3(region2);
+        if (list != null && list.size() > 0) {
+            ar = new String[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
     // userkey로 Address 목록 가져오기
     public TownVO[] getNearTown(String region1, String region2) {
         TownVO[] ar = null;
