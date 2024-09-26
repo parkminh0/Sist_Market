@@ -38,6 +38,8 @@ public interface PostMapper {
 
     int unhidPostByPostKey(String postkey);
 
+    int searchpostTotal(Map<String, Object> map);
+
     List<PostVO> searchpost(Map<String, Object> map);
 
     int writePost(PostVO vo);
@@ -60,16 +62,12 @@ public interface PostMapper {
 
     int deletePostImg(String postkey);
 
-    // 여러 상태 값에 따른 조회 / search
-    List<PostVO> findAllByPoststatusIn(List<Integer> statuses);
-
-    // 특정 상태 값에 따른 조회 / search
-    List<PostVO> findByPoststatus(int poststatus);
-
     List<PostImgVO> pImg_list(int postkey);
 
     int hidePost(String postkey);
-    
+
+    int checkPostDel(String postkey);
+
     PostImgVO getPostImgThumbnail(String postkey);
 
     void updatePostStatus(String postStatus, String postkey);

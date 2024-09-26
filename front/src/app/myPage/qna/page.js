@@ -1,4 +1,5 @@
 "use client"
+
 import Link from "next/link";
 import "/public/css/myPage.css";
 import "/public/css/paging.css";
@@ -10,21 +11,30 @@ import TableRow from '@mui/material/TableRow';
 import axios from "axios";
 import Cookies from "js-cookie";
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import { TableHead } from "@mui/material";
+import { Box, Button, TableHead } from "@mui/material";
 import { useRouter } from "next/navigation";
+import QnaModal from "@/app/customer/qna/page";
 
 export default function () {
+    const [qnaOpen, setQnaOpen] = useState(false);
+
+    const handleQnaOpen = (e) => {
+      e.preventDefault(); // 링크의 기본 동작 방지
+      setQnaOpen(true);
+    };
+
+    const handleQnaClose = () => {
+      setQnaOpen(false);
+      getData(nowPage);
+    };
+    
     const [q_ar, setQ_ar] = useState([]);
     const listUrl = `/qna/userAll`;
     const [nowPage, setNowPage] = useState(1);
     const [page, setPage] = useState({});
     const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
-    const [categoryName, setCategoryName] = useState("");  // 카테고리 이름 저장
-    
     const router = useRouter();
 
-
-    // 페이지 변경시 모든 공지사항 로드
     function getData(cPage) {  
       axios.get(listUrl, {
         params: {
@@ -54,8 +64,6 @@ export default function () {
     useEffect(() => {
         getData(nowPage);
     }, [nowPage]);
-
-
 
     return (
         <div>
@@ -96,33 +104,21 @@ export default function () {
                     <article className="_1h4pbgy7wg _1h4pbgy7wz">
                         <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
                             <MyPageSide />
-                            {/* 여기서부터 콘텐츠 */}
                             <div
                                 data-v-81750584=""
                                 data-v-0adb81cc=""
                                 className="content_area my-page-content"
                                 style={{ display: 'flex', flexDirection: 'column' }} // flex 설정
                             >
-                                <div
-                                    className="questionsTitle"
-                                    style={{
-                                        margin: '5px 0',
-                                        fontSize: '30px',
-                                        fontWeight: 'bold',
-                                    }}    
-                                >
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '10px' }} >
+                                  <div className="questionsTitle" style={{ margin: '5px 0', fontSize: '30px', fontWeight: 'bold', }}>
                                     나의 문의사항
-                                </div>
-                                <div
-                                    data-v-6b53f901=""
-                                    data-v-81750584=""
-                                    className="content_title border"
-                                >
-                                    <div data-v-6b53f901="" className="title">
-                                        <h3 data-v-6b53f901="">{categoryName}</h3>
-                                    </div>
-                                </div>
-                                
+                                  </div>
+                                  <Button variant="contained" onClick={handleQnaOpen} sx={{ backgroundColor: '#FF8000',  color: 'white', '&:hover': { backgroundColor: '#e67300', }, }}>
+                                    문의하기
+                                  </Button>
+                                  <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
+                                </Box>
                                 {/* 테이블 */}
                                 <div className="tableDiv">
                                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -148,7 +144,6 @@ export default function () {
                                         </TableRow>
                                     </TableHead>
                                   <TableBody>
-                                      {/* 삼항 연산자를 사용하여 데이터가 없을 경우 메시지 표시 */}
                                       {q_ar && q_ar.length > 0 ? (
                                         q_ar.map((qvo, i) => {
                                             var status = "답변 대기중";
@@ -190,8 +185,6 @@ export default function () {
                                     </TableBody>
                                   </Table>
                                 </div>
-
-                                {/* 페이징 */}
                                 <div className="mPaginate" style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }} >
                                   {page && page.startPage > 1 && (
                                     <a href="#" onClick={() => changePage(page.startPage - page.pagePerBlock)} className="prev">

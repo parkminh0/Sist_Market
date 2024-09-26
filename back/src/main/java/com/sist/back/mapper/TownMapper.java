@@ -21,4 +21,10 @@ public interface TownMapper {
 
     List<TownVO> getNearTown(String region1, String region2);
 
+    List<String> getAllRegion1();
+
+    List<String> getAllRegion2(String region1);
+
+    List<String> getAllRegion3(String region2);
+
 }
