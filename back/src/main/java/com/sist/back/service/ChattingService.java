@@ -23,7 +23,10 @@ public class ChattingService {
     }
 
     public int addChat(ChattingVO message) {
-        //databaseChangeService.onDatabaseChange("대화 상대:"+message.getUserkey2()+",대화 내용:"+message.getContent());
+        String chatroomkey = message.getChatroomkey();
+        String redirection = "/chat/room/"+chatroomkey;
+        String userkey = message.getUserkey2();
+        databaseChangeService.onDatabaseChange(redirection,"대화 상대:"+message.getUserkey2()+",대화 내용:"+message.getContent(),"채팅", userkey);
         return mapper.addChat(message);
     }
 

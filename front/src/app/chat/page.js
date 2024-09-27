@@ -41,6 +41,7 @@ const ChatApp = () => {
   const socket = useRef(null);
   const ws = useRef(null);
   const userkey = Cookies.get("userkey");
+
   // 이모지 관련 선언
   const emojisPerPage = 64;
   const indexOfLastEmoji = currentEmojiPage * emojisPerPage;
@@ -184,12 +185,7 @@ const ChatApp = () => {
                       </span>
                     </li>
                     <div id={`mapDetail-${index}`}
-                      style={{
-                        border: "0.5px solid black",
-                        marginTop: "10px",
-                        width: "400px",
-                        height: "250px",
-                      }}
+                      style={{ border: "0.5px solid black", marginTop: "10px", width: "400px", height: "250px",}}
                     ></div>
                     날짜 및 시간 : {dayjs(item.hope_time).format('YYYY-MM-DD HH:mm')}<br />
                     장소 : {item.hope_place}
@@ -235,8 +231,7 @@ const ChatApp = () => {
                         약속 장소
                       </span>
                     </li>
-                    <div
-                      id="mapDetail"
+                    <div id={`mapDetail-${index}`}
                       style={{
                         border: "0.5px solid black",
                         marginTop: "10px",
@@ -394,7 +389,6 @@ const ChatApp = () => {
       let longitude = item.hope_long;
       // 주소-좌표 변환 객체를 생성합니다
       let locPosition = new kakao.maps.LatLng(latitude, longitude);
-
       // 인포윈도우를 생성합니다
       let infowindow = new kakao.maps.InfoWindow({
         content:
@@ -402,7 +396,6 @@ const ChatApp = () => {
           hope_place +
           "</span>",
       });
-
       let mapContainer = document.getElementById(`mapDetail-${index}`); // 지도를 표시할 div
       let mapOption = {
         center: locPosition, // 지도의 중심좌표
@@ -833,7 +826,8 @@ const ChatApp = () => {
       axios.get("/adpost/updatePostStatus", {
         params: {
           postStatus: event.target.value,
-          postkey: postkey.current
+          postkey: postkey.current,
+          dealuserkey: another,
         }
       });
     }
