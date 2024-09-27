@@ -356,6 +356,13 @@ export default function page() {
                           </span>
                         </TableCell>
                         : ''}
+                        {cellStatus == 3 ?
+                        <TableCell style={{textAlign:'center'}} colSpan={2}>
+                          <span data-v-eff62a72="" className="status_txt">
+                            후기
+                          </span>
+                        </TableCell>
+                        : ''}
                         <TableCell colSpan={2} align="right">
                           <span data-v-eff62a72="" className="status_txt">
                           { whatNow=="onSale" ? '수정' : whatNow=="Selling" ? '확인' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
