@@ -5,11 +5,71 @@
 <mapper namespace="com.sist.back.mapper.AdminMapper">
     <select id="getTotal" resultType="com.sist.back.vo.admin.TotalVO">
    SELECT 
-        COUNT(*) AS cntPost, 
-        (SELECT COUNT(*) FROM `user` WHERE isdeleted = 0) AS cntUser,
-        (SELECT COUNT(*) FROM `board` WHERE isdeleted = 0) AS cntBbs,
-        (SELECT COUNT(*) FROM `qna` WHERE isdeleted = 0) AS cntQna
-    FROM post
-    where isdeleted = 0;
+    COUNT(*) AS cntPost, 
+    (SELECT COUNT(*) FROM `user` WHERE isdeleted = 0) AS cntUser,
+    (SELECT COUNT(*) FROM `board` WHERE isdeleted = 0) AS cntBbs,
+    (SELECT COUNT(*) FROM `qna` WHERE isdeleted = 0 AND isanswered = 0) AS cntQna,
+    COUNT(CASE WHEN date_format(create_dtm, '%Y') = date_format(now(), '%Y') THEN 1 END) As cntPostYear,
+    (SELECT COUNT(*) FROM `user` WHERE date_format(create_dtm, '%Y') = date_format(now(), '%Y') AND isdeleted = 0) As cntUserYear,
+    (SELECT COUNT(*) FROM `board` WHERE date_format(create_dtm, '%Y') = date_format(now(), '%Y') AND isdeleted = 0) As cntBbsYear,
+      (SELECT COUNT(*) FROM `qna` WHERE date_format(create_dtm, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d') AND isanswered = 0 AND isdeleted = 0) As cntQnaDay
+  FROM post
+  where isdeleted = 0
+    </select>
+
+    <select id="postOverview" resultType="com.sist.back.vo.admin.PostOverviewVO" parameterType="String">
+    SELECT date_format(create_dtm, '%y년 %m월') as yearandmonth, COUNT(*) cnt, COUNT(CASE WHEN poststatus = 3 THEN 1 END) as dealcnt FROM post
+      WHERE isdeleted = 0 AND create_dtm is not null 
+      <if test="year != null and year != ''">
+      AND DATE_FORMAT(create_dtm, '%Y') = #{year}
+      </if>
+      GROUP BY date_format(create_dtm, '%y년 %m월')
+      ORDER BY date_format(create_dtm, '%y년 %m월') 
+    </select>
+
+    <select id="searchYear" resultType="String">
+    SELECT date_format(create_dtm, '%Y년') as searchyear FROM post
+      WHERE isdeleted = 0 AND create_dtm is not null
+      GROUP BY date_format(create_dtm, '%Y년')
+      ORDER BY date_format(create_dtm, '%Y년') DESC
+    </select>
+
+    <select id="postStatusCnt" resultType="String">
+    SELECT COUNT(*) cnt
+      FROM post
+    WHERE isdeleted = 0 
+    GROUP BY poststatus
+    ORDER BY poststatus
+    </select>
+    
+    <select id="userStatusCnt" resultType="com.sist.back.vo.admin.UserStatusCntVO">
+    SELECT 
+        DATE_FORMAT(create_dtm, '%y년 %m월') AS `date`, 
+        COUNT(*) AS `newCnt`, 
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS `delCnt`
+    FROM `user`
+    WHERE create_dtm IS NOT NULL
+      AND create_dtm  <![CDATA[>=]]> DATE_SUB(NOW(), INTERVAL 12 MONTH)
+    GROUP BY DATE_FORMAT(create_dtm, '%y년 %m월')
+    ORDER BY DATE_FORMAT(create_dtm, '%y년 %m월');
+    </select>
+    
+    <select id="getQnaList" resultType="com.sist.back.vo.QnaVO">
+   SELECT * 
+      FROM `qna`
+    WHERE isanswered = 0
+      AND isdeleted = 0
+    ORDER BY create_dtm desc
+    limit 6
+    </select>
+    
+    <select id="getUserRank" resultType="com.sist.back.vo.admin.UserRankVO">
+   SELECT p.userkey, u.nickname, u.email, u.imgurl, COUNT(*) as cellqty, u.mannertemp, SUM(p.lastprice) as cellprice
+  FROM `user` u
+  JOIN `post` p ON p.userkey = u.userkey
+ WHERE p.poststatus = 3 and p.isdeleted = 0 and u.isdeleted = 0
+ GROUP BY p.userkey
+ ORDER BY cellqty desc
+ limit 4
     </select>
 </mapper>
