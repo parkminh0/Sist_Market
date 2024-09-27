@@ -201,22 +201,6 @@ export default function Page() {
     return userTown;
   }
 
-  function getManner(m_list) {
-    var length = m_list.length > 0 ? m_list.length : 0;
-    var manner = 36.5;
-    for (var i = 0; i < length; i++) {
-      switch (m_list[i].ismanner) {
-        case "0":
-          manner -= 0.5;
-          break;
-        case "1":
-        case "2":
-          manner += 0.5;
-          break;
-      }
-    }
-    return manner;
-  }
 
   useEffect(() => {
     let currentUrl = window.location.href;
@@ -256,7 +240,7 @@ export default function Page() {
       }
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
-      setManner(getManner(res.data.pvo.uvo.m_list));
+      setManner(res.data.pvo.uvo.mannertemp);
 
       axios({
         url: "/adpost/cellList",
