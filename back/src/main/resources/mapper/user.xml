@@ -94,6 +94,7 @@
             <result column="preference" property="preference"/>
             <result column="review" property="review"/>
         </association>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfoByEstimateUserKey" column="estimateuserkey"/>
     </resultMap>
 
       <!-- UserBadgeVO BadgeVO 조인하여 가져오는 매핑 -->
@@ -143,6 +144,12 @@
         <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="noseeuserkey"/>
     </resultMap>
 
+    <!-- estimateuserkey로 user 닉네임과 imgurl -->
+    <select id="getUserInfoByEstimateUserKey" parameterType="String" resultType="com.sist.back.vo.userVO">
+        SELECT *
+        FROM user
+        WHERE userkey = #{estimateuserkey}
+    </select>
 
     <!-- Town 테이블에서 townkey로 townVO 데이터를 가져오는 select 쿼리 -->
     <select id="getTownByTownKey" resultType="com.sist.back.vo.TownVO" parameterType="String">
