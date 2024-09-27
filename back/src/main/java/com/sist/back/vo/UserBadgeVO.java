@@ -10,4 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserBadgeVO {
     private String userbadgekey, userkey, badgekey, create_dtm, isrepresent;
+    private BadgeVO bvo;
 }
