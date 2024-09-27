@@ -9,35 +9,51 @@ import ProductPerformance from "@/component/admin/dashboard/ProductPerformance";
 import Blog from "@/component/admin/dashboard/Blog";
 import MonthlyEarnings from "@/component/admin/dashboard/MonthlyEarnings";
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Dashboard = () => {
+  const [totalVO, setTotalVO] = useState({});
+
+  useEffect(() => {
+    axios({
+      url: "/ad/getTotal", // 실제 검색 API
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setTotalVO(res.data.res_getTotal); // 데이터 업데이트
+    });
+  }, []);
+
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
         <Grid container spacing={3}>
           <Grid item xs={12} sx={{ mb: -2.25 }}>
-            <Typography variant="h5">Dashboard</Typography>
+            <Typography variant="h5">전체 현황</Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
-              title="Total Page Views"
-              count="4,42,236"
+              title="게시글"
+              count={totalVO.cntPost}
               percentage={59.3}
               extra="35,000"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
-              title="Total Users"
-              count="78,250"
+              title="사용자"
+              count={totalVO.cntUser}
               percentage={70.5}
               extra="8,900"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
-              title="Total Order"
-              count="18,800"
+              title="게시판"
+              count={totalVO.cntBbs}
               percentage={27.4}
               isLoss
               color="warning"
@@ -46,8 +62,8 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
-              title="Total Sales"
-              count="$35,078"
+              title="문의사항"
+              count={totalVO.cntQna}
               percentage={27.4}
               isLoss
               color="warning"

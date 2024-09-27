@@ -12,7 +12,7 @@ import "/public/css/popcatelist.css";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
 import PraiseModal from "@/component/user/userPage/PraiseModal";
@@ -78,7 +78,6 @@ export default function page() {
          }
       }
     ).then((res) => {
-      // console.log(res.data.result);
       if(res.data.result>0){
         setCanPoN(true);
       }
@@ -95,7 +94,6 @@ export default function page() {
          }
       }
     ).then((res) => {
-      // console.log(res.data.cellList);
       setLastpostkey(res.data.lastpostkey);
       setCellList([...cellList,...res.data.cellList]);
       setIsnextexist(res.data.isnextexist);
@@ -165,8 +163,8 @@ export default function page() {
         params: { userkey: userkey }
       }
     ).then((res) => {
-      // console.log(res.data.uvo);
       setVo(res.data.uvo);
+      setMannerTemp(res.data.uvo.mannertemp);
       setCellList(res.data.cellList);
       handleCellCount(res.data.cellCount);
       setLimitpostkey(res.data.limitpostkey);
@@ -210,7 +208,7 @@ export default function page() {
       const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
       .reduce((sum, item) => sum + item.count, 0);
       const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
-      setMannerTemp(updatedTemp);
+      
     });
     Promise.all([
       axios.get("/user/buyingReview", { params: { userkey: userkey} }),
@@ -401,12 +399,21 @@ export default function page() {
                     <div data-v-24868902="" data-v-eff62a72="" className={`empty_area ${selectedTab == '1' ? 'userPage' : ''}`} style={{paddingTop: '50px'}}>
                         {selectedTab == '1' && (
                             <p data-v-24868902="" className="desc">
-                                <div className="UserPageGrid" >
                                 {cellList.length > 0
-                                ? cellList.map((clvo, index) => {
-                                    return <UserCellList2 key={index} pvo={clvo} />;
-                                }) : ""}
+                                ? 
+                                <div className="UserPageGrid" >
+                                  {cellList.map((clvo, index) => {
+                                    return <UserCellList key={index} pvo={clvo} />;
+                                })}
+                                </div> : 
+                                <div style={{
+                                  width: 'fit-content',
+                                  margin: '0 auto',
+                                  fontSize: '27px'
+                                }}>
+                                    판매 내역이 존재하지 않습니다
                                 </div>
+                                }
                                 {isnextexist ?
                                 <Button
                                   variant="contained"

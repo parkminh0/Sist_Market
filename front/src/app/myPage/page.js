@@ -1,7 +1,7 @@
 "use client";
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import "/public/css/myPage.css";
+import Moneybook from "@/component/user/myPage/Moneybook";
 
 export default function page() {
   const API_URL = "/user/api/admin/userEdit";
@@ -34,7 +35,6 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      // console.log(res.data.ar);
       setUvo(res.data.ar);
       const cell_list = res.data.ar.cell_list;
       var sell1 = 0;
@@ -61,9 +61,21 @@ export default function page() {
       setSell_2(sell2);
       setSell_3(sell3);
       setSell_4(sell4);
-      // console.log([sell1, sell2, sell3, sell4]);
     });
   }
+
+
+  const[open,setOpen] = useState(false);
+  
+  function openMoneyBook(){
+    setOpen(true);
+  }
+  function closeMoneyBook(){
+    setOpen(false);
+  }
+
+
+
 
   useEffect(() => {
     if (Cookies.get("userkey") == undefined) {
@@ -162,7 +174,7 @@ export default function page() {
               <div
                 data-v-247cd1ce=""
                 data-v-7b7d73d2=""
-                className="shortcut-grid"
+                className="sm shortcut-grid"
               >
                 <Link
                   data-v-247cd1ce=""
@@ -184,8 +196,8 @@ export default function page() {
                 </Link>
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/moneybook"
-                  target="_blank"
+                  href="#"
+                  onClick={openMoneyBook}
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -201,6 +213,7 @@ export default function page() {
                     가계부
                   </p>
                 </Link>
+                <Moneybook open={open} closeMoneyBook={closeMoneyBook} userkey={userkey} />
                 <Link data-v-247cd1ce="" href="/myPage/qna" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
                     <LiveHelpOutlinedIcon sx={{ width: 28, height: 28 }} />
@@ -213,24 +226,6 @@ export default function page() {
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
                     문의사항
-                  </p>
-                </Link>
-                <Link
-                  data-v-247cd1ce=""
-                  href="/Board/list/1"
-                  className="menu-item"
-                >
-                  <div data-v-247cd1ce="" className="icon-wrap">
-                    <EventIcon sx={{ width: 28, height: 28 }}/>
-                  </div>
-                  <p
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-247cd1ce=""
-                    className="text-lookup name display_paragraph"
-                    style={{ color: "rgb(34, 34, 34)" }}
-                  >
-                    공지사항/이벤트
                   </p>
                 </Link>
 
@@ -633,7 +628,7 @@ export default function page() {
                           return;
                         }
                         return (
-                            <UserCellList2 key={index} pvo={wlvo.pvo} />
+                            <UserCellList key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (
