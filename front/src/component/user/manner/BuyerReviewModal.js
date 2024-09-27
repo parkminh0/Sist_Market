@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Box, Typography, List, ListItem, Divider, FormControlLabel, Checkbox } from "@mui/material";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function BuyerReviewModal(props) {
   const REVIEW_URL = "/user/reviewList";
   const BUYER_REVIEW_URL = "/user/buyerReview";
+  const MANNER_TEMP_URL = "/user/manner/setMannerTemp";
   const open = props.reportOpen;
   const onClose = () => {
     props.handleReportClose();
@@ -17,12 +19,23 @@ export default function BuyerReviewModal(props) {
   const [preference, setPreference] = useState('2');
   const [selectedRating, setSelectedRating] = useState("최고예요!");
   const [selectedKeys, setSelectedKeys] = useState([]);
+  const selluserkey = props.sellerUserkey; //postkey에 해당하는 userkey
 
   function getData() {
     axios.get(REVIEW_URL, { params: { preference } })
       .then((res) => {
         setList(res.data.r_ar || []);
       });
+  }
+
+  function setMannerTemp() {
+    axios({
+      url: MANNER_TEMP_URL,
+      method: "post",
+      params: { userkey: "selluserkey" },
+    }).then((res) => {
+      alert("갱신 완료");
+    });
   }
 
   const handleRatingChange = (event) => {
@@ -59,8 +72,12 @@ export default function BuyerReviewModal(props) {
       params: {
         reviewlistkey: selectedKeys,
         postkey: props.postkey,
+        userkey: "selluserkey",
+        estimateuserkey: Cookies.get("userkey"),
       },
     }).then((res) => {
+      setMannerTemp();
+      alert("후기 작성 완료")
       onClose();
     });
   }

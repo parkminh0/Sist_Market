@@ -1,36 +1,53 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, Divider, Tabs, Tab, Modal } from '@mui/material';
+import { Box, Typography, Avatar, Divider, Tabs, Tab } from '@mui/material';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import Link from 'next/link';
 
 export default function Review({ userKey, onReviewCountChange }) {
+  const ALL_URL = "/user/allReview";
   const BUY_URL = "/user/buyingReview";
   const SELL_URL = "/user/sellingReview";
 
   const [selectedTab, setSelectedTab] = useState(0);
+  const [allList, setAllList] = useState([]);
   const [buyingList, setBuyingList] = useState([]);
   const [sellingList, setSellingList] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [page, setPage] = useState({});
+  const [bPage, setBpage] = useState({});
+  const [sPage, setSpage] = useState({});
   const userkey = userKey;
 
   useEffect(() => {
-    getData();
-  }, []);
+    getData(1);
+  }, [selectedTab]);
 
-  function getData() {
-    Promise.all([
-      axios.get(BUY_URL, { params: { userkey: userkey} }),
-      axios.get(SELL_URL, { params: { userkey: userkey} })
-    ]).then(([res1, res2]) => {
-        console.log(res2.data.selling_ar);
-        setBuyingList(res1.data.buying_ar);
-        setSellingList(res2.data.selling_ar);
-        onReviewCountChange([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
-    })
+  function getData(cPage) {
+    if (selectedTab === 0) {
+      axios.get(ALL_URL, { params: { userkey, cPage } }).then((res) => {
+        setAllList(res.data.all_ar);
+        setPage(res.data.page);
+        console.log(res.data.page);
+        console.log(res.data.all_ar);
+        onReviewCountChange(res.data.all_ar.length);
+      });
+    } else if (selectedTab === 1) {
+      axios.get(SELL_URL, { params: { userkey, cPage } }).then((res) => {
+        setSellingList(res.data.selling_ar);
+        setSpage(res.data.s_page);
+      });
+    } else if (selectedTab === 2) {
+      axios.get(BUY_URL, { params: { userkey, cPage } }).then((res) => {
+        setBuyingList(res.data.buying_ar);
+        setBpage(res.data.b_page);
+      });
+    }
   }
+
+  const changePage = (pNum) => {
+    getData(pNum);
+  };
 
   const tabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -42,21 +59,11 @@ export default function Review({ userKey, onReviewCountChange }) {
     } else if (f == 'seller') {
       return sellingList || [];
     } else if (f == 'all') {
-      return [...(sellingList || []), ...(buyingList || [])]; //sellingList + buyingList (순서 상관 O)
+      return allList || [];
     } else {
       return [];
     }
-}
-
-  const modalOpen = (imgUrl) => {
-    setSelectedImage(imgUrl);
-    setOpenModal(true);
-  };
-
-  const modalClose = () => {
-    setOpenModal(false);
-    setSelectedImage(null);
-  };
+  }
 
   return (
     <Box sx={{ width: '100%', padding: 2 }}>
@@ -84,12 +91,6 @@ export default function Review({ userKey, onReviewCountChange }) {
                   </Box>
                 </Box>
               </Box>
-              {(review.dealuserreviewimg || review.userreviewimg) && (
-                <Box sx={{ ml: 2 }}>
-                  <img src={review.dealuserreviewimg || review.userreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                    onClick={() => modalOpen(review.dealuserreviewimg || review.userreviewimg)} />
-                </Box>
-              )}
             </Box>
             {index < filter('all').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
           </React.Fragment>
@@ -114,12 +115,6 @@ export default function Review({ userKey, onReviewCountChange }) {
                   </Box>
                 </Box>
               </Box>
-              {review.userreviewimg && (
-                <Box sx={{ ml: 2 }}>
-                  <img src={review.userreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                    onClick={() => modalOpen(review.userreviewimg)} />
-                </Box>
-              )}
             </Box>
             {index < filter('seller').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
           </React.Fragment>
@@ -144,12 +139,6 @@ export default function Review({ userKey, onReviewCountChange }) {
                   </Box>
                 </Box>
               </Box>
-              {review.dealuserreviewimg && (
-                <Box sx={{ ml: 2 }}>
-                  <img src={review.dealuserreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                    onClick={() => modalOpen(review.dealuserreviewimg)} />
-                </Box>
-              )}
             </Box>
             {index < filter('buyer').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
           </React.Fragment>
@@ -159,12 +148,149 @@ export default function Review({ userKey, onReviewCountChange }) {
       )))}
       </div>
       <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />
-      <Modal open={openModal} onClose={modalClose} aria-labelledby="image-modal-title" aria-describedby="image-modal-description">
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80%', maxWidth: '500px', bgcolor: 'background.paper', 
-                  boxShadow: 24, p: 4, outline: 'none' }}>
-          {selectedImage && ( <img src={selectedImage} alt="확대된 이미지" style={{ width: '100%', height: 'auto', borderRadius: '8px' }}/> )}
-        </Box>
-      </Modal>
+
+      {/* 페이징 시작 */}
+        {/* {selectedTab === 0 && (
+          <div className="mPaginate">
+            {page.startPage > 1 && (
+              <Link href="#" onClick={() => {changePage(page.startPage - page.pagePerBlock)}} className="prev">
+                이전 {page.pagePerBlock}페이지
+              </Link>
+            )}
+            <ol>
+              {Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+                <li key={pNum}>
+                  {page.nowPage == pNum ? (
+                    <strong title="현재페이지">{pNum}</strong>
+                  ) : (
+                    <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+                  )}
+                </li>
+              ))}
+            </ol>
+            {page.endPage < page.totalPage && (
+              <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+                다음 {page.pagePerBlock}페이지
+              </Link>
+            )}
+          </div>
+        )}
+
+        {selectedTab === 1 && (
+          <div className="mPaginate">
+          {sPage.startPage > 1 && (
+            <Link href="#" onClick={() => {changePage(sPage.startPage - sPage.pagePerBlock)}} className="prev">
+              이전 {sPage.pagePerBlock}페이지
+            </Link>
+          )}
+          <ol>
+            {Array.from({ length: sPage.endPage - sPage.startPage + 1 }, (_, i) => sPage.startPage + i).map((pNum) => (
+              <li key={pNum}>
+                {sPage.nowPage == pNum ? (
+                  <strong title="현재페이지">{pNum}</strong>
+                ) : (
+                  <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+                )}
+              </li>
+            ))}
+          </ol>
+          {sPage.endPage < sPage.totalPage && (
+            <Link href="#" onClick={() => {changePage(sPage.endPage + 1)}} className="next">
+              다음 {sPage.pagePerBlock}페이지
+            </Link>
+          )}
+        </div>
+        )}
+
+        {selectedTab === 2 && (
+          <div className="mPaginate">
+          {bPage.startPage > 1 && (
+            <Link href="#" onClick={() => {changePage(bPage.startPage - bPage.pagePerBlock)}} className="prev">
+              이전 {bPage.pagePerBlock}페이지
+            </Link>
+          )}
+          <ol>
+            {Array.from({ length: bPage.endPage - bPage.startPage + 1 }, (_, i) => bPage.startPage + i).map((pNum) => (
+              <li key={pNum}>
+                {bPage.nowPage == pNum ? (
+                  <strong title="현재페이지">{pNum}</strong>
+                ) : (
+                  <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+                )}
+              </li>
+            ))}
+          </ol>
+          {bPage.endPage < bPage.totalPage && (
+            <Link href="#" onClick={() => {changePage(bPage.endPage + 1)}} className="next">
+              다음 {bPage.pagePerBlock}페이지
+            </Link>
+          )}
+        </div>
+        )} */}
+
+<div className="mPaginate">
+        {selectedTab === 0 && page.startPage > 1 && (
+          <Link href="#" onClick={() => {changePage(page.startPage - page.pagePerBlock)}} className="prev">
+            이전 {page.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 1 && sPage.startPage > 1 && (
+          <Link href="#" onClick={() => {changePage(sPage.startPage - sPage.pagePerBlock)}} className="prev">
+            이전 {sPage.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 2 && bPage.startPage > 1 && (
+          <Link href="#" onClick={() => {changePage(bPage.startPage - bPage.pagePerBlock)}} className="prev">
+            이전 {bPage.pagePerBlock}페이지
+          </Link>
+        )}
+
+        <ol>
+          {selectedTab === 0 && Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+            <li key={pNum}>
+              {page.nowPage == pNum ? (
+                <strong title="현재페이지">{pNum}</strong>
+              ) : (
+                <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+              )}
+            </li>
+          ))}
+          {selectedTab === 1 && Array.from({ length: sPage.endPage - sPage.startPage + 1 }, (_, i) => sPage.startPage + i).map((pNum) => (
+            <li key={pNum}>
+              {sPage.nowPage == pNum ? (
+                <strong title="현재페이지">{pNum}</strong>
+              ) : (
+                <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+              )}
+            </li>
+          ))}
+          {selectedTab === 2 && Array.from({ length: bPage.endPage - bPage.startPage + 1 }, (_, i) => bPage.startPage + i).map((pNum) => (
+            <li key={pNum}>
+              {bPage.nowPage == pNum ? (
+                <strong title="현재페이지">{pNum}</strong>
+              ) : (
+                <Link href="#" onClick={() => {changePage(pNum)}}>{pNum}</Link>
+              )}
+            </li>
+          ))}
+        </ol>
+        {selectedTab === 0 && page.endPage < page.totalPage && (
+          <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+            다음 {page.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 1 && sPage.endPage < sPage.totalPage && (
+          <Link href="#" onClick={() => {changePage(sPage.endPage + 1)}} className="next">
+            다음 {sPage.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 2 && bPage.endPage < bPage.totalPage && (
+          <Link href="#" onClick={() => {changePage(bPage.endPage + 1)}} className="next">
+            다음 {bPage.pagePerBlock}페이지
+          </Link>
+        )}
+      </div>
+      {/* 페이징 끝 */}
     </Box>
   );
 }
