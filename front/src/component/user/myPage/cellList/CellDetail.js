@@ -202,9 +202,6 @@ export default function CellDetail(props) {
                 </div>
             </div>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={closeDetail}>나가기</Button>
-          </DialogActions>
         </Dialog>
       </Fragment>
   )

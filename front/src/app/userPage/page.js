@@ -12,7 +12,7 @@ import "/public/css/popcatelist.css";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
 import PraiseModal from "@/component/user/userPage/PraiseModal";
@@ -402,7 +402,7 @@ export default function page() {
                                 ? 
                                 <div className="UserPageGrid" >
                                   {cellList.map((clvo, index) => {
-                                    return <UserCellList2 key={index} pvo={clvo} />;
+                                    return <UserCellList key={index} pvo={clvo} />;
                                 })}
                                 </div> : 
                                 <div style={{

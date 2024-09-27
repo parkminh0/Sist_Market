@@ -30,6 +30,8 @@ import {
 } from "@mui/material";
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
+import PostDetail from "@/component/admin/post/detail/PostDetail";
+import PostDetail2 from "@/component/admin/post/detail/PostDetail2";
 
 export default function Page() {
   const [list, setList] = useState([]);
@@ -229,6 +231,22 @@ export default function Page() {
         alert("삭제 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
+
+  const [openPD, setOpenPD] = useState(false);
+  const [pdkey, setPdkey] = useState('0');
+
+  function openPostDetail(postkey){
+    setPdkey(postkey);
+    setOpenPD(true);
+  }
+  function closePostDetail(){
+    setOpenPD(false);
+    setPdkey('0');
+
+  }
+
+
+
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -744,9 +762,7 @@ export default function Page() {
                           hover
                           tabIndex={-1}
                           role="checkbox"
-                          onDoubleClick={() =>
-                            window.open(`/admin/post/detail/${prod.postkey}`)
-                          }
+                          onDoubleClick={() => {openPostDetail(prod.postkey);} }
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -901,6 +917,7 @@ export default function Page() {
           </Grid>
         </Grid>
       </Box>
+      <PostDetail openPD={openPD} closePostDetail={closePostDetail} postkey={pdkey} />
     </PageContainer>
   );
 }
