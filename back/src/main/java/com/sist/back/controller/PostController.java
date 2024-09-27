@@ -38,13 +38,8 @@ import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
-<<<<<<< HEAD
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-=======
-import org.springframework.web.bind.annotation.RequestParam;
->>>>>>> 6b32446a4a8238b9a83a3875fb40fe51932feca0
 
 @RestController
 @RequestMapping("/adpost")
@@ -462,8 +457,8 @@ public class PostController {
     }
 
     @RequestMapping("/updatePostStatus")
-    public void updatePostStatus(String postStatus, String postkey) {
-        p_service.updatePostStatus(postStatus, postkey);
+    public void updatePostStatus(String postStatus, String postkey, String dealuserkey) {
+        p_service.updatePostStatus(postStatus, postkey, dealuserkey);
     }
     
     @GetMapping("/checkPostDel")

@@ -13,7 +13,7 @@ public class SseEmitterService {
     private final List<SseEmitter> emitters = new ArrayList<>();
 
     public SseEmitter createEmitter() {
-        SseEmitter emitter = new SseEmitter(60* 60 * 1000L); // 60초 동안 연결 유지
+        SseEmitter emitter = new SseEmitter(60* 60 * 1000L);
         emitters.add(emitter);
 
         // 연결이 완료되거나 오류 발생 시 emitter 제거

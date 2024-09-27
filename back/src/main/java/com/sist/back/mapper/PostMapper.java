@@ -70,5 +70,5 @@ public interface PostMapper {
 
     PostImgVO getPostImgThumbnail(String postkey);
 
-    void updatePostStatus(String postStatus, String postkey);
+    void updatePostStatus(String postStatus, String postkey, String dealuserkey);
 }
