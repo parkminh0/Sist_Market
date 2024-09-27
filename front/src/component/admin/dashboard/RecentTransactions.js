@@ -10,10 +10,34 @@ import {
 } from "@mui/lab";
 import { Link, Typography } from "@mui/material";
 import DashboardCard from "../shared/DashboardCard";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const RecentTransactions = () => {
+  const [qnaList, setQnaList] = useState([]);
+  const colorList = [
+    "primary",
+    "secondary",
+    "success",
+    "warning",
+    "error",
+    "success",
+  ];
+
+  useEffect(() => {
+    axios({
+      url: "/ad/getQnaList",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setQnaList(res.data.res_getQnaList);
+    });
+  }, []);
+
   return (
-    <DashboardCard title="Recent Transactions">
+    <DashboardCard title="문의사항">
       <>
         <Timeline
           className="theme-timeline"
@@ -25,74 +49,33 @@ const RecentTransactions = () => {
               backgroundColor: "#efefef",
             },
             [`& .${timelineOppositeContentClasses.root}`]: {
-              flex: 0.5,
+              flex: 0.6,
               paddingLeft: 0,
             },
           }}
         >
-          <TimelineItem>
-            <TimelineOppositeContent>09:30 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="primary" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              Payment received from John Doe of $385.90
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>10:00 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="secondary" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="600">New sale recorded</Typography>{" "}
-              <Link href="/" underline="none">
-                #ML-3467
-              </Link>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>12:00 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="success" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              Payment was made of $64.95 to Michael
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>09:30 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="warning" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="600">New sale recorded</Typography>{" "}
-              <Link href="/" underline="none">
-                #ML-3467
-              </Link>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>09:30 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="error" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="600">New arrival recorded</Typography>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>12:00 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="success" variant="outlined" />
-            </TimelineSeparator>
-            <TimelineContent>Payment Received</TimelineContent>
-          </TimelineItem>
+          {qnaList.map((qna, i) => (
+            <TimelineItem key={i}>
+              <TimelineOppositeContent>
+                {new Date(qna.create_dtm).toLocaleString("ko-KR", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false, // 24시간 형식
+                })}
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot color={colorList[i]} variant="outlined" />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Link href="/" underline="none">
+                  <Typography fontWeight="600">{qna.title}</Typography>
+                </Link>
+              </TimelineContent>
+            </TimelineItem>
+          ))}
         </Timeline>
       </>
     </DashboardCard>

@@ -2,15 +2,49 @@ import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { useTheme } from "@mui/material/styles";
 import { Stack, Typography, Avatar, Fab } from "@mui/material";
-import { IconArrowDownRight, IconCurrencyDollar } from "@tabler/icons-react";
+import {
+  IconArrowDownRight,
+  IconCurrencyDollar,
+  IconMoodX,
+  IconUserSquareRounded,
+} from "@tabler/icons-react";
 import DashboardCard from "../shared/DashboardCard";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const MonthlyEarnings = () => {
+  const [userStatusCnt, setUserStatusCnt] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [del, setDel] = useState(0);
+
+  useEffect(() => {
+    axios({
+      url: "/ad/userStatusCnt",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setUserStatusCnt(res.data.res_userStatusCnt);
+      const totalSum = res.data.res_userStatusCnt.reduce(
+        (acc, item) => acc + parseInt(item.newCnt, 10),
+        0
+      );
+      const delSum = res.data.res_userStatusCnt.reduce(
+        (acc, item) => acc + parseInt(item.delCnt, 10),
+        0
+      );
+      setTotal(totalSum);
+      setDel(delSum);
+    });
+  }, []);
+
   // chart color
   const theme = useTheme();
   const secondary = theme.palette.secondary.main;
   const secondarylight = "#f5fcff";
-  const errorlight = "#fdede8";
+  const label = userStatusCnt.map((item) => item.date);
 
   // chart
   const optionscolumnchart = {
@@ -36,6 +70,7 @@ const MonthlyEarnings = () => {
       type: "solid",
       opacity: 0.05,
     },
+    labels: label,
     markers: {
       size: 0,
     },
@@ -48,17 +83,19 @@ const MonthlyEarnings = () => {
     {
       name: "",
       color: secondary,
-      data: [25, 66, 20, 40, 12, 58, 20],
+      data: userStatusCnt.map((item) => item.newCnt),
     },
   ];
 
   return (
     <DashboardCard
-      title="Monthly Earnings"
+      title="신규 회원(12개월)"
       action={
-        <Fab color="secondary" size="medium" sx={{ color: "#ffffff" }}>
-          <IconCurrencyDollar width={24} />
-        </Fab>
+        <Link href="/ad/user">
+          <Fab color="secondary" size="medium" sx={{ color: "#ffffff" }}>
+            <IconUserSquareRounded width={24} />
+          </Fab>
+        </Link>
       }
       footer={
         <Chart
@@ -71,18 +108,31 @@ const MonthlyEarnings = () => {
       }
     >
       <>
-        <Typography variant="h3" fontWeight="700" mt="-20px">
-          $6,820
-        </Typography>
-        <Stack direction="row" spacing={1} my={1} alignItems="center">
-          <Avatar sx={{ bgcolor: errorlight, width: 27, height: 27 }}>
-            <IconArrowDownRight width={20} color="#FA896B" />
-          </Avatar>
-          <Typography variant="subtitle2" fontWeight="600">
-            +9%
+        <Stack direction="row" alignItems="flex-end" mt="-20px">
+          <Typography variant="h4" fontWeight="700">
+            {new Intl.NumberFormat("ko-KR").format(total)}명
           </Typography>
-          <Typography variant="subtitle2" color="textSecondary">
-            last year
+          <Typography
+            variant="subtitle2"
+            fontWeight="700"
+            sx={{ marginLeft: 0.5 }}
+          >
+            (신규)
+          </Typography>
+        </Stack>
+        <Stack direction="row" spacing={1} mt={1} alignItems="center">
+          <Avatar sx={{ bgcolor: "transparent", width: 27, height: 27 }}>
+            <IconMoodX width={20} color="#39B69A" />
+          </Avatar>
+          <Typography
+            variant="caption"
+            sx={{ fontSize: "0.7rem" }}
+            color="textSecondary"
+          >
+            탈퇴율
+          </Typography>
+          <Typography variant="subtitle2" fontWeight="600">
+            {((del / total) * 100).toFixed(1)}%
           </Typography>
         </Stack>
       </>
