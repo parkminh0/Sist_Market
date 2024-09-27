@@ -164,6 +164,7 @@ export default function page() {
       }
     ).then((res) => {
       setVo(res.data.uvo);
+      setMannerTemp(res.data.uvo.mannertemp);
       setCellList(res.data.cellList);
       handleCellCount(res.data.cellCount);
       setLimitpostkey(res.data.limitpostkey);
@@ -207,7 +208,7 @@ export default function page() {
       const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
       .reduce((sum, item) => sum + item.count, 0);
       const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
-      setMannerTemp(updatedTemp);
+      
     });
     Promise.all([
       axios.get("/user/buyingReview", { params: { userkey: userkey} }),

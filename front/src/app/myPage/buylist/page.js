@@ -256,14 +256,20 @@ export default function Page() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span data-v-eff62a72="" className="status_txt">
-                            구매금액
-                          </span>
+                          <div style={{
+                                display: 'flex',
+                                flexDirection:'column',
+                                }}>
+                            <span data-v-eff62a72="" className="status_txt">
+                              구매금액
+                            </span>
+                            <span data-v-eff62a72="" className="status_txt">
+                              (구매일)
+                            </span>
+                          </div>
                         </TableCell>
-                        <TableCell>
-                          <span data-v-eff62a72="" className="status_txt">
-                            구매일
-                          </span>
+                        <TableCell style={{textAlign:'center'}}>
+                          후기
                         </TableCell>
                         <TableCell style={{textAlign:'right'}}>
                           <span data-v-eff62a72="" className="status_txt">
