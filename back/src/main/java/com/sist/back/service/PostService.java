@@ -167,7 +167,7 @@ public class PostService {
         return p_mapper.getPostImgThumbnail(postkey);
     }
 
-    public void updatePostStatus(String postStatus, String postkey){
-        p_mapper.updatePostStatus(postStatus, postkey);
+    public void updatePostStatus(String postStatus, String postkey, String dealuserkey){
+        p_mapper.updatePostStatus(postStatus, postkey, dealuserkey);
     }
 }

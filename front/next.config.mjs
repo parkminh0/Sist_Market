@@ -60,6 +60,10 @@ const nextConfig = {
         source: "/qna/:path*",
         destination: "http://localhost:8080/qna/:path*"
       },
+      {
+        source: "/alarm/:path*",
+        destination: "http://localhost:8080/alarm/:path*"
+      },
     ];
   },
 };
