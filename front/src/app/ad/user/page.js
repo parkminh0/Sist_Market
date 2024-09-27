@@ -209,6 +209,7 @@ export default function Page() {
   const [s_list, setS_list] = useState([]);
   const [w_list, setW_list] = useState([]);
   const [k_list, setK_list] = useState([]);
+  const [tvo, setTvo] = useState([]);
 
   function editUser(userkey){
     setUserkey(userkey);
@@ -234,6 +235,8 @@ export default function Page() {
         setS_list(res.data.ar.s_list || []);
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
+        setTvo(res.data.ar.a_list.tvo || []);
+        console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
       });
     }
   }
@@ -565,16 +568,7 @@ export default function Page() {
           <Grid item xs={12}>
             <DashboardCard>
               <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <Button
-                  variant="contained"
-                  color="inherit"
-                  onClick={delete_choice}
-                  className="btnNormal"
-                  sx={{ ml: 1 }}
-                  startIcon={<AddIcon />}
-                >
-                  추가
-                </Button>
+                
                 <Button
                   variant="contained"
                   color="inherit"
@@ -802,21 +796,7 @@ export default function Page() {
                         </span>
                       </td>
                     </tr>
-                    <tr>
-                      <th scope="row">비밀번호</th>
-                      <td>
-                        <input
-                          type="text"
-                          name="pw"
-                          className="fText eMarketChecker"
-                          style={{ width: "150px" }}
-                          value={pw}
-                          onChange={(e) => {
-                            setPW(e.target.value);
-                          }}
-                        />
-                      </td>
-                    </tr>
+                   
                     <tr>
                       <th scope="row">이름</th>
                       <td>
@@ -831,6 +811,18 @@ export default function Page() {
                           }}
                         />
                       </td>
+                    </tr>
+                    <tr>
+                    <th scope="row">매너온도</th>
+                    <td>
+                      <span
+                        className="fText eMarketChecker"
+                        style={{ width: "400px", display: "inline-block" }}
+                      >
+                        {ar.mannertemp || "0"} 도
+                      </span>
+                    </td>
+                   
                     </tr>
                     <tr>
                       <th scope="row">이메일</th>
@@ -984,6 +976,7 @@ export default function Page() {
                   <tr>
                     <th scope="col">평가자 키</th>
                     <th scope="col">매너</th>
+                    <th scope="col">간편후기</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1002,6 +995,12 @@ export default function Page() {
                         >
                           {manner.ismanner ? "좋음" : "나쁨"}
                         </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {manner.rvo.review || ""}
+                        </td>
                       </tr>
                     ))
                   ) : (
@@ -1017,13 +1016,13 @@ export default function Page() {
           </div>
         </div>
 
-        {/* 좋아요 사용자 목록 테이블 */}
+        {/* 관심 사용자 목록 테이블 */}
         <div className="section" id="QA_register2">
           
           <div className="toggleArea" style={{ display: "block" }}>
             <div className="mBoard typeProduct">
-              <table summary="좋아하는 사용자 목록">
-                <caption>좋아하는 사용자 목록</caption>
+              <table summary="관심 사용자 목록">
+                <caption>관심 사용자 목록</caption>
                 <colgroup>
                   <col className="product" />
                   <col style={{ width: "auto" }} />
@@ -1079,6 +1078,7 @@ export default function Page() {
                 <thead>
                   <tr>
                     <th scope="col">뱃지 번호</th>
+                    <th scope="col">뱃지명</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1091,6 +1091,12 @@ export default function Page() {
                           style={{ textAlign: "center" }}
                         >
                           {badge.badgekey || ""}
+                        </td>
+                        <td
+                          className="fText eMarketChecker eHasModifyProductAuth"
+                          style={{ textAlign: "center" }}
+                        >
+                          {badge.bvo.name || ""}
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
@@ -1223,7 +1229,7 @@ export default function Page() {
                 <thead>
                   <tr>
                     <th scope="col">주소 번호</th>
-                    <th scope="col">범위</th>
+                    <th scope="col">대표도시</th>
                     <th scope="col">알림 여부</th>
                   </tr>
                 </thead>
@@ -1241,7 +1247,7 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {address.range || ""}
+                          {address.tvo.region2 || ""}
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"

@@ -47,11 +47,6 @@ public class UserController {
     @Value("${server.upload.user.image}")
     private String userImgPath;
 
-    @RequestMapping("/login/kakao")
-    public ModelAndView login(String code) {
-        ModelAndView mv = new ModelAndView();
-        return mv;
-    }
 
     // 관리자 유저 카운트 확인
     @RequestMapping("/api/usercount")
@@ -239,10 +234,9 @@ public class UserController {
         int cnt = 0; // 아무 작업도 못했어 0 한번했어 1
         String msg = "로그인에 실패하였습니다.";
         userVO uvo = null;
+        
         if (vo.getId() != null) {
-
             uvo = service.authAndMakeToken(vo.getId(), vo.getPw());
-
             if (uvo != null) {
                 ResponseCookie cookie = ResponseCookie
                         .from("accessToken", uvo.getAccess_token())
@@ -266,6 +260,8 @@ public class UserController {
                         .secure(true)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
+
+                service.upt_login_dtm(uvo);
                 cnt = 1;
                 msg = "success";
             }
@@ -347,12 +343,10 @@ public class UserController {
             fvo.setEmail(email);
             fvo.setImgurl(imgurl);
             fvo.setIsauthorized("0");
-
-            // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
             String randomId = "user" + System.currentTimeMillis();
             fvo.setId(randomId);
 
-            // 비밀번호는 카카오 로그인 사용자는 필요 없음
+            
             fvo.setPw(null);
 
             // 회원가입 처리
@@ -391,6 +385,8 @@ public class UserController {
                         .secure(true)
                         .build();
                 res.addHeader("Set-Cookie", userkeyCookie.toString());
+
+                service.kakao_login_dtm(email);
 
                 map.put("msg", "로그인 성공");
                 map.put("uvo", uvo);
