@@ -31,9 +31,7 @@ import Cookies from "js-cookie";
 import EditPostModal from "@/component/user/post/detail/EditPostModal";
 import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
 import UserCellList from "@/component/user/post/detail/UserCellList";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import PopCateList from "@/component/user/post/detail/PopCateList";
-import PopCateList2 from "@/component/user/post/detail/PopCateList2";
 import ReportModal from "@/component/user/post/detail/report/ReportModal";
 
 export default function Page() {
@@ -104,7 +102,6 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      // console.log(res.data);
       if (res.data.result > 0) {
         setViewqty(res.data.viewqty);
       }
@@ -141,17 +138,13 @@ export default function Page() {
       if (cookie.includes(`/${userkey}`)) {
         // 유저가 있을 때
         var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
-        // console.log(`userCookieTmp: ${userCookieTmp}`);
         var beforeCookie = cookie.substring(0, cookie.indexOf(`/${userkey}`));
-        // console.log(`beforeCookie: ${beforeCookie}`);
         var userCookie = userCookieTmp;
         var afterCookie = "";
         if (userCookieTmp.indexOf("/") > 0) {
           userCookie = userCookieTmp.substring(0, userCookieTmp.indexOf("/"));
           afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
         }
-        // console.log(`userCookie: ${userCookie}`);
-        // console.log(`afterCookie: ${afterCookie}`);
         if (!userCookie.includes(`[${postkey}]`)) {
           // 새로운 페이지 일 때
           updateViewqty(postkey);
@@ -208,22 +201,6 @@ export default function Page() {
     return userTown;
   }
 
-  function getManner(m_list) {
-    var length = m_list.length > 0 ? m_list.length : 0;
-    var manner = 36.5;
-    for (var i = 0; i < length; i++) {
-      switch (m_list[i].ismanner) {
-        case "0":
-          manner -= 0.5;
-          break;
-        case "1":
-        case "2":
-          manner += 0.5;
-          break;
-      }
-    }
-    return manner;
-  }
 
   useEffect(() => {
     let currentUrl = window.location.href;
@@ -263,7 +240,7 @@ export default function Page() {
       }
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
-      setManner(getManner(res.data.pvo.uvo.m_list));
+      setManner(res.data.pvo.uvo.mannertemp);
 
       axios({
         url: "/adpost/cellList",
@@ -284,6 +261,7 @@ export default function Page() {
         method: "get",
         params: {
           categorykey: res.data.pvo.categorykey,
+          userkey: userkey,
         },
         headers: {
           "Content-Type": "application/json",
@@ -338,6 +316,8 @@ export default function Page() {
   function editPost(userkey, poststatus) {
     if (userkey != Cookies.get("userkey")) {
       alert("수정 권한이 없습니다.");
+    } else if (poststatus == 2) {
+      alert("예약(거래진행)중인 게시글은 수정하실 수 없습니다.");
     } else if (poststatus == 3) {
       alert("구매완료된 게시글은 수정하실 수 없습니다.");
     } else {
@@ -857,7 +837,7 @@ export default function Page() {
             {cellList.length > 0
               ? cellList.map((clvo, index) => {
                 if (index < 5) {
-                  return <UserCellList2 key={index} pvo={clvo} />;
+                  return <UserCellList key={index} pvo={clvo} />;
                 }
               })
               : ""}
@@ -921,7 +901,7 @@ export default function Page() {
             {popCate.length > 0
               ? popCate.map((pcvo, index) => {
                 return (
-                  <PopCateList2 key={index} pvo={pcvo} />
+                  <PopCateList key={index} pvo={pcvo} />
                 )
               })
               : ""}

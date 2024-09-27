@@ -396,8 +396,6 @@ export default function EditPostModal(props) {
     useEffect(() => {
         getCategory();
         var pvo = props.pvo;
-        console.log("props.pvo");
-        console.log(props.pvo);
         setPvo(props.pvo);
         setTitle(pvo.title);
         setCategory(pvo.cvo?pvo.cvo.categorykey:1);
@@ -735,7 +733,6 @@ export default function EditPostModal(props) {
                 disabled={isFree}
                 value={isFree ? 0 : price}
                 onChange={(e) => {
-                  console.log(e.nativeEvent)
                   const check = /[0-9]/g;
                   if(check.test(e.nativeEvent.data)||e.nativeEvent.inputType!="insertText"){
                     setPrice(e.target.value);

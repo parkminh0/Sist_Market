@@ -101,6 +101,7 @@ const ChatApp = () => {
   const handleSellerReportClose = () => setSellerReportOpen(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const isFirstRender = useRef(true);
+  const [buyerUserkey, setBuyerUserkey] = useState(null);
 
   useEffect(() => {
     if (oneTime.current) {
@@ -116,6 +117,7 @@ const ChatApp = () => {
         user_img_url: res.user_list[index] && res.user_list[index].imgurl || '/img/Orange_img.png',
         anotherName: res.user_list[index] && res.user_list[index].nickname,
       })));
+
     });
     const octokit = new Octokit({
       auth: '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'
@@ -326,6 +328,15 @@ const ChatApp = () => {
           hope_place: item.hope_place,
           hope_time: item.hope_time,
         })))
+
+        if (res.chattingList.length > 0) {
+          if (res.chattingList[0].userkey1 !== userkey) {
+            setBuyerUserkey(res.chattingList[0].userkey1);
+          } else if (res.chattingList[0].userkey2 !== userkey) {
+            setBuyerUserkey(res.chattingList[0].userkey2);
+          }
+        }
+
       });
     }
     connect();
@@ -826,7 +837,7 @@ const ChatApp = () => {
     <>
       <article className="article">
         <div>
-          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} dealuserkey={another} />
+          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} buyerUserkey={buyerUserkey}/>
         </div>
         <nav className="sidebar">
           <Link className="anchor" href="chat">

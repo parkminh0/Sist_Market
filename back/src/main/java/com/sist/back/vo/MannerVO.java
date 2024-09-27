@@ -14,4 +14,6 @@ public class MannerVO {
             delete_dtm,
             update_dtm, isdeleted;
     private int count;
+    private ReviewListVO rvo;
+    private userVO uvo;
 }

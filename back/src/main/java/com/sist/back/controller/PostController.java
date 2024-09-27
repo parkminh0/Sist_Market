@@ -40,7 +40,6 @@ import com.sist.back.vo.PostCountVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @RequestMapping("/adpost")
 public class PostController {
@@ -116,9 +115,9 @@ public class PostController {
     }
 
     @RequestMapping("/pop_cate")
-    public Map<String, Object> popCate(int categorykey) {
+    public Map<String, Object> popCate(int categorykey, String userkey) {
         Map<String, Object> e_map = new HashMap<>();
-        e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey));
+        e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey, userkey));
         return e_map;
     }
 
