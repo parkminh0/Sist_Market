@@ -6,7 +6,6 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 export default function Manner({ userKey, onMannerCountChange }) {
   const API_URL = "/user/manner/getManner";
@@ -25,7 +24,6 @@ export default function Manner({ userKey, onMannerCountChange }) {
       params: { userkey: userkey }
     }).then((res) => {
       setList(res.data.m_ar || []);
-      console.log(res.data.m_ar);
       const goodList = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2);
       const badList = (res.data.m_ar || []).filter(item => item.preference == 0);
       setGoods(goodList);
@@ -37,7 +35,7 @@ export default function Manner({ userKey, onMannerCountChange }) {
   
   return (
     <Box sx={{ padding: 2, maxWidth: 600, margin: 'auto' }}>
-      {/* 매너 칭찬 섹션 */}
+      {/* 매너 */}
       <Box sx={{ marginBottom: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <SentimentSatisfiedAltIcon color="primary" />
@@ -70,7 +68,7 @@ export default function Manner({ userKey, onMannerCountChange }) {
 
       <Divider sx={{ borderColor: 'gray', borderWidth: '0.7px', marginBottom: 2 }} />
 
-      {/* 비매너 섹션 */}
+      {/* 비매너 */}
       <Box sx={{ marginBottom: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <SentimentDissatisfiedIcon color="error" />

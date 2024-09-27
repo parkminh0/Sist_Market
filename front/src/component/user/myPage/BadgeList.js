@@ -34,7 +34,6 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
         axios.get(API_URL, {
             params: { userkey: userkey }
         }).then((res) => {
-            console.log(res.data.b_ar);
             const badges = res.data.b_ar || [];
             const representBadge = badges.find((item) => item.isrepresent == "1");
             if (representBadge) {
@@ -64,7 +63,6 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
 
     const modalOpen = (badge) => {
         setSelectedBadge(badge);
-        console.log(badge);
         setBadgekey(badge.badgekey);
         setOpen(true);
     };

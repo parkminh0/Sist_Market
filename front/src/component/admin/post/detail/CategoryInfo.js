@@ -8,6 +8,8 @@ export default function CategoryInfo(props) {
           <TableBody>
             <TableRow>
               <TableCell className="th">분류</TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell className="td">{cvo.categoryname}</TableCell>
             </TableRow>
           </TableBody>

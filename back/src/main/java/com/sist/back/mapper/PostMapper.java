@@ -22,7 +22,7 @@ public interface PostMapper {
 
     PostVO getPostByPostKey(int postkey);
 
-    List<PostVO> getPostByCategoryKey(int categorykey);
+    List<PostVO> getPostByCategoryKey(int categorykey, String userkey);
 
     List<PostVO> getCellListByUserPostKey(int userkey, int postkey);
 
@@ -37,6 +37,8 @@ public interface PostMapper {
     int remindPostByPostKey(String postkey);
 
     int unhidPostByPostKey(String postkey);
+
+    int searchpostTotal(Map<String, Object> map);
 
     List<PostVO> searchpost(Map<String, Object> map);
 
@@ -60,15 +62,13 @@ public interface PostMapper {
 
     int deletePostImg(String postkey);
 
-    // 여러 상태 값에 따른 조회 / search
-    List<PostVO> findAllByPoststatusIn(List<Integer> statuses);
-
-    // 특정 상태 값에 따른 조회 / search
-    List<PostVO> findByPoststatus(int poststatus);
-
     List<PostImgVO> pImg_list(int postkey);
 
     int hidePost(String postkey);
-    
+
+    int checkPostDel(String postkey);
+
     PostImgVO getPostImgThumbnail(String postkey);
+
+    void updatePostStatus(String postStatus, String postkey, String dealuserkey);
 }

@@ -7,8 +7,12 @@ import {
   TableHead,
   TableRow,
   Chip,
+  Avatar,
+  useTheme,
 } from "@mui/material";
 import DashboardCard from "../shared/DashboardCard";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const products = [
   {
@@ -50,8 +54,24 @@ const products = [
 ];
 
 const ProductPerformance = () => {
+  const [userRank, setUserRank] = useState([]);
+
+  const theme = useTheme();
+
+  useEffect(() => {
+    axios({
+      url: "/ad/getUserRank",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setUserRank(res.data.res_getUserRank);
+    });
+  }, []);
+
   return (
-    <DashboardCard title="Product Performance">
+    <DashboardCard title="명예의 전당">
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         <Table
           aria-label="simple table"
@@ -63,55 +83,59 @@ const ProductPerformance = () => {
           <TableHead>
             <TableRow>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Id
+                <Typography align="center" variant="subtitle2" fontWeight={600}>
+                  순위
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Assigned
+                <Typography align="center" variant="subtitle2" fontWeight={600}>
+                  사용자
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Name
+                <Typography align="center" variant="subtitle2" fontWeight={600}>
+                  판매 건수
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Priority
+                <Typography align="center" variant="subtitle2" fontWeight={600}>
+                  매너온도
                 </Typography>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align="center">
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Budget
+                  총 판매가격
                 </Typography>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.name}>
-                <TableCell>
+            {userRank.map((user, i) => (
+              <TableRow key={i}>
+                <TableCell align="center">
                   <Typography
                     sx={{
                       fontSize: "15px",
                       fontWeight: "500",
                     }}
                   >
-                    {product.id}
+                    {i + 1}
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Box
+                    gap={2}
                     sx={{
                       display: "flex",
                       alignItems: "center",
                     }}
                   >
+                    {user.imgurl && (
+                      <Avatar alt={user.nickname} src={user.imgurl} />
+                    )}
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600}>
-                        {product.name}
+                        {user.nickname}
                       </Typography>
                       <Typography
                         color="textSecondary"
@@ -119,33 +143,29 @@ const ProductPerformance = () => {
                           fontSize: "13px",
                         }}
                       >
-                        {product.post}
+                        {user.email}
                       </Typography>
                     </Box>
                   </Box>
                 </TableCell>
-                <TableCell>
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle2"
-                    fontWeight={400}
-                  >
-                    {product.pname}
-                  </Typography>
+                <TableCell align="center">
+                  <Typography variant="h6">{user.cellqty}</Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <Chip
                     sx={{
                       px: "4px",
-                      backgroundColor: product.pbg,
+                      backgroundColor: theme.palette.error.main,
                       color: "#fff",
                     }}
                     size="small"
-                    label={product.priority}
+                    label={user.mannertemp}
                   ></Chip>
                 </TableCell>
                 <TableCell align="right">
-                  <Typography variant="h6">${product.budget}k</Typography>
+                  <Typography variant="h6">
+                    {new Intl.NumberFormat("ko-KR").format(user.cellprice)}원
+                  </Typography>
                 </TableCell>
               </TableRow>
             ))}

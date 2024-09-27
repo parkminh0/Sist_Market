@@ -45,20 +45,28 @@ const nextConfig = {
         destination: "http://localhost:8080/searchlog/:path*",
       },
       {
-          source: "/sub/:path*",
-          destination: "http://localhost:8080/sub/:path*"
+        source: "/sub/:path*",
+        destination: "http://localhost:8080/sub/:path*",
       },
       {
-          source: "/ws-stomp/:path*",
-          destination: "http://localhost:8080/ws-stomp/:path*"
+        source: "/ws-stomp/:path*",
+        destination: "http://localhost:8080/ws-stomp/:path*",
       },
       {
-          source: "/pub/:path*",
-          destination: "http://localhost:8080/pub/:path*"
+        source: "/pub/:path*",
+        destination: "http://localhost:8080/pub/:path*",
       },
       {
         source: "/qna/:path*",
-        destination: "http://localhost:8080/qna/:path*"
+        destination: "http://localhost:8080/qna/:path*",
+      },
+      {
+        source: "/ad/:path*",
+        destination: "http://localhost:8080/ad/:path*",
+      },
+      {
+        source: "/alarm/:path*",
+        destination: "http://localhost:8080/alarm/:path*"
       },
     ];
   },

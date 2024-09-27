@@ -36,8 +36,8 @@ public class PostService {
         return p_mapper.getPostByPostKey(postkey);
     }
 
-    public List<PostVO> getPostByCategoryKey(int categorykey) {
-        return p_mapper.getPostByCategoryKey(categorykey);
+    public List<PostVO> getPostByCategoryKey(int categorykey, String userkey) {
+        return p_mapper.getPostByCategoryKey(categorykey, userkey);
     }
 
     public List<PostVO> getCellListByUserPostKey(int userkey, int postkey) {
@@ -83,6 +83,10 @@ public class PostService {
         }
 
         return result;
+    }
+
+    public int searchpostTotal(Map<String, Object> map) {
+        return p_mapper.searchpostTotal(map);
     }
 
     public PostVO[] searchpost(Map<String, Object> map) {
@@ -147,16 +151,6 @@ public class PostService {
         return p_mapper.countpostForAdmin();
     }
 
-    // 전체 상태를 조회하는 메서드 (1, 2, 3, 4 상태를 모두 조회)
-    public List<PostVO> findAllByPoststatusIn(List<Integer> statuses) {
-        return p_mapper.findAllByPoststatusIn(statuses);
-    }
-
-    // 특정 상태를 조회하는 메서드
-    public List<PostVO> findByPoststatus(int poststatus) {
-        return p_mapper.findByPoststatus(poststatus);
-    }
-
     public List<PostImgVO> getPImgListByPostKey(int postkey) {
         return p_mapper.pImg_list(postkey); // PostMapper에서 pImg_list 메서드 호출
     }
@@ -165,7 +159,15 @@ public class PostService {
         return p_mapper.hidePost(postkey);
     }
 
-    public PostImgVO getPostImgThumbnail(String postkey){
+    public int checkPostDel(String postkey) {
+        return p_mapper.checkPostDel(postkey);
+    }
+
+    public PostImgVO getPostImgThumbnail(String postkey) {
         return p_mapper.getPostImgThumbnail(postkey);
+    }
+
+    public void updatePostStatus(String postStatus, String postkey, String dealuserkey){
+        p_mapper.updatePostStatus(postStatus, postkey, dealuserkey);
     }
 }

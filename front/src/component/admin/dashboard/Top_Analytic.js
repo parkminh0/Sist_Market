@@ -29,6 +29,7 @@ export default function AnalyticEcommerce({
   percentage,
   isLoss,
   extra,
+  sort,
 }) {
   return (
     <DashboardCard>
@@ -65,16 +66,19 @@ export default function AnalyticEcommerce({
         </Grid>
       </Stack>
       <Box sx={{ pt: 2.25 }}>
-        <Typography variant="caption" color="text.secondary">
-          You made an extra{" "}
-          <Typography
-            variant="caption"
-            sx={{ color: `${color || "primary"}.main` }}
-          >
-            {extra}
-          </Typography>{" "}
-          this year
-        </Typography>
+        {extra && (
+          <Typography variant="caption" color="text.secondary">
+            {sort === "year"
+              ? `${new Date().getFullYear()}년 추가된 항목 `
+              : "오늘 추가된 항목 "}
+            <Typography
+              variant="caption"
+              sx={{ color: `${color || "primary"}.main` }}
+            >
+              {extra}
+            </Typography>{" "}
+          </Typography>
+        )}
       </Box>
     </DashboardCard>
   );

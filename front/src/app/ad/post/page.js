@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/user.css";
-import Link from "next/link";
 import axios from "axios";
 import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
@@ -15,7 +14,6 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
-  InputLabel,
   MenuItem,
   Pagination,
   Radio,
@@ -26,13 +24,14 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
+import PostDetail from "@/component/admin/post/detail/PostDetail";
+import PostDetail2 from "@/component/admin/post/detail/PostDetail2";
 
 export default function Page() {
   const [list, setList] = useState([]);
@@ -47,18 +46,85 @@ export default function Page() {
   const [saleing, set_saleing_posts] = useState(0); // 예약중(거래중) 게시글 수
   const [saled, set_saled_posts] = useState(0); // 거래완료 게시글 수
   const [hide, set_hide_posts] = useState(0); // 숨김 게시글 수
+  const [del, set_del_posts] = useState(0); // 삭제 게시글 수
 
   // 상태 관리 추가
-  const [postStatus, setPostStatus] = useState("all");
-  const [method, setMethod] = useState("0");
-  const [canBargain, setCanBargain] = useState("0");
+  const [page, setPage] = useState({});
 
-  const baseUrl = "https://dtxw8q4qct0d4.cloudfront.net"; // 서버의 기본 URL
+  // 작성지 위한 useEffect
+  const [region1, setRegion1] = useState([]);
+  const [region2, setRegion2] = useState([]);
+  const [region3, setRegion3] = useState([]);
 
-  function searchpost() {
-    let frm = document.getElementById("frmSearch");
-    let formData = new FormData(frm);
+  const [selReg1, setSelReg1] = useState("null");
+  const [selReg2, setSelReg2] = useState("null");
+  const [selReg3, setSelReg3] = useState("null");
 
+  // region1
+  useEffect(() => {
+    axios({
+      url: "/town/getAllRegion1", // 실제 검색 API
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion1(res.data.getAllRegion1); // 데이터 업데이트
+      setRegion2([]);
+      setRegion3([]);
+    });
+  }, []);
+
+  // region2
+  useEffect(() => {
+    axios({
+      url: "/town/getAllRegion2", // 실제 검색 API
+      method: "get",
+      params: {
+        region1: selReg1,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion2(res.data.getAllRegion2); // 데이터 업데이트
+      setSelReg2("null");
+      setSelReg3("null");
+      setRegion3([]);
+    });
+  }, [selReg1]);
+
+  // region3
+  useEffect(() => {
+    axios({
+      url: "/town/getAllRegion3",
+      method: "get",
+      params: {
+        region2: selReg2,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion3(res.data.getAllRegion3); // 데이터 업데이트
+      setSelReg3("null");
+    });
+  }, [selReg2]);
+
+  // 게시글 조회
+  function searchpost(event, nowPage) {
+    let formData;
+    if (event == null) {
+      formData = new FormData(document.getElementById("frmSearch"));
+    } else {
+      event.preventDefault();
+
+      formData = new FormData(event.currentTarget);
+    }
+    formData.append("nowPage", nowPage);
+    formData.append("region1", selReg1);
+    formData.append("region2", selReg2);
+    formData.append("region3", selReg3);
     // 검색 조건을 URLSearchParams로 변환
     let searchParams = Object.fromEntries(new URLSearchParams(formData));
 
@@ -72,12 +138,10 @@ export default function Page() {
       },
     })
       .then((res) => {
-        console.log(res.data); // 서버 응답 확인
         setList(res.data.post_list); // 데이터 업데이트
+        setPage(res.data.page);
       })
-      .catch((error) => {
-        console.error("There was an error with the search request:", error);
-      });
+      .catch((error) => {});
   }
 
   // 게시글 현황
@@ -93,10 +157,9 @@ export default function Page() {
         set_saleing_posts(data.saleing_posts); // 예약중(거래중) 게시글 수
         set_saled_posts(data.saled_posts); // 거래완료 게시글 수
         set_hide_posts(data.hide_posts); // 숨김 게시글 수
+        set_del_posts(data.del_posts); // 숨김 게시글 수
       })
-      .catch((error) => {
-        console.error("Error fetching post counts:", error);
-      });
+      .catch((error) => {});
   }
 
   function callData() {
@@ -121,7 +184,7 @@ export default function Page() {
     setAllChecked(checked); // 전체 선택 상태 업데이트
     if (checked) {
       // 전체 선택 시, 모든 유저의 키를 checkedItems에 추가
-      const allCheckedItems = userlist.map((item) => item.userkey);
+      const allCheckedItems = list.map((item) => item.postkey);
       setCheckedItems(allCheckedItems);
     } else {
       // 전체 선택 해제
@@ -130,22 +193,60 @@ export default function Page() {
   };
 
   // 개별 체크박스 핸들러
-  const handleRowCheck = (e, userkey) => {
+  const handleRowCheck = (e, postkey) => {
     const checked = e.target.checked;
     let updatedCheckedItems = [...checkedItems];
     if (checked) {
       // 체크 시 해당 유저의 키를 checkedItems에 추가
-      updatedCheckedItems.push(userkey);
+      updatedCheckedItems.push(postkey);
     } else {
       // 체크 해제 시 유저의 키 checkedItems에서 제거
       updatedCheckedItems = updatedCheckedItems.filter(
-        (key) => key !== userkey
+        (key) => key !== postkey
       );
     }
     setCheckedItems(updatedCheckedItems);
     // 모든 유저가 선택되었는지 확인> 전체 선택 상태 업데이트
-    setAllChecked(updatedCheckedItems.length === userlist.length);
+    setAllChecked(updatedCheckedItems.length === list.length);
   };
+
+  // 체크 삭제
+  function delete_choice() {
+    if (!confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+    axios
+      .get("/adpost/checkPostDel", {
+        params: { postkeys: checkedItems }, // URL 쿼리 파라미터로 postkeys 전송
+      })
+      .then((res) => {
+        alert("삭제가 완료되었습니다.");
+        // 체크박스 선택 해제
+        setCheckedItems([]); // 개별 체크박스 해제
+        setAllChecked(false); // 전체 선택 체크박스 해제
+        getCount();
+        searchpost(null, 1);
+      })
+      .catch((error) => {
+        alert("삭제 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      });
+  }
+
+  const [openPD, setOpenPD] = useState(false);
+  const [pdkey, setPdkey] = useState('0');
+
+  function openPostDetail(postkey){
+    setPdkey(postkey);
+    setOpenPD(true);
+  }
+  function closePostDetail(){
+    setOpenPD(false);
+    setPdkey('0');
+
+  }
+
+
+
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -160,60 +261,57 @@ export default function Page() {
           <Grid item xs={12} sx={{ mb: -2.25 }}>
             <Typography variant="h5">게시글 현황</Typography>
           </Grid>
-          <Grid item xs={12} sm={2} md={2} lg={2}>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
             <Top_Analytic
               title="전체"
-              count={all}
-              percentage={59.3}
-              extra="35,000"
+              count={all} //extra="35,000"
             />
           </Grid>
-          <Grid item xs={12} sm={2} md={2} lg={2}>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
             <Top_Analytic
               title="임시 저장"
               count={tem_save}
-              percentage={70.5}
-              extra="8,900"
+              //extra="8,900"
             />
           </Grid>
-          <Grid item xs={12} sm={2} md={2} lg={2}>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
             <Top_Analytic
               title="판매중"
               count={sale}
-              percentage={27.4}
-              isLoss
               color="warning"
-              extra="1,943"
+              //extra="1,943"
             />
           </Grid>
-          <Grid item xs={12} sm={2} md={2} lg={2}>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
             <Top_Analytic
               title="예약중"
               count={saleing}
-              percentage={27.4}
-              isLoss
               color="warning"
-              extra="1,943"
+              //extra="1,943"
             />
           </Grid>
-          <Grid item xs={12} sm={2} md={2} lg={2}>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
             <Top_Analytic
               title="거래완료"
               count={saled}
-              percentage={27.4}
-              isLoss
               color="warning"
-              extra="1,943"
+              //extra="1,943"
             />
           </Grid>
-          <Grid item xs={12} sm={2} md={2} lg={2}>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
             <Top_Analytic
               title="숨김"
               count={hide}
-              percentage={27.4}
-              isLoss
               color="warning"
-              extra="1,943"
+              //extra="1,943"
+            />
+          </Grid>
+          <Grid item xs={12} sm={12 / 7} md={12 / 7} lg={12 / 7}>
+            <Top_Analytic
+              title="삭제"
+              count={del}
+              color="warning"
+              //extra="1,943"
             />
           </Grid>
         </Grid>
@@ -232,7 +330,7 @@ export default function Page() {
           {/* 검색 폼 */}
           <Grid item xs={12}>
             <DashboardCard>
-              <form id="frmSearch">
+              <form id="frmSearch" onSubmit={searchpost}>
                 <ul style={{ listStyle: "none", padding: 0 }}>
                   <li
                     style={{
@@ -251,9 +349,9 @@ export default function Page() {
                       >
                         <MenuItem value="title">게시글명</MenuItem>
                         <MenuItem value="postkey">게시글 번호</MenuItem>
-                        <MenuItem value="hope_place">거래 장소명</MenuItem>
-                        <MenuItem value="townkey">동네명</MenuItem>
-                        <MenuItem value="userkey">회원번호</MenuItem>
+                        <MenuItem value="userkey">게시 회원 번호</MenuItem>
+                        <MenuItem value="id">게시 회원 ID</MenuItem>
+                        <MenuItem value="nickname">게시 회원 닉네임</MenuItem>
                       </Select>
                     </FormControl>
                     <TextField
@@ -297,13 +395,71 @@ export default function Page() {
                       marginBottom: "20px",
                     }}
                   >
+                    <span style={{ width: "120px" }}>작성지</span>
+                    <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
+                      <Select
+                        className="fSelect category eCategory"
+                        id="region1"
+                        name="region1"
+                        value={selReg1}
+                        onChange={(e) => setSelReg1(e.target.value)}
+                      >
+                        <MenuItem value="null">- 분류 선택 -</MenuItem>
+                        {region1.map((reg1, i) => (
+                          <MenuItem value={reg1} key={i}>
+                            {reg1}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
+                      <Select
+                        className="fSelect category eCategory"
+                        id="region2"
+                        name="region2"
+                        value={selReg2}
+                        onChange={(e) => setSelReg2(e.target.value)}
+                      >
+                        <MenuItem value="null">- 분류 선택 -</MenuItem>
+                        {region2 &&
+                          region2.map((reg2, i) => (
+                            <MenuItem value={reg2} key={i}>
+                              {reg2}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                    <FormControl sx={{ minWidth: 120 }} size="small">
+                      <Select
+                        className="fSelect category eCategory"
+                        id="region3"
+                        name="region3"
+                        value={selReg3}
+                        onChange={(e) => setSelReg3(e.target.value)}
+                      >
+                        <MenuItem value="null">- 분류 선택 -</MenuItem>
+                        {region3 &&
+                          region3.map((reg3, i) => (
+                            <MenuItem value={reg3} key={i}>
+                              {reg3}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </li>
+                  <li
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
                     <span style={{ width: "120px" }}>게시글 상태</span>
                     <RadioGroup
                       row
                       defaultValue="all"
                       className="poststatus"
                       name="poststatus"
-                      onChange={(e) => setPostStatus(e.target.value)}
                     >
                       <FormControlLabel
                         value="all"
@@ -335,6 +491,11 @@ export default function Page() {
                         control={<Radio size="small" />}
                         label="숨김"
                       />
+                      <FormControlLabel
+                        value="5"
+                        control={<Radio size="small" />}
+                        label="삭제"
+                      />
                     </RadioGroup>
                   </li>
                   {/* 판매 or 나눔 */}
@@ -351,7 +512,6 @@ export default function Page() {
                       defaultValue="all"
                       className="method"
                       name="method"
-                      onChange={(e) => setMethod(e.target.value)}
                     >
                       <FormControlLabel
                         value="all"
@@ -432,7 +592,6 @@ export default function Page() {
                       defaultValue="all"
                       className="canbargain"
                       name="canbargain"
-                      onChange={(e) => setCanBargain(e.target.value)}
                     >
                       <FormControlLabel
                         value="all"
@@ -461,8 +620,13 @@ export default function Page() {
                   >
                     <span style={{ width: "120px" }}>일자 검색</span>
                     <FormControl sx={{ minWidth: 120 }} size="small">
-                      <Select className="dtm" name="dtm" id="dtm">
-                        <MenuItem value="create_dtm">게시글 생성일</MenuItem>
+                      <Select
+                        className="dtm"
+                        name="dtm"
+                        id="dtm"
+                        defaultValue="create_dtm"
+                      >
+                        <MenuItem value="create_dtm">게시글 작성일</MenuItem>
                         <MenuItem value="update_dtm">게시글 수정일</MenuItem>
                         <MenuItem value="delete_dtm">게시글 삭제일</MenuItem>
                         <MenuItem value="remind_dtm">끌어올리기 일자</MenuItem>
@@ -477,18 +641,18 @@ export default function Page() {
                       }}
                     >
                       <TextField
-                        id="create_dtm_a"
+                        id="dtm_from"
                         type="date"
-                        className="create_dtm_a"
-                        name="create_dtm_a"
+                        className="dtm_from"
+                        name="dtm_from"
                         size="small"
                       />
                       <span style={{ margin: "0 10px" }}>~</span>
                       <TextField
-                        id="create_dtm_b"
+                        id="dtm_to"
                         type="date"
-                        className="create_dtm_b"
-                        name="create_dtm_b"
+                        className="dtm_to"
+                        name="dtm_to"
                         size="small"
                       />
                     </div>
@@ -497,10 +661,10 @@ export default function Page() {
                   {/* 검색 버튼 */}
                   <li style={{ textAlign: "center", marginTop: "20px" }}>
                     <Button
+                      type="submit"
                       variant="contained"
                       color="primary"
                       size="small"
-                      onClick={searchpost}
                       className="btnSearch"
                       id="productSearchBtn"
                     >
@@ -534,7 +698,7 @@ export default function Page() {
                   color="inherit"
                   //onClick={delete_choice}
                   className="btnNormal"
-                  sx={{ ml: 1 }}
+                  sx={{ ml: 1, display: "none" }}
                   startIcon={<AddIcon />}
                 >
                   추가
@@ -552,7 +716,7 @@ export default function Page() {
                 <Button
                   variant="contained"
                   color="inherit"
-                  //onClick={delete_choice}
+                  onClick={delete_choice}
                   className="btnNormal"
                   sx={{ ml: 1 }}
                   startIcon={<ClearIcon />}
@@ -561,7 +725,7 @@ export default function Page() {
                 </Button>
               </Box>
               <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
-                <Table sx={{ minWidth: 1500 }}>
+                <Table sx={{ minWidth: 1500, tableLayout: "auto" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell padding="checkbox">
@@ -574,39 +738,31 @@ export default function Page() {
                         />
                       </TableCell>
                       <TableCell align="center">No</TableCell>
-                      <TableCell
-                        align="center"
-                        //   sx={{ width: '', minWidth: '', }}
-                      >
-                        회원번호
-                      </TableCell>
-                      <TableCell align="center">도시번호</TableCell>
-                      <TableCell align="center">카테고리 번호</TableCell>
+                      <TableCell align="center">작성자</TableCell>
+                      <TableCell align="center">작성지</TableCell>
+                      <TableCell align="center">분류</TableCell>
                       <TableCell align="center">제목</TableCell>
-                      <TableCell align="center">거래방식</TableCell>
-                      <TableCell align="center">가격</TableCell>
-                      <TableCell align="center">변동후 가격</TableCell>
-                      <TableCell align="center">거래장소명</TableCell>
-                      <TableCell align="center">흥정가능여부</TableCell>
-                      <TableCell align="center">생성일자</TableCell>
-                      <TableCell align="center">수정일자</TableCell>
-                      <TableCell align="center">삭제일자</TableCell>
-                      <TableCell align="center">끌어올리기일자</TableCell>
-                      <TableCell align="center">거래완료일자</TableCell>
-                      <TableCell align="center">게시글상태</TableCell>
+                      <TableCell align="center">구분</TableCell>
+                      <TableCell align="center">등록가</TableCell>
+                      <TableCell align="center">판매가</TableCell>
+                      <TableCell align="center">구매자</TableCell>
+                      <TableCell align="center">생성일</TableCell>
+                      <TableCell align="center">수정일</TableCell>
+                      <TableCell align="center">삭제일</TableCell>
+                      <TableCell align="center">끌올일</TableCell>
+                      <TableCell align="center">거래완료일</TableCell>
+                      <TableCell align="center">상태</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {list &&
+                    {list && list.length > 0 ? (
                       list.map((prod, i) => (
                         <TableRow
                           key={i}
                           hover
                           tabIndex={-1}
                           role="checkbox"
-                          onDoubleClick={() =>
-                            window.open(`/admin/post/detail/${prod.postkey}`)
-                          }
+                          onDoubleClick={() => {openPostDetail(prod.postkey);} }
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -614,93 +770,130 @@ export default function Page() {
                               name="use_check[]"
                               className="rowChk"
                               checked={checkedItems.includes(prod.postkey)} // 개별 체크박스 상태 관리
-                              onChange={(e) => handleRowCheck(e, prod.userkey)} // 개별 체크박스 핸들러 연결
+                              onChange={(e) => handleRowCheck(e, prod.postkey)} // 개별 체크박스 핸들러 연결
                             />
                           </TableCell>
                           <TableCell align="center">{prod.postkey}</TableCell>
-                          <TableCell align="center">{prod.userkey}</TableCell>
-                          <TableCell align="center">{prod.townkey}</TableCell>
+                          <TableCell component="th" scope="row">
+                            <Box gap={2} display="flex" alignItems="center">
+                              <Avatar
+                                alt={prod.uvo.nickname}
+                                src={prod.uvo.imgurl}
+                              />
+                              {prod.uvo.nickname}
+                            </Box>
+                          </TableCell>
                           <TableCell align="center">
-                            {prod.categorykey}
+                            {prod.townVO.region1 +
+                              " " +
+                              prod.townVO.region2 +
+                              " " +
+                              prod.townVO.region3}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.cvo.categoryname}
                           </TableCell>
                           {/* 이미지 */}
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
-                              {prod.pImg_list && prod.pImg_list.length > 0 && (
+                              {prod.pimg_list && prod.pimg_list.length > 0 && (
                                 <Avatar
-                                  alt={prod.name}
-                                  src={prod.pImg_list[0].imgurl}
+                                  alt={prod.title}
+                                  src={prod.pimg_list[0].imgurl}
                                 />
                               )}
                               {prod.title}
                             </Box>
                           </TableCell>
-                          <TableCell align="center">{prod.method}</TableCell>
-                          <TableCell align="center">{prod.price}</TableCell>
-                          <TableCell align="center">{prod.lastprice}</TableCell>
                           <TableCell align="center">
-                            {prod.hope_place}
+                            {prod.method == 0 ? "판매" : "나눔"}
                           </TableCell>
                           <TableCell align="center">
-                            {prod.canbargain}
-                          </TableCell>
-                          <TableCell align="right">
-                            {
-                              new Date(prod.create_dtm)
-                                .toISOString()
-                                .split("T")[0]
-                            }
-                          </TableCell>
-                          <TableCell align="right">
-                            {
-                              new Date(prod.update_dtm)
-                                .toISOString()
-                                .split("T")[0]
-                            }
-                          </TableCell>
-                          <TableCell align="right">
-                            {
-                              new Date(prod.delete_dtm)
-                                .toISOString()
-                                .split("T")[0]
-                            }
-                          </TableCell>
-                          <TableCell align="right">
-                            {
-                              new Date(prod.remind_dtm)
-                                .toISOString()
-                                .split("T")[0]
-                            }
-                          </TableCell>
-                          <TableCell align="right">
-                            {
-                              new Date(prod.deal_dtm)
-                                .toISOString()
-                                .split("T")[0]
-                            }
+                            {new Intl.NumberFormat("ko-KR").format(prod.price)}
                           </TableCell>
                           <TableCell align="center">
-                            {prod.poststatus}
+                            {new Intl.NumberFormat("ko-KR").format(
+                              prod.lastprice
+                            )}
                           </TableCell>
-                        </TableRow>
-                      ))}
-
-                    {list == null ||
-                      (list.length == 0 && (
-                        <TableRow>
-                          <TableCell align="center" colSpan={16}>
-                            <Box sx={{ py: 15, textAlign: "center" }}>
-                              <Typography variant="h6" sx={{ mb: 1 }}>
-                                검색된 게시글 목록이 없습니다.
-                              </Typography>
-
-                              <Typography variant="body2">
-                                검색 조건을 확인해주세요.
-                              </Typography>
+                          <TableCell component="th" scope="row">
+                            <Box gap={2} display="flex" alignItems="center">
+                              {prod.duvo && (
+                                <>
+                                  <Avatar
+                                    alt={prod.duvo.nickname}
+                                    src={prod.duvo.imgurl}
+                                  />
+                                  {prod.duvo.nickname}
+                                </>
+                              )}
                             </Box>
                           </TableCell>
+                          <TableCell align="center">
+                            {prod.create_dtm
+                              ? new Date(prod.create_dtm)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : "-"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.update_dtm
+                              ? new Date(prod.update_dtm)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : "-"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.delete_dtm
+                              ? new Date(prod.delete_dtm)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : "-"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.remind_dtm
+                              ? new Date(prod.remind_dtm)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : "-"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.deal_dtm
+                              ? new Date(prod.deal_dtm)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : "-"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.isdeleted == 1
+                              ? "삭제"
+                              : prod.poststatus == 0
+                                ? "임시저장"
+                                : prod.poststatus == 1
+                                  ? "판매중"
+                                  : prod.postStatus == 2
+                                    ? "예약중"
+                                    : prod.poststatus == 3
+                                      ? "거래완료"
+                                      : "숨김"}
+                          </TableCell>
                         </TableRow>
-                      ))}
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell align="center" colSpan={16}>
+                          <Box sx={{ py: 15, textAlign: "center" }}>
+                            <Typography variant="h6" sx={{ mb: 1 }}>
+                              검색된 게시글 목록이 없습니다.
+                            </Typography>
+
+                            <Typography variant="body2">
+                              검색 조건을 확인해주세요.
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -712,18 +905,19 @@ export default function Page() {
                   mt: 3,
                 }}
               >
-                {/* <Typography sx={{ mr: 2 }}>Page: {page.nowPage}</Typography>
+                <Typography sx={{ mr: 2 }}>Page: {page.nowPage}</Typography>
                 <Pagination
                   count={page.totalPage}
                   showFirstButton
                   showLastButton
-                  onChange={(e, newPage) => changePage(newPage)}
-                /> */}
+                  onChange={(e, newPage) => searchpost(null, newPage)}
+                />
               </Box>
             </DashboardCard>
           </Grid>
         </Grid>
       </Box>
+      <PostDetail openPD={openPD} closePostDetail={closePostDetail} postkey={pdkey} />
     </PageContainer>
   );
 }
