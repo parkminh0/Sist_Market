@@ -26,4 +26,46 @@ public class AdminController {
         return res;
     }
 
+    @GetMapping("/searchYear")
+    public Map<String, Object> searchYear() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_searchYear", adminService.searchYear());
+        return res;
+    }
+
+    @GetMapping("/postOverview")
+    public Map<String, Object> postOverview(String year) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_postOverview", adminService.postOverview(year));
+        return res;
+    }
+
+    @GetMapping("/postStatusCnt")
+    public Map<String, Object> postStatusCnt() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_postStatusCnt", adminService.postStatusCnt());
+        return res;
+    }
+
+    @GetMapping("/userStatusCnt")
+    public Map<String, Object> userStatusCnt() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_userStatusCnt", adminService.userStatusCnt());
+        return res;
+    }
+
+    @GetMapping("/getQnaList")
+    public Map<String, Object> getQnaList() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_getQnaList", adminService.getQnaList());
+        return res;
+    }
+
+    @GetMapping("/getUserRank")
+    public Map<String, Object> getUserRank() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_getUserRank", adminService.getUserRank());
+        return res;
+    }
+
 }

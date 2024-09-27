@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TotalVO {
-    String cntPost, cntUser, cntBbs, cntQna, cntPostYear, cntUserYear, cntBbsYear, cntQnaDay;
+public class PostOverviewVO {
+    String yearandmonth, cnt, dealcnt;
 }
