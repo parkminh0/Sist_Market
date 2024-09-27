@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.MannerMapper;
+import com.sist.back.vo.PostVO;
 import com.sist.back.vo.ReviewListVO;
 
 @Service
@@ -49,8 +50,11 @@ public class MannerService {
     }
 
     public int disapproveUser(String userkey, String estimateUser, String listKey) {
-        
         return m_mapper.disapproveUser(userkey,estimateUser,listKey);
+    }
+
+    public int setMannerTemp(String userkey) {
+        return m_mapper.setMannerTemp(userkey);
     }
 
 }

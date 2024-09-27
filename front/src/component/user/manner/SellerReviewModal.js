@@ -3,26 +3,37 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Box, Typography, List, ListItem, Divider, FormControlLabel, Checkbox } from "@mui/material";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function SellerReviewModal(props) {
   const REVIEW_URL = "/user/reviewList";
   const SELLER_REVIEW_URL = "/user/sellerReview";
+  const MANNER_TEMP_URL = "/user/manner/setMannerTemp";
   const open = props.reportOpen;
   const onClose = () => {
     props.handleReportClose();
     setSelectedKeys([]);
   };
-
+  
   const [list, setList] = useState([]);
   const [preference, setPreference] = useState('5');
   const [selectedRating, setSelectedRating] = useState("최고예요!");
   const [selectedKeys, setSelectedKeys] = useState([]);
-
+  const dealuserkey = props.buyerUserkey;
+  
   function getData() {
     axios.get(REVIEW_URL, { params: { preference } })
       .then((res) => {
         setList(res.data.r_ar || []);
       });
+  }
+
+  function setMannerTemp() {
+    axios({
+      url: MANNER_TEMP_URL,
+      method: "post",
+      params: { userkey: dealuserkey },
+    }).then((res) => {});
   }
 
   const handleRatingChange = (event) => {
@@ -59,8 +70,12 @@ export default function SellerReviewModal(props) {
       params: {
         reviewlistkey: selectedKeys,
         postkey: props.postkey,
+        userkey: dealuserkey,
+        estimateuserkey: Cookies.get("userkey"),
       },
     }).then((res) => {
+      setMannerTemp();
+      alert("후기 작성 완료")
       onClose();
     });
   }
