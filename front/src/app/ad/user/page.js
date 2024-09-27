@@ -616,11 +616,6 @@ export default function Page() {
                       <TableCell align="center">이름</TableCell>
                       <TableCell
                         align="center"
-                        // align="center"
-                        //   sx={{
-                        //     width: '',
-                        //     minWidth: '',
-                        //   }}
                       >
                         등록일
                       </TableCell>
@@ -635,7 +630,9 @@ export default function Page() {
                   </TableHead>
                   <TableBody>
                     {(userlist || []).map((item, i) => (
-                      <TableRow key={i} hover tabIndex={-1} role="checkbox">
+                      <TableRow key={i} hover tabIndex={-1} role="checkbox"
+                      onClick={() => handleRowCheck({ target: { checked: !checkedItems.includes(item.userkey) } }, item.userkey)}
+                      >
                         <TableCell padding="checkbox">
                           <Checkbox
                             disableRipple
@@ -646,14 +643,10 @@ export default function Page() {
                           />
                         </TableCell>
                         <TableCell component="th" scope="row">
-                          <Link
-                            href={`/admin/user/userEdit?userkey=${item.userkey}`}
-                          >
                             <Box gap={2} display="flex" alignItems="center">
                               <Avatar alt={item.name} src={item.imgurl} />
                               {item.name}
                             </Box>
-                          </Link>
                         </TableCell>
                         <TableCell align="right">
                           {
@@ -663,11 +656,7 @@ export default function Page() {
                           }
                         </TableCell>
                         <TableCell>
-                          <Link
-                            href={`/admin/user/userEdit?userkey=${item.userkey}`}
-                          >
                             {item.id}
-                          </Link>
                         </TableCell>
                         <TableCell align="center">{item.nickname}</TableCell>
                         <TableCell align="center">{item.phone}</TableCell>
@@ -987,7 +976,13 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {manner.estimateuserkey || ""}
+                          <Box gap={2} display="flex" alignItems="center">
+                          <Avatar 
+                              alt={manner?.uvo?.nickname || "Unknown"} 
+                              src={manner?.uvo?.imgurl || "/default-avatar.png"} 
+                            />
+                            {manner?.uvo?.nickname || "Unknown"}
+                            </Box>
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
