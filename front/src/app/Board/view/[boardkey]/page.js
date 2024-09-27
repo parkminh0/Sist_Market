@@ -33,7 +33,7 @@ export default function page( props ) {
     axios.get(API_URL).then((res) => {
         setAr(res.data.bvo); // 객체로 설정
     }).catch((error) => {
-        console.error("Error fetching data: ", error);
+        //console.error("Error fetching data: ", error);
     });
   }
 
@@ -54,7 +54,7 @@ export default function page( props ) {
         }
     })
     .catch((error) => {
-        console.error("데이터 로딩 오류:", error);  
+        //console.error("데이터 로딩 오류:", error);  
     });
   }
 
