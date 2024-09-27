@@ -4,9 +4,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import "/public/css/celllist.css";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import { TableCell, TableRow } from "@mui/material";
+import { Button, TableCell, TableRow } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CellDetail from "./CellDetail";
+import SellerReviewModal from "../../manner/SellerReviewModal";
+import ReviewDetail from "../buylist/ReviewDetail";
 
 export default function CellList(props) {
   // const param = useSearchParams();
@@ -63,6 +65,32 @@ export default function CellList(props) {
     setPostkey(0);
   }
 
+  const[reportOpen,setReportOpen] = useState(false);
+  function handleReportOpen(postkey){
+    setPostkey(postkey);
+    setReportOpen(true);
+  }
+  function handleReportClose(){
+    setReportOpen(false);
+    setPostkey(0);
+  }
+
+  const [rdOpen, setRdOpen] = useState(false);
+  const [rdvo, setRdvo] = useState({});
+  const [review, setReview] = useState("");
+  function openRd(rdvo, review){
+    setRdvo(rdvo);
+    setReview(review);
+    setRdOpen(true);
+  }
+  function closeRd(){
+    setRdOpen(false);
+    setReview("");
+    setRdvo({});
+  }
+
+
+
   function canRemindFunc(latestRemind) {
     var canRemind = true;
     const timeDiff = new Date() - new Date(latestRemind);
@@ -109,7 +137,7 @@ export default function CellList(props) {
       return (
           <TableRow
           key={index}
-            onDoubleClick={()=>{router.push(`/post/detail?postkey=${clvo.postkey}`)}}
+            // onDoubleClick={()=>{router.push(`/post/detail?postkey=${clvo.postkey}`)}}
           >
             <TableCell colSpan={3}>
                 <div style={{
@@ -222,6 +250,30 @@ export default function CellList(props) {
                 :
                 ''  
                 }
+                { whatNow=="Sold" ? 
+                  <TableCell colSpan={2}
+                  style={{color: "#22222280",
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                        }}
+                  >
+                  <div style={{
+                        display: 'flex',
+                        flexDirection:'column',
+                        textAlign:'center'
+                        }}>
+                    <Button variant="text" onClick={(e)=>{handleReportOpen(clvo.postkey);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#12dd21", margin:'2px 0'}}>후기 작성</Button>
+                    {clvo.dealuserreview!=null ? 
+                    <Button variant="text" onClick={(e)=>{openRd(clvo, clvo.dealuserreview);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#ff5f00", margin:'2px 0'}}>받은 후기</Button>
+                    :
+                    <Button disableTouchRipple onClick={(e)=>{alert("아직 판매자가 후기를 등록하지 않았습니다.");}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#aaaaaa", margin:'2px 0', cursor:'default'}}>받은 후기</Button>
+                    }
+                  </div>
+                  </TableCell>
+                  :
+                  ''
+              }
                 <TableCell colSpan={2} style={{textAlign:'right'}}>
                   {whatNow == "Hidden" ? (
                     <Link
@@ -269,6 +321,8 @@ export default function CellList(props) {
       );
     })}
     <CellDetail open={open} closeDetail={closeDetail} postkey={postkey} />
+    <SellerReviewModal reportOpen={reportOpen} handleReportClose={handleReportClose} postkey={postkey}/>
+    <ReviewDetail rdOpen={rdOpen} closeRd={closeRd} rdvo={rdvo}  who="Seller"/>
     </>
   ) : (
     <TableRow data-v-24868902="" data-v-eff62a72="" className="empty_area">
