@@ -38,4 +38,18 @@
     VALUES(#{userkey},#{listKey},#{estimateUser},0,0,NOW(),0)
   </insert>
 
+  <!-- 매너온도 user테이블에 저장 -->
+  <update id="setMannerTemp" parameterType="String">
+    UPDATE user u
+    LEFT JOIN ( <!-- manner테이블에 userkey가 없는 경우도 outer -->
+        SELECT 
+            userkey,
+            COALESCE(SUM(CASE WHEN ismanner = 1 THEN 0.5 ELSE -0.5 END), 0) + 36.5 AS mt <!-- COALESCE(SUM(...), 0): sum이 null이면 0 반환 -->
+        FROM manner
+        GROUP BY userkey
+    ) m ON u.userkey = m.userkey
+    SET u.mannertemp = COALESCE(m.mt, 36.5)
+    WHERE u.userkey = #{userkey};
+  </update>
+
 </mapper>
