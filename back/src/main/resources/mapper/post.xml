@@ -714,7 +714,7 @@
     </select>
 
     <update id="updatePostStatus" parameterType="String">
-        UPDATE post SET poststatus = #{postStatus} where postkey = #{postkey}
+        UPDATE post SET poststatus = #{postStatus}, dealuserkey = #{dealuserkey}, deal_dtm = now() where postkey = #{postkey}
     </update>
 
     <!-- 게시글 숨기기 -->
