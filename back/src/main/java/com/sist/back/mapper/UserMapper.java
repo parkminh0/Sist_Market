@@ -15,7 +15,9 @@ public interface UserMapper {
 
     userVO login(userVO vo);
 
-    int upt_login_dtm(userVO vo);
+    int login_dtm(userVO vo);
+
+    int kakao_login_dtm(String email);
 
     UserCountVO countForAdmin();
 

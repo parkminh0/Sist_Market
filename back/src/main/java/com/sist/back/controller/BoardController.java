@@ -313,7 +313,7 @@ public class BoardController {
         
         Paging p = new Paging(5, 3); // 페이징 객체 생성
         int totalRecord = b_service.userBbsCount(categorykey);
-        System.out.println("토탈레코드@@@@@@@@@@@@@@@@"+totalRecord);
+        //System.out.println("토탈레코드@@@@@@@@@@@@@@@@"+totalRecord);
         p.setTotalRecord(totalRecord);
         
         if (cPage != null) {
