@@ -31,9 +31,7 @@ import Cookies from "js-cookie";
 import EditPostModal from "@/component/user/post/detail/EditPostModal";
 import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
 import UserCellList from "@/component/user/post/detail/UserCellList";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import PopCateList from "@/component/user/post/detail/PopCateList";
-import PopCateList2 from "@/component/user/post/detail/PopCateList2";
 import ReportModal from "@/component/user/post/detail/report/ReportModal";
 
 export default function Page() {
@@ -279,6 +277,7 @@ export default function Page() {
         method: "get",
         params: {
           categorykey: res.data.pvo.categorykey,
+          userkey: userkey,
         },
         headers: {
           "Content-Type": "application/json",
@@ -854,7 +853,7 @@ export default function Page() {
             {cellList.length > 0
               ? cellList.map((clvo, index) => {
                 if (index < 5) {
-                  return <UserCellList2 key={index} pvo={clvo} />;
+                  return <UserCellList key={index} pvo={clvo} />;
                 }
               })
               : ""}
@@ -918,7 +917,7 @@ export default function Page() {
             {popCate.length > 0
               ? popCate.map((pcvo, index) => {
                 return (
-                  <PopCateList2 key={index} pvo={pcvo} />
+                  <PopCateList key={index} pvo={pcvo} />
                 )
               })
               : ""}
