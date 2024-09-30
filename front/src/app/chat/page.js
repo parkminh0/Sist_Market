@@ -128,7 +128,7 @@ const ChatApp = () => {
 
     });
     const octokit = new Octokit({
-      auth: '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'
+      auth: process.env.GITHUB_TOKEN
     });
 
     octokit.request('GET /emojis', {
