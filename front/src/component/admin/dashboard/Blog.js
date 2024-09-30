@@ -65,7 +65,6 @@ const Blog = () => {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data.res_getTop4);
       setTop4(res.data.res_getTop4);
     });
   }, []);
@@ -100,7 +99,7 @@ const Blog = () => {
                 }}
               />
             </Typography>
-            <Tooltip title="Add To Cart">
+            <Tooltip title="상세보기">
               <Fab
                 size="small"
                 color="primary"
