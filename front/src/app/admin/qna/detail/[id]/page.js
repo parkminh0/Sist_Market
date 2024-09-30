@@ -1,6 +1,5 @@
 'use client'
 
-import "/public/css/admin/board.css";
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableRow, Paper, Typography, Box, Button } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';

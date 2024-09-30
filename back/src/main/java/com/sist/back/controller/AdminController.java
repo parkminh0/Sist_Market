@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.AdminService;
+import com.sist.back.service.PostService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,9 @@ public class AdminController {
 
     @Autowired
     AdminService adminService;
+
+    @Autowired
+    PostService postService;
 
     @GetMapping("/getTotal")
     public Map<String, Object> getTotal() {
@@ -65,6 +69,13 @@ public class AdminController {
     public Map<String, Object> getUserRank() {
         Map<String, Object> res = new HashMap<>();
         res.put("res_getUserRank", adminService.getUserRank());
+        return res;
+    }
+
+    @GetMapping("/getTop4")
+    public Map<String, Object> getTop4() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_getTop4", postService.getTop4());
         return res;
     }
 

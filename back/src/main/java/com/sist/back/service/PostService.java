@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.PostMapper;
@@ -167,7 +168,17 @@ public class PostService {
         return p_mapper.getPostImgThumbnail(postkey);
     }
 
-    public void updatePostStatus(String postStatus, String postkey, String dealuserkey){
+    public void updatePostStatus(String postStatus, String postkey, String dealuserkey) {
         p_mapper.updatePostStatus(postStatus, postkey, dealuserkey);
+    }
+
+    public PostVO[] getTop4() {
+        PostVO[] ar = null;
+        List<PostVO> list = p_mapper.getTop4();
+        if (list != null && list.size() > 0) {
+            ar = new PostVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
     }
 }
