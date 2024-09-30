@@ -33,7 +33,7 @@ import {
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 import PostDetail from "@/component/admin/post/detail/PostDetail";
-import PostDetail2 from "@/component/admin/post/detail/PostDetail2";
+import { ArticleOutlined } from "@mui/icons-material";
 
 export default function Page() {
   const [list, setList] = useState([]);
@@ -131,6 +131,8 @@ export default function Page() {
         setList(res.data.post_list);
         setPage(res.data.page);
         setLoading(false);
+        setAllChecked(false);
+        setCheckedItems([]);
       });
     }
   }, [loading]);
@@ -249,7 +251,14 @@ export default function Page() {
   const [pdkey, setPdkey] = useState("0");
 
   function openPostDetail(postkey) {
-    setPdkey(postkey);
+    if(checkedItems.length==0){
+      alert("상세내용을 확인할 게시글을 선택해주시기 바랍니다.");
+      return;
+    } else if(checkedItems.length>1){
+      alert("상세내용 확인은 한 게시글만 가능합니다.");
+      return;
+    }
+    setPdkey(checkedItems.pop());
     setOpenPD(true);
   }
   function closePostDetail() {
@@ -750,12 +759,12 @@ export default function Page() {
                 <Button
                   variant="contained"
                   color="inherit"
-                  //onClick={delete_choice}
+                  onClick={() => {openPostDetail()}}
                   className="btnNormal"
                   sx={{ ml: 1 }}
-                  startIcon={<EditIcon />}
+                  startIcon={<ArticleOutlined />}
                 >
-                  수정
+                  확인
                 </Button>
                 <Button
                   variant="contained"
@@ -805,9 +814,6 @@ export default function Page() {
                           hover
                           tabIndex={-1}
                           role="checkbox"
-                          onDoubleClick={() => {
-                            openPostDetail(prod.postkey);
-                          }}
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
