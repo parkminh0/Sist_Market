@@ -4,24 +4,6 @@ import axios from "axios";
 import FaqModal from "@/app/customer/faq/page";
 import QnaModal from "@/app/customer/qna/page";
 export default function Footer() {
-  const bcUrl = "/admin/board/getAllBc";
-  const [bclist, setBclist] = useState([]);
-
-  function getData() {  
-    axios.get(bcUrl)
-    .then((json) => {
-        setBclist(json.data.bc_list);
-        //setCategorykey(json.data.bc_list.key);
-    })
-    .catch((error) => {
-        console.error("데이터 로딩 오류:", error);  
-    });
-  }
-
-  useEffect(() => {
-    getData();
-    //console.log("@@@@@@@@@@@@@@@@@@@@@@@"+categorykey);
-  }, []);
 
   //문의하기
   const [qnaOpen, setQnaOpen] = useState(false);
@@ -31,7 +13,9 @@ export default function Footer() {
     }
     setQnaOpen(true);
   };
-  const handleQnaClose = () => { setQnaOpen(false); };
+  const handleQnaClose = () => {
+    setQnaOpen(false);
+  };
 
   //FAQ
   const [faqOpen, setFaqOpen] = useState(false);
@@ -39,7 +23,9 @@ export default function Footer() {
     e.preventDefault(); // 링크의 기본 동작 방지
     setFaqOpen(true);
   };
-  const handleFaqClose = () => { setFaqOpen(false); };
+  const handleFaqClose = () => {
+    setFaqOpen(false);
+  };
 
   return (
     <>
@@ -48,13 +34,11 @@ export default function Footer() {
           <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9vn">
             <div className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy834 _1h4pbgy9w0">
               <div className="_1h4pbgy828">
-               
-                  <img
-                    src="/img/Orange_logo_final.png"
-                    alt="당근마켓 로고"
-                    style={{ width: "100px", height: "auto" }}
-                  />
-                
+                <img
+                  src="/img/Orange_logo_final.png"
+                  alt="당근마켓 로고"
+                  style={{ width: "100px", height: "auto" }}
+                />
               </div>
               <div className="_1h4pbgy9ug">
                 <Link
@@ -153,28 +137,27 @@ export default function Footer() {
               </div>
 
               <div className="dmu53n2">
-              <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
-                <font>오렌지소식</font>
+                <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
+                  <font>오렌지소식</font>
+                </div>
+                <div className="_1h4pbgy9ug _1h4pbgy9vs">
+                  <Link
+                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
+                    href='/Board/list/1' // 각 카테고리의 링크를 설정
+                    target="_self"
+                  >
+                    <font>공지사항</font> {/* 카테고리 이름 표시 */}
+                  </Link>
+                  <Link
+                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
+                    href='/Board/list/2' // 각 카테고리의 링크를 설정
+                    target="_self"
+                  >
+                    <font>이벤트</font> {/* 카테고리 이름 표시 */}
+                  </Link>
+                </div>
               </div>
-              <div className="_1h4pbgy9ug _1h4pbgy9vs">
-                {bclist.length > 0 ? (
-                  bclist.map((bc, index) => (
-                    <Link
-                      key={index}
-                      className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
-                      href={`/Board/list/${bc.key}`} // 각 카테고리의 링크를 설정
-                      target="_self"
-                    >
-                      <font>{bc.value}</font> {/* 카테고리 이름 표시 */}
-                    </Link>
-                  ))
-                ) : (
-                  <font>게시판 목록이 없습니다.</font>
-                )}
-              </div>
-            </div>
 
-              
               <div className="dmu53n2">
                 <div className="_1h4pbgy780 _1h4pbgy7ag _1h4pbgy81k">
                   <font>
@@ -182,16 +165,30 @@ export default function Footer() {
                   </font>
                 </div>
                 <div className="_1h4pbgy9ug _1h4pbgy9vs">
-                  <Link data-gtm="footer_navigation" href="#" rel="noreferrer noopener" onClick={handleFaqOpen}
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28">
+                  <Link
+                    data-gtm="footer_navigation"
+                    href="#"
+                    rel="noreferrer noopener"
+                    onClick={handleFaqOpen}
+                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
+                  >
                     <font>
                       <font>자주 묻는 질문</font>
                     </font>
                   </Link>
-                  <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} />
+                  <FaqModal
+                    faqOpen={faqOpen}
+                    handleFaqClose={handleFaqClose}
+                    handleQnaOpen={handleQnaOpen}
+                  />
 
-                  <Link data-gtm="footer_navigation" href="#" rel="noreferrer noopener" onClick={handleQnaOpen}
-                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28">
+                  <Link
+                    data-gtm="footer_navigation"
+                    href="#"
+                    rel="noreferrer noopener"
+                    onClick={handleQnaOpen}
+                    className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
+                  >
                     <font>
                       <font>문의하기</font>
                     </font>
@@ -217,7 +214,10 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
-                    href={{ pathname: '/Board/terms', query: { term: '개인정보 처리방침' } }}
+                    href={{
+                      pathname: "/Board/terms",
+                      query: { term: "개인정보 처리방침" },
+                    }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
                     rel="noreferrer noopener"
@@ -227,11 +227,14 @@ export default function Footer() {
                     </font>
                   </Link>
                   <Link
-                    href={{ pathname: '/Board/terms', query: { term: '위치기반서비스 이용약관' } }}
+                    href={{
+                      pathname: "/Board/terms",
+                      query: { term: "위치기반서비스 이용약관" },
+                    }}
                     data-gtm="footer_navigation"
                     className="dmu53n3 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy8g _1h4pbgy76o _1h4pbgy81c _1h4pbgya28"
                     rel="noreferrer noopener"
-                    style={{ whiteSpace: 'nowrap' }}
+                    style={{ whiteSpace: "nowrap" }}
                   >
                     <font>
                       <font>위치기반서비스 이용약관</font>

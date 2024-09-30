@@ -65,11 +65,11 @@
     
     <select id="getUserRank" resultType="com.sist.back.vo.admin.UserRankVO">
    SELECT p.userkey, u.nickname, u.email, u.imgurl, COUNT(*) as cellqty, u.mannertemp, SUM(p.lastprice) as cellprice
-  FROM `user` u
-  JOIN `post` p ON p.userkey = u.userkey
- WHERE p.poststatus = 3 and p.isdeleted = 0 and u.isdeleted = 0
- GROUP BY p.userkey
- ORDER BY cellqty desc
- limit 4
+      FROM `user` u
+      JOIN `post` p ON p.userkey = u.userkey
+    WHERE p.poststatus = 3 and p.isdeleted = 0 and u.isdeleted = 0
+    GROUP BY p.userkey
+    ORDER BY cellqty desc
+    limit 4
     </select>
 </mapper>
