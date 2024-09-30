@@ -72,6 +72,7 @@ const MSidebar = ({ isMobileSidebarOpen, onSidebarClose, isSidebarOpen }) => {
                   style={{ marginTop: "20px" }} // 상단에 20px의 마진 추가
                 >
                   <img
+<<<<<<< HEAD
                     src="/img/orange_logo3.png"
                     alt="당근마켓 로고"
                     style={{ width: "30px", height: "auto" }}
@@ -82,6 +83,13 @@ const MSidebar = ({ isMobileSidebarOpen, onSidebarClose, isSidebarOpen }) => {
                     alt="당근마켓 로고"
                     style={{ width: "70px", height: "auto" }}
                   />
+=======
+                    src="/img/Orange_logo_final.png"
+                    alt="당근마켓 로고"
+                    style={{ width: "100px", height: "auto" }}
+                  />
+                  <br />
+>>>>>>> c3efe558533b5458dc2ce71910fa25fa6f320a9b
                 </Link>
               </div>
 

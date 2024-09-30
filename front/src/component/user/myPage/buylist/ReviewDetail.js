@@ -14,7 +14,7 @@ export default function ReviewDetail(props) {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: 500,
-        bgcolor: 'background.paper',
+        bgcolor: who=="Buyer"?'#228822':"#ff4f00",
         borderRadius: 5,
         boxShadow: 24,
         p: 4,
