@@ -682,6 +682,7 @@ export default function Page() {
                         className="dtm_from"
                         name="dtm_from"
                         size="small"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
                       <span style={{ margin: "0 10px" }}>~</span>
                       <TextField
@@ -690,6 +691,7 @@ export default function Page() {
                         className="dtm_to"
                         name="dtm_to"
                         size="small"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
                     </div>
                   </li>

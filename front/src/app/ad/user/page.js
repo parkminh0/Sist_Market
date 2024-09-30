@@ -414,6 +414,7 @@ export default function Page() {
                               onChange={(e) =>
                                 setRegist_start_date(e.target.value)
                               }
+                              onKeyDown={(e) => e.preventDefault()}
                             />
                             <span style={{ margin: "0 10px" }}>~</span>
                             <TextField
@@ -425,6 +426,7 @@ export default function Page() {
                               onChange={(e) =>
                                 setRegist_end_date(e.target.value)
                               }
+                              onKeyDown={(e) => e.preventDefault()}
                             />
                           </div>
                         </div>
@@ -488,6 +490,7 @@ export default function Page() {
                               onChange={(e) =>
                                 setRecent_login_start_date(e.target.value)
                               }
+                              onKeyDown={(e) => e.preventDefault()}
                             />
                             <span style={{ margin: "0 10px" }}>~</span>
                             <TextField
@@ -499,6 +502,7 @@ export default function Page() {
                               onChange={(e) =>
                                 setRecent_login_end_date(e.target.value)
                               }
+                              onKeyDown={(e) => e.preventDefault()}
                             />
                           </div>
                         </div>

@@ -707,11 +707,16 @@
           JOIN `category` c ON c.categorykey = p.categorykey
           <!-- 게시글미노출 -->
          <if test="userkey != null and userkey != ''">
-          LEFT JOIN `nosee` n ON n.userkey = #{userkey} AND n.noseeuserkey != p.userkey
-          LEFT JOIN `blocked` b ON b.userkey = #{userkey} AND b.blockeduserkey != p.userkey
-          LEFT JOIN `noseepost` np ON np.userkey = #{userkey} AND np.postkey != p.postkey
-         </if>
+            LEFT JOIN nosee n ON n.userkey = #{userkey} AND n.noseeuserkey = p.userkey
+            LEFT JOIN blocked b ON b.userkey = #{userkey} AND b.blockeduserkey = p.userkey
+            LEFT JOIN noseepost np ON np.userkey = #{userkey} AND np.postkey = p.postkey
+        </if>
          WHERE p.isdeleted = 0
+         <if test="userkey != null and userkey != ''">
+            AND n.noseeuserkey IS NULL
+            AND b.blockeduserkey IS NULL
+            AND np.postkey IS NULL
+         </if>
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
          </if>

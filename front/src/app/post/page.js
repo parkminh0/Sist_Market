@@ -115,7 +115,6 @@ export default function page() {
 
   // #region useEffect-카테고리, 파라미터 초기화
   useEffect(() => {
-    setLoading(true);
     setCookie_region1(decodeURIComponent(Cookies.get("region1")));
     setCookie_region2(decodeURIComponent(Cookies.get("region2")));
     setCookie_region3(decodeURIComponent(Cookies.get("region3")));
@@ -168,7 +167,6 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data.res_search);
       setPost_list(res.data.res_search);
       if (!res.data.res_search || res.data.res_search.length < 15) {
         setViewMore(false);
@@ -177,18 +175,19 @@ export default function page() {
         setLastPostKey(res.data.lastPostKey);
       }
     });
-    setLoading(false);
+    
   }, [router.query]);
   // #endregion
 
   // #region 상품 더보기
-  function showMorePost() {
-    if (!loading) {
-      setLoading(true);
+  useEffect(() => {
+    if (loading){
       axios({
         url: "/adpost/search",
         method: "get",
         params: {
+          userkey: decodeURIComponent(Cookies.get("userkey")),
+          onsale: onsaleParam,
           lastPostKey: lastPostKey,
           search: searchParam,
           loc1: loc1Param,
@@ -214,8 +213,12 @@ export default function page() {
           }
         }
       });
+      setLoading(false);
     }
-    setLoading(false);
+  }, [loading]);
+  // 
+  function showMorePost() {
+    setLoading(true);
   }
   // #endregion
 
@@ -692,8 +695,6 @@ export default function page() {
       alert("위치 기반 서비스를 허용해주세요.");
       return;
     }
-    if (!loading) {
-      setLoading(true);
 
       const formData = new FormData(event.currentTarget);
       formData.append("userkey", tmpUserKey);
@@ -760,8 +761,6 @@ export default function page() {
         .catch((error) => {
           console.error("게시글 작성 오류", error);
         });
-      setLoading(false);
-    }
   };
   // #endregion
 
@@ -943,7 +942,7 @@ export default function page() {
           let mapContainer = document.getElementById("map"); // 지도를 표시할 div
           let mapOption = {
             center: locPosition, // 지도의 중심좌표
-            level: 3, // 지도의 확대 레벨
+            level: 6, // 지도의 확대 레벨
           };
           let map = new kakao.maps.Map(mapContainer, mapOption);
 
