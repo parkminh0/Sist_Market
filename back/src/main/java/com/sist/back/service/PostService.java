@@ -36,8 +36,8 @@ public class PostService {
         return p_mapper.getPostByPostKey(postkey);
     }
 
-    public List<PostVO> getPostByCategoryKey(int categorykey) {
-        return p_mapper.getPostByCategoryKey(categorykey);
+    public List<PostVO> getPostByCategoryKey(int categorykey, String userkey) {
+        return p_mapper.getPostByCategoryKey(categorykey, userkey);
     }
 
     public List<PostVO> getCellListByUserPostKey(int userkey, int postkey) {
@@ -167,7 +167,7 @@ public class PostService {
         return p_mapper.getPostImgThumbnail(postkey);
     }
 
-    public void updatePostStatus(String postStatus, String postkey){
-        p_mapper.updatePostStatus(postStatus, postkey);
+    public void updatePostStatus(String postStatus, String postkey, String dealuserkey){
+        p_mapper.updatePostStatus(postStatus, postkey, dealuserkey);
     }
 }

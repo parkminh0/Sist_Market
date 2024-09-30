@@ -121,10 +121,22 @@
 
 
     <!-- 게시글 상세 필요 데이터 추가본 -->
-    <select id="getPostByCategoryKey" resultMap="post_image_map" parameterType="int">
-        SELECT *
-        FROM `post`
-        WHERE categorykey = #{categorykey}
+    <select id="getPostByCategoryKey" resultMap="post_image_map" parameterType="map">
+        SELECT b.*
+        FROM ( SELECT *<!--a.*-->
+               <!-- FROM ( SELECT *
+                      FROM `post`
+                      WHERE poststatus IN (1,2)
+                ) a -->
+               FROM `post`
+               <!-- WHERE a.userkey NOT IN ( SELECT noseeuserkey FROM `nosee` WHERE userkey = #{userkey})
+               AND a.userkey NOT IN (SELECT blockeduserkey FROM `blocked` WHERE userkey = #{userkey})
+               AND a.userkey NOT IN (SELECT userkey FROM `blocked` WHERE blockeduserkey = #{userkey}) -->
+               WHERE userkey NOT IN ( SELECT noseeuserkey FROM `nosee` WHERE userkey = #{userkey})
+               AND userkey NOT IN (SELECT blockeduserkey FROM `blocked` WHERE userkey = #{userkey})
+               AND userkey NOT IN (SELECT userkey FROM `blocked` WHERE blockeduserkey = #{userkey})
+            ) b
+        WHERE b.categorykey = #{categorykey}
         ORDER BY viewqty DESC
         LIMIT 15
     </select>
@@ -702,7 +714,7 @@
     </select>
 
     <update id="updatePostStatus" parameterType="String">
-        UPDATE post SET poststatus = #{postStatus} where postkey = #{postkey}
+        UPDATE post SET poststatus = #{postStatus}, dealuserkey = #{dealuserkey}, deal_dtm = now() where postkey = #{postkey}
     </update>
 
     <!-- 게시글 숨기기 -->

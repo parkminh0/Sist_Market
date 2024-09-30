@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TotalVO {
-    String cntPost, cntUser, cntBbs, cntQna;
+    String cntPost, cntUser, cntBbs, cntQna, cntPostYear, cntUserYear, cntBbsYear, cntQnaDay;
 }

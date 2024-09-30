@@ -38,7 +38,7 @@ export default function (props) {
           setPage(json.data.page);
       })
       .catch((error) => {
-          console.error("데이터 로딩 오류:", error);  // 에러 콘솔에 출력
+          //console.error("데이터 로딩 오류:", error);  // 에러 콘솔에 출력
       });
     }
 
@@ -68,7 +68,7 @@ export default function (props) {
           }
       })
       .catch((error) => {
-          console.error("데이터 로딩 오류:", error);  
+          //console.error("데이터 로딩 오류:", error);  
       });
     }
 
@@ -91,7 +91,7 @@ export default function (props) {
           setPage(json.data.page);
       })
       .catch((error) => {
-          console.error("검색 데이터 로딩 오류:", error);  // 에러 콘솔에 출력
+          //console.error("검색 데이터 로딩 오류:", error);  // 에러 콘솔에 출력
       });
     }
 

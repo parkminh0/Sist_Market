@@ -1,17 +1,17 @@
 'use client'
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
+import CellList from "@/component/user/myPage/cellList/CellList";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import axios from "axios";
+import Cookies from "js-cookie";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import "/public/css/myPage.css";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
 import "/public/css/celllist.css";
+import "/public/css/myPage.css";
 import "/public/css/paging.css";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
-import CellList from "@/component/user/myPage/cellList/CellList";
-import Cookies from "js-cookie";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
 export default function page() {
 
@@ -356,22 +356,22 @@ export default function page() {
                           </span>
                         </TableCell>
                         : ''}
+                        {cellStatus == 3 ?
+                        <TableCell style={{textAlign:'center'}} colSpan={2}>
+                          <span data-v-eff62a72="" className="status_txt">
+                            후기
+                          </span>
+                        </TableCell>
+                        : ''}
                         <TableCell colSpan={2} align="right">
                           <span data-v-eff62a72="" className="status_txt">
-                          { (whatNow=="onSale" || whatNow=="Selling") ? '수정' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
+                          { whatNow=="onSale" ? '수정' : whatNow=="Selling" ? '확인' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
                           </span>
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                    { (whatNow=="onSale" || whatNow=="Selling") ?
                       <CellList celllist={celllist} whatNow={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
-                      :
-                      (whatNow=="Sold") ?
-                      <CellList celllist={celllist} whatNow="Sold"  getCellList={getCellList} cPage={page.nowPage} />
-                      :
-                      <CellList celllist={celllist} whatNow="Hidden"  getCellList={getCellList} cPage={page.nowPage} />
-                    }
                     </TableBody>
                   </Table>
                 </TableContainer>

@@ -31,9 +31,7 @@ import Cookies from "js-cookie";
 import EditPostModal from "@/component/user/post/detail/EditPostModal";
 import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
 import UserCellList from "@/component/user/post/detail/UserCellList";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
 import PopCateList from "@/component/user/post/detail/PopCateList";
-import PopCateList2 from "@/component/user/post/detail/PopCateList2";
 import ReportModal from "@/component/user/post/detail/report/ReportModal";
 
 export default function Page() {
@@ -203,22 +201,6 @@ export default function Page() {
     return userTown;
   }
 
-  function getManner(m_list) {
-    var length = m_list.length > 0 ? m_list.length : 0;
-    var manner = 36.5;
-    for (var i = 0; i < length; i++) {
-      switch (m_list[i].ismanner) {
-        case "0":
-          manner -= 0.5;
-          break;
-        case "1":
-        case "2":
-          manner += 0.5;
-          break;
-      }
-    }
-    return manner;
-  }
 
   useEffect(() => {
     let currentUrl = window.location.href;
@@ -258,7 +240,7 @@ export default function Page() {
       }
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
-      setManner(getManner(res.data.pvo.uvo.m_list));
+      setManner(res.data.pvo.uvo.mannertemp);
 
       axios({
         url: "/adpost/cellList",
@@ -279,6 +261,7 @@ export default function Page() {
         method: "get",
         params: {
           categorykey: res.data.pvo.categorykey,
+          userkey: userkey,
         },
         headers: {
           "Content-Type": "application/json",
@@ -854,7 +837,7 @@ export default function Page() {
             {cellList.length > 0
               ? cellList.map((clvo, index) => {
                 if (index < 5) {
-                  return <UserCellList2 key={index} pvo={clvo} />;
+                  return <UserCellList key={index} pvo={clvo} />;
                 }
               })
               : ""}
@@ -918,7 +901,7 @@ export default function Page() {
             {popCate.length > 0
               ? popCate.map((pcvo, index) => {
                 return (
-                  <PopCateList2 key={index} pvo={pcvo} />
+                  <PopCateList key={index} pvo={pcvo} />
                 )
               })
               : ""}

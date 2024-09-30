@@ -1,7 +1,7 @@
 "use client";
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
@@ -15,7 +15,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import Moneybook from "@/component/user/myPage/Moneybook";
-import Moneybook2 from "@/component/user/myPage/Moneybook2";
 
 export default function page() {
   const API_URL = "/user/api/admin/userEdit";
@@ -629,7 +628,7 @@ export default function page() {
                           return;
                         }
                         return (
-                            <UserCellList2 key={index} pvo={wlvo.pvo} />
+                            <UserCellList key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (

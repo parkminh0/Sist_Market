@@ -64,6 +64,10 @@ const nextConfig = {
         source: "/ad/:path*",
         destination: "http://localhost:8080/ad/:path*",
       },
+      {
+        source: "/alarm/:path*",
+        destination: "http://localhost:8080/alarm/:path*"
+      },
     ];
   },
 };

@@ -28,6 +28,7 @@ public class userVO {
 
 	private List<PostVO> buy_list;
 	private List<PostVO> cell_list;
+	private TownVO tvo;
 
 	private String 
 			userkey,
@@ -48,7 +49,8 @@ public class userVO {
 			delete_dtm,
 			isdeleted,
 			access_token,
-			refresh_token
+			refresh_token,
+			mannertemp
 
 	;
 

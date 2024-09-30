@@ -69,4 +69,14 @@ public class MannerController {
 
         return map;
     }
+
+    @RequestMapping("/setMannerTemp")
+    @ResponseBody
+    public Map<String, Object> setMannerTemp(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = m_service.setMannerTemp(userkey);
+        map.put("cnt", cnt);
+        return map;
+    }
 }
+

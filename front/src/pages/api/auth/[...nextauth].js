@@ -4,8 +4,8 @@ import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import KakaoProvider from "next-auth/providers/kakao";
 
-console.log("KAKAO_CLIENT_ID", process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID);
-console.log("KAKAO_SECRET", process.env.NEXT_PUBLIC_KAKAO_SECRET);
+//console.log("KAKAO_CLIENT_ID", process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID);
+//console.log("KAKAO_SECRET", process.env.NEXT_PUBLIC_KAKAO_SECRET);
 
 export default NextAuth({
   debug: true,
@@ -35,7 +35,7 @@ export default NextAuth({
           }),
         });
         const user = await res.json();
-        console.log(user);
+        //console.log(user);
 
         if (user) {
           // Any object returned will be saved in `user` property of the JWT

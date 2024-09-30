@@ -22,7 +22,7 @@ public interface PostMapper {
 
     PostVO getPostByPostKey(int postkey);
 
-    List<PostVO> getPostByCategoryKey(int categorykey);
+    List<PostVO> getPostByCategoryKey(int categorykey, String userkey);
 
     List<PostVO> getCellListByUserPostKey(int userkey, int postkey);
 
@@ -70,5 +70,5 @@ public interface PostMapper {
 
     PostImgVO getPostImgThumbnail(String postkey);
 
-    void updatePostStatus(String postStatus, String postkey);
+    void updatePostStatus(String postStatus, String postkey, String dealuserkey);
 }

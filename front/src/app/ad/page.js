@@ -37,37 +37,41 @@ const Dashboard = () => {
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
               title="게시글"
-              count={totalVO.cntPost}
-              percentage={59.3}
-              extra="35,000"
+              count={new Intl.NumberFormat("ko-KR").format(totalVO.cntPost)}
+              //percentage={59.3}
+              extra={new Intl.NumberFormat("ko-KR").format(totalVO.cntPostYear)}
+              sort="year"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
               title="사용자"
-              count={totalVO.cntUser}
-              percentage={70.5}
-              extra="8,900"
+              count={new Intl.NumberFormat("ko-KR").format(totalVO.cntUser)}
+              //percentage={70.5}
+              extra={new Intl.NumberFormat("ko-KR").format(totalVO.cntUserYear)}
+              sort="year"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
               title="게시판"
-              count={totalVO.cntBbs}
-              percentage={27.4}
+              count={new Intl.NumberFormat("ko-KR").format(totalVO.cntBbs)}
+              //percentage={27.4}
               isLoss
               color="warning"
-              extra="1,943"
+              extra={new Intl.NumberFormat("ko-KR").format(totalVO.cntBbsYear)}
+              sort="year"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Top_Analytic
-              title="문의사항"
-              count={totalVO.cntQna}
-              percentage={27.4}
+              title="미답변 문의사항"
+              count={new Intl.NumberFormat("ko-KR").format(totalVO.cntQna)}
+              //percentage={27.4}
               isLoss
               color="warning"
-              extra="$20,395"
+              extra={new Intl.NumberFormat("ko-KR").format(totalVO.cntQnaDay)}
+              sort="day"
             />
           </Grid>
 

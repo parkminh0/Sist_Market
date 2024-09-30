@@ -1,17 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Select, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import dynamic from "next/dynamic";
 import DashboardCard from "../shared/DashboardCard";
+import axios from "axios";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const SalesOverview = () => {
-  // select
-  const [month, setMonth] = React.useState("1");
+  const [postOvewview, setPostOverview] = useState([]);
+  const [searchYear, setSearchyear] = useState([]);
 
+  // 데이터 가져오기
+  function getPostOverview(year) {
+    axios({
+      url: "/ad/postOverview",
+      method: "get",
+      params: {
+        year: year,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setPostOverview(res.data.res_postOverview);
+    });
+  }
+
+  // 년도 선택
   const handleChange = (event) => {
-    setMonth(event.target.value);
+    getPostOverview(event.target.value);
   };
+
+  // 초기 세팅
+  useEffect(() => {
+    axios({
+      url: "/ad/searchYear",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setSearchyear(res.data.res_searchYear);
+    });
+    getPostOverview();
+  }, []);
 
   // chart color
   const theme = useTheme();
@@ -64,17 +96,9 @@ const SalesOverview = () => {
     yaxis: {
       tickAmount: 4,
     },
+    // x축
     xaxis: {
-      categories: [
-        "16/08",
-        "17/08",
-        "18/08",
-        "19/08",
-        "20/08",
-        "21/08",
-        "22/08",
-        "23/08",
-      ],
+      categories: postOvewview.map((item) => item.yearandmonth),
       axisBorder: {
         show: false,
       },
@@ -85,31 +109,35 @@ const SalesOverview = () => {
     },
   };
 
+  // 데이터
   const seriescolumnchart = [
     {
-      name: "Eanings this month",
-      data: [355, 390, 300, 350, 390, 180, 355, 390],
+      name: "전체",
+      data: postOvewview.map((item) => item.cnt),
     },
     {
-      name: "Expense this month",
-      data: [280, 250, 325, 215, 250, 310, 280, 250],
+      name: "거래완료",
+      data: postOvewview.map((item) => item.dealcnt),
     },
   ];
 
   return (
     <DashboardCard
-      title="Sales Overview"
+      title="거래 통계"
+      subtitle="*삭제된 게시글은 통계에 포함되지 않습니다."
       action={
         <Select
           labelId="month-dd"
           id="month-dd"
-          value={month}
           size="small"
+          defaultValue={new Date().getFullYear()}
           onChange={handleChange}
         >
-          <MenuItem value={1}>March 2023</MenuItem>
-          <MenuItem value={2}>April 2023</MenuItem>
-          <MenuItem value={3}>May 2023</MenuItem>
+          {searchYear.map((item, i) => (
+            <MenuItem key={i} value={item.substring(0, item.length - 1)}>
+              {item}
+            </MenuItem>
+          ))}
         </Select>
       }
     >

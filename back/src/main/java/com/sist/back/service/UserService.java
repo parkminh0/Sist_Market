@@ -86,7 +86,11 @@ public class UserService {
     }
 
     public int upt_login_dtm(userVO vo) {
-        return mapper.upt_login_dtm(vo);
+        return mapper.login_dtm(vo);
+    }
+
+    public int kakao_login_dtm(String email) {
+        return mapper.kakao_login_dtm(email);
     }
 
     public UserCountVO userForAdmin() {

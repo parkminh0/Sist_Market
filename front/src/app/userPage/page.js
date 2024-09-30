@@ -12,7 +12,7 @@ import "/public/css/popcatelist.css";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
 import PraiseModal from "@/component/user/userPage/PraiseModal";
@@ -164,6 +164,7 @@ export default function page() {
       }
     ).then((res) => {
       setVo(res.data.uvo);
+      setMannerTemp(res.data.uvo.mannertemp);
       setCellList(res.data.cellList);
       handleCellCount(res.data.cellCount);
       setLimitpostkey(res.data.limitpostkey);
@@ -207,7 +208,7 @@ export default function page() {
       const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
       .reduce((sum, item) => sum + item.count, 0);
       const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
-      setMannerTemp(updatedTemp);
+      
     });
     Promise.all([
       axios.get("/user/buyingReview", { params: { userkey: userkey} }),
@@ -402,7 +403,7 @@ export default function page() {
                                 ? 
                                 <div className="UserPageGrid" >
                                   {cellList.map((clvo, index) => {
-                                    return <UserCellList2 key={index} pvo={clvo} />;
+                                    return <UserCellList key={index} pvo={clvo} />;
                                 })}
                                 </div> : 
                                 <div style={{
