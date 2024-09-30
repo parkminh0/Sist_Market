@@ -168,6 +168,7 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
+      console.log(res.data.res_search);
       setPost_list(res.data.res_search);
       if (!res.data.res_search || res.data.res_search.length < 15) {
         setViewMore(false);
@@ -212,10 +213,9 @@ export default function page() {
             setLastPostKey(res.data.lastPostKey);
           }
         }
-
-        setLoading(false);
       });
     }
+    setLoading(false);
   }
   // #endregion
 
@@ -1098,7 +1098,7 @@ export default function page() {
                 </button>
               </header>
               <section>
-                <div class="_588sy41z _588sy421 _588sy4qq _588sy4h2">
+                <div className="_588sy41z _588sy421 _588sy4qq _588sy4h2">
                   <Link
                     href="#"
                     className="rx8bta0 rx8bta1"
@@ -1111,7 +1111,7 @@ export default function page() {
                     <div
                       {...(onsaleParam == "true" ? { "data-checked": "" } : {})}
                       aria-hidden="true"
-                      class="rx8bta7 rx8bta9"
+                      className="rx8bta7 rx8bta9"
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -1934,7 +1934,7 @@ export default function page() {
                               <span
                                 style={{ fontSize: "12px", marginLeft: "0" }}
                               >
-                                5
+                                {post.chatroomqty}
                               </span>
                               <IconButton
                                 variant="plain"
@@ -2015,27 +2015,26 @@ export default function page() {
         </div>
       </article>
       {/* 내 물건 팔기 모달 */}
-      <React.Fragment>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: handleSubmit,
-          }}
-          scroll="paper"
-        >
-          <DialogTitle
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+      {open && (
+        <React.Fragment>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              component: "form",
+              onSubmit: handleSubmit,
             }}
+            scroll="paper"
           >
-            내 물건 팔기
-            {
-              tempPost
-              ?
+            <DialogTitle
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              내 물건 팔기
+              {tempPost ? (
                 <Button
                   variant="outlined"
                   type="button"
@@ -2046,14 +2045,14 @@ export default function page() {
                     border: 0,
                     cursor: "default",
                   }}
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     alert("임시저장 중인 문서가 이미 존재합니다.");
                   }}
                 >
                   임시저장
                 </Button>
-              :
+              ) : (
                 <Button
                   variant="outlined"
                   type="submit"
@@ -2066,378 +2065,394 @@ export default function page() {
                 >
                   임시저장
                 </Button>
-            }
-          </DialogTitle>
-          <DialogContent dividers="paper">
-            <FormControl fullWidth margin="dense">
-              <ImageList
-                cols={11}
-                gap={8}
-                id="dragImageList"
-                ref={containerRef}
-              >
-                <ImageListItem
-                  style={{
-                    width: 100,
-                    height: 100,
-                    position: "relative",
-                  }}
+              )}
+            </DialogTitle>
+            <DialogContent dividers="paper">
+              <FormControl fullWidth margin="dense">
+                <ImageList
+                  cols={11}
+                  gap={8}
+                  id="dragImageList"
+                  ref={containerRef}
                 >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    name="file"
-                    onChange={handleChange}
-                    accept="image/*" // 이미지 파일만 허용
-                    style={{ display: "none" }}
-                    multiple
-                  />
-                  <AddPhotoAlternateIcon
-                    color="primary"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      cursor: "pointer",
-                    }}
-                    onClick={uploadImg}
-                  />
-                  <Typography
-                    variant="caption"
-                    style={{
-                      position: "absolute",
-                      bottom: 5, // 아이콘 아래에 배치
-                      left: 0,
-                      right: 0,
-                      textAlign: "center",
-                      color: "black",
-                      backgroundColor: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {`${previewImages.length}/10`}
-                  </Typography>
-                </ImageListItem>
-                {previewImages.map((img, i) => (
                   <ImageListItem
-                    key={i}
                     style={{
                       width: 100,
                       height: 100,
-                      border: "2px solid #ccc", // 이미지에 보더 추가
                       position: "relative",
                     }}
-                    draggable="true"
-                    className="draggable"
                   >
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => handleDelete(i)}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                        padding: 2,
-                        zIndex: 10,
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                    <img
-                      src={img.src}
-                      alt={`Uploaded Preview ${i}`}
-                      loading="lazy"
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      name="file"
+                      onChange={handleChange}
+                      accept="image/*" // 이미지 파일만 허용
+                      style={{ display: "none" }}
+                      multiple
+                    />
+                    <AddPhotoAlternateIcon
+                      color="primary"
                       style={{
                         width: "100%",
                         height: "100%",
                         objectFit: "contain",
+                        cursor: "pointer",
                       }}
+                      onClick={uploadImg}
                     />
-                    {i === 0 && (
-                      <Typography
-                        variant="caption"
+                    <Typography
+                      variant="caption"
+                      style={{
+                        position: "absolute",
+                        bottom: 5, // 아이콘 아래에 배치
+                        left: 0,
+                        right: 0,
+                        textAlign: "center",
+                        color: "black",
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        fontSize: "16px",
+                      }}
+                    >
+                      {`${previewImages.length}/10`}
+                    </Typography>
+                  </ImageListItem>
+                  {previewImages.map((img, i) => (
+                    <ImageListItem
+                      key={i}
+                      style={{
+                        width: 100,
+                        height: 100,
+                        border: "2px solid #ccc", // 이미지에 보더 추가
+                        position: "relative",
+                      }}
+                      draggable="true"
+                      className="draggable"
+                    >
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => handleDelete(i)}
                         style={{
                           position: "absolute",
-                          bottom: 0,
-                          left: 0,
+                          top: 0,
                           right: 0,
-                          textAlign: "center",
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          color: "white",
-                          padding: "2px 0",
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          padding: 2,
+                          zIndex: 10,
                         }}
                       >
-                        대표 사진
-                      </Typography>
-                    )}
-                  </ImageListItem>
-                ))}
-              </ImageList>
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-              <TextField
-                required
-                margin="dense"
-                id="title"
-                name="title"
-                label="제목"
-                type="text"
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                      <img
+                        src={img.src}
+                        alt={`Uploaded Preview ${i}`}
+                        loading="lazy"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
+                      />
+                      {i === 0 && (
+                        <Typography
+                          variant="caption"
+                          style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            textAlign: "center",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            color: "white",
+                            padding: "2px 0",
+                          }}
+                        >
+                          대표 사진
+                        </Typography>
+                      )}
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <TextField
+                  required
+                  margin="dense"
+                  id="title"
+                  name="title"
+                  label="제목"
+                  type="text"
+                  fullWidth
+                  size="small"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <TextField
+                  required
+                  margin="dense"
+                  id="categorykey"
+                  name="categorykey"
+                  label="카테고리"
+                  select
+                  fullWidth
+                  size="small"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  {category_list.map((item, i) => (
+                    <MenuItem key={i} value={item.categorykey}>
+                      {item.categoryname}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <FormLabel
+                  required
+                  id="demo-simple-row-radio-buttons-group-label"
+                >
+                  거래 방식
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="method"
+                  value={method}
+                  onChange={(e) => {
+                    setMethod(e.target.value);
+                    setIsFree(e.target.value == 0 ? false : true);
+                    setPrice(e.target.value == 0 ? "" : 0);
+                  }}
+                >
+                  <FormControlLabel
+                    value="0"
+                    control={<Radio />}
+                    label="판매하기"
+                  />
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio />}
+                    label="나눔하기"
+                  />
+                </RadioGroup>
+                <OutlinedInput
+                  size="small"
+                  id="price"
+                  name="price"
+                  placeholder="가격을 입력해주세요."
+                  disabled={isFree}
+                  value={isFree ? 0 : price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">원</InputAdornment>
+                  }
+                  aria-describedby="outlined-weight-helper-text"
+                  inputProps={{
+                    "aria-label": "weight",
+                  }}
+                />
+                <FormControlLabel
+                  id="canbargain"
+                  name="canbargain"
+                  style={{ display: isFree ? "none" : "block" }}
+                  control={
+                    <Checkbox
+                      checked={canBargain === 1}
+                      onChange={(e) => setCanBargain(e.target.checked ? 1 : 0)}
+                    />
+                  }
+                  label="가격 제안 받기"
+                />
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <TextField
+                  required
+                  id="content"
+                  name="content"
+                  label="자세한 설명"
+                  multiline
+                  rows={7}
+                  placeholder={`OO동에 올릴 게시글 내용을 작성해 주세요. (판매 금지 물품은 게시가 제한될 수 있어요.)\n\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.`}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+              </FormControl>
+              <FormControl
                 fullWidth
-                size="small"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-              <TextField
-                required
                 margin="dense"
-                id="categorykey"
-                name="categorykey"
-                label="카테고리"
-                select
-                fullWidth
-                size="small"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                sx={{ display: "flex", alignItems: "center" }}
               >
-                {category_list.map((item, i) => (
-                  <MenuItem key={i} value={item.categorykey}>
-                    {item.categoryname}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </FormControl>
-            <FormControl fullWidth margin="dense">
+                <Link
+                  href="#"
+                  component="button"
+                  variant="body2"
+                  onClick={() => {
+                    setHope_place("");
+                    setHope_lati("");
+                    setHope_long("");
+                  }}
+                  style={{
+                    marginLeft: "auto",
+                  }}
+                >
+                  삭제
+                </Link>
+                <TextField
+                  margin="dense"
+                  id="hope_place"
+                  name="hope_place"
+                  label="거래 희망 장소"
+                  type="text"
+                  fullWidth
+                  size="small"
+                  value={hope_place}
+                  onClick={() => {
+                    getLocation();
+                    setLocationOpen(true);
+                  }}
+                  InputProps={{
+                    readOnly: true, // readonly 설정
+                  }}
+                />
+              </FormControl>
+            </DialogContent>
+            <DialogActions
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
+                *거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이
+                작성됩니다.
+              </span>
+              <div>
+                <Button
+                  type="submit"
+                  onClick={(e) =>
+                    (e.currentTarget.closest("form").dataset.mode = "write")
+                  }
+                  style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
+                >
+                  작성완료
+                </Button>
+                <Button onClick={handleClose}>취소</Button>
+              </div>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
+      )}
+      {/* 거래 희망 장소 모달 */}
+      {locationOpen && (
+        <React.Fragment>
+          <Dialog
+            open={locationOpen}
+            onClose={locationClose}
+            id="hopeDialog"
+            PaperProps={{
+              component: "form",
+              onSubmit: locationHandleSubmit,
+            }}
+          >
+            <DialogTitle
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              위치 추가
+            </DialogTitle>
+            <IconButton
+              aria-label="close"
+              onClick={locationClose}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <DialogContent dividers>
+              <Typography gutterBottom>
+                이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
+              </Typography>
+              <DialogContentText
+                style={{ marginBottom: "20px" }}
+                sx={{ fontSize: "0.875rem" }}
+              >
+                만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
+              </DialogContentText>
               <FormLabel
                 required
                 id="demo-simple-row-radio-buttons-group-label"
               >
-                거래 방식
+                거래 희망 장소명
               </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="method"
-                value={method}
-                onChange={(e) => {
-                  setMethod(e.target.value);
-                  setIsFree(e.target.value == 0 ? false : true);
-                  setPrice(e.target.value == 0 ? "" : 0);
-                }}
-              >
-                <FormControlLabel
-                  value="0"
-                  control={<Radio />}
-                  label="판매하기"
-                />
-                <FormControlLabel
-                  value="1"
-                  control={<Radio />}
-                  label="나눔하기"
-                />
-              </RadioGroup>
-              <OutlinedInput
-                size="small"
-                id="price"
-                name="price"
-                placeholder="가격을 입력해주세요."
-                disabled={isFree}
-                value={isFree ? 0 : price}
-                onChange={(e) => setPrice(e.target.value)}
-                endAdornment={
-                  <InputAdornment position="end">원</InputAdornment>
-                }
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                  "aria-label": "weight",
-                }}
-              />
-              <FormControlLabel
-                id="canbargain"
-                name="canbargain"
-                style={{ display: isFree ? "none" : "block" }}
-                control={
-                  <Checkbox
-                    checked={canBargain === 1}
-                    onChange={(e) => setCanBargain(e.target.checked ? 1 : 0)}
-                  />
-                }
-                label="가격 제안 받기"
-              />
-            </FormControl>
-            <FormControl fullWidth margin="dense">
               <TextField
                 required
-                id="content"
-                name="content"
-                label="자세한 설명"
-                multiline
-                rows={7}
-                placeholder={`OO동에 올릴 게시글 내용을 작성해 주세요. (판매 금지 물품은 게시가 제한될 수 있어요.)\n\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.`}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-            </FormControl>
-            <FormControl
-              fullWidth
-              margin="dense"
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              <Link
-                href="#"
-                component="button"
-                variant="body2"
-                onClick={() => {
-                  setHope_place("");
-                  setHope_lati("");
-                  setHope_long("");
-                }}
-                style={{
-                  marginLeft: "auto",
-                }}
-              >
-                삭제
-              </Link>
-              <TextField
                 margin="dense"
-                id="hope_place"
-                name="hope_place"
-                label="거래 희망 장소"
+                id="tmpHope_place"
+                name="tmpHope_place"
+                placeholder="예) 강남역 1번 출구, 교보타워 앞"
                 type="text"
                 fullWidth
                 size="small"
-                value={hope_place}
-                onClick={() => {
-                  getLocation();
-                  setLocationOpen(true);
-                }}
-                InputProps={{
-                  readOnly: true, // readonly 설정
-                }}
+                value={tmpHope_place}
+                onChange={(e) => setTmpHope_place(e.target.value)}
               />
-            </FormControl>
-          </DialogContent>
-          <DialogActions
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
-              *거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
-            </span>
-            <div>
-              <Button
-                type="submit"
-                onClick={(e) =>
-                  (e.currentTarget.closest("form").dataset.mode = "write")
-                }
-                style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
-              >
-                작성완료
-              </Button>
-              <Button onClick={handleClose}>취소</Button>
-            </div>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-      {/* 거래 희망 장소 모달 */}
-      <React.Fragment>
+              <div
+                id="map"
+                style={{
+                  border: "0.5px solid black",
+                  marginTop: "10px",
+                  width: "100%",
+                  height: "350px",
+                }}
+              ></div>
+            </DialogContent>
+            <DialogActions>
+              <Button type="submit">선택 완료</Button>
+              <Button onClick={locationClose}>취소</Button>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
+      )}
+      {/* 임시저장 확인 모달 */}
+      {tempPostConfirmOpen && (
         <Dialog
-          open={locationOpen}
-          onClose={locationClose}
-          id="hopeDialog"
-          PaperProps={{
-            component: "form",
-            onSubmit: locationHandleSubmit,
-          }}
+          open={tempPostConfirmOpen}
+          onClose={() => tempPostClose(null)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
         >
-          <DialogTitle
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            위치 추가
+          <DialogTitle id="alert-dialog-title">
+            {"작성중인 게시글이 있습니다."}
           </DialogTitle>
-          <IconButton
-            aria-label="close"
-            onClick={locationClose}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <DialogContent dividers>
-            <Typography gutterBottom>
-              이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
-            </Typography>
-            <DialogContentText
-              style={{ marginBottom: "20px" }}
-              sx={{ fontSize: "0.875rem" }}
-            >
-              만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
+          <DialogContent>
+            <DialogContentText>
+              {`'${tempPost ? tempPost.title : ""}' 글을 이어서 작성하시겠습니까?`}
             </DialogContentText>
-            <FormLabel required id="demo-simple-row-radio-buttons-group-label">
-              거래 희망 장소명
-            </FormLabel>
-            <TextField
-              required
-              margin="dense"
-              id="tmpHope_place"
-              name="tmpHope_place"
-              placeholder="예) 강남역 1번 출구, 교보타워 앞"
-              type="text"
-              fullWidth
-              size="small"
-              value={tmpHope_place}
-              onChange={(e) => setTmpHope_place(e.target.value)}
-            />
-            <div
-              id="map"
-              style={{
-                border: "0.5px solid black",
-                marginTop: "10px",
-                width: "100%",
-                height: "350px",
-              }}
-            ></div>
           </DialogContent>
           <DialogActions>
-            <Button type="submit">선택 완료</Button>
-            <Button onClick={locationClose}>취소</Button>
+            <Button onClick={() => tempPostClose(1)}>이어서 쓰기</Button>
+            <Button onClick={() => tempPostClose(0)}>새로 쓰기</Button>
           </DialogActions>
         </Dialog>
-      </React.Fragment>
-      {/* 임시저장 확인 모달 */}
-      <Dialog
-        open={tempPostConfirmOpen}
-        onClose={() => tempPostClose(null)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"작성중인 게시글이 있습니다."}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {`'${tempPost?tempPost.title:''}' 글을 이어서 작성하시겠습니까?`}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => tempPostClose(1)}>이어서 쓰기</Button>
-          <Button onClick={() => tempPostClose(0)}>새로 쓰기</Button>
-        </DialogActions>
-      </Dialog>
+      )}
       {/* 임시저장 게시글 작성 모달 */}
-      <EditPostModal open={isTemp} isTemp={true} handleClose={handleClose} pvo={tempPost} />
+      {isTemp && (
+        <EditPostModal
+          open={isTemp}
+          isTemp={true}
+          handleClose={handleClose}
+          pvo={tempPost}
+        />
+      )}
     </>
   );
 }

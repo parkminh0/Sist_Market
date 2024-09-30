@@ -34,7 +34,7 @@ const Dashboard = () => {
           <Grid item xs={12} sx={{ mb: -2.25 }}>
             <Typography variant="h5">전체 현황</Typography>
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
             <Top_Analytic
               title="게시글"
               count={new Intl.NumberFormat("ko-KR").format(totalVO.cntPost)}
@@ -43,7 +43,7 @@ const Dashboard = () => {
               sort="year"
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
             <Top_Analytic
               title="사용자"
               count={new Intl.NumberFormat("ko-KR").format(totalVO.cntUser)}
@@ -52,7 +52,7 @@ const Dashboard = () => {
               sort="year"
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
             <Top_Analytic
               title="게시판"
               count={new Intl.NumberFormat("ko-KR").format(totalVO.cntBbs)}
@@ -63,7 +63,7 @@ const Dashboard = () => {
               sort="year"
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
             <Top_Analytic
               title="미답변 문의사항"
               count={new Intl.NumberFormat("ko-KR").format(totalVO.cntQna)}
