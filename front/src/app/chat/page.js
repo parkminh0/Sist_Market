@@ -18,6 +18,10 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+<<<<<<< HEAD
+import { useRouter } from "next/navigation";
+=======
+>>>>>>> c3efe558533b5458dc2ce71910fa25fa6f320a9b
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -104,6 +108,13 @@ const ChatApp = () => {
   const [buyerUserkey, setBuyerUserkey] = useState(null);
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const key = queryParams.get('chatroomkey');
+    setCurrentchatroomkey(key);
+    console.log(window.location.search);
+  }, [window.location.search]);
+
+  useEffect(() => {
     if (oneTime.current) {
       return;
     }
@@ -120,7 +131,7 @@ const ChatApp = () => {
 
     });
     const octokit = new Octokit({
-      auth: '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'
+      auth: process.env.GITHUB_TOKEN
     });
 
     octokit.request('GET /emojis', {
