@@ -35,10 +35,8 @@ import { styled, alpha } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Bell } from "lucide-react";
-import NotificationUI from './notification-ui'
+import NotificationUI from "./notification-ui";
 import NotificationIcon from "./notification-icon";
-
-
 
 // #region 민호-동네설정메뉴
 const StyledMenu = styled((props) => (
@@ -108,14 +106,15 @@ export default function Header() {
 
   // 로그인한 사용자의 알림을 가져옴
   useEffect(() => {
-    axios.get(`/alarm`, { params: { userkey } })
-      .then(response => {
-        setNotifications(response.data);  // 알림 데이터 설정
-        const unread = response.data.filter(notif => !notif.read).length; // 읽지 않은 알림 수 계산
-        setUnreadCount(unread);  // 알림 버튼에 보여줄 숫자 설정
+    axios
+      .get(`/alarm`, { params: { userkey } })
+      .then((response) => {
+        setNotifications(response.data); // 알림 데이터 설정
+        const unread = response.data.filter((notif) => !notif.read).length; // 읽지 않은 알림 수 계산
+        setUnreadCount(unread); // 알림 버튼에 보여줄 숫자 설정
       })
-      .catch(error => {
-        console.error('Error fetching notifications:', error);
+      .catch((error) => {
+        console.error("Error fetching notifications:", error);
       });
   }, [userkey]);
 
@@ -517,7 +516,6 @@ export default function Header() {
 
   //token 저장
   const [accessToken, setAccessToken] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
 
   function jwtLogin() {
     axios({
@@ -605,8 +603,8 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleNotifications = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
   return (
     <>
       <div className="_1a7kymo0"></div>
@@ -648,8 +646,17 @@ export default function Header() {
                   </button>
                 ) : (
                   <>
-                    <div style={{ position: 'relative', display: 'inline-block', marginRight: '10px' }}>
-                      <NotificationIcon notificationCount={notificationCount.current} notifications={notifications} />
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                        marginRight: "10px",
+                      }}
+                    >
+                      <NotificationIcon
+                        notificationCount={notificationCount.current}
+                        notifications={notifications}
+                      />
                     </div>
                     <button
                       onClick={logout}
@@ -702,8 +709,8 @@ export default function Header() {
                 endIcon={<KeyboardArrowDownIcon />}
               >
                 {userAddress != null &&
-                  userAddress != "undefined" &&
-                  userAddress.length > 0
+                userAddress != "undefined" &&
+                userAddress.length > 0
                   ? userAddress[0].tvo.region3
                   : region3 != ""
                     ? region3
@@ -1231,10 +1238,10 @@ export default function Header() {
                               primary={
                                 loc.region1
                                   ? loc.region1 +
-                                  " " +
-                                  loc.region2 +
-                                  " " +
-                                  loc.region3
+                                    " " +
+                                    loc.region2 +
+                                    " " +
+                                    loc.region3
                                   : loc.join(" ")
                               }
                             />

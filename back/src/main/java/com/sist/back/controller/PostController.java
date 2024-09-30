@@ -459,7 +459,7 @@ public class PostController {
     public void updatePostStatus(String postStatus, String postkey, String dealuserkey) {
         p_service.updatePostStatus(postStatus, postkey, dealuserkey);
     }
-    
+
     @GetMapping("/checkPostDel")
     public Map<String, Object> checkPostDel(@RequestParam List<String> postkeys) {
         Map<String, Object> map = new HashMap<>();

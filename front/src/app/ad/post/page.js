@@ -8,9 +8,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
   Avatar,
+  Backdrop,
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   Grid,
@@ -59,6 +61,10 @@ export default function Page() {
   const [selReg1, setSelReg1] = useState("null");
   const [selReg2, setSelReg2] = useState("null");
   const [selReg3, setSelReg3] = useState("null");
+
+  // 프로그레스 띄우기용
+  const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useState([]);
 
   // region1
   useEffect(() => {
@@ -111,6 +117,24 @@ export default function Page() {
     });
   }, [selReg2]);
 
+  // 로딩창
+  useEffect(() => {
+    if (loading) {
+      axios({
+        url: "/adpost/searchpost",
+        method: "post",
+        data: JSON.stringify(searchParams),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        setList(res.data.post_list);
+        setPage(res.data.page);
+        setLoading(false);
+      });
+    }
+  }, [loading]);
+
   // 게시글 조회
   function searchpost(event, nowPage) {
     let formData;
@@ -118,30 +142,19 @@ export default function Page() {
       formData = new FormData(document.getElementById("frmSearch"));
     } else {
       event.preventDefault();
-
       formData = new FormData(event.currentTarget);
     }
     formData.append("nowPage", nowPage);
     formData.append("region1", selReg1);
     formData.append("region2", selReg2);
     formData.append("region3", selReg3);
+
     // 검색 조건을 URLSearchParams로 변환
     let searchParams = Object.fromEntries(new URLSearchParams(formData));
 
-    // 검색 조건을 처리하여 서버에 데이터를 요청
-    axios({
-      url: "/adpost/searchpost", // 실제 검색 API
-      method: "post",
-      data: JSON.stringify(searchParams), // JSON 문자열로 변환
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        setList(res.data.post_list); // 데이터 업데이트
-        setPage(res.data.page);
-      })
-      .catch((error) => {});
+    // 검색 조건을 state에 저장하고 로딩 시작
+    setSearchParams(searchParams);
+    setLoading(true);
   }
 
   // 게시글 현황
@@ -233,24 +246,40 @@ export default function Page() {
   }
 
   const [openPD, setOpenPD] = useState(false);
-  const [pdkey, setPdkey] = useState('0');
+  const [pdkey, setPdkey] = useState("0");
 
-  function openPostDetail(postkey){
+  function openPostDetail(postkey) {
     setPdkey(postkey);
     setOpenPD(true);
   }
-  function closePostDetail(){
+  function closePostDetail() {
     setOpenPD(false);
-    setPdkey('0');
-
+    setPdkey("0");
   }
-
-
-
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
-      <Box>
+      <Box sx={{ position: "relative" }}>
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <Grid
           container
           spacing={3}
@@ -539,22 +568,22 @@ export default function Page() {
                     }}
                   >
                     <span style={{ width: "120px" }}>가격</span>
-                    <FormControl sx={{ minWidth: 120 }} size="small">
+                    <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
                       <Select
-                        defaultValue="price"
-                        className="price"
-                        name="price"
+                        className="fSelect category eCategory"
                         id="price"
+                        name="price"
+                        defaultValue="price"
                       >
                         <MenuItem value="price">등록 가격</MenuItem>
-                        <MenuItem value="last_price">판매 가격</MenuItem>
+                        <MenuItem value="lastprice">판매 가격</MenuItem>
                       </Select>
                     </FormControl>
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        marginLeft: 16,
+                        ml: 16,
                       }}
                     >
                       <TextField
@@ -627,9 +656,7 @@ export default function Page() {
                         defaultValue="create_dtm"
                       >
                         <MenuItem value="create_dtm">게시글 작성일</MenuItem>
-                        <MenuItem value="update_dtm">게시글 수정일</MenuItem>
                         <MenuItem value="delete_dtm">게시글 삭제일</MenuItem>
-                        <MenuItem value="remind_dtm">끌어올리기 일자</MenuItem>
                         <MenuItem value="deal_dtm">거래완료 일자</MenuItem>
                       </Select>
                     </FormControl>
@@ -656,6 +683,33 @@ export default function Page() {
                         size="small"
                       />
                     </div>
+                  </li>
+                  {/* 정렬 */}
+                  <li
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <span style={{ width: "120px" }}>정렬</span>
+                    <RadioGroup
+                      row
+                      defaultValue="recent"
+                      className="sort"
+                      name="sort"
+                    >
+                      <FormControlLabel
+                        value="recent"
+                        control={<Radio size="small" />}
+                        label="최신순"
+                      />
+                      <FormControlLabel
+                        value="popular"
+                        control={<Radio size="small" />}
+                        label="조회순"
+                      />
+                    </RadioGroup>
                   </li>
 
                   {/* 검색 버튼 */}
@@ -686,23 +740,13 @@ export default function Page() {
         >
           <Grid item xs={12} sx={{ mb: 0.3 }}>
             <Typography variant="h5" flexGrow={1}>
-              게시글 목록
+              게시글 목록 {page?.totalRecord && `(${page.totalRecord}건)`}
             </Typography>
           </Grid>
           {/* 검색 폼 */}
           <Grid item xs={12}>
             <DashboardCard>
               <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <Button
-                  variant="contained"
-                  color="inherit"
-                  //onClick={delete_choice}
-                  className="btnNormal"
-                  sx={{ ml: 1, display: "none" }}
-                  startIcon={<AddIcon />}
-                >
-                  추가
-                </Button>
                 <Button
                   variant="contained"
                   color="inherit"
@@ -725,7 +769,7 @@ export default function Page() {
                 </Button>
               </Box>
               <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
-                <Table sx={{ minWidth: 1500, tableLayout: "auto" }}>
+                <Table sx={{ minWidth: 1600, tableLayout: "auto" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell padding="checkbox">
@@ -747,10 +791,9 @@ export default function Page() {
                       <TableCell align="center">판매가</TableCell>
                       <TableCell align="center">구매자</TableCell>
                       <TableCell align="center">생성일</TableCell>
-                      <TableCell align="center">수정일</TableCell>
                       <TableCell align="center">삭제일</TableCell>
-                      <TableCell align="center">끌올일</TableCell>
-                      <TableCell align="center">거래완료일</TableCell>
+                      <TableCell align="center">거래일</TableCell>
+                      <TableCell align="center">조회</TableCell>
                       <TableCell align="center">상태</TableCell>
                     </TableRow>
                   </TableHead>
@@ -762,7 +805,9 @@ export default function Page() {
                           hover
                           tabIndex={-1}
                           role="checkbox"
-                          onDoubleClick={() => {openPostDetail(prod.postkey);} }
+                          onDoubleClick={() => {
+                            openPostDetail(prod.postkey);
+                          }}
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -837,22 +882,8 @@ export default function Page() {
                               : "-"}
                           </TableCell>
                           <TableCell align="center">
-                            {prod.update_dtm
-                              ? new Date(prod.update_dtm)
-                                  .toISOString()
-                                  .split("T")[0]
-                              : "-"}
-                          </TableCell>
-                          <TableCell align="center">
                             {prod.delete_dtm
                               ? new Date(prod.delete_dtm)
-                                  .toISOString()
-                                  .split("T")[0]
-                              : "-"}
-                          </TableCell>
-                          <TableCell align="center">
-                            {prod.remind_dtm
-                              ? new Date(prod.remind_dtm)
                                   .toISOString()
                                   .split("T")[0]
                               : "-"}
@@ -863,6 +894,11 @@ export default function Page() {
                                   .toISOString()
                                   .split("T")[0]
                               : "-"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {new Intl.NumberFormat("ko-KR").format(
+                              prod.viewqty
+                            )}
                           </TableCell>
                           <TableCell align="center">
                             {prod.isdeleted == 1
@@ -917,7 +953,11 @@ export default function Page() {
           </Grid>
         </Grid>
       </Box>
-      <PostDetail openPD={openPD} closePostDetail={closePostDetail} postkey={pdkey} />
+      <PostDetail
+        openPD={openPD}
+        closePostDetail={closePostDetail}
+        postkey={pdkey}
+      />
     </PageContainer>
   );
 }
