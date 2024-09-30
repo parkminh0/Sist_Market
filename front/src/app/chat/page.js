@@ -18,6 +18,7 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import { useRouter } from "next/navigation";
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -104,6 +105,13 @@ const ChatApp = () => {
   const [buyerUserkey, setBuyerUserkey] = useState(null);
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const key = queryParams.get('chatroomkey');
+    setCurrentchatroomkey(key);
+    console.log(window.location.search);
+  }, [window.location.search]);
+
+  useEffect(() => {
     if (oneTime.current) {
       return;
     }
@@ -120,7 +128,7 @@ const ChatApp = () => {
 
     });
     const octokit = new Octokit({
-      auth: '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'
+      auth: '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'
     });
 
     octokit.request('GET /emojis', {
