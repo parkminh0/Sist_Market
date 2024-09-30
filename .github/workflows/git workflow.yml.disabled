@@ -12,7 +12,7 @@ on:
   push:
 
   branches: ["heo"]
-  #pull_request:
+  ##pull_request:
     #branches: ["develop"]
 
 jobs:
