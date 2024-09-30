@@ -336,12 +336,17 @@
         `title` = #{title},
         `method` = #{method},
         `price` = #{price},
-        `lastprice` = #{lastprice},
         `content` = #{content},
         `range` = #{range},
-        `hope_place` = #{hope_place},
-        `hope_lati` = #{hope_lati},
-        `hope_long` = #{hope_long},
+        <if test="hope_place != null and hope_place != '' and hope_place != 'null'">
+            `hope_place` = #{hope_place},
+        </if>
+        <if test="hope_lati != null and hope_lati != '' and hope_lati != 'null'">
+            `hope_lati` = #{hope_lati},
+        </if>
+        <if test="hope_long != null and hope_long != '' and hope_long != 'null'">
+            `hope_long` = #{hope_long},
+        </if>
         `canbargain` = #{canbargain},
         <if test="isPostPage = 1 and poststatus != 0">
         `create_dtm` = now(),
