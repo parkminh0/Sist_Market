@@ -953,11 +953,13 @@ export default function Page() {
           </Grid>
         </Grid>
       </Box>
-      <PostDetail
-        openPD={openPD}
-        closePostDetail={closePostDetail}
-        postkey={pdkey}
-      />
+      {openPD && (
+        <PostDetail
+          openPD={openPD}
+          closePostDetail={closePostDetail}
+          postkey={pdkey}
+        />
+      )}
     </PageContainer>
   );
 }
