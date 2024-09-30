@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import "/public/css/admin/board.css";
 import axios from "axios";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 

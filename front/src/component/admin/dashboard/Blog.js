@@ -7,10 +7,16 @@ import {
   Tooltip,
   Fab,
   Avatar,
+  IconButton,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { IconBasket } from "@tabler/icons-react";
 import BlankCard from "../shared/BlankCard";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 
 const ecoCard = [
   {
@@ -48,14 +54,32 @@ const ecoCard = [
 ];
 
 const Blog = () => {
+  const [top4, setTop4] = useState([]);
+
+  useEffect(() => {
+    axios({
+      url: "/ad/getTop4",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      console.log(res.data.res_getTop4);
+      setTop4(res.data.res_getTop4);
+    });
+  }, []);
+
   return (
     <Grid container spacing={3}>
-      {ecoCard.map((product, index) => (
-        <Grid item xs={12} md={4} lg={3} key={index}>
+      <Grid item xs={12} sx={{ mb: -2.25 }}>
+        <Typography variant="h5">인기 게시글</Typography>
+      </Grid>
+      {top4.map((post, index) => (
+        <Grid item xs={12} md={3} lg={3} key={index}>
           <BlankCard>
             <Typography component={Link} href="/">
               <Avatar
-                src={product.photo}
+                src={post.pimg_list[0].imgurl}
                 variant="square"
                 sx={{
                   height: 250,
@@ -73,7 +97,7 @@ const Blog = () => {
               </Fab>
             </Tooltip>
             <CardContent sx={{ p: 3, pt: 2 }}>
-              <Typography variant="h6">{product.title}</Typography>
+              <Typography variant="h6">{post.title}</Typography>
               <Stack
                 direction="row"
                 alignItems="center"
@@ -81,21 +105,42 @@ const Blog = () => {
                 mt={1}
               >
                 <Stack direction="row" alignItems="center">
-                  <Typography variant="h6">${product.price}</Typography>
-                  <Typography
-                    color="textSecondary"
-                    ml={1}
-                    sx={{ textDecoration: "line-through" }}
-                  >
-                    ${product.salesPrice}
+                  <Typography variant="h6">
+                    {post.price == 0
+                      ? "나눔♥"
+                      : new Intl.NumberFormat("ko-KR").format(post.price) +
+                        "원"}
                   </Typography>
                 </Stack>
-                <Rating
-                  name="read-only"
-                  size="small"
-                  value={product.rating}
-                  readOnly
-                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginLeft: "0",
+                  }}
+                >
+                  <IconButton variant="plain" size="sm" sx={{ padding: "4px" }}>
+                    <RemoveRedEyeOutlinedIcon style={{ fontSize: "14px" }} />
+                  </IconButton>
+
+                  <span style={{ fontSize: "12px", marginLeft: "0" }}>
+                    {post.viewqty}
+                  </span>
+                  <IconButton variant="plain" size="sm" sx={{ padding: "4px" }}>
+                    <ChatBubbleOutlineOutlinedIcon
+                      style={{ fontSize: "14px" }}
+                    />
+                  </IconButton>
+                  <span style={{ fontSize: "12px", marginLeft: "0" }}>
+                    {post.chatroomqty}
+                  </span>
+                  <IconButton variant="plain" size="sm" sx={{ padding: "4px" }}>
+                    <FavoriteBorderOutlinedIcon style={{ fontSize: "14px" }} />
+                  </IconButton>
+                  <span style={{ fontSize: "12px", marginLeft: "0" }}>
+                    {post.likedqty}
+                  </span>
+                </div>
               </Stack>
             </CardContent>
           </BlankCard>
