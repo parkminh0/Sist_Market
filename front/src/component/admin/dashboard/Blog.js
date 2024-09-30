@@ -17,6 +17,7 @@ import axios from "axios";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import PostDetail from "../post/detail/PostDetail";
 
 const ecoCard = [
   {
@@ -69,6 +70,18 @@ const Blog = () => {
     });
   }, []);
 
+  const [openPD, setOpenPD] = useState(false);
+  const [pdkey, setPdkey] = useState("0");
+
+  function openPostDetail(postkey) {
+    setPdkey(postkey);
+    setOpenPD(true);
+  }
+  function closePostDetail() {
+    setOpenPD(false);
+    setPdkey("0");
+  }
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sx={{ mb: -2.25 }}>
@@ -77,7 +90,7 @@ const Blog = () => {
       {top4.map((post, index) => (
         <Grid item xs={12} md={3} lg={3} key={index}>
           <BlankCard>
-            <Typography component={Link} href="/">
+            <Typography component={Link} href="#" onClick={() => openPostDetail(post.postkey)}>
               <Avatar
                 src={post.pimg_list[0].imgurl}
                 variant="square"
@@ -146,6 +159,13 @@ const Blog = () => {
           </BlankCard>
         </Grid>
       ))}
+      {openPD && (
+        <PostDetail
+          openPD={openPD}
+          closePostDetail={closePostDetail}
+          postkey={pdkey}
+        />
+      )}
     </Grid>
   );
 };
