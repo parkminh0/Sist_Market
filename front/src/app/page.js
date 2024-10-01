@@ -179,7 +179,6 @@ export default function Home() {
     const scroll_div = e.currentTarget.parentNode.querySelector(
       'div[data-scroll_div="scroll_div"]'
     );
-    console.log(scroll_div);
     let chk = parseInt(scroll_div.getAttribute("data-scroll_idx"));
     const chkRange = parseInt(scroll_div.getAttribute("data-scroll_range"));
 

@@ -38,40 +38,6 @@ export default function FooterBanner() {
                     </font>
                   </font>
                 </div>
-                <div className="a1nvr45 _1h4pbgy9vc _1h4pbgy90g _1h4pbgy90r">
-                  <Link
-                    className="_19xafot0 _19xafot4 _19xafot5"
-                    style={{
-                      _19xafot2: "100ms",
-                      _19xafot1: "500ms",
-                      _19xafot3: "translateY(1rem)",
-                    }}
-                    href="#"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/49380c1c7e70e49f0f93baf0f790925eefc69082-120x40.svg"
-                      alt="앱스토어에서 다운로드"
-                    />
-                  </Link>
-                  <Link
-                    className="_19xafot0 _19xafot4 _19xafot5"
-                    style={{
-                      _19xafot2: "150ms",
-                      _19xafot1: "500ms",
-                      _19xafot3: "translateY(1rem)",
-                    }}
-                    href="#"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/0d8f72b8e4cdb98af115a7c1f04c4abf19f5c419-180x53.svg"
-                      alt="Google Play에서 받으세요"
-                    />
-                  </Link>
-                </div>
               </div>
               <div className="a1nvr46">
                 <img

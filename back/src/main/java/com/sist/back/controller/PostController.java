@@ -225,7 +225,6 @@ public class PostController {
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
             String region2, String region3) {
-        System.out.println("거래희망!!" + vo.getHope_place() + "까지");
         if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
                 && !region3.equals("")) {
             Map<String, String> searchTown = new HashMap<>();
@@ -244,8 +243,6 @@ public class PostController {
             }
         }
 
-        // lastprice 변동 후 가격 = 가격
-        vo.setLastprice(vo.getPrice());
         // range
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
@@ -426,10 +423,9 @@ public class PostController {
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
         // 배열을 리스트로 변환하여 할당
-        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0)), region1, region2));
-        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1)), region1, region2));
-        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2)), region1, region2));
-
+        for (int i = 0; i < 3; i++) {
+            tmp[i] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(i)), region1, region2));
+        }
         Map<String, Object> res = new HashMap<>();
         res.put("free_list", p_service.main("free", region1, region2));
         res.put("cate_list", tmp);
