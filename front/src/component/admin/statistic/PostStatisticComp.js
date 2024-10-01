@@ -15,6 +15,7 @@ export default function PostStatisticComp({ categoryType }) {
   const [postList, setPostList] = useState([]);
 
   useEffect(() => {
+    console.log(categoryType);
     axios({
       url: "/ad/postTop10Statistic",
       method: "get",
