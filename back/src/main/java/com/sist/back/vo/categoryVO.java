@@ -15,4 +15,8 @@ public class categoryVO {
     private String categorykey, upcategoryname, categoryname, img_url, create_dtm, update_dtm, delete_dtm, isdeleted;
 
     private MultipartFile file;
+
+    // Admin 통계용
+    String dealcnt;
+    String dealprice;
 }

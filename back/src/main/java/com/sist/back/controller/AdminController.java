@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/ad")
@@ -76,6 +75,34 @@ public class AdminController {
     public Map<String, Object> getTop4() {
         Map<String, Object> res = new HashMap<>();
         res.put("res_getTop4", postService.getTop4());
+        return res;
+    }
+
+    @GetMapping("/todayReport")
+    public Map<String, Object> todayReport() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_todayReport", adminService.todayReport());
+        return res;
+    }
+
+    @GetMapping("/dealstatistic")
+    public Map<String, Object> dealstatistic() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_dealstatistic", adminService.dealstatistic());
+        return res;
+    }
+
+    @GetMapping("/catedealstatistic")
+    public Map<String, Object> catedealstatistic(String type) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_catedealstatistic", adminService.catedealstatistic(type));
+        return res;
+    }
+
+    @GetMapping("/postTop10Statistic")
+    public Map<String, Object> postTop10Statistic(String type) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_postTop10Statistic", postService.postTop10Statistic(type));
         return res;
     }
 

@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import Moneybook from "@/component/user/myPage/Moneybook";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 export default function page() {
   const API_URL = "/user/api/mypage/userEdit";
@@ -61,6 +62,7 @@ export default function page() {
       setSell_2(sell2);
       setSell_3(sell3);
       setSell_4(sell4);
+      setLoading(false);
     });
   }
 
@@ -82,12 +84,34 @@ export default function page() {
       alert("로그인이 필요한 서비스입니다.");
       window.location.replace("/");
     }
+    setLoading(true);
     getData();
   }, []);
 
+  const [loading, setLoading] = useState(false);
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
             <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">

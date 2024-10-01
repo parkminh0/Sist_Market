@@ -4,6 +4,22 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.PostMapper">
 
+    <!-- DB 속도 실험용 -->
+    <resultMap id="post_simple" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
+    <select id="getPost_simple" resultMap="post_simple" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+
+
     <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey" />
         <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
@@ -795,6 +811,40 @@
     <select id="searchTemp" resultMap="searchTempMap" parameterType="String">
         SELECT * FROM post 
          WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
+    </select>
+
+    <!-- 게시글 TOP 10 -->
+    <resultMap id="postTop10StatisticMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="userkey" property="userkey" />
+        <result column="townkey" property="townkey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoPostTop10StatisticMap" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="postTop10Statistic" resultMap="postTop10StatisticMap" parameterType="String">
+      select p.*, 
+	   COUNT(CASE WHEN w.wishlistkey is not null THEN 1 END) likedqty,
+       COUNT(CASE WHEN c.chatroomkey is not null THEN 1 END) chatroomqty
+        FROM post p
+        LEFT JOIN wishlist w on p.postkey = w.postkey
+        LEFT JOIN chatroom c on p.postkey = c.postkey
+        WHERE p.isdeleted = 0
+        <if test="type = 1">
+            AND DATE(w.create_dtm) = DATE(NOW())
+        </if>
+        <if test="type = 2">
+            AND WEEK(w.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1)
+        </if>
+        <if test="type = 3">
+            AND w.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()
+        </if>
+        GROUP BY p.postkey
+        order by likedqty desc;
+    </select>
+    <select id="getUvoPostTop10StatisticMap" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
     </select>
     <!-- 
         민호 끝 

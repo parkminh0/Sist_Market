@@ -21,7 +21,7 @@ public interface PostMapper {
     int incViewqty(int postkey);
 
     PostVO getPostByPostKey(int postkey);
-    
+
     PostVO getPostDetailByPostKey(int postkey);
 
     List<PostVO> getPostByCategoryKey(int categorykey, String userkey);
@@ -75,6 +75,8 @@ public interface PostMapper {
     void updatePostStatus(String postStatus, String postkey, String dealuserkey);
 
     List<PostVO> getTop4();
+
+    List<PostVO> postTop10Statistic(String type);
 
     List<String> townAll();
 }

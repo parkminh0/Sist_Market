@@ -5,6 +5,7 @@ import {
   IconUser,
   IconClipboardText,
   IconMessageChatbot,
+  IconMedal2,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -49,6 +50,20 @@ const Menuitems = [
     title: "게시판 관리",
     icon: IconClipboardText,
     href: "/ad/bbs",
+  },
+  {
+    navlabel: true,
+    subheader: "통계",
+  },
+  {
+    title: "대시보드",
+    icon: IconMedal2,
+    href: "/ad/statistic",
+  },
+  {
+    title: "대시보드",
+    icon: IconMessageChatbot,
+    href: "/ad/qna",
   },
   {
     navlabel: true,

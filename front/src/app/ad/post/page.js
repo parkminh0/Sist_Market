@@ -255,10 +255,10 @@ export default function Page() {
   const [pdkey, setPdkey] = useState("0");
 
   function openPostDetail(postkey) {
-    if(checkedItems.length==0){
+    if (checkedItems.length == 0) {
       alert("상세내용을 확인할 게시글을 선택해주시기 바랍니다.");
       return;
-    } else if(checkedItems.length>1){
+    } else if (checkedItems.length > 1) {
       alert("상세내용 확인은 한 게시글만 가능합니다.");
       return;
     }
@@ -765,7 +765,9 @@ export default function Page() {
                 <Button
                   variant="contained"
                   color="inherit"
-                  onClick={() => {openPostDetail()}}
+                  onClick={() => {
+                    openPostDetail();
+                  }}
                   className="btnNormal"
                   sx={{ ml: 1 }}
                   startIcon={<ArticleOutlined />}
@@ -797,10 +799,10 @@ export default function Page() {
                         />
                       </TableCell>
                       <TableCell align="center">No</TableCell>
-                      <TableCell align="center">작성자</TableCell>
-                      <TableCell align="center">작성지</TableCell>
-                      <TableCell align="center">분류</TableCell>
                       <TableCell align="center">제목</TableCell>
+                      <TableCell align="center">작성자</TableCell>
+                      <TableCell align="center">동네</TableCell>
+                      <TableCell align="center">분류</TableCell>
                       <TableCell align="center">구분</TableCell>
                       <TableCell align="center">상태</TableCell>
                       <TableCell align="center">등록가</TableCell>
@@ -815,12 +817,7 @@ export default function Page() {
                   <TableBody>
                     {list && list.length > 0 ? (
                       list.map((prod, i) => (
-                        <TableRow
-                          key={i}
-                          hover
-                          tabIndex={-1}
-                          role="checkbox"
-                        >
+                        <TableRow key={i} hover tabIndex={-1} role="checkbox">
                           <TableCell padding="checkbox">
                             <Checkbox
                               disableRipple
@@ -831,6 +828,18 @@ export default function Page() {
                             />
                           </TableCell>
                           <TableCell align="center">{prod.postkey}</TableCell>
+                          {/* 이미지 */}
+                          <TableCell component="th" scope="row">
+                            <Box gap={2} display="flex" alignItems="center">
+                              {prod.pimg_list && prod.pimg_list.length > 0 && (
+                                <Avatar
+                                  alt={prod.title}
+                                  src={prod.pimg_list[0].imgurl}
+                                />
+                              )}
+                              {prod.title}
+                            </Box>
+                          </TableCell>
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
                               <Avatar
@@ -849,18 +858,6 @@ export default function Page() {
                           </TableCell>
                           <TableCell align="center">
                             {prod.cvo.categoryname}
-                          </TableCell>
-                          {/* 이미지 */}
-                          <TableCell component="th" scope="row">
-                            <Box gap={2} display="flex" alignItems="center">
-                              {prod.pimg_list && prod.pimg_list.length > 0 && (
-                                <Avatar
-                                  alt={prod.title}
-                                  src={prod.pimg_list[0].imgurl}
-                                />
-                              )}
-                              {prod.title}
-                            </Box>
                           </TableCell>
                           <TableCell align="center">
                             {prod.method == 0 ? "판매" : "나눔"}
@@ -882,10 +879,11 @@ export default function Page() {
                             {new Intl.NumberFormat("ko-KR").format(prod.price)}
                           </TableCell>
                           <TableCell align="center">
-                            {prod.lastprice 
-                              ? new Intl.NumberFormat("ko-KR")
-                                    .format(prod.lastprice)
-                              : '-'}
+                            {prod.lastprice
+                              ? new Intl.NumberFormat("ko-KR").format(
+                                  prod.lastprice
+                                )
+                              : "-"}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
