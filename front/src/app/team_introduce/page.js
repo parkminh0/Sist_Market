@@ -146,7 +146,7 @@ export default function Page() {
                     alt="팀원5"
                     className={styles.teamPhoto}
                   />
-                  <h3 className={styles.teamName}>전민권</h3>
+                  <h3 className={styles.teamName}>전민건</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
                     <li className={styles.teamDescriptionItem}>업무 설명</li>

@@ -9,6 +9,16 @@
     min-width: 450px;
     max-width: 450px;
 }
+.mbDatePicker{
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.mbDatePicker .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input{
+    height: 0.5em !important;
+    font-size: 15px !important;
+}
+
 
 .moneybookBody{
     margin: 0 auto;
