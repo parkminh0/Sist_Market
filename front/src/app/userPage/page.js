@@ -17,7 +17,7 @@ import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
 import PraiseModal from "@/component/user/userPage/PraiseModal";
 import UserReport from "@/component/user/userPage/UserReport";
-import { Box, Button, LinearProgress, Typography } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, LinearProgress, Typography } from '@mui/material';
 import Cookies from "js-cookie";
 
 
@@ -170,6 +170,7 @@ export default function page() {
       setLimitpostkey(res.data.limitpostkey);
       setLastpostkey(res.data.lastpostkey);
       setIsnextexist(res.data.isnextexist);
+      setLoading(false);
     });
   }
 
@@ -216,6 +217,7 @@ export default function page() {
     ]).then(([res1, res2]) => {
         setReviewCount([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
     });
+    setLoading(true);
     getData();
   }, []);
 
@@ -269,9 +271,31 @@ export default function page() {
     );
   }
   
+  const [loading, setLoading] = useState(false);
+
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
             <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">

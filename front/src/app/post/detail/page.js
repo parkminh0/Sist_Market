@@ -6,9 +6,11 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
+  Backdrop,
   Box,
   Breadcrumbs,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -203,6 +205,11 @@ export default function Page() {
 
 
   useEffect(() => {
+    setCellList([]);
+    setPopCate([]);
+    setPostVO({});
+    setUserVO({});
+    setManner();
     let currentUrl = window.location.href;
     let currentUrlObj = new URL(currentUrl);
     let params = new URLSearchParams(currentUrlObj.search);
@@ -210,7 +217,8 @@ export default function Page() {
     let postkey = params.get("postkey");
 
     setPostKey(postkey);
-
+    
+    setLoading(true);
     axios({
       url: "/adpost/postdetail",
       method: "get",
@@ -252,24 +260,26 @@ export default function Page() {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => {
-        setCellList(res.data.cellList);
+      }).then((res2) => {
+        setCellList(res2.data.cellList);
+        axios({
+          url: "/adpost/pop_cate",
+          method: "get",
+          params: {
+            categorykey: res.data.pvo.categorykey,
+            userkey: userkey,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res3) => {
+          setPopCate(res3.data.popCateList);
+          setLoading(false);
+        });
+      });
       });
 
-      axios({
-        url: "/adpost/pop_cate",
-        method: "get",
-        params: {
-          categorykey: res.data.pvo.categorykey,
-          userkey: userkey,
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => {
-        setPopCate(res.data.popCateList);
-      });
-    });
+      
   }, [param.get("postkey")]);
 
   const theme = useTheme();
@@ -413,6 +423,9 @@ export default function Page() {
   const handleChkOpen = () => { setChkOpen(true); };
   const handleChkClose = (res) => { setChkOpen(false); if (res) { setReportOpen(true); } };
 
+  
+  const [loading, setLoading] = useState(false);
+
   return (
     <>
       {postVO ? (
@@ -421,6 +434,26 @@ export default function Page() {
         ""
       )}
       <article className="vqbuc90 _1h4pbgy7zs _1h4pbgy83s _1h4pbgy84b _1h4pbgy84l _1h4pbgy89k _1h4pbgy8eg _1h4pbgy9ug _1h4pbgy9vs _1h4pbgya0o">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <div className="_588sy41z _588sy421 vqbuc9j _588sy422 _588sy42b _588sy4qe _588sy4r5">
             <Breadcrumbs separator="›" aria-label="breadcrumb">

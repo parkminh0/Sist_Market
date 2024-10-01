@@ -4,6 +4,22 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.PostMapper">
 
+    <!-- DB 속도 실험용 -->
+    <resultMap id="post_simple" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
+    <select id="getPost_simple" resultMap="post_simple" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+
+
     <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey" />
         <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>

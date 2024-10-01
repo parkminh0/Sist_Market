@@ -11,7 +11,7 @@ import ChatroomInfo from "@/component/admin/post/detail/ChatroomInfo";
 import UserInfo from "@/component/admin/post/detail/UserInfo";
 import TownInfo from "@/component/admin/post/detail/TownInfo";
 import OfferInfo from "@/component/admin/post/detail/OfferInfo";
-import { Box, Grid, Modal } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Grid, Modal } from "@mui/material";
 import ImageModal from "@/component/admin/post/detail/ImageModal";
 
 export default function PostDetail(props) {
@@ -51,11 +51,13 @@ export default function PostDetail(props) {
       setO_list(response.data.o_list);
       setCr_list(response.data.cr_list);
       setLoaded(response.data.pvo!=null);
+      setLoading(false);
     });
   }
 
   useEffect(() => {
     setPostkey(props.postkey);
+    if(openPD){setLoading(true);}
     getPostDetail(props.postkey);
   }, [openPD]);
 
@@ -79,6 +81,9 @@ export default function PostDetail(props) {
     borderRadius: 5
   };
 
+  const [loading, setLoading] = useState(false);
+
+
   return (
     <Modal
         className="ModalStyle"
@@ -88,6 +93,26 @@ export default function PostDetail(props) {
         aria-describedby="modal-modal-description"
         >
         <Box sx={style} className="BoxStyle">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="MuiStack-root css-tfkmr0">
             <div className="MuiGrid-root MuiGrid-container css-v3z1wi">
             <div className="MuiGrid-root MuiGrid-item MuiGrid-grid-md-6 css-196gsvj">
