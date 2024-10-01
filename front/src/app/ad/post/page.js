@@ -33,7 +33,7 @@ import {
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 import PostDetail from "@/component/admin/post/detail/PostDetail";
-import PostDetail2 from "@/component/admin/post/detail/PostDetail2";
+import { ArticleOutlined } from "@mui/icons-material";
 
 export default function Page() {
   const [list, setList] = useState([]);
@@ -131,6 +131,8 @@ export default function Page() {
         setList(res.data.post_list);
         setPage(res.data.page);
         setLoading(false);
+        setAllChecked(false);
+        setCheckedItems([]);
       });
     }
   }, [loading]);
@@ -249,7 +251,14 @@ export default function Page() {
   const [pdkey, setPdkey] = useState("0");
 
   function openPostDetail(postkey) {
-    setPdkey(postkey);
+    if(checkedItems.length==0){
+      alert("상세내용을 확인할 게시글을 선택해주시기 바랍니다.");
+      return;
+    } else if(checkedItems.length>1){
+      alert("상세내용 확인은 한 게시글만 가능합니다.");
+      return;
+    }
+    setPdkey(checkedItems.pop());
     setOpenPD(true);
   }
   function closePostDetail() {
@@ -673,6 +682,7 @@ export default function Page() {
                         className="dtm_from"
                         name="dtm_from"
                         size="small"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
                       <span style={{ margin: "0 10px" }}>~</span>
                       <TextField
@@ -681,6 +691,7 @@ export default function Page() {
                         className="dtm_to"
                         name="dtm_to"
                         size="small"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
                     </div>
                   </li>
@@ -750,12 +761,12 @@ export default function Page() {
                 <Button
                   variant="contained"
                   color="inherit"
-                  //onClick={delete_choice}
+                  onClick={() => {openPostDetail()}}
                   className="btnNormal"
                   sx={{ ml: 1 }}
-                  startIcon={<EditIcon />}
+                  startIcon={<ArticleOutlined />}
                 >
-                  수정
+                  확인
                 </Button>
                 <Button
                   variant="contained"
@@ -787,6 +798,7 @@ export default function Page() {
                       <TableCell align="center">분류</TableCell>
                       <TableCell align="center">제목</TableCell>
                       <TableCell align="center">구분</TableCell>
+                      <TableCell align="center">상태</TableCell>
                       <TableCell align="center">등록가</TableCell>
                       <TableCell align="center">판매가</TableCell>
                       <TableCell align="center">구매자</TableCell>
@@ -794,7 +806,6 @@ export default function Page() {
                       <TableCell align="center">삭제일</TableCell>
                       <TableCell align="center">거래일</TableCell>
                       <TableCell align="center">조회</TableCell>
-                      <TableCell align="center">상태</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -805,9 +816,6 @@ export default function Page() {
                           hover
                           tabIndex={-1}
                           role="checkbox"
-                          onDoubleClick={() => {
-                            openPostDetail(prod.postkey);
-                          }}
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -854,12 +862,26 @@ export default function Page() {
                             {prod.method == 0 ? "판매" : "나눔"}
                           </TableCell>
                           <TableCell align="center">
+                            {prod.isdeleted == 1
+                              ? "삭제"
+                              : prod.poststatus == 0
+                                ? "임시저장"
+                                : prod.poststatus == 1
+                                  ? "판매중"
+                                  : prod.postStatus == 2
+                                    ? "예약중"
+                                    : prod.poststatus == 3
+                                      ? "거래완료"
+                                      : "숨김"}
+                          </TableCell>
+                          <TableCell align="center">
                             {new Intl.NumberFormat("ko-KR").format(prod.price)}
                           </TableCell>
                           <TableCell align="center">
-                            {new Intl.NumberFormat("ko-KR").format(
-                              prod.lastprice
-                            )}
+                            {prod.lastprice 
+                              ? new Intl.NumberFormat("ko-KR")
+                                    .format(prod.lastprice)
+                              : '-'}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
@@ -899,19 +921,6 @@ export default function Page() {
                             {new Intl.NumberFormat("ko-KR").format(
                               prod.viewqty
                             )}
-                          </TableCell>
-                          <TableCell align="center">
-                            {prod.isdeleted == 1
-                              ? "삭제"
-                              : prod.poststatus == 0
-                                ? "임시저장"
-                                : prod.poststatus == 1
-                                  ? "판매중"
-                                  : prod.postStatus == 2
-                                    ? "예약중"
-                                    : prod.poststatus == 3
-                                      ? "거래완료"
-                                      : "숨김"}
                           </TableCell>
                         </TableRow>
                       ))
@@ -953,11 +962,13 @@ export default function Page() {
           </Grid>
         </Grid>
       </Box>
-      <PostDetail
-        openPD={openPD}
-        closePostDetail={closePostDetail}
-        postkey={pdkey}
-      />
+      {openPD && (
+        <PostDetail
+          openPD={openPD}
+          closePostDetail={closePostDetail}
+          postkey={pdkey}
+        />
+      )}
     </PageContainer>
   );
 }

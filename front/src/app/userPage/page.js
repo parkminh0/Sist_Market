@@ -101,23 +101,23 @@ export default function page() {
   }
 
   function openPraise(){
-    if(!canPoN){
-      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
-      return;
-    }
     if(Cookies.get("userkey")==undefined){
       alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+    if(!canPoN){
+      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
       return;
     }
     setPraiseOpen(true);
   }
   function openDisapprove(){
-    if(!canPoN){
-      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
-      return;
-    }
     if(Cookies.get("userkey")==undefined){
       alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+    if(!canPoN){
+      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
       return;
     }
     setDisapproveOpen(true);
@@ -335,7 +335,7 @@ export default function page() {
                                     <button type="button" className="PraiseBtn" onClick={()=>{openPraise()}}>매너 평가</button>
                                     <button type="button" className="DisapproveBtn" onClick={()=>{openDisapprove()}}>비매너 평가</button>
                                 </div>
-                                <FHRBMenu you={userkey} setIfReport={setIfReport} isLiked={isLiked}  setIsLiked={setIsLiked} isNosee={isNosee} setIsNosee={setIsNosee}  isBlocked={isBlocked} setIsBlocked={setIsBlocked} />
+                                <FHRBMenu yourName={vo.nickname} you={userkey} setIfReport={setIfReport} isLiked={isLiked}  setIsLiked={setIsLiked} isNosee={isNosee} setIsNosee={setIsNosee}  isBlocked={isBlocked} setIsBlocked={setIsBlocked} />
                                 <UserReport ifReport={ifReport}  setIfReport={setIfReport} userkey={userkey} />
                                 <PraiseModal praiseOpen={praiseOpen} setPraiseOpen={setPraiseOpen} userkey={userkey}/>
                                 <DisapproveModal disapproveOpen={disapproveOpen} setDisapproveOpen={setDisapproveOpen} userkey={userkey}/>

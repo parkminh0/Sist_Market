@@ -58,7 +58,7 @@ const Dashboard = () => {
               count={new Intl.NumberFormat("ko-KR").format(totalVO.cntBbs)}
               //percentage={27.4}
               isLoss
-              color="warning"
+              //color="warning"
               extra={new Intl.NumberFormat("ko-KR").format(totalVO.cntBbsYear)}
               sort="year"
             />
@@ -69,7 +69,7 @@ const Dashboard = () => {
               count={new Intl.NumberFormat("ko-KR").format(totalVO.cntQna)}
               //percentage={27.4}
               isLoss
-              color="warning"
+              //color="warning"
               extra={new Intl.NumberFormat("ko-KR").format(totalVO.cntQnaDay)}
               sort="day"
             />

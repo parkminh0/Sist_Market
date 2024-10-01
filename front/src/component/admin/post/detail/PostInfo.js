@@ -121,20 +121,24 @@ export default function PostInfo(props) {
              : ''}
         </TableBody>
       </Table>
-      <Table className="detailInfoTable">
-        <TableBody>
-          <TableRow>
-            <TableCell className="th">게시글 이미지</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <TableContainer className="postimgRow">
+      {pvo.pimg_list.length>0 ? 
+      <>
         <Table className="detailInfoTable">
           <TableBody>
-            <PostImg postimg={pvo.pimg_list} handleOpen={handleOpen} />
+            <TableRow>
+              <TableCell className="th">게시글 이미지</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-      </TableContainer>
+        <TableContainer className="postimgRow">
+          <Table className="detailInfoTable">
+            <TableBody>
+              <PostImg postimg={pvo.pimg_list} handleOpen={handleOpen} />
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
+      : '' }
       <Table className="detailInfoTable">
         <TableBody>
           <TableRow>
@@ -153,9 +157,9 @@ export default function PostInfo(props) {
               <TableCell className="th">경도</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="td">{pvo.hope_place}</TableCell>
-              <TableCell className="td">{pvo.hope_lati}</TableCell>
-              <TableCell className="td">{pvo.hope_long}</TableCell>
+              <TableCell className="td">{pvo.hope_place ? pvo.hope_place : '-'}</TableCell>
+              <TableCell className="td">{pvo.hope_lati ? pvo.hope_lati : '-'}</TableCell>
+              <TableCell className="td">{pvo.hope_long ? pvo.hope_long : '-'}</TableCell>
             </TableRow>
         </TableBody>
       </Table>
@@ -182,8 +186,8 @@ export default function PostInfo(props) {
               : ''}
             </TableRow>
             <TableRow>
-              <TableCell className="td">{pvo.create_dtm}</TableCell>
-              <TableCell className="td">{pvo.update_dtm}</TableCell>
+              <TableCell className="td">{pvo.poststatus!=0 ? pvo.create_dtm : "임시저장"}</TableCell>
+              <TableCell className="td">{pvo.poststatus!=0 ? pvo.update_dtm : "임시저장"}</TableCell>
               <TableCell className="td" onClick={()=>handleOpen_pi(pvo.pinfo_list.length)} style={{cursor:"pointer"}}>{pvo.pinfo_list.length>0?pvo.remind_dtm:'-'}</TableCell>
               <TableCell className="td">{isdeleted}</TableCell>
             {pvo.isdeleted==1 ?

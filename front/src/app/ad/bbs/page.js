@@ -331,6 +331,7 @@ export default function Page() {
                           name="create_start_date"
                           size="small"
                           onChange={(e) => setCreate_start_date(e.target.value)}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                         <span style={{ margin: "0 10px" }}>~</span>
                         <TextField
@@ -340,6 +341,7 @@ export default function Page() {
                           name="create_end_date"
                           size="small"
                           onChange={(e) => setCreate_end_date(e.target.value)}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                       </div>
                     </li>

@@ -284,7 +284,7 @@
         #{title},
         #{method},
         #{price},
-        0,
+        #{lastprice},
         #{content},
         #{range},
         <if test="hope_place != null and hope_place != ''">
@@ -336,12 +336,17 @@
         `title` = #{title},
         `method` = #{method},
         `price` = #{price},
-        `lastprice` = #{lastprice},
         `content` = #{content},
         `range` = #{range},
-        `hope_place` = #{hope_place},
-        `hope_lati` = #{hope_lati},
-        `hope_long` = #{hope_long},
+        <if test="hope_place != null and hope_place != '' and hope_place != 'null'">
+            `hope_place` = #{hope_place},
+        </if>
+        <if test="hope_lati != null and hope_lati != '' and hope_lati != 'null'">
+            `hope_lati` = #{hope_lati},
+        </if>
+        <if test="hope_long != null and hope_long != '' and hope_long != 'null'">
+            `hope_long` = #{hope_long},
+        </if>
         `canbargain` = #{canbargain},
         <if test="isPostPage = 1 and poststatus != 0">
         `create_dtm` = now(),
@@ -366,29 +371,6 @@
         `isbuyvisible` = #{isbuyvisible}
         WHERE `postkey` = #{postkey}
     </update>
-
-    <select id="searchTemp" resultMap="postMap" parameterType="String">
-        SELECT * FROM post 
-         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
-    </select>
-
-    <select id="main" resultMap="postMap" parameterType="String">
-        select p.* from `post` p
-         LEFT JOIN `town` t ON p.townkey = t.townkey
-         where p.isdeleted = 0 AND p.poststatus = 1
-          <if test ="param == 'free'">
-            AND p.method = 1 AND p.price = 0
-          </if>
-          <if test="param != 'free'">
-            AND p.categorykey = #{param}
-          </if>
-          <if test="region1 != 'undefined' and region2 != 'undefined'">
-            AND t.region1 = #{region1} AND t.region2 = #{region2}
-          </if>
-
-          ORDER BY p.remind_dtm DESC
-          limit 10
-    </select>
 
     <!-- 관리자 게시글 현황 정보 카운트 -->
     <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
@@ -682,6 +664,30 @@
     WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
+    <!-- / -->
+    <resultMap id="mainMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="townkey" property="townkey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="main" resultMap="mainMap" parameterType="String">
+        select p.* from `post` p
+         LEFT JOIN `town` t ON p.townkey = t.townkey
+         where p.isdeleted = 0 AND p.poststatus = 1
+          <if test ="param == 'free'">
+            AND p.method = 1 AND p.price = 0
+          </if>
+          <if test="param != 'free'">
+            AND p.categorykey = #{param}
+          </if>
+          <if test="region1 != 'undefined' and region2 != 'undefined'">
+            AND t.region1 = #{region1} AND t.region2 = #{region2}
+          </if>
+          ORDER BY p.remind_dtm DESC
+          limit 10
+    </select>
+
     <!-- /post -->
     <resultMap id="searchMap" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey" />
@@ -702,11 +708,16 @@
           JOIN `category` c ON c.categorykey = p.categorykey
           <!-- 게시글미노출 -->
          <if test="userkey != null and userkey != ''">
-          LEFT JOIN `nosee` n ON n.userkey = #{userkey} AND n.noseeuserkey != p.userkey
-          LEFT JOIN `blocked` b ON b.userkey = #{userkey} AND b.blockeduserkey != p.userkey
-          LEFT JOIN `noseepost` np ON np.userkey = #{userkey} AND np.postkey != p.postkey
-         </if>
+            LEFT JOIN nosee n ON n.userkey = #{userkey} AND n.noseeuserkey = p.userkey
+            LEFT JOIN blocked b ON b.userkey = #{userkey} AND b.blockeduserkey = p.userkey
+            LEFT JOIN noseepost np ON np.userkey = #{userkey} AND np.postkey = p.postkey
+        </if>
          WHERE p.isdeleted = 0
+         <if test="userkey != null and userkey != ''">
+            AND n.noseeuserkey IS NULL
+            AND b.blockeduserkey IS NULL
+            AND np.postkey IS NULL
+         </if>
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
          </if>
@@ -752,6 +763,16 @@
             </if>
         </if>
         limit #{howManyPost}
+    </select>
+
+    <!-- 임시저장 찾기 -->
+    <resultMap id="searchTempMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="searchTemp" resultMap="searchTempMap" parameterType="String">
+        SELECT * FROM post 
+         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
     </select>
     <!-- 
         민호 끝 

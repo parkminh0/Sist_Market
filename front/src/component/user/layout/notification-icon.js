@@ -3,14 +3,13 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Bell } from 'lucide-react'
 import NotificationUI from './notification-ui'
 import ReactDOM from 'react-dom'
-import { useRouter } from 'next/router';
 
 function NotificationIcon({ notificationCount, notifications }) {
   const [isOpen, setIsOpen] = useState(false);
   const notificationRef = useRef(null);
   const buttonRef = useRef(null);
   const toggleNotifications = () => {
-    setIsOpen(!isOpen)
+    setIsOpen(!isOpen);
   }
 
   useEffect(() => {
@@ -27,7 +26,7 @@ function NotificationIcon({ notificationCount, notifications }) {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [notificationRef, buttonRef])
 
