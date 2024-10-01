@@ -129,7 +129,7 @@ public class PostService {
         map.put("category", category);
         map.put("minPrice", minPrice);
         map.put("maxPrice", maxPrice);
-        
+
         PostVO[] ar = null;
         List<PostVO> list = p_mapper.search(map);
         if (list != null && list.size() > 0) {
@@ -175,6 +175,16 @@ public class PostService {
     public PostVO[] getTop4() {
         PostVO[] ar = null;
         List<PostVO> list = p_mapper.getTop4();
+        if (list != null && list.size() > 0) {
+            ar = new PostVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public PostVO[] postTop10Statistic(String type) {
+        PostVO[] ar = null;
+        List<PostVO> list = p_mapper.postTop10Statistic(type);
         if (list != null && list.size() > 0) {
             ar = new PostVO[list.size()];
             list.toArray(ar);

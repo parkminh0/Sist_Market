@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.AdminMapper;
 import com.sist.back.vo.QnaVO;
+import com.sist.back.vo.categoryVO;
+import com.sist.back.vo.admin.DealStatisticVO;
 import com.sist.back.vo.admin.PostOverviewVO;
+import com.sist.back.vo.admin.TodayReportVO;
 import com.sist.back.vo.admin.TotalVO;
 import com.sist.back.vo.admin.UserRankVO;
 import com.sist.back.vo.admin.UserStatusCntVO;
@@ -44,5 +47,17 @@ public class AdminService {
 
     public List<UserRankVO> getUserRank() {
         return adminMapper.getUserRank();
+    }
+
+    public TodayReportVO todayReport() {
+        return adminMapper.todayReport();
+    }
+
+    public DealStatisticVO dealstatistic() {
+        return adminMapper.dealstatistic();
+    }
+
+    public List<categoryVO> catedealstatistic(String type) {
+        return adminMapper.catedealstatistic(type);
     }
 }

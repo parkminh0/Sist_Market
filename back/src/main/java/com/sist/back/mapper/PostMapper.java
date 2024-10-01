@@ -73,4 +73,6 @@ public interface PostMapper {
     void updatePostStatus(String postStatus, String postkey, String dealuserkey);
 
     List<PostVO> getTop4();
+
+    List<PostVO> postTop10Statistic(String type);
 }
