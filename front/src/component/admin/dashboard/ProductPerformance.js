@@ -77,7 +77,6 @@ const ProductPerformance = () => {
           aria-label="simple table"
           sx={{
             whiteSpace: "nowrap",
-            mt: 2,
           }}
         >
           <TableHead>
