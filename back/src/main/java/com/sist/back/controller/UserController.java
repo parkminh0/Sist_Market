@@ -113,6 +113,16 @@ public class UserController {
 
         return map;
     }
+    // userAdmin 회원 정보 가져오기
+    @RequestMapping("/api/mypage/userEdit")
+    @ResponseBody
+    public Map<String, Object> getUserForMyPage(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserForMyPage(userkey);
+        map.put("ar", uvo);
+
+        return map;
+    }
 
     // userAdmin 회원 탈퇴
     @RequestMapping("/api/admin/userDel")

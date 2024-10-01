@@ -212,7 +212,7 @@ export default function Page() {
     setPostKey(postkey);
 
     axios({
-      url: "/adpost/detail",
+      url: "/adpost/postdetail",
       method: "get",
       params: {
         postkey: postkey,
@@ -716,7 +716,7 @@ export default function Page() {
                 </ul>
               )}
               <div className="_1h4pbgy7s _1h4pbgy7ao _1h4pbgy79s">
-                <span>채팅 {chatroomVO.length}</span> ·{" "}
+                <span>채팅 {postVO.chatroomqty}</span> ·{" "}
                 <span>관심 {postVO.likedqty}</span> ·{" "}
                 <span>조회 {viewqty}</span>
               </div>

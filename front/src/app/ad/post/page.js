@@ -227,8 +227,12 @@ export default function Page() {
 
   // 체크 삭제
   function delete_choice() {
-    if (!confirm("정말 삭제하시겠습니까?")) {
-      return;
+    if(checkedItems.length>0){
+      if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+      }
+    } else{
+      alert("삭제하실 게시글을 선택해주시기 바랍니다.")
     }
     axios
       .get("/adpost/checkPostDel", {
