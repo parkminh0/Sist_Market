@@ -14,7 +14,7 @@ export default function CellList(props) {
   // const param = useSearchParams();
   // alert(param.get("edit"));
   const celllist = props.celllist;
-  const whatNow = props.whatNow;
+  const cellNow = props.cellNow;
   const getCellList = props.getCellList;
   const cPage = props.cPage;
 
@@ -197,13 +197,13 @@ export default function CellList(props) {
                     {price}
                 </TableCell>
                 <TableCell colSpan={2} style={{ color: "#22222280"}}>
-                    {whatNow == "Hidden"
+                    {cellNow == "Hidden"
                       ? clvo.update_dtm.split(" ")[0]
-                      : whatNow == "Sold"
+                      : cellNow == 3
                         ? clvo.create_dtm.split(" ")[0]
                         : clvo.create_dtm.split(" ")[0]}
                 </TableCell>
-                {whatNow=="onSale"?
+                {cellNow==1?
                 <TableCell colSpan={2}>
                 <div>
                   <div
@@ -250,7 +250,7 @@ export default function CellList(props) {
                 :
                 ''  
                 }
-                { whatNow=="Sold" ? 
+                { cellNow==3 ? 
                   <TableCell colSpan={2}
                   style={{color: "#22222280",
                           overflow: 'hidden',
@@ -275,7 +275,7 @@ export default function CellList(props) {
                   ''
               }
                 <TableCell colSpan={2} style={{textAlign:'right'}}>
-                  {whatNow == "Hidden" ? (
+                  {cellNow == "Hidden" ? (
                     <Link
                       href="#"
                       onClick={() => {
@@ -286,7 +286,7 @@ export default function CellList(props) {
                     >
                       해제
                     </Link>
-                  ) : whatNow == "Sold" ? (
+                  ) : cellNow == 3 ? (
                     <Link
                       href="#"
                       onClick={()=>{
@@ -297,7 +297,7 @@ export default function CellList(props) {
                     >
                       확인
                     </Link>
-                  ) : whatNow == "Selling" ? (
+                  ) : cellNow == 2 ? (
                     <Link
                       href={`/post/detail?postkey=${clvo.postkey}`}
                       className="last_item_txt text-lookup last_description display_paragraph action_named_action"
@@ -326,14 +326,14 @@ export default function CellList(props) {
     </>
   ) : (
     <TableRow data-v-24868902="" data-v-eff62a72="" className="empty_area">
-      <TableCell colSpan={whatNow=="onSale" ? 11 : 9} style={{textAlign:'center'}}>
+      <TableCell colSpan={cellNow==1 ? 11 : 9} style={{textAlign:'center'}}>
         {/* <!-- 없을 경우 --> */}
         <p data-v-24868902="" className="desc">
-          {whatNow=="onSale" ? '판매중' :
-          whatNow=="Selling" ? '예약중' :
-          whatNow=="Sold" ? '거래완료' : "숨김"} 내역이 없습니다.
+          {cellNow==1 ? '판매중' :
+          cellNow==2 ? '예약중' :
+          cellNow==3 ? '거래완료' : "숨김"} 내역이 없습니다.
         </p>
-        {whatNow=="onSale" ?
+        {cellNow==1 ?
         <Link
           data-v-420a5cda=""
           data-v-24868902=""

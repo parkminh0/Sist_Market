@@ -133,7 +133,7 @@
 
     <resultMap id="wishlistResultMap" type="com.sist.back.vo.WishlistVO">
         <result column="postkey" property="postkey"/>
-        <association property="pvo" javaType="com.sist.back.vo.PostVO" select="com.sist.back.mapper.PostMapper.getPostByPostKey" column="postkey"/>
+        <association property="pvo" javaType="com.sist.back.vo.PostVO" select="com.sist.back.mapper.PostMapper.getPost_simple" column="postkey"/>
     </resultMap>
 
     <resultMap id="interestcategoryResultMap" type="com.sist.back.vo.InterestCategoryVO">
@@ -143,15 +143,15 @@
 
     <resultMap id="likeuserMap" type="com.sist.back.vo.LikeUserVO">
         <result column="likeuserkey" property="likeuserkey"/>
-        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="likeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="likeuserkey"/>
     </resultMap>
     <resultMap id="blockedMap" type="com.sist.back.vo.BlockedVO">
         <result column="blockeduserkey" property="blockeduserkey"/>
-        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="blockeduserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="blockeduserkey"/>
     </resultMap>
     <resultMap id="noseeMap" type="com.sist.back.vo.NoseeVO">
         <result column="noseeuserkey" property="noseeuserkey"/>
-        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="noseeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="noseeuserkey"/>
     </resultMap>
 
     <!-- estimateuserkey로 user 닉네임과 imgurl -->

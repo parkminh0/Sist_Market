@@ -8,7 +8,7 @@ import "/public/css/paging.css";
 import axios from "axios";
 import BuyList from "@/component/user/myPage/buylist/BuyList";
 import Cookies from "js-cookie";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Backdrop, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
 export default function Page() {
 
@@ -22,7 +22,10 @@ export default function Page() {
   const API_URL = '/user/api/buyList';
   const userkey = Cookies.get("userkey");
 
+  const [loading, setLoading] = useState(false);
+
   function changePage(pNum) { 
+    setLoading(true);
     getBuyList(pNum);
   }
 
@@ -49,6 +52,7 @@ export default function Page() {
         } else {
           setTotalRecord(res.data.totalRecord);
         }
+        setLoading(false);
         
       });
   }
@@ -76,6 +80,7 @@ export default function Page() {
   }
 
   useEffect(()=>{
+    setLoading(true);
     getBuyList(1);
   },[]);
 
@@ -115,6 +120,27 @@ export default function Page() {
         <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
             <MyPageSide />
+            
+          {loading && (
+            <Backdrop
+              open={loading}
+              sx={(theme) => ({
+                position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                justifyContent: "center", // 수평 중앙 정렬
+                alignItems: "center", // 수직 중앙 정렬
+                color: "#fff",
+                zIndex: theme.zIndex.drawer + 1,
+                backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+              })}
+            >
+              <CircularProgress size={100} color="inherit" />
+            </Backdrop>
+          )}
             {/* <!-- 여기서부터 콘텐츠 --> */}
             <div
               data-v-3b1b5d32=""
@@ -221,7 +247,7 @@ export default function Page() {
                       <button
                         data-v-14e5ae1c=""
                         className="btn_search is_active"
-                        onClick={()=>getBuyList(1)}
+                        onClick={()=>{setLoading(true);getBuyList(1);}}
                       >
                         조회
                       </button>

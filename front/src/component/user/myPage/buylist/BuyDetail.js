@@ -1,6 +1,8 @@
 'use client'
 import React, { Fragment, useEffect, useState } from "react";
 import {
+    Backdrop,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -28,6 +30,7 @@ export default function BuyDetail(props) {
   
     const API_URL = "/adpost/detail";
 
+    const [loading, setLoading] = useState(false);
 
     function getDateFormat(dtm){
         var yyyymmdd = dtm.split(" ")[0];
@@ -51,7 +54,7 @@ export default function BuyDetail(props) {
             "Content-Type": "application/json",
           },
         }).then((response) => {
-            console.log(response.data);
+            
           setPvo(response.data.pvo);
           var price = response.data.pvo.price;
           var lastprice = response.data.pvo.lastprice;
@@ -62,7 +65,7 @@ export default function BuyDetail(props) {
           if(response.data.pvo.method == 1){
             useState('나눔');
           }
-          
+          setLoading(false);
           setDeal_dtm(getDateFormat(response.data.pvo.deal_dtm));
           if(response.data.pvo.userreview != null){
               setUserreview_dtm(getDateFormat(response.data.pvo.userreview_dtm));
@@ -72,6 +75,7 @@ export default function BuyDetail(props) {
 
       useEffect(() => {
         if(props.postkey!=0){
+            setLoading(true);
             getPostDetail();
         }
       }, [postkey]);
@@ -84,6 +88,26 @@ export default function BuyDetail(props) {
           open={open}
           onClose={closeDetail}
         >
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
           <DialogTitle
             style={{
                 display: "flex",
