@@ -37,6 +37,7 @@ public interface UserMapper {
     int blockI(String me, String you);
 
     userVO getUserForAdmin(String userkey);
+    userVO getUserForMyPage(String userkey);
     
     int userDelForAdmin(String userkey);
 

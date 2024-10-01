@@ -31,6 +31,7 @@ public class ApiSecurityConfig {
                                 .requestMatchers("/user/api/usercount").permitAll()
                                 .requestMatchers("/user/api/kakao/login").permitAll()
                                 .requestMatchers("/user/api/search_user_admin").permitAll()
+                                .requestMatchers("/user/api/mypage/userEdit").permitAll()
                                 .requestMatchers("/user/api/admin/userEdit").permitAll()
                                 .requestMatchers("/user/api/admin/userDel").permitAll()
                                 .requestMatchers("/user/api/admin/userEditReal").permitAll()

@@ -1,10 +1,14 @@
 'use client'
-import { Box, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
+import { Box, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableRow, TextField } from "@mui/material";
 import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
 import "/public/css/moneybook.css";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import 'dayjs/locale/ko';
+import dayjs from 'dayjs';
 
 export default function Moneybook(props) {
     const open = props.open;
@@ -122,8 +126,8 @@ export default function Moneybook(props) {
             }
         ).then((result)=>{
             setUserVO(result.data.uvo);
-            setUserSell(result.data.b_list);
-            setUserBuy(result.data.s_list);
+            setUserSell(result.data.s_list);
+            setUserBuy(result.data.b_list);
             setUserGive(result.data.gi_list);
             setUserGet(result.data.ge_list);
             setNeighbor(result.data.n_list);
@@ -157,7 +161,7 @@ export default function Moneybook(props) {
               <Box className="datePicker">
               <FormControl variant="standard">
                   <InputLabel id="demo-simple-select-label"></InputLabel>
-                  <Select
+                  {/* <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       label="yyyymm"
@@ -170,7 +174,34 @@ export default function Moneybook(props) {
                           )
                       }) : <MenuItem value={todayYYYYMM}>{`${today.getFullYear()}년 ${todayMonth}월`}</MenuItem>
                   }
-                  </Select>
+                  </Select> */}
+                <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="ko"
+                >
+                    <DatePicker
+                        sx={{width: 160}}
+                        minDate={dayjs(userVO.create_dtm)}
+                        maxDate={dayjs()}
+                        views={['year', 'month']}
+                        format="YYYY년 MM월"
+                        onChange={(e)=>{
+                                            if((e.month()+1).toString().length == 1){
+                                                setYyyymm(e.year()+"-0"+(e.month()+1).toString());
+                                            } else {
+                                                setYyyymm(e.year()+"-"+e.month());
+                                            }
+                                        }
+                                }
+                        className="mbDatePicker"
+                        defaultValue={dayjs()}
+                        slotProps={{
+                            field: {
+                                readOnly: true
+                            }
+                        }}
+                    />
+                </LocalizationProvider>
               </FormControl>
               </Box>
           </DialogTitle>
