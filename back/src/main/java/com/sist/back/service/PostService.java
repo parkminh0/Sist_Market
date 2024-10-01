@@ -37,6 +37,10 @@ public class PostService {
         return p_mapper.getPostByPostKey(postkey);
     }
 
+    public PostVO getPostDetailByPostKey(int postkey) {
+        return p_mapper.getPostDetailByPostKey(postkey);
+    }
+
     public List<PostVO> getPostByCategoryKey(int categorykey, String userkey) {
         return p_mapper.getPostByCategoryKey(categorykey, userkey);
     }
@@ -190,5 +194,9 @@ public class PostService {
             list.toArray(ar);
         }
         return ar;
+    }
+
+    public List<String> townAll() {
+        return p_mapper.townAll();
     }
 }

@@ -75,6 +75,14 @@ public class PostController {
         return res;
     }
 
+    
+    @RequestMapping("/postdetail")
+    public Map<String, Object> getPostDetailByPostKey(int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("pvo", p_service.getPostDetailByPostKey(postkey));
+        return e_map;
+    }
+
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
         // 페이징 처리

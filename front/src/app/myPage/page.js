@@ -17,7 +17,7 @@ import "/public/css/myPage.css";
 import Moneybook from "@/component/user/myPage/Moneybook";
 
 export default function page() {
-  const API_URL = "/user/api/admin/userEdit";
+  const API_URL = "/user/api/mypage/userEdit";
   const userkey = Cookies.get("userkey");
   const [uvo, setUvo] = useState({});
   const [sell_1, setSell_1] = useState(0);
