@@ -189,6 +189,7 @@ public class PostService {
     public PostVO[] postTop10Statistic(String type) {
         PostVO[] ar = null;
         List<PostVO> list = p_mapper.postTop10Statistic(type);
+        System.out.println(list.size());
         if (list != null && list.size() > 0) {
             ar = new PostVO[list.size()];
             list.toArray(ar);

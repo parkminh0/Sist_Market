@@ -806,6 +806,10 @@
         <association property="uvo" select="getUvoPostTop10StatisticMap" column="userkey" javaType="com.sist.back.vo.userVO"/>
         <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
     </resultMap>
+    <select id="getUvoPostTop10StatisticMap" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
+    </select>
     <select id="postTop10Statistic" resultMap="postTop10StatisticMap" parameterType="String">
       select p.*, 
 	   COUNT(CASE WHEN w.wishlistkey is not null THEN 1 END) likedqty,
@@ -815,20 +819,17 @@
         LEFT JOIN chatroom c on p.postkey = c.postkey
         WHERE p.isdeleted = 0
         <if test="type = 1">
-            AND DATE(w.create_dtm) = DATE(NOW())
+            AND (DATE(w.create_dtm) = DATE(NOW()) or w.create_dtm is null)
         </if>
         <if test="type = 2">
-            AND WEEK(w.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1)
+            AND (WEEK(w.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR w.create_dtm is null)
         </if>
         <if test="type = 3">
-            AND w.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()
+            and (w.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR w.create_dtm IS NULL)
         </if>
         GROUP BY p.postkey
-        order by likedqty desc;
-    </select>
-    <select id="getUvoPostTop10StatisticMap" resultType="com.sist.back.vo.userVO" parameterType="int">
-        SELECT * FROM `user`
-        WHERE userkey = #{userkey}
+        order by likedqty desc
+        LIMIT 10
     </select>
     <!-- 
         민호 끝 
