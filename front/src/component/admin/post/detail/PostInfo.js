@@ -34,8 +34,10 @@ export default function PostInfo(props) {
   var isbuyvisible = "X";
 
   const price = pvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
-  const lastprice = pvo.lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
-
+  var lastprice = " - "
+  if(pvo.lastprice != null){
+    lastprice = pvo.lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
+  } 
   if(pvo.method == 1){
     method = "나눔";
   }
