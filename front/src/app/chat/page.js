@@ -373,7 +373,7 @@ const ChatApp = () => {
 
   function getLocationForChat(item, index) {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 
@@ -449,7 +449,7 @@ const ChatApp = () => {
 
   function getLocation() {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 

@@ -891,7 +891,7 @@ export default function page() {
 
   function getLocation() {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 
@@ -1260,16 +1260,6 @@ export default function page() {
                           })}
                       </div>
                     </div>
-                  </div>
-                  <div className="_1h4pbgy7w8">
-                    <label
-                      data-gtm="search_show_more_options"
-                      className="_1h4pbgy76o _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy48 _1h4pbgy9yw"
-                    >
-                      <font style={{ verticalAlign: "inherit" }}>
-                        자세히보기
-                      </font>
-                    </label>
                   </div>
                 </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">

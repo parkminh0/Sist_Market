@@ -798,6 +798,7 @@ export default function Page() {
                       <TableCell align="center">분류</TableCell>
                       <TableCell align="center">제목</TableCell>
                       <TableCell align="center">구분</TableCell>
+                      <TableCell align="center">상태</TableCell>
                       <TableCell align="center">등록가</TableCell>
                       <TableCell align="center">판매가</TableCell>
                       <TableCell align="center">구매자</TableCell>
@@ -805,7 +806,6 @@ export default function Page() {
                       <TableCell align="center">삭제일</TableCell>
                       <TableCell align="center">거래일</TableCell>
                       <TableCell align="center">조회</TableCell>
-                      <TableCell align="center">상태</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -862,12 +862,26 @@ export default function Page() {
                             {prod.method == 0 ? "판매" : "나눔"}
                           </TableCell>
                           <TableCell align="center">
+                            {prod.isdeleted == 1
+                              ? "삭제"
+                              : prod.poststatus == 0
+                                ? "임시저장"
+                                : prod.poststatus == 1
+                                  ? "판매중"
+                                  : prod.postStatus == 2
+                                    ? "예약중"
+                                    : prod.poststatus == 3
+                                      ? "거래완료"
+                                      : "숨김"}
+                          </TableCell>
+                          <TableCell align="center">
                             {new Intl.NumberFormat("ko-KR").format(prod.price)}
                           </TableCell>
                           <TableCell align="center">
-                            {new Intl.NumberFormat("ko-KR").format(
-                              prod.lastprice
-                            )}
+                            {prod.lastprice 
+                              ? new Intl.NumberFormat("ko-KR")
+                                    .format(prod.lastprice)
+                              : '-'}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
@@ -907,19 +921,6 @@ export default function Page() {
                             {new Intl.NumberFormat("ko-KR").format(
                               prod.viewqty
                             )}
-                          </TableCell>
-                          <TableCell align="center">
-                            {prod.isdeleted == 1
-                              ? "삭제"
-                              : prod.poststatus == 0
-                                ? "임시저장"
-                                : prod.poststatus == 1
-                                  ? "판매중"
-                                  : prod.postStatus == 2
-                                    ? "예약중"
-                                    : prod.poststatus == 3
-                                      ? "거래완료"
-                                      : "숨김"}
                           </TableCell>
                         </TableRow>
                       ))
