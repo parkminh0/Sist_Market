@@ -103,51 +103,28 @@ public class UserController {
         return map;
     }
 
-    // userAdmin 회원 정보 가져오기
+     // userAdmin 회원 정보 가져오기
     @RequestMapping("/api/admin/userEdit")
     @ResponseBody
-    public Map<String, Object> getUserInfoForAdmin(String userkey,String cPage) {
+    public Map<String, Object> getUserInfoForAdmin(String userkey) {
         Map<String, Object> map = new HashMap<>();
-        Map<String, Object> pmap = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
-        //System.out.println("@@@@@@@@@@@@@@@@@"+cPage);
-        //게시글 따로 가져옴 
-
-        // 페이징 처리
-        Paging p = new Paging(5, 3);
-        // 전체 페이지
-        p.setTotalRecord(service.getPostCountByUserKey(userkey));
-
-        
-
-        if (cPage != null && !cPage.equals("0")) {
-            p.setNowPage(Integer.parseInt(cPage));
-        } else {
-            p.setNowPage(1);
-        }
-
-        pmap.put("begin", String.valueOf(p.getBegin()));
-        pmap.put("end", String.valueOf(p.getEnd()));
-        pmap.put("userkey", userkey);
-        List<PostVO> p_list = service.getPostsByUserKey(pmap);
-        //System.out.println("@@@@@@@@@pList"+p_list);
-        uvo.setP_list(p_list);
-        //System.out.println("토탈레코드@@@@@@@@@@"+p.getTotalRecord());
         map.put("ar", uvo);
-        map.put(" Ppage", p);
-        map.put("PtotalPage", p.getTotalPage());
-        map.put("PtotalRecord", p.getTotalRecord());
-        map.put("PnumPerPage", p.getNumPerPage());
 
         return map;
     }
-    // userAdmin 회원 정보 가져오기
-    @RequestMapping("/api/mypage/userEdit")
+
+    // userAdmin 회원 탈퇴
+    @RequestMapping("/api/admin/userDel")
     @ResponseBody
-    public Map<String, Object> getUserForMyPage(String userkey) {
+    public Map<String, Object> userDel(String userkey) {
+
         Map<String, Object> map = new HashMap<>();
-        userVO uvo = service.getUserForMyPage(userkey);
-        map.put("ar", uvo);
+        int cnt = service.userDelForAdmin(userkey);
+        if (cnt > 0) {
+            String str = "success";
+            map.put("str", str);
+        }
 
         return map;
     }
