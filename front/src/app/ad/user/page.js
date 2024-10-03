@@ -8,6 +8,7 @@ import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
+import PostDetail from "@/component/admin/post/detail/PostDetail";
 import {
   Avatar,
   Box,
@@ -162,24 +163,6 @@ export default function Page() {
       });
   }
 
-  //모달창
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 1200,
-    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
-    overflowY: 'auto',  // 세로 스크롤 추가
-    bgcolor: 'background.paper',
-    border: '2px solid #blue',
-    boxShadow: 24,
-    p: 4,
-  };
-  
-  
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); 
 
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
@@ -296,39 +279,6 @@ export default function Page() {
     });
   }
 
-  
-
-  function changePostPage(cPage) {
-    if (!cPage) {
-      cPage = 1;
-    }
-  
-    axios({
-      url: `/user/api/admin/userEdit`,
-      method: "get",
-      params: {
-        userkey: userkey,
-        cPage: cPage, 
-      },
-    }).then((response) => {
-      setPTotalPage(response.data.PtotalPage);
-      setPTotalRecords(response.data.PtotalRecord);
-      // 현재 페이지 정보를 저장
-      setPPage(cPage);
-      // 게시글 리스트 저장
-      if (response.data.p_list) {
-        setP_list(response.data.p_list);
-      } else {
-        setP_list([]);  // 만약 게시글이 없다면 빈 배열로 설정
-      }
-    }).catch((error) => {
-      //console.error("Error fetching posts:", error);
-      setP_list([]);  // 오류 발생 시에도 빈 배열로 설정하여 처리
-    });
-  }
-  
-  
-  
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -970,7 +920,9 @@ export default function Page() {
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
+                          
+                          style={{ cursor: "pointer", textAlign: "center" }}
+                          onClick={() => openPostDetail(post.postkey)}
                         >
                           {post.title || ""}
                         </td>
@@ -1473,10 +1425,18 @@ export default function Page() {
         
       </div>
     </div>
+    
+        {/*게시글 상세보기 모달 */}
+        {openPD && (
+          <PostDetail
+            openPD={openPD}
+            closePostDetail={closePostDetail}
+            postkey={pdkey}
+          />
+        )}
+
         </Box>
       </Modal>
-
-      
     </PageContainer>
   );
 }
