@@ -70,7 +70,6 @@ export default function Page() {
     const checked = e.target.checked;
     setAllChecked(checked); // 전체 선택 상태 업데이트
     if (checked) {
-      // 전체 선택 시, 모든 유저의 키를 checkedItems에 추가
       const allCheckedItems = userlist.map((item) => item.userkey);
       setCheckedItems(allCheckedItems);
     } else {
@@ -84,10 +83,8 @@ export default function Page() {
     const checked = e.target.checked;
     let updatedCheckedItems = [...checkedItems];
     if (checked) {
-      // 체크 시 해당 유저의 키를 checkedItems에 추가
       updatedCheckedItems.push(userkey);
     } else {
-      // 체크 해제 시 유저의 키 checkedItems에서 제거
       updatedCheckedItems = updatedCheckedItems.filter(
         (key) => key !== userkey
       );
@@ -100,7 +97,6 @@ export default function Page() {
   // 페이지 로드 시 Count
   useEffect(() => {
     getCount();
-    //doSrchFrm(0);
   }, []);
 
   function getCount() {
@@ -139,7 +135,7 @@ export default function Page() {
         setPage(response.data.page);
       })
       .catch((error) => {
-        console.error("Error during search:", error);
+        //console.error("Error during search:", error);
       });
   }
 
@@ -148,8 +144,8 @@ export default function Page() {
     if (!confirmed) {
       return; 
     }
-    console.log("delete_choice 함수 호출됨");
-    console.log("DEL_URL:", DEL_URL);
+    //console.log("delete_choice 함수 호출됨");
+    //console.log("DEL_URL:", DEL_URL);
     axios
       .post(DEL_URL, checkedItems)
       .then((response) => {
@@ -161,7 +157,7 @@ export default function Page() {
         getCount();
       })
       .catch((error) => {
-        console.error("Error deleting users:", error);
+        //console.error("Error deleting users:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
@@ -211,23 +207,27 @@ export default function Page() {
   const [k_list, setK_list] = useState([]);
   const [tvo, setTvo] = useState([]);
 
-  function editUser(userkey){
+  //포스트 페이징 부분
+  const [PtotalRecords, setPTotalRecords] = useState(0);
+  const [PtotalPage, setPTotalPage] = useState(0);
+  const [Ppage, setPPage] = useState({});
+ 
+  function editUser(userkey,cPage = 1){
     setUserkey(userkey);
-    setOpen(true); 
 
     if (userkey) {
       
-      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}`;
+      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}&cPage=${cPage}`;
       axios.get(API_URL).then((res) => {
+        //console.log("페이징 데이터:", res.data.Ppage);
         setAR(res.data.ar);
         setPW(res.data.ar.pw || "");
         setNAME(res.data.ar.name || "");
         setEMAIL(res.data.ar.email || "");
         setPHONE(res.data.ar.phone || "");
-
-        setP_list(res.data.ar.p_list || []);
         setM_list(res.data.ar.m_list || []);
         setL_list(res.data.ar.l_list || []);
+        setP_list(res.data.ar.p_list || []);
         setUb_list(res.data.ar.ub_list || []);
         setB_list(res.data.ar.b_list || []);
         setN_list(res.data.ar.n_list || []);
@@ -236,7 +236,11 @@ export default function Page() {
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
-        console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
+        // 페이징 관련 상태값 설정
+        setPTotalRecords(res.data.PtotalRecord || 0);
+        setPPage(res.data.Ppage);   
+        setOpen(true);
+      
       });
     }
   }
@@ -292,6 +296,39 @@ export default function Page() {
     });
   }
 
+  
+
+  function changePostPage(cPage) {
+    if (!cPage) {
+      cPage = 1;
+    }
+  
+    axios({
+      url: `/user/api/admin/userEdit`,
+      method: "get",
+      params: {
+        userkey: userkey,
+        cPage: cPage, 
+      },
+    }).then((response) => {
+      setPTotalPage(response.data.PtotalPage);
+      setPTotalRecords(response.data.PtotalRecord);
+      // 현재 페이지 정보를 저장
+      setPPage(cPage);
+      // 게시글 리스트 저장
+      if (response.data.p_list) {
+        setP_list(response.data.p_list);
+      } else {
+        setP_list([]);  // 만약 게시글이 없다면 빈 배열로 설정
+      }
+    }).catch((error) => {
+      //console.error("Error fetching posts:", error);
+      setP_list([]);  // 오류 발생 시에도 빈 배열로 설정하여 처리
+    });
+  }
+  
+  
+  
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -951,6 +988,26 @@ export default function Page() {
             </div>
           </div>
         </div>
+        {/* Pagination을 가운데에 배치 */}
+        <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  mt: 3,
+                }}
+              >
+                <Typography sx={{ mr: 2 }}>Page: {Ppage?.nowPage || 1}</Typography>
+                  <Pagination
+                    count={Ppage?.totalPage || 1}
+                    showFirstButton
+                    showLastButton
+                    onChange={(e, newPage) => changePostPage(newPage)}
+                  />
+
+              </Box>
+
+      
 
         
 
