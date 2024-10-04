@@ -16,6 +16,7 @@ export default function BuyList(props) {
 
   const[open,setOpen] = useState(false);
   const[postkey,setPostkey] = useState(0);
+  const[selluserkey, setSelluserkey] = useState(0);
   function openDetail(postkey){
     setPostkey(postkey);
     setOpen(true);
@@ -26,13 +27,15 @@ export default function BuyList(props) {
   }
 
   const[reportOpen,setReportOpen] = useState(false);
-  function handleReportOpen(postkey){
+  function handleReportOpen(postkey, selluserkey){
     setPostkey(postkey);
+    setSelluserkey(selluserkey);
     setReportOpen(true);
   }
   function handleReportClose(){
     setReportOpen(false);
     setPostkey(0);
+    setSelluserkey(0);
   }
 
   const [rdOpen, setRdOpen] = useState(false);
@@ -142,7 +145,7 @@ export default function BuyList(props) {
                       flexDirection:'column',
                       textAlign:'center'
                       }}>
-                  <Button variant="text" onClick={(e)=>{handleReportOpen(blvo.postkey);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#12dd21", margin:'2px 0'}}>후기 작성</Button>
+                  <Button variant="text" onClick={(e)=>{handleReportOpen(blvo.postkey, blvo.userkey);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#12dd21", margin:'2px 0'}}>후기 작성</Button>
                   {blvo.userreview!=null ? 
                   <Button variant="text" onClick={(e)=>{openRd(blvo, blvo.userreview);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#ff5f00", margin:'2px 0'}}>받은 후기</Button>
                   :
@@ -168,7 +171,7 @@ export default function BuyList(props) {
   })
   }
       <BuyDetail open={open} closeDetail={closeDetail} postkey={postkey} />
-      <BuyerReviewModal reportOpen={reportOpen} handleReportClose={handleReportClose} postkey={postkey}/>
+      <BuyerReviewModal reportOpen={reportOpen} handleReportClose={handleReportClose} postkey={postkey} selluserkey={selluserkey}/>
       <ReviewDetail rdOpen={rdOpen} closeRd={closeRd} rdvo={rdvo}  who="Buyer"/>
     </>
   )

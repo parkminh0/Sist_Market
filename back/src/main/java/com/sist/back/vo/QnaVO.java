@@ -11,4 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class QnaVO {
     private String qnakey, userkey, title, content, answer, create_dtm, answer_dtm, delete_dtm, isanswered, isdeleted;
+    private userVO uvo;
 }

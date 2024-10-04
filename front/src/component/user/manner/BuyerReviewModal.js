@@ -33,10 +33,8 @@ export default function BuyerReviewModal(props) {
     axios({
       url: MANNER_TEMP_URL,
       method: "post",
-      params: { userkey: "selluserkey" },
-    }).then((res) => {
-      alert("갱신 완료");
-    });
+      params: { userkey: selluserkey },
+    }).then((res) => {});
   }
 
   const handleRatingChange = (event) => {
@@ -67,13 +65,21 @@ export default function BuyerReviewModal(props) {
   };
   
   function send() {
+    if (selectedKeys.length === 0) {
+      alert("항목을 선택해 주세요.");
+      return;
+    }
+    const confirmation = confirm("작성한 후기는 수정할 수 없습니다. 계속 진행하시겠습니까?");
+    if (!confirmation) {
+      return;
+    }
     axios({
       url: BUYER_REVIEW_URL,
       method: "post",
       params: {
         reviewlistkey: selectedKeys,
         postkey: props.postkey,
-        userkey: "selluserkey",
+        userkey: selluserkey,
         estimateuserkey: Cookies.get("userkey"),
       },
     }).then((res) => {

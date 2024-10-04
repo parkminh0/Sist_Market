@@ -147,7 +147,7 @@ public class QnaController {
     @RequestMapping("/all")
     @ResponseBody
     public Map<String, Object> all(String cPage) {
-        Map<String, Object> b_map = new HashMap<>();
+        Map<String, Object> q_map = new HashMap<>();
         
         int totalRecord = q_service.count();
         Paging page = new Paging(5, 3);
@@ -163,10 +163,10 @@ public class QnaController {
 
         int begin = page.getBegin();
         int end = page.getEnd();
-        b_map.put("begin", begin);
-        b_map.put("end", end);
+        q_map.put("begin", begin);
+        q_map.put("end", end);
 
-        QnaVO[] q_ar = q_service.all(b_map);
+        QnaVO[] q_ar = q_service.all(q_map);
 
         Map<String, Object> map = new HashMap<>();
         map.put("q_ar", q_ar);
@@ -175,13 +175,31 @@ public class QnaController {
         return map;
     }
 
-    @RequestMapping("/select")
+
+    @RequestMapping("/search")
     @ResponseBody
-    public Map<String, Object> select(String cPage, String isanswered) {
-        Map<String, Object> b_map = new HashMap<>();
-        
-        int totalRecord = q_service.selectCount(isanswered);
-        Paging page = new Paging(5, 3);
+    public Map<String, Object> search(String cPage, String title, String create_start_dtm, String create_end_dtm, String answer_start_dtm,
+                                    String answer_end_dtm, String isanswered, String searchType, String searchValue) {
+        Map<String, Object> q_map = new HashMap<>();
+        q_map.put("isanswered", "1");
+        int answeredRecord = q_service.searchCount(q_map);
+        q_map.put("isanswered", "0");
+        int unansweredRecord = q_service.searchCount(q_map);
+        int allRecord = answeredRecord + unansweredRecord;
+
+        if (searchValue != null && searchValue.length() != 0) {
+            q_map.put("searchType", searchType);
+            q_map.put("searchValue", searchValue);
+        }
+        q_map.put("title", title);
+        q_map.put("create_start_dtm", create_start_dtm);
+        q_map.put("create_end_dtm", create_end_dtm);
+        q_map.put("answer_start_dtm", answer_start_dtm);
+        q_map.put("answer_end_dtm", answer_end_dtm);
+        q_map.put("isanswered", isanswered);
+
+        int totalRecord = q_service.searchCount(q_map);
+        Paging page = new Paging(5, 5);
         page.setTotalRecord(totalRecord);
 
         int nowPage = 1;
@@ -194,16 +212,19 @@ public class QnaController {
 
         int begin = page.getBegin();
         int end = page.getEnd();
-        b_map.put("begin", begin);
-        b_map.put("end", end);
-        b_map.put("isanswered", isanswered);
+        q_map.put("begin", begin);
+        q_map.put("end", end);
 
-        QnaVO[] q_ar = q_service.select(b_map);
+        QnaVO[] q_ar = q_service.search(q_map);
 
         Map<String, Object> map = new HashMap<>();
         map.put("q_ar", q_ar);
         map.put("page", page);
         map.put("nowPage", nowPage);
+        map.put("totalRecord", totalRecord);
+        map.put("answeredRecord", answeredRecord);
+        map.put("unansweredRecord", unansweredRecord);
+        map.put("allRecord", allRecord);
         return map;
     }
 
@@ -219,8 +240,8 @@ public class QnaController {
     @RequestMapping("/userAll")
     @ResponseBody
     public Map<String, Object> userAll(String cPage, String userkey) {
-        Map<String, Object> b_map = new HashMap<>();
-        b_map.put("userkey", userkey);
+        Map<String, Object> q_map = new HashMap<>();
+        q_map.put("userkey", userkey);
         
         int totalRecord = q_service.userCount(userkey);
         Paging page = new Paging(5, 3);
@@ -236,10 +257,10 @@ public class QnaController {
 
         int begin = page.getBegin();
         int end = page.getEnd();
-        b_map.put("begin", begin);
-        b_map.put("end", end);
+        q_map.put("begin", begin);
+        q_map.put("end", end);
 
-        List<QnaVO> q_list = q_service.userAll(b_map);
+        List<QnaVO> q_list = q_service.userAll(q_map);
 
         Map<String, Object> map = new HashMap<>();
         map.put("q_list", q_list);

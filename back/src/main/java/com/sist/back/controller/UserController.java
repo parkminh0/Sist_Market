@@ -129,21 +129,6 @@ public class UserController {
         return map;
     }
 
-    // userAdmin 회원 탈퇴
-    @RequestMapping("/api/admin/userDel")
-    @ResponseBody
-    public Map<String, Object> userDel(String userkey) {
-
-        Map<String, Object> map = new HashMap<>();
-        int cnt = service.userDelForAdmin(userkey);
-        if (cnt > 0) {
-            String str = "success";
-            map.put("str", str);
-        }
-
-        return map;
-    }
-
     // userAdmin 회원 정보 수정
     @RequestMapping("/api/admin/userEditReal")
     @ResponseBody
