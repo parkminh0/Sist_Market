@@ -79,7 +79,7 @@ public class UserController {
         iMap.put("isauthorized", isauthorized.trim());
 
         // 페이징 처리
-        Paging p = new Paging(10, 3);
+        Paging p = new Paging(5, 3);
         // 전체 페이지
         p.setTotalRecord(service.searchForAdminPaging(iMap));
 
