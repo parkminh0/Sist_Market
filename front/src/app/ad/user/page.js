@@ -8,7 +8,6 @@ import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
-import PostDetail from "@/component/admin/post/detail/PostDetail";
 import {
   Avatar,
   Box,
@@ -71,6 +70,7 @@ export default function Page() {
     const checked = e.target.checked;
     setAllChecked(checked); // 전체 선택 상태 업데이트
     if (checked) {
+      // 전체 선택 시, 모든 유저의 키를 checkedItems에 추가
       const allCheckedItems = userlist.map((item) => item.userkey);
       setCheckedItems(allCheckedItems);
     } else {
@@ -84,8 +84,10 @@ export default function Page() {
     const checked = e.target.checked;
     let updatedCheckedItems = [...checkedItems];
     if (checked) {
+      // 체크 시 해당 유저의 키를 checkedItems에 추가
       updatedCheckedItems.push(userkey);
     } else {
+      // 체크 해제 시 유저의 키 checkedItems에서 제거
       updatedCheckedItems = updatedCheckedItems.filter(
         (key) => key !== userkey
       );
@@ -98,6 +100,7 @@ export default function Page() {
   // 페이지 로드 시 Count
   useEffect(() => {
     getCount();
+    //doSrchFrm(0);
   }, []);
 
   function getCount() {
@@ -136,7 +139,7 @@ export default function Page() {
         setPage(response.data.page);
       })
       .catch((error) => {
-        //console.error("Error during search:", error);
+        console.error("Error during search:", error);
       });
   }
 
@@ -145,8 +148,8 @@ export default function Page() {
     if (!confirmed) {
       return; 
     }
-    //console.log("delete_choice 함수 호출됨");
-    //console.log("DEL_URL:", DEL_URL);
+    console.log("delete_choice 함수 호출됨");
+    console.log("DEL_URL:", DEL_URL);
     axios
       .post(DEL_URL, checkedItems)
       .then((response) => {
@@ -158,11 +161,29 @@ export default function Page() {
         getCount();
       })
       .catch((error) => {
-        //console.error("Error deleting users:", error);
+        console.error("Error deleting users:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
 
+  //모달창
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 1200,
+    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
+    overflowY: 'auto',  // 세로 스크롤 추가
+    bgcolor: 'background.paper',
+    border: '2px solid #blue',
+    boxShadow: 24,
+    p: 4,
+  };
+  
+  
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); 
 
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
@@ -190,27 +211,23 @@ export default function Page() {
   const [k_list, setK_list] = useState([]);
   const [tvo, setTvo] = useState([]);
 
-  //포스트 페이징 부분
-  const [PtotalRecords, setPTotalRecords] = useState(0);
-  const [PtotalPage, setPTotalPage] = useState(0);
-  const [Ppage, setPPage] = useState({});
- 
-  function editUser(userkey,cPage = 1){
+  function editUser(userkey){
     setUserkey(userkey);
+    setOpen(true); 
 
     if (userkey) {
       
-      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}&cPage=${cPage}`;
+      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}`;
       axios.get(API_URL).then((res) => {
-        //console.log("페이징 데이터:", res.data.Ppage);
         setAR(res.data.ar);
         setPW(res.data.ar.pw || "");
         setNAME(res.data.ar.name || "");
         setEMAIL(res.data.ar.email || "");
         setPHONE(res.data.ar.phone || "");
+
+        setP_list(res.data.ar.p_list || []);
         setM_list(res.data.ar.m_list || []);
         setL_list(res.data.ar.l_list || []);
-        setP_list(res.data.ar.p_list || []);
         setUb_list(res.data.ar.ub_list || []);
         setB_list(res.data.ar.b_list || []);
         setN_list(res.data.ar.n_list || []);
@@ -219,11 +236,7 @@ export default function Page() {
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
-        // 페이징 관련 상태값 설정
-        setPTotalRecords(res.data.PtotalRecord || 0);
-        setPPage(res.data.Ppage);   
-        setOpen(true);
-      
+        console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
       });
     }
   }
@@ -401,7 +414,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRegist_start_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                             <span style={{ margin: "0 10px" }}>~</span>
                             <TextField
@@ -413,7 +425,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRegist_end_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                           </div>
                         </div>
@@ -477,7 +488,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRecent_login_start_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                             <span style={{ margin: "0 10px" }}>~</span>
                             <TextField
@@ -489,7 +499,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRecent_login_end_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                           </div>
                         </div>
@@ -920,9 +929,7 @@ export default function Page() {
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
-                          
-                          style={{ cursor: "pointer", textAlign: "center" }}
-                          onClick={() => openPostDetail(post.postkey)}
+                          style={{ textAlign: "center" }}
                         >
                           {post.title || ""}
                         </td>
@@ -940,26 +947,6 @@ export default function Page() {
             </div>
           </div>
         </div>
-        {/* Pagination을 가운데에 배치 */}
-        <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  mt: 3,
-                }}
-              >
-                <Typography sx={{ mr: 2 }}>Page: {Ppage?.nowPage || 1}</Typography>
-                  <Pagination
-                    count={Ppage?.totalPage || 1}
-                    showFirstButton
-                    showLastButton
-                    onChange={(e, newPage) => changePostPage(newPage)}
-                  />
-
-              </Box>
-
-      
 
         
 
@@ -1425,18 +1412,10 @@ export default function Page() {
         
       </div>
     </div>
-    
-        {/*게시글 상세보기 모달 */}
-        {openPD && (
-          <PostDetail
-            openPD={openPD}
-            closePostDetail={closePostDetail}
-            postkey={pdkey}
-          />
-        )}
-
         </Box>
       </Modal>
+
+      
     </PageContainer>
   );
 }
