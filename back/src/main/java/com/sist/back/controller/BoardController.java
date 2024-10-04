@@ -313,7 +313,6 @@ public class BoardController {
         
         Paging p = new Paging(5, 3); // 페이징 객체 생성
         int totalRecord = b_service.userBbsCount(categorykey);
-        //System.out.println("토탈레코드@@@@@@@@@@@@@@@@"+totalRecord);
         p.setTotalRecord(totalRecord);
         
         if (cPage != null) {
@@ -347,7 +346,6 @@ public class BoardController {
 
         Paging p = new Paging(5, 3); // 페이징 객체 생성
         int totalRecord = b_service.searchForNoticeCount(b_map);
-        //System.out.println("토탈레코드@@@@@@@@@@@@@@@@"+totalRecord);
         p.setTotalRecord(totalRecord);
 
         // cPage가 null이거나 변환이 안될 경우 기본값 1을 사용
@@ -371,6 +369,4 @@ public class BoardController {
         }
         return map;
     }
-
-
 }

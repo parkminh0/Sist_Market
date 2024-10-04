@@ -1,10 +1,7 @@
 package com.sist.back.controller;
 
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,10 +25,7 @@ public class DealreviewController {
     public Map<String, Object> allReview(String userkey, String cPage) {
         Map<String, Object> d_map = new HashMap<>();
         
-        int sellingTotalRecord = d_service.sellingCount(userkey);
-        int buyingTotalRecord = d_service.buyingCount(userkey);
-        int totalRecord = sellingTotalRecord + buyingTotalRecord;
-
+        int totalRecord = d_service.allCount(userkey);
         Paging page = new Paging(5, 3);
         page.setTotalRecord(totalRecord);
         int nowPage = 1;
@@ -48,21 +42,11 @@ public class DealreviewController {
         d_map.put("end", end);
         d_map.put("userkey", userkey);
 
-        PostVO[] selling_ar = d_service.sellingReview(d_map);
-        PostVO[] buying_ar = d_service.buyingReview(d_map);
-
         Map<String, Object> map = new HashMap<>();
-
-        List<PostVO> all_ar = new ArrayList<>();
-        if (selling_ar != null) {
-            all_ar.addAll(Arrays.asList(selling_ar));
-        }
-        if (buying_ar != null) {
-            all_ar.addAll(Arrays.asList(buying_ar));
-        }
-
-        map.put("all_ar", all_ar.toArray(new PostVO[0]));
+        PostVO[] all_ar = d_service.allReview(d_map);
+        map.put("all_ar", all_ar);
         map.put("page", page);
+        map.put("count", totalRecord);
         return map;
     }
 
@@ -154,5 +138,15 @@ public class DealreviewController {
         map.put("toManner", toManner);
         return map;
     }
+
+    @RequestMapping("/hideReview")
+    @ResponseBody
+    public Map<String, Object> hideReview(String postkey) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = d_service.hideReview(postkey);
+        map.put("cnt", cnt);
+        return map;
+    }
+    
     
 }

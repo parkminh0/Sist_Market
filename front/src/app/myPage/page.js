@@ -18,7 +18,8 @@ import Moneybook from "@/component/user/myPage/Moneybook";
 import { Backdrop, CircularProgress } from "@mui/material";
 
 export default function page() {
-  const API_URL = "/user/api/mypage/userEdit";
+  // const API_URL = "/user/api/mypage/userEdit";
+  const API_URL = "/user/api/admin/userEdit";
   const userkey = Cookies.get("userkey");
   const [uvo, setUvo] = useState({});
   const [sell_1, setSell_1] = useState(0);
@@ -202,7 +203,7 @@ export default function page() {
               >
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/profile"
+                  href="/myPage/profile?tab=badge" 
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">

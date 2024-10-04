@@ -3,7 +3,28 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.QnaMapper">
-  
+    <resultMap id="map1" type="com.sist.back.vo.QnaVO">
+        <id property="qnakey" column="qnakey"/>
+        <result property="userkey" column="userkey"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="answer" column="answer"/>
+        <result property="create_dtm" column="create_dtm"/>
+        <result property="answer_dtm" column="answer_dtm"/>
+        <result property="delete_dtm" column="delete_dtm"/>
+        <result property="isanswered" column="isanswered"/>
+        <result property="isdeleted" column="isdeleted"/>
+
+        <association property="uvo" javaType="com.sist.back.vo.userVO">
+            <id property="userkey" column="userkey"/>
+            <result property="name" column="name"/>
+            <result property="id" column="id"/>
+            <result property="email" column="email"/>
+            <result property="phone" column="phone"/>
+            <result property="nickname" column="nickname"/>
+        </association>
+    </resultMap>
+
     <!-- 빈 글 추가 -->
     <insert id="emptyAdd" useGeneratedKeys="true" keyProperty="qnakey">
         INSERT INTO qna(userkey, create_dtm, isanswered, isdeleted)
@@ -51,6 +72,89 @@
         ) c
         WHERE c.rnum BETWEEN #{begin} AND #{end}
     </select>
+
+
+
+    <!-- 검색 -->
+    <select id="search" resultMap="map1" parameterType="map">
+        SELECT x.*
+        FROM (
+            SELECT q.*, u.name, u.id, u.email, u.phone, u.nickname, row_number() over (order by q.qnakey DESC) rnum
+            FROM qna q
+            LEFT JOIN user u ON u.userkey = q.userkey
+            WHERE 1 = 1
+            <if test="searchValue != null and searchValue != ''">
+                <if test="searchType == 'name'">
+                    AND u.name LIKE CONCAT('%', #{searchValue}, '%')
+                </if>
+                <if test="searchType == 'id'">
+                    AND u.id LIKE CONCAT('%', #{searchValue}, '%')
+                </if>
+                <if test="searchType == 'email'">
+                    AND u.email LIKE CONCAT('%', #{searchValue}, '%')
+                </if>
+                <if test="searchType == 'phone'">
+                    AND u.phone LIKE CONCAT('%', #{searchValue}, '%')
+                </if>
+                <if test="searchType == 'nickname'">
+                    AND u.nickname LIKE CONCAT('%', #{searchValue}, '%')
+                </if>
+            </if>
+            <if test="title != null and title != ''">
+                AND q.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="create_start_dtm != null and create_start_dtm != '' and create_end_dtm != null and create_end_dtm != ''">
+                AND q.create_dtm BETWEEN #{create_start_dtm} AND #{create_end_dtm}
+            </if>
+            <if test="answer_start_dtm != null and answer_start_dtm != '' and answer_end_dtm != null and answer_end_dtm != ''">
+                AND q.answer_dtm BETWEEN #{answer_start_dtm} AND #{answer_end_dtm}
+            </if>
+            <if test="isanswered != null and isanswered != ''">
+                AND q.isanswered = #{isanswered}
+            </if>
+        ) x
+        WHERE x.rnum BETWEEN #{begin} and #{end}
+    </select>
+
+    <!-- 개수 검색 -->
+    <select id="searchCount" resultType="int" parameterType="map">
+        SELECT COUNT(*)
+        FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.*
+            FROM (
+                SELECT q.*
+                FROM qna q
+                <where>
+                    <if test="title != null and title != ''">
+                        q.title LIKE CONCAT('%', #{title}, '%')
+                    </if>
+                    <if test="create_start_dtm != null and create_start_dtm != '' and create_end_dtm != null and create_end_dtm != ''">
+                        AND q.create_dtm BETWEEN #{create_start_dtm} AND #{create_end_dtm}
+                    </if>
+                    <if test="answer_start_dtm != null and answer_start_dtm != '' and answer_end_dtm != null and answer_end_dtm != ''">
+                        AND q.answer_dtm BETWEEN #{answer_start_dtm} AND #{answer_end_dtm}
+                    </if>
+                    <if test="isanswered != null and isanswered != ''">
+                        AND q.isanswered = #{isanswered}
+                    </if>
+                </where>
+                ORDER BY q.qnakey DESC
+            ) a, (SELECT @RN:=0) r
+        ) c
+        JOIN user u ON c.userkey = u.userkey
+        <where>
+            <if test="searchValue != null and searchValue != ''">
+                <choose>
+                    <when test="searchType == 'name'">u.name LIKE CONCAT('%', #{searchValue}, '%')</when>
+                    <when test="searchType == 'id'">u.id LIKE CONCAT('%', #{searchValue}, '%')</when>
+                    <when test="searchType == 'email'">u.email LIKE CONCAT('%', #{searchValue}, '%')</when>
+                    <when test="searchType == 'phone'">u.phone LIKE CONCAT('%', #{searchValue}, '%')</when>
+                    <when test="searchType == 'nickname'">u.nickname LIKE CONCAT('%', #{searchValue}, '%')</when>
+                </choose>
+            </if>
+        </where>
+    </select>
+
 
     <!-- 답변 여부로 데이터 출력 -->
     <select id="select" resultType="com.sist.back.vo.QnaVO" parameterType="map">

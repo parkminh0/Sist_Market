@@ -45,6 +45,20 @@ public class QnaService {
         return q_ar;
     }
 
+    public QnaVO[] search(Map q_map) {
+        List<QnaVO> q_list = q_mapper.search(q_map);
+        QnaVO[] q_ar = null;
+        if (q_list != null && !q_list.isEmpty()) {
+            q_ar = new QnaVO[q_list.size()];
+            q_list.toArray(q_ar);
+        }
+        return q_ar;
+    }
+
+    public int searchCount(Map q_map) {
+        return q_mapper.searchCount(q_map);
+    }
+
     public QnaVO[] select(Map q_map) {
         List<QnaVO> q_list = q_mapper.select(q_map);
         QnaVO[] q_ar = null;

@@ -4,7 +4,6 @@ import "/public/css/admin/user.css";
 import axios from "axios";
 import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
   Box,
@@ -17,7 +16,6 @@ import {
   FormControl,
   Grid,
   MenuItem,
-  Modal,
   Pagination,
   Select,
   Table,
@@ -31,6 +29,10 @@ import {
 } from "@mui/material";
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
+import AddModal from "@/component/admin/bbs/AddModal";
+import DetailModal from "@/component/admin/bbs/DetailModal";
+import EditModal from "@/component/admin/bbs/EditModal";
+
 export default function Page() {
   const API_URL = "/admin/board/list";
   const BC_URL = "/admin/board/getAllBc";
@@ -42,7 +44,6 @@ export default function Page() {
   // #region 카테고리 CRUD
   const [allCateChecked, setAllCateChecked] = useState(false);
   const [checkedCateItems, setCheckedCateItems] = useState([]);
-
   const [bc_list, setBc_list] = useState([]);
 
   function getCateData() {
@@ -62,6 +63,7 @@ export default function Page() {
 
   useEffect(() => {
     getCateData();
+    getBbsData(1);
   }, []);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -139,21 +141,38 @@ export default function Page() {
   // #region 게시글 CRUD
   const [allBbsChecked, setAllBbsChecked] = useState(false);
   const [checkedBbsItems, setCheckedBbsItems] = useState([]);
-
   const [categoryName, setCategoryName] = useState("");
   const [title, setTitle] = useState("");
   const [create_start_date, setCreate_start_date] = useState("");
   const [create_end_date, setCreate_end_date] = useState("");
-
   const [search_list, setBbs_list] = useState([]);
   const [page, setPage] = useState({});
+  const [initialTotalBbsCount, setInitialTotalBbsCount] = useState(null);
+  const [selectedBoardKey, setSelectedBoardKey] = useState(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const handleAddModalOpen = (e) => { setAddModalOpen(true);};
+  const handleAddModalClose = () => { setAddModalOpen(false); };
+  const handleDetailModalOpen = (boardkey) => { 
+    setSelectedBoardKey(boardkey);
+    setDetailModalOpen(true);
+  };
+  const handleDetailModalClose = () => {
+    setDetailModalOpen(false);
+    setSelectedBoardKey(null);
+  };
+  const handleEditModalOpen = () => { setEditModalOpen(true); };
+  const handleEditModalClose = () => { setEditModalOpen(false); };
+
   function getBbsData(cPage) {
     axios({
       url: `${API_URL}?cPage=${cPage}`,
       method: "post",
       params: {
         title: title,
-        categoryName: categoryName,
+        categoryName: categoryName === "null" ? "" : categoryName,
         create_start_date: create_start_date,
         create_end_date: create_end_date,
       },
@@ -161,6 +180,9 @@ export default function Page() {
       .then((res) => {
         setBbs_list(res.data.b_ar);
         setPage(res.data.page);
+        if (initialTotalBbsCount === null) {
+          setInitialTotalBbsCount(res.data.totalRecord);
+        }
       })
       .catch((error) => {
         if (error.response && error.response.status === 404) {
@@ -202,6 +224,10 @@ export default function Page() {
   function delete_choice_bbs() {
     if (checkedBbsItems.length === 0) {
       alert("삭제할 게시글을 선택해 주세요.");
+      return;
+    }
+    const confirmation = confirm("선택된 게시글을 정말 삭제하시겠습니까?");
+    if (!confirmation) {
       return;
     }
     axios
@@ -266,9 +292,9 @@ export default function Page() {
             >
               <Top_Analytic
                 title="전체"
-                count={0}
-                percentage={59.3}
-                extra="35,000"
+                count={initialTotalBbsCount}
+                percentage={initialTotalBbsCount > 0 ? ((bc_list.length / initialTotalBbsCount) * 100).toFixed(1) : 0}
+                extra={(initialTotalBbsCount || 0).toString()}
               />
             </Grid>
             {bc_list &&
@@ -286,8 +312,8 @@ export default function Page() {
                   <Top_Analytic
                     title={ar.value}
                     count={ar.count}
-                    percentage={59.3}
-                    extra="35,000"
+                    percentage={ar.count > 0 ? ((ar.count / initialTotalBbsCount) * 100).toFixed(1) : "0"}
+                    extra={(ar.count || 0).toString()}
                   />
                 </Grid>
               ))}
@@ -401,7 +427,7 @@ export default function Page() {
                         variant="contained"
                         color="primary"
                         size="small"
-                        onClick={() => getBbsData(1)}
+                        onClick={() => { getBbsData(1); setCheckedBbsItems([]); setAllBbsChecked(false); }}
                         className="btnSearch"
                       >
                         검색
@@ -436,23 +462,14 @@ export default function Page() {
                   <Button
                     variant="contained"
                     color="inherit"
-                    onClick={delete_choice_bbs}
+                    onClick={handleAddModalOpen}
                     className="btnNormal"
                     sx={{ ml: 1 }}
                     startIcon={<AddIcon />}
                   >
                     추가
                   </Button>
-                  <Button
-                    variant="contained"
-                    color="inherit"
-                    onClick={delete_choice_bbs}
-                    className="btnNormal"
-                    sx={{ ml: 1 }}
-                    startIcon={<EditIcon />}
-                  >
-                    수정
-                  </Button>
+                  <AddModal addModalOpen={addModalOpen} handleAddModalClose={handleAddModalClose} getBbsData={getBbsData}/>
                   <Button
                     variant="contained"
                     color="inherit"
@@ -503,28 +520,27 @@ export default function Page() {
                             </TableCell>
                             <TableCell
                               align="center"
-                              onClick={() =>
-                                router.push(
-                                  `/admin/bbs/post/detail/${ar.boardkey}`
-                                )
-                              }
+                              onClick={() => handleDetailModalOpen(ar.boardkey)}
                               style={{ cursor: "pointer" }}
                             >
                               {(page.nowPage - 1) * page.numPerPage + i + 1}
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell 
+                              align="center"
+                              onClick={() => handleDetailModalOpen(ar.boardkey)}
+                              style={{ cursor: "pointer" }}
+                            >
                               {categoryMap[ar.categorykey] || "X"}
                             </TableCell>
                             <TableCell
-                              onClick={() =>
-                                router.push(
-                                  `/admin/bbs/post/detail/${ar.boardkey}`
-                                )
-                              }
+                              align="center"
+                              onClick={() => handleDetailModalOpen(ar.boardkey)}
                               style={{ cursor: "pointer" }}
                             >
                               {ar.title}
                             </TableCell>
+                            <DetailModal detailModalOpen={detailModalOpen} handleDetailModalClose={handleDetailModalClose} boardkey={selectedBoardKey} getBbsData={getBbsData} handleEditModalOpen={handleEditModalOpen}/>
+                            <EditModal editModalOpen={editModalOpen} handleEditModalClose={handleEditModalClose} getBbsData={getBbsData} boardkey={selectedBoardKey}/>
                             <TableCell align="center">
                               {ar.create_dtm
                                 ? new Date(ar.create_dtm)
@@ -539,7 +555,7 @@ export default function Page() {
                                     .split("T")[0]
                                 : "-"}
                             </TableCell>
-                            <TableCell align="right">{ar.viewqty}</TableCell>
+                            <TableCell align="center">{ar.viewqty}</TableCell>
                           </TableRow>
                         ))
                       ) : (
