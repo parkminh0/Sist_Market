@@ -68,6 +68,14 @@ const nextConfig = {
         source: "/alarm/:path*",
         destination: "http://localhost:8080/alarm/:path*"
       },
+      {
+        source: "/deleteNotification/:path*",
+        destination: "http://localhost:8080/deleteNotification/:path*"
+      },
+      {
+        source: "/deleteAllAlarms/:path*",
+        destination: "http://localhost:8080/deleteAllAlarms/:path*"
+      },
     ];
   },
 };

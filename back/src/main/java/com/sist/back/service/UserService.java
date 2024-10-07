@@ -371,5 +371,7 @@ public class UserService {
         return p_list;
     }
 
-
+    public String searchNickname(String userkey){
+        return mapper.searchNickname(userkey);
+    }
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sist.back.service.AlarmService;
+import com.sist.back.service.DBChangeService;
 import com.sist.back.service.DealreviewService;
 import com.sist.back.util.Paging;
 import com.sist.back.vo.PostVO;
@@ -19,6 +21,9 @@ import com.sist.back.vo.ReviewListVO;
 public class DealreviewController {
     @Autowired
     private DealreviewService d_service;
+
+    @Autowired
+    private DBChangeService db_service;
 
     @RequestMapping("/allReview")
     @ResponseBody
@@ -123,6 +128,7 @@ public class DealreviewController {
         Map<String, Object> map = new HashMap<>();
         int toPost = d_service.sellerReview(reviewlistkey, postkey);
         int toManner = d_service.addManner(userkey, reviewlistkey, estimateuserkey);
+        db_service.onDatabaseChange("/myPage/profile", "거래 후기가 도착했어요!", "후기", userkey);
         map.put("toPost", toPost);
         map.put("toManner", toManner);
         return map;
@@ -134,6 +140,7 @@ public class DealreviewController {
         Map<String, Object> map = new HashMap<>();
         int toPost = d_service.sellerReview(reviewlistkey, postkey);
         int toManner = d_service.addManner(userkey, reviewlistkey, estimateuserkey);
+        db_service.onDatabaseChange("/myPage/profile", "거래 후기가 도착했어요!", "후기", userkey);
         map.put("toPost", toPost);
         map.put("toManner", toManner);
         return map;

@@ -821,5 +821,9 @@
           ) AS temp
       )
     </update>
+
+    <select id="searchNickname" parameterType="String">
+      SELECT nickname FROM user WHERE userkey = #{userkey}
+    </select>
 </mapper>
 

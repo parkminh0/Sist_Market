@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import { Settings, MoreVertical, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import Cookies from "js-cookie";
 
 function NotificationUI({ notifications }) {
   const [activeTab, setActiveTab] = useState('알림');
@@ -9,23 +11,44 @@ function NotificationUI({ notifications }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [displayCount, setDisplayCount] = useState(5);
-
+  const [userkey, setUserkey] = useState(Cookies.get("userkey"));
   const router = useRouter(); // useRouter 훅은 항상 호출됨
-
-  const handleNotificationClick = (notification) => {
+  const handleNotificationClick = async (notification) => {
     let redirectPath = '';
     let tempQuery = '';
     if (notification.category === "채팅") {
       redirectPath = "/chat"; // 리디렉션 경로 가져오기
-      tempQuery = { chatroomkey : notification.redirection }; // 쿼리 파라미터 설정
+      tempQuery = { chatroomkey: notification.redirection }; // 쿼리 파라미터 설정
+    } else if (notification.category === "후기") {
+      redirectPath = notification.redirection;
+    } else if (notification.category === "문의") {
+      redirectPath = notification.redirection;
     }
+    
     const query = new URLSearchParams(tempQuery).toString();
+
     // 쿼리 파라미터를 URL에 추가하기
     const fullPath = `${redirectPath}?${query}`;
-
-    // 리디렉션
-    router.push(fullPath);
+    try {
+      await axios.get("/deleteNotification", {
+        params: {
+          alarmkey: notification.alarmkey}}).then(
+            window.location.href = fullPath
+          );
+    } catch(error){
+    }
   };
+
+  const removeAllAlarm = () =>{
+    axios.get("/deleteAllAlarms",{
+      params: {
+        userkey: userkey
+      }
+    }).then(() => {
+      // 요청이 완료된 후 페이지 새로고침
+      window.location.reload();
+    })
+  }
 
   const moreAlarms = () => {
     setDisplayCount(notifications.length);
@@ -38,7 +61,7 @@ function NotificationUI({ notifications }) {
   return (
     <div style={{ padding: '1rem 0.625rem', maxWidth: '440px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem' }}>
-        <button
+        <button  onClick={removeAllAlarm}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{
@@ -85,21 +108,6 @@ function NotificationUI({ notifications }) {
               transition: 'background-color 0.3s ease',
             }}
           >
-            <div
-              style={{
-                width: '2rem',
-                height: '2rem',
-                backgroundColor: '#FB923C',
-                borderRadius: '9999px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                flexShrink: 0,
-              }}
-            >
-              {notification.icon}
-            </div>
             <div style={{ flex: '1', minWidth: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontWeight: '600', color: '#C2410C' }}>{notification.category}</span>
@@ -107,8 +115,7 @@ function NotificationUI({ notifications }) {
               </div>
               <p style={{ fontSize: '0.875rem', color: '#EA580C', margin: '0.25rem 0', wordBreak: 'break-word' }}>{notification.message}</p>
             </div>
-            <button
-              style={{
+            <button style={{
                 color: '#FB923C',
                 background: 'none',
                 border: 'none',
@@ -127,7 +134,6 @@ function NotificationUI({ notifications }) {
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              <MoreVertical size={16} />
             </button>
           </div>
         ))}
