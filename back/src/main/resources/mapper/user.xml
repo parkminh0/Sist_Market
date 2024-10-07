@@ -566,6 +566,19 @@
         WHERE c.rnum BETWEEN #{begin} AND #{end}
     </select>
 
+    <insert id="addLikeCategory" parameterType="Map">
+      INSERT
+      INTO `interestcategory`(userkey,categorykey)
+      VALUES (#{userkey},#{categorykey})
+    </insert>
+
+    <insert id="addLikeKeyword" parameterType="Map">
+      INSERT
+      INTO `keyword`(userkey, content)
+      VALUES(#{userkey}, #{content} )
+    </insert>
+
+
     
     <!-- buy_list -->
     <select id="getBuyTotalCount" resultType="int" parameterType="String">

@@ -46,7 +46,7 @@ export default function Moneybook(props) {
         const length = postList.length;
         var totalPrice = 0;
         for(var i=0; i<length; i++){
-            totalPrice += parseInt(postList[i].lastprice);
+            totalPrice += postList[i].lastprice ? parseInt(postList[i].lastprice) : 0;
         }
         return totalPrice;
     }

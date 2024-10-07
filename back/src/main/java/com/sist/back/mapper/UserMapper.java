@@ -60,6 +60,9 @@ public interface UserMapper {
 
     int getKeywordCount(String userkey);
 
+    int addLikeCategory(String userkey, String categorykey);
+    int addLikeKeyword(String userkey, String content);
+
     List<WishlistVO> getWishlistByMap(Map<String, Object> get_map);
 
     List<WishlistVO> getInterestCategoryByMap(Map<String, Object> get_map);

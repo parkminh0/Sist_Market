@@ -116,8 +116,8 @@ export default function PostInfo(props) {
                   <TableCell className="th" colSpan={2}>거래완료일자</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="td" colSpan={2}>{pvo.duvo.nickname}</TableCell>
-                  <TableCell className="td" colSpan={2}>{pvo.deal_dtm}</TableCell>
+                  <TableCell className="td" colSpan={2}>{pvo.duvo ? pvo.duvo.nickname : '-'}</TableCell>
+                  <TableCell className="td" colSpan={2}>{pvo.deal_dtm ? pvo.deal_dtm : '-'}</TableCell>
                 </TableRow>
               </>
              : ''}

@@ -47,7 +47,7 @@ export default function UserList(props) {
         return(
         <div key={index}>
             {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-            <Link href={`/userPage?userkey=${ulvo.uvo.userkey}`} className="userListComponents">
+            <Link href={ulvo.uvo?`/userPage?userkey=${ulvo.uvo.userkey}`:'#'} className="userListComponents">
             <div
                 className="purchase_list_display_item"
                 style={{ backgroundColor: "#FFFFFF" }}
