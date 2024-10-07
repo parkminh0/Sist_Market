@@ -73,8 +73,6 @@
         WHERE c.rnum BETWEEN #{begin} AND #{end}
     </select>
 
-
-
     <!-- 검색 -->
     <select id="search" resultMap="map1" parameterType="map">
         SELECT x.*
@@ -154,7 +152,6 @@
             </if>
         </where>
     </select>
-
 
     <!-- 답변 여부로 데이터 출력 -->
     <select id="select" resultType="com.sist.back.vo.QnaVO" parameterType="map">

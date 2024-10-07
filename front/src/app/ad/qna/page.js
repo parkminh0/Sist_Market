@@ -58,6 +58,7 @@ export default function Page() {
     setSelectedQnaKey(qnakey);
     setQuestionModalOpen(true);
   };
+
   const handleQuestionModalClose = () => {
     setSelectedQnaKey(null);
     setQuestionModalOpen(false);
@@ -437,6 +438,8 @@ export default function Page() {
                       <TableCell align="center">답변 여부</TableCell>
                     </TableRow>
                   </TableHead>
+                  <QuestionModal questionModalOpen={questionModalOpen} handleQuestionModalClose={handleQuestionModalClose} qnakey={selectedQnaKey}  handleAnswerModalOpen={handleAnswerModalOpen}/>
+                  <AnswerModal answerModalOpen={answerModalOpen} handleAnswerModalClose={handleAnswerModalClose} qnakey={selectedQnaKey} search={search}/>
                   <TableBody>
                     {list && list.length > 0 ? (
                       list.map((ar, i) => (
@@ -460,8 +463,6 @@ export default function Page() {
                           >
                             {ar.uvo.name}
                           </TableCell>
-                          <QuestionModal questionModalOpen={questionModalOpen} handleQuestionModalClose={handleQuestionModalClose} qnakey={selectedQnaKey}  handleAnswerModalOpen={handleAnswerModalOpen}/>
-                          <AnswerModal answerModalOpen={answerModalOpen} handleAnswerModalClose={handleAnswerModalClose} qnakey={selectedQnaKey} search={search}/>
                           <TableCell align="center" onClick={() => handleQuestionModalOpen(ar.qnakey)} style={{ cursor: "pointer" }}>
                             {ar.uvo.nickname}
                           </TableCell>
