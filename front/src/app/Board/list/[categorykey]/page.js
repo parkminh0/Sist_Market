@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import React, { useEffect, useState } from "react";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
+import "/public/css/paging.css";
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import axios from "axios";
@@ -224,11 +225,11 @@ export default function (props) {
                                       </li>
                                     ))}
                                   </ol>
-                                  {page && page.endPage < page.totalPage && (
-                                    <a href="#" onClick={() => changePage(page.endPage + 1)} className="next">
-                                      &gt;
-                                    </a>
-                                  )}
+                                  {page.endPage < page.totalPage && (
+                    <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+                      다음 {page.pagePerBlock}페이지
+                    </Link>
+                  )}
                                 </div>
                             </div>
                         </section>

@@ -301,11 +301,15 @@
 
     <!-- 관리자 유저 정보 카운트 -->
     <select id="countForAdmin" resultType="com.sist.back.vo.UserCountVO">
-      SELECT COUNT(*) AS cntAll, 
-          COUNT(CASE WHEN isdeleted = 0 THEN 1 END) AS cntNotDel,
-          COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS cntDel
-        FROM user
-    </select> 
+      SELECT 
+        COUNT(*) AS cntAll, 
+        COUNT(CASE WHEN isdeleted = 0 THEN 1 END) AS cntNotDel,
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS cntDel,
+        COUNT(CASE WHEN DATE(create_dtm) = CURDATE() THEN 1 END) AS cntTAll,
+        COUNT(CASE WHEN isdeleted = 0 AND DATE(create_dtm) = CURDATE() THEN 1 END) AS cntTNotDel,
+        COUNT(CASE WHEN isdeleted = 1 AND DATE(delete_dtm) = CURDATE() THEN 1 END) AS cntTDel
+      FROM user
+    </select>
 
     <!-- 관리자 페이징 검색 -->
     <select id="searchForAdminPaging" parameterType="map" resultType="int">
