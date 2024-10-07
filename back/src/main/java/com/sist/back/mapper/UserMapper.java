@@ -37,6 +37,7 @@ public interface UserMapper {
     int blockI(String me, String you);
 
     userVO getUserForAdmin(String userkey);
+    userVO getUserForMyPage(String userkey);
     
     int userDelForAdmin(String userkey);
 
@@ -119,5 +120,10 @@ public interface UserMapper {
     List<PostVO> getCellListForUserPage(String userkey);
     List<PostVO> getMorePost(String userkey,String limitpostkey,String lastpostkey);
     int getRestList(String userkey,String limitpostkey,String lastpostkey);
+
+    List<PostVO> getPostsByUserKey(Map<String, Object> pmap);
+    int getPostCountByUserKey(String userkey);
+
+    
 
 }

@@ -227,8 +227,12 @@ export default function Page() {
 
   // 체크 삭제
   function delete_choice() {
-    if (!confirm("정말 삭제하시겠습니까?")) {
-      return;
+    if(checkedItems.length>0){
+      if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+      }
+    } else{
+      alert("삭제하실 게시글을 선택해주시기 바랍니다.")
     }
     axios
       .get("/adpost/checkPostDel", {
@@ -251,10 +255,10 @@ export default function Page() {
   const [pdkey, setPdkey] = useState("0");
 
   function openPostDetail(postkey) {
-    if(checkedItems.length==0){
+    if (checkedItems.length == 0) {
       alert("상세내용을 확인할 게시글을 선택해주시기 바랍니다.");
       return;
-    } else if(checkedItems.length>1){
+    } else if (checkedItems.length > 1) {
       alert("상세내용 확인은 한 게시글만 가능합니다.");
       return;
     }
@@ -682,6 +686,7 @@ export default function Page() {
                         className="dtm_from"
                         name="dtm_from"
                         size="small"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
                       <span style={{ margin: "0 10px" }}>~</span>
                       <TextField
@@ -690,6 +695,7 @@ export default function Page() {
                         className="dtm_to"
                         name="dtm_to"
                         size="small"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
                     </div>
                   </li>
@@ -759,7 +765,9 @@ export default function Page() {
                 <Button
                   variant="contained"
                   color="inherit"
-                  onClick={() => {openPostDetail()}}
+                  onClick={() => {
+                    openPostDetail();
+                  }}
                   className="btnNormal"
                   sx={{ ml: 1 }}
                   startIcon={<ArticleOutlined />}
@@ -791,11 +799,12 @@ export default function Page() {
                         />
                       </TableCell>
                       <TableCell align="center">No</TableCell>
-                      <TableCell align="center">작성자</TableCell>
-                      <TableCell align="center">작성지</TableCell>
-                      <TableCell align="center">분류</TableCell>
                       <TableCell align="center">제목</TableCell>
+                      <TableCell align="center">작성자</TableCell>
+                      <TableCell align="center">동네</TableCell>
+                      <TableCell align="center">분류</TableCell>
                       <TableCell align="center">구분</TableCell>
+                      <TableCell align="center">상태</TableCell>
                       <TableCell align="center">등록가</TableCell>
                       <TableCell align="center">판매가</TableCell>
                       <TableCell align="center">구매자</TableCell>
@@ -803,18 +812,12 @@ export default function Page() {
                       <TableCell align="center">삭제일</TableCell>
                       <TableCell align="center">거래일</TableCell>
                       <TableCell align="center">조회</TableCell>
-                      <TableCell align="center">상태</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {list && list.length > 0 ? (
                       list.map((prod, i) => (
-                        <TableRow
-                          key={i}
-                          hover
-                          tabIndex={-1}
-                          role="checkbox"
-                        >
+                        <TableRow key={i} hover tabIndex={-1} role="checkbox">
                           <TableCell padding="checkbox">
                             <Checkbox
                               disableRipple
@@ -825,6 +828,18 @@ export default function Page() {
                             />
                           </TableCell>
                           <TableCell align="center">{prod.postkey}</TableCell>
+                          {/* 이미지 */}
+                          <TableCell component="th" scope="row">
+                            <Box gap={2} display="flex" alignItems="center">
+                              {prod.pimg_list && prod.pimg_list.length > 0 && (
+                                <Avatar
+                                  alt={prod.title}
+                                  src={prod.pimg_list[0].imgurl}
+                                />
+                              )}
+                              {prod.title}
+                            </Box>
+                          </TableCell>
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
                               <Avatar
@@ -844,28 +859,31 @@ export default function Page() {
                           <TableCell align="center">
                             {prod.cvo.categoryname}
                           </TableCell>
-                          {/* 이미지 */}
-                          <TableCell component="th" scope="row">
-                            <Box gap={2} display="flex" alignItems="center">
-                              {prod.pimg_list && prod.pimg_list.length > 0 && (
-                                <Avatar
-                                  alt={prod.title}
-                                  src={prod.pimg_list[0].imgurl}
-                                />
-                              )}
-                              {prod.title}
-                            </Box>
-                          </TableCell>
                           <TableCell align="center">
                             {prod.method == 0 ? "판매" : "나눔"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {prod.isdeleted == 1
+                              ? "삭제"
+                              : prod.poststatus == 0
+                                ? "임시저장"
+                                : prod.poststatus == 1
+                                  ? "판매중"
+                                  : prod.postStatus == 2
+                                    ? "예약중"
+                                    : prod.poststatus == 3
+                                      ? "거래완료"
+                                      : "숨김"}
                           </TableCell>
                           <TableCell align="center">
                             {new Intl.NumberFormat("ko-KR").format(prod.price)}
                           </TableCell>
                           <TableCell align="center">
-                            {new Intl.NumberFormat("ko-KR").format(
-                              prod.lastprice
-                            )}
+                            {prod.lastprice
+                              ? new Intl.NumberFormat("ko-KR").format(
+                                  prod.lastprice
+                                )
+                              : "-"}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
@@ -905,19 +923,6 @@ export default function Page() {
                             {new Intl.NumberFormat("ko-KR").format(
                               prod.viewqty
                             )}
-                          </TableCell>
-                          <TableCell align="center">
-                            {prod.isdeleted == 1
-                              ? "삭제"
-                              : prod.poststatus == 0
-                                ? "임시저장"
-                                : prod.poststatus == 1
-                                  ? "판매중"
-                                  : prod.postStatus == 2
-                                    ? "예약중"
-                                    : prod.poststatus == 3
-                                      ? "거래완료"
-                                      : "숨김"}
                           </TableCell>
                         </TableRow>
                       ))

@@ -4,6 +4,22 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.back.mapper.PostMapper">
 
+    <!-- DB 속도 실험용 -->
+    <resultMap id="post_simple" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
+    <select id="getPost_simple" resultMap="post_simple" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+
+
     <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey" />
         <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
@@ -26,6 +42,21 @@
         <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
         <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
     </resultMap>
+
+    <!-- 사용자 post detail에 필요한 정보 -->
+    <resultMap id="pdMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="townkey" property="townkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
 
     <!-- 게시글 상세 필요 데이터 추가본 -->
     <resultMap id="user_cell_map" type="com.sist.back.vo.userVO">
@@ -86,6 +117,13 @@
         WHERE postkey = #{postkey}
     </select>
 
+    
+    <!-- 사용자 Post Detail 관련 sql -->
+    <select id="getPostDetailByPostKey" resultMap="pdMap" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+    
 
     <!-- 2. town 관련 데이터 -->
     <select id="getTownByPostKey" resultType="com.sist.back.vo.TownVO" parameterType="int">
@@ -284,7 +322,7 @@
         #{title},
         #{method},
         #{price},
-        0,
+        #{lastprice},
         #{content},
         #{range},
         <if test="hope_place != null and hope_place != ''">
@@ -371,29 +409,6 @@
         `isbuyvisible` = #{isbuyvisible}
         WHERE `postkey` = #{postkey}
     </update>
-
-    <select id="searchTemp" resultMap="postMap" parameterType="String">
-        SELECT * FROM post 
-         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
-    </select>
-
-    <select id="main" resultMap="postMap" parameterType="String">
-        select p.* from `post` p
-         LEFT JOIN `town` t ON p.townkey = t.townkey
-         where p.isdeleted = 0 AND p.poststatus = 1
-          <if test ="param == 'free'">
-            AND p.method = 1 AND p.price = 0
-          </if>
-          <if test="param != 'free'">
-            AND p.categorykey = #{param}
-          </if>
-          <if test="region1 != 'undefined' and region2 != 'undefined'">
-            AND t.region1 = #{region1} AND t.region2 = #{region2}
-          </if>
-
-          ORDER BY p.remind_dtm DESC
-          limit 10
-    </select>
 
     <!-- 관리자 게시글 현황 정보 카운트 -->
     <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
@@ -687,6 +702,30 @@
     WHERE x.rnum BETWEEN #{begin} and #{end}
     </select>
 
+    <!-- / -->
+    <resultMap id="mainMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="townkey" property="townkey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="main" resultMap="mainMap" parameterType="String">
+        select p.* from `post` p
+         LEFT JOIN `town` t ON p.townkey = t.townkey
+         where p.isdeleted = 0 AND p.poststatus = 1
+          <if test ="param == 'free'">
+            AND p.method = 1 AND p.price = 0
+          </if>
+          <if test="param != 'free'">
+            AND p.categorykey = #{param}
+          </if>
+          <if test="region1 != 'undefined' and region2 != 'undefined'">
+            AND t.region1 = #{region1} AND t.region2 = #{region2}
+          </if>
+          ORDER BY p.remind_dtm DESC
+          limit 10
+    </select>
+
     <!-- /post -->
     <resultMap id="searchMap" type="com.sist.back.vo.PostVO">
         <id column="postkey" property="postkey" />
@@ -707,11 +746,16 @@
           JOIN `category` c ON c.categorykey = p.categorykey
           <!-- 게시글미노출 -->
          <if test="userkey != null and userkey != ''">
-          LEFT JOIN `nosee` n ON n.userkey = #{userkey} AND n.noseeuserkey != p.userkey
-          LEFT JOIN `blocked` b ON b.userkey = #{userkey} AND b.blockeduserkey != p.userkey
-          LEFT JOIN `noseepost` np ON np.userkey = #{userkey} AND np.postkey != p.postkey
-         </if>
+            LEFT JOIN nosee n ON n.userkey = #{userkey} AND n.noseeuserkey = p.userkey
+            LEFT JOIN blocked b ON b.userkey = #{userkey} AND b.blockeduserkey = p.userkey
+            LEFT JOIN noseepost np ON np.userkey = #{userkey} AND np.postkey = p.postkey
+        </if>
          WHERE p.isdeleted = 0
+         <if test="userkey != null and userkey != ''">
+            AND n.noseeuserkey IS NULL
+            AND b.blockeduserkey IS NULL
+            AND np.postkey IS NULL
+         </if>
          <if test="loc1 != null and loc1 != ''">
            AND t.region1 = #{loc1}
          </if>
@@ -757,6 +801,51 @@
             </if>
         </if>
         limit #{howManyPost}
+    </select>
+
+    <!-- 임시저장 찾기 -->
+    <resultMap id="searchTempMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="searchTemp" resultMap="searchTempMap" parameterType="String">
+        SELECT * FROM post 
+         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
+    </select>
+
+    <!-- 게시글 TOP 10 -->
+    <resultMap id="postTop10StatisticMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="userkey" property="userkey" />
+        <result column="townkey" property="townkey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoPostTop10StatisticMap" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="getUvoPostTop10StatisticMap" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="postTop10Statistic" resultMap="postTop10StatisticMap" parameterType="String">
+      select p.*, 
+	   COUNT(CASE WHEN w.wishlistkey is not null THEN 1 END) likedqty,
+       COUNT(CASE WHEN c.chatroomkey is not null THEN 1 END) chatroomqty
+        FROM post p
+        LEFT JOIN wishlist w on p.postkey = w.postkey
+        LEFT JOIN chatroom c on p.postkey = c.postkey
+        WHERE p.isdeleted = 0
+        <if test="type = 1">
+            AND (DATE(w.create_dtm) = DATE(NOW()) or w.create_dtm is null)
+        </if>
+        <if test="type = 2">
+            AND (WEEK(w.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR w.create_dtm is null)
+        </if>
+        <if test="type = 3">
+            and (w.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR w.create_dtm IS NULL)
+        </if>
+        GROUP BY p.postkey
+        order by likedqty desc
+        LIMIT 10
     </select>
     <!-- 
         민호 끝 

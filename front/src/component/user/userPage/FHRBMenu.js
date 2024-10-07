@@ -128,7 +128,7 @@ export default function FHRBMenu(props) {
         <MenuItem onClick={()=>{openCheckAlert('nosee')}}>게시글 미노출 {isNosee ? "해제" : "등록"}</MenuItem>
         <MenuItem onClick={()=>{setIfReport(true);}}>사용자 신고</MenuItem>
         <MenuItem onClick={()=>{openCheckAlert('block')}}>사용자 차단 {isBlocked ? "해제" : ""}</MenuItem>
-        <CheckAlert open={openCA} handleClose={closeCA} yourName={yourName} isLiked={isLiked} tarFunc={tarFunc}/>
+        <CheckAlert open={openCA} handleClose={closeCA} yourName={yourName} isLiked={isLiked} isNosee={isNosee} isBlocked={isBlocked} tarFunc={tarFunc}/>
       </Menu>
     </div>
   );

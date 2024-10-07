@@ -51,7 +51,6 @@ export default function CellDetail(props) {
             "Content-Type": "application/json",
           },
         }).then((response) => {
-            console.log(response.data);
           setPvo(response.data.pvo);
           var price = response.data.pvo.price;
           var lastprice = response.data.pvo.lastprice;

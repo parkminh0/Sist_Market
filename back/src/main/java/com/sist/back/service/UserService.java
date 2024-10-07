@@ -158,6 +158,9 @@ public class UserService {
     public userVO getUserForAdmin(String userkey) {
         return mapper.getUserForAdmin(userkey);
     }
+    public userVO getUserForMyPage(String userkey) {
+        return mapper.getUserForMyPage(userkey);
+    }
 
     public int userDelForAdmin(String userkey) {
         return mapper.userDelForAdmin(userkey);
@@ -355,6 +358,17 @@ public class UserService {
     }
     public int getRestList(String userkey,String limitpostkey,String lastpostkey){
         return mapper.getRestList(userkey,limitpostkey,lastpostkey);
+    }
+
+    public int getPostCountByUserKey(String userkey){
+        return mapper.getPostCountByUserKey(userkey);
+    }
+
+    public List<PostVO> getPostsByUserKey(Map<String, Object> pmap){
+      
+        List<PostVO> p_list = mapper.getPostsByUserKey(pmap);
+        
+        return p_list;
     }
 
 

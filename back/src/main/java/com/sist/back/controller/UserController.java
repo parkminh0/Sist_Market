@@ -103,7 +103,7 @@ public class UserController {
         return map;
     }
 
-    // userAdmin 회원 정보 가져오기
+     // userAdmin 회원 정보 가져오기
     @RequestMapping("/api/admin/userEdit")
     @ResponseBody
     public Map<String, Object> getUserInfoForAdmin(String userkey) {

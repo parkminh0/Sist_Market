@@ -5,6 +5,8 @@ import {
   IconUser,
   IconClipboardText,
   IconMessageChatbot,
+  IconMedal2,
+  IconAward,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -42,6 +44,11 @@ const Menuitems = [
     href: "/ad/user",
   },
   {
+    title: "배지 관리",
+    icon: IconAward,
+    href: "/ad/user/badge",
+  },
+  {
     navlabel: true,
     subheader: "게시판",
   },
@@ -50,6 +57,20 @@ const Menuitems = [
     icon: IconClipboardText,
     href: "/ad/bbs",
   },
+  {
+    navlabel: true,
+    subheader: "통계",
+  },
+  {
+    title: "대시보드",
+    icon: IconMedal2,
+    href: "/ad/statistic",
+  },
+  // {
+  //   title: "대시보드",
+  //   icon: IconMessageChatbot,
+  //   href: "/ad/qna",
+  // },
   {
     navlabel: true,
     subheader: "고객센터",

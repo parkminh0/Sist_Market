@@ -1,21 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "/public/css/admin/user.css";
-import Link from "next/link";
 import axios from "axios";
 import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
-  Avatar,
   Box,
   Button,
   Checkbox,
   FormControl,
   FormControlLabel,
   Grid,
-  InputLabel,
   MenuItem,
   Pagination,
   Radio,
@@ -26,56 +22,55 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
-import { useRouter } from "next/navigation";
+import QuestionModal from "@/component/admin/qna/QuestionModal";
+import AnswerModal from "@/component/admin/qna/AnswerModal";
 
 export default function Page() {
-  const ALL_URL = "/qna/all";
-  const SELECT_URL = "/qna/select";
   const CHKDEL_URL = "/qna/chkDelete";
+  const SEARCH_URL = "/qna/search";
 
-  const router = useRouter();
   const [list, setList] = useState([]);
   const [allChecked, setAllChecked] = useState(false);
   const [checkedItems, setCheckedItems] = useState([]);
   const [page, setPage] = useState({});
-  const [isanswered, setIsAnswered] = useState(""); // 추가된 상태
+  const [title, setTitle] = useState("");
+  const [searchType, setSearchType] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  const [create_start_dtm, setCreateStartDtm] = useState("");
+  const [create_end_dtm, setCreateEndDtm] = useState("");
+  const [answer_start_dtm, setAnswerStartDtm] = useState("");
+  const [answer_end_dtm, setAnswerEndDtm] = useState("");
+  const [isanswered, setIsAnswered] = useState("");
+  const [selectedQnaKey, setSelectedQnaKey] = useState(null);
+  const [questionModalOpen, setQuestionModalOpen] = useState(false);
+  const [answerModalOpen, setAnswerModalOpen] = useState(false);
+  const [allRecord, setAllRecord] = useState(0);
+  const [answeredRecord, setAnsweredRecord] = useState(0);
+  const [unansweredRecord, setUnansweredRecord] = useState(0);
 
-  function getData(cPage, selectedData = "") {
-    const url =
-      selectedData !== ""
-        ? `${SELECT_URL}?cPage=${cPage}&isanswered=${selectedData}`
-        : `${ALL_URL}?cPage=${cPage}`;
-    axios({
-      url,
-      method: "get",
-    })
-      .then((res) => {
-        setList(res.data.q_ar);
-        setPage(res.data.page);
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 404) {
-          setList([]);
-          setPage({});
-        }
-      });
-  }
+  const handleQuestionModalOpen = (qnakey) => { 
+    setSelectedQnaKey(qnakey);
+    setQuestionModalOpen(true);
+  };
+  const handleQuestionModalClose = () => {
+    setSelectedQnaKey(null);
+    setQuestionModalOpen(false);
+  };
+  const handleAnswerModalOpen = (qnakey) => {
+    setSelectedQnaKey(qnakey);
+    setAnswerModalOpen(true); };
+  const handleAnswerModalClose = () => { setAnswerModalOpen(false); };
 
   useEffect(() => {
-    getData(1);
+    search(1);
   }, []);
-
-  function changePage(pNum) {
-    getData(pNum, isanswered);
-  }
-
+  
   const handleAllCheck = (e) => {
     const checked = e.target.checked;
     setAllChecked(checked);
@@ -110,18 +105,42 @@ export default function Page() {
       .post(CHKDEL_URL, checkedItems)
       .then((res) => {
         alert("삭제 완료");
-        getData(1);
+        search(1);
       })
       .catch((error) => {
         console.error("삭제 중 오류가 발생했습니다.", error);
       });
   }
 
-  const handleSelect = (e) => {
-    const selectedData = e.target.value;
-    setIsAnswered(selectedData);
-    getData(1, selectedData);
-  };
+  function search(cPage) {
+    axios({
+      url: `${SEARCH_URL}?cPage=${cPage}`,
+      method: "post",
+      params: {
+        title: title,
+        create_start_dtm: create_start_dtm,
+        create_end_dtm: create_end_dtm,
+        answer_start_dtm: answer_start_dtm,
+        answer_end_dtm: answer_end_dtm,
+        isanswered: isanswered !== "" ? isanswered : null,
+        searchType: searchType,
+        searchValue: searchValue,
+      },
+    })
+      .then((res) => {
+        setList(res.data.q_ar);
+        setPage(res.data.page);
+        setAllRecord(res.data.allRecord);
+        setAnsweredRecord(res.data.answeredRecord);
+        setUnansweredRecord(res.data.unansweredRecord);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 404) {
+          setList([]);
+          setPage({});
+        }
+      });
+  }
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -139,27 +158,27 @@ export default function Page() {
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="전체"
-              count={0}
-              percentage={59.3}
-              extra="35,000"
+              count={allRecord || 0}
+              percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
+              extra={(allRecord || 0).toString()}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="답변 완료"
-              count={0}
-              percentage={70.5}
-              extra="8,900"
+              count={answeredRecord || 0}
+              percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
+              extra={(answeredRecord || 0).toString()}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="답변 대기"
-              count={0}
-              percentage={27.4}
+              count={unansweredRecord || 0}
+              percentage={allRecord > 0 ? ((unansweredRecord / allRecord) * 100).toFixed(1) : 0}
               isLoss
               color="warning"
-              extra="1,943"
+              extra={(unansweredRecord || 0).toString()}
             />
           </Grid>
         </Grid>
@@ -178,7 +197,7 @@ export default function Page() {
           {/* 검색 폼 */}
           <Grid item xs={12}>
             <DashboardCard>
-              <form name="mform" method="post" action="/search_user_admin">
+              <form name="mform" method="post" action="/search">
                 <ul style={{ listStyle: "none", padding: 0 }}>
                   {/* 개인정보 */}
                   <li
@@ -191,9 +210,9 @@ export default function Page() {
                     <span style={{ width: "120px" }}>사용자</span>
                     <FormControl sx={{ minWidth: 120 }} size="small">
                       <Select
-                        defaultValue="null"
+                        value={searchType === "" ? "null" : searchType} 
+                        onChange={(e) => setSearchType(e.target.value)}
                         className="fSelect"
-                        name="search_type"
                       >
                         <MenuItem value="null">--선택--</MenuItem>
                         <MenuItem value="name">이름</MenuItem>
@@ -206,7 +225,8 @@ export default function Page() {
                     <TextField
                       label="검색어"
                       type="text"
-                      name="type"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
                       className="fText"
                       style={{ width: "auto" }}
                       sx={{ marginLeft: 2 }}
@@ -225,7 +245,8 @@ export default function Page() {
                     <TextField
                       label="제목"
                       type="text"
-                      name="type"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
                       className="fText"
                       style={{ width: "auto" }}
                       size="small"
@@ -251,18 +272,20 @@ export default function Page() {
                           id="regist_start_date"
                           type="date"
                           className="fText gDate"
-                          name="regist_start_date"
+                          value={create_start_dtm}
+                          onChange={(e) => setCreateStartDtm(e.target.value)}
                           size="small"
-                          onChange={(e) => setRegist_start_date(e.target.value)}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                         <span style={{ margin: "0 10px" }}>~</span>
                         <TextField
                           id="regist_end_date"
                           type="date"
                           className="fText gDate"
-                          name="regist_end_date"
+                          value={create_end_dtm}
+                          onChange={(e) => setCreateEndDtm(e.target.value)}
                           size="small"
-                          onChange={(e) => setRegist_end_date(e.target.value)}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                       </div>
                     </div>
@@ -287,18 +310,20 @@ export default function Page() {
                           id="regist_start_date"
                           type="date"
                           className="fText gDate"
-                          name="regist_start_date"
+                          value={answer_start_dtm}
+                          onChange={(e) => setAnswerStartDtm(e.target.value)}
                           size="small"
-                          onChange={(e) => setRegist_start_date(e.target.value)}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                         <span style={{ margin: "0 10px" }}>~</span>
                         <TextField
                           id="regist_end_date"
                           type="date"
                           className="fText gDate"
-                          name="regist_end_date"
+                          value={answer_end_dtm}
+                          onChange={(e) => setAnswerEndDtm(e.target.value)}
                           size="small"
-                          onChange={(e) => setRegist_end_date(e.target.value)}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                       </div>
                     </div>
@@ -314,13 +339,13 @@ export default function Page() {
                     <span style={{ width: "120px" }}>답변여부</span>
                     <RadioGroup
                       row
-                      defaultValue="2"
-                      name="del"
+                      value={isanswered}
+                      onChange={(e) => setIsAnswered(e.target.value)}
                       className="fChk"
-                      onChange={(e) => setIsdeleted(e.target.value)}
                     >
                       <FormControlLabel
-                        value="2"
+                        // value="2"
+                        value=""
                         control={<Radio size="small" />}
                         label="전체"
                       />
@@ -342,7 +367,7 @@ export default function Page() {
                       variant="contained"
                       color="primary"
                       size="small"
-                      onClick={() => doSrchFrm(0)}
+                      onClick={() => search(1)}
                       className="btnSearch"
                     >
                       검색
@@ -386,16 +411,6 @@ export default function Page() {
                   onClick={delete_choice}
                   className="btnNormal"
                   sx={{ ml: 1 }}
-                  startIcon={<EditIcon />}
-                >
-                  답변하기
-                </Button>
-                <Button
-                  variant="contained"
-                  color="inherit"
-                  onClick={delete_choice}
-                  className="btnNormal"
-                  sx={{ ml: 1 }}
                   startIcon={<ClearIcon />}
                 >
                   삭제
@@ -414,8 +429,8 @@ export default function Page() {
                           onChange={handleAllCheck} // 전체 선택 체크박스 핸들러 연결
                         />
                       </TableCell>
-                      <TableCell align="center">번호</TableCell>
-                      <TableCell align="center">사용자번호</TableCell>
+                      <TableCell align="center">이름</TableCell>
+                      <TableCell align="center">닉네임</TableCell>
                       <TableCell align="center">제목</TableCell>
                       <TableCell align="center">작성일</TableCell>
                       <TableCell align="center">답변 완료일</TableCell>
@@ -425,7 +440,7 @@ export default function Page() {
                   <TableBody>
                     {list && list.length > 0 ? (
                       list.map((ar, i) => (
-                        <TableRow key={i} hover tabIndex={-1} role="checkbox">
+                        <TableRow key={i} hover role="checkbox">
                           <TableCell padding="checkbox">
                             <Checkbox
                               disableRipple
@@ -440,18 +455,18 @@ export default function Page() {
                             align="center"
                             component="th"
                             scope="row"
-                            onClick={() =>
-                              router.push(`/admin/qna/detail/${ar.qnakey}`)
-                            }
+                            onClick={() => handleQuestionModalOpen(ar.qnakey)}
                             style={{ cursor: "pointer" }}
                           >
-                            {(page.nowPage - 1) * page.numPerPage + i + 1}
+                            {ar.uvo.name}
                           </TableCell>
-                          <TableCell align="right">{ar.userkey}</TableCell>
+                          <QuestionModal questionModalOpen={questionModalOpen} handleQuestionModalClose={handleQuestionModalClose} qnakey={selectedQnaKey}  handleAnswerModalOpen={handleAnswerModalOpen}/>
+                          <AnswerModal answerModalOpen={answerModalOpen} handleAnswerModalClose={handleAnswerModalClose} qnakey={selectedQnaKey} search={search}/>
+                          <TableCell align="center" onClick={() => handleQuestionModalOpen(ar.qnakey)} style={{ cursor: "pointer" }}>
+                            {ar.uvo.nickname}
+                          </TableCell>
                           <TableCell
-                            onClick={() =>
-                              router.push(`/admin/qna/detail/${ar.qnakey}`)
-                            }
+                            onClick={() => handleQuestionModalOpen(ar.qnakey)} align="center"
                             style={{ cursor: "pointer" }}
                           >
                             {ar.title ? ar.title : "-"}
@@ -506,7 +521,7 @@ export default function Page() {
                   count={page.totalPage}
                   showFirstButton
                   showLastButton
-                  onChange={(e, newPage) => changePage(newPage)}
+                  onChange={(e, newPage) => search(newPage)}
                 />
               </Box>
             </DashboardCard>

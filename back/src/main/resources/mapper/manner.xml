@@ -6,7 +6,7 @@
     <!-- 매너 목록 -->
     <select id="getManner" parameterType="String" resultType="com.sist.back.vo.ReviewListVO">
       SELECT MIN(r.reviewlistkey) AS reviewlistkey, MIN(r.preference) AS preference, r.review,
-            COUNT(CASE WHEN r.preference = 0 THEN 1 END) + COUNT(CASE WHEN r.preference IN (1, 2) THEN 1 END) AS count
+            COUNT(CASE WHEN r.preference IN (0, 3) THEN 1 END) + COUNT(CASE WHEN r.preference IN (1, 2, 4, 5) THEN 1 END) AS count
       FROM manner m
       JOIN reviewlist r ON m.reviewlistkey = r.reviewlistkey
       WHERE m.userkey = #{userkey}

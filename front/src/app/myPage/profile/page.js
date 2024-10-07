@@ -12,12 +12,13 @@ import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
 import "/public/css/myPage.css";
 import "/public/css/paging.css";
+import { useSearchParams } from "next/navigation";
 
 export default function page() {
   const API_URL = "/user/api/getUser";
 
   const [selectedTab, setSelectedTab] = useState('');
-  const [whatNow, setWhatNow] = useState('badge');
+  const [whatNow, setWhatNow] = useState('manner');
   const [status, setStatus] = useState(1);
   const [badgeCount, setBadgeCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
@@ -25,8 +26,9 @@ export default function page() {
   const [mannerTemp, setMannerTemp] = useState(36.5);
   const [vo, setVo] = useState({});
   const userkey = Cookies.get("userkey");
+  const searchParams = useSearchParams();
 
-  const categoryList = ['badge','manner','review'];
+  const categoryList = ['manner','review', 'badge'];
   
   const handleBadgeCount = (count) => {
     setBadgeCount(count);
@@ -44,11 +46,11 @@ export default function page() {
       setWhatNow(category);
       setStatus(categoryList.indexOf(category)+1);
   
-      if (category == 'badge') {
+      if (category == 'manner') {
       setSelectedTab('1');
-      } else if (category == 'manner') {
-      setSelectedTab('2');
       } else if (category == 'review') {
+      setSelectedTab('2');
+      } else if (category == 'badge') {
       setSelectedTab('3');
       }
   }
@@ -60,23 +62,29 @@ export default function page() {
       }
     ).then((res) => {
       setVo(res.data.uvo);
-      setMannerTemp(res.data.uvo.mannerTemp);
+      setMannerTemp(res.data.uvo.mannertemp);
     });
   }
 
   useEffect(() => {
-    updateList('badge');
+    const tab = searchParams.get('tab') || 'manner'; // 기본 탭은 'manner'
+    updateList(tab);
+
     axios.get("/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
     });
-    Promise.all([
-      axios.get("/user/buyingReview", { params: { userkey: userkey} }),
-      axios.get("/user/sellingReview", { params: { userkey: userkey} })
-    ]).then(([res1, res2]) => {
-        setReviewCount([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
+      axios.get("/user/allReview", { params: { userkey: userkey} })
+    .then((res) => {
+      if (reviewCount === 0) {
+        setReviewCount(res.data.count);
+      }
+    });
+      axios.get("/user/badge/getBadgeCount", { params: { userkey: userkey } })
+    .then((res) => {
+      setBadgeCount(res.data.count);
     });
     getData();
   }, []);
@@ -204,19 +212,7 @@ export default function page() {
                   <LinearProgressWithLabel temp={ mannerTemp } />
                 </div>
                 <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
-                  <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
-                    <Link data-v-2cbb289b="" href="#" className="tab_link">
-                      <dl data-v-2cbb289b="" className="tab_box">
-                        <dt data-v-2cbb289b="" className="title">
-                          {badgeCount}
-                        </dt>
-                        <dd data-v-2cbb289b="" className="count">
-                          활동 배지
-                        </dd>
-                      </dl>
-                    </Link>
-                  </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -228,7 +224,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -240,12 +236,24 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
+                  <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
+                    <Link data-v-2cbb289b="" href="#" className="tab_link">
+                      <dl data-v-2cbb289b="" className="tab_box">
+                        <dt data-v-2cbb289b="" className="title">
+                          {badgeCount}
+                        </dt>
+                        <dd data-v-2cbb289b="" className="count">
+                          활동 배지
+                        </dd>
+                      </dl>
+                    </Link>
+                  </div>
                 </div>
                 <div data-v-eff62a72="" data-v-0a67d0b5="" className="purchase_list bidding ask">
                     <div data-v-24868902="" className="empty_area" style={{paddingTop: '50px'}}>
-                      {selectedTab == '1' && <BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/>}
-                      {selectedTab == '2' && <Manner userKey={userkey} onMannerCountChange={handleMannerCount} />}
-                      {selectedTab == '3' && <Review userKey={userkey} onReviewCountChange={handleReviewCount}/>}
+                      {selectedTab == '1' && <Manner userKey={userkey} onMannerCountChange={handleMannerCount} />}
+                      {selectedTab == '2' && <Review userKey={userkey} onReviewCountChange={handleReviewCount}/>}
+                      {selectedTab == '3' && <BadgeList userKey={userkey} onBadgeCountChange={handleBadgeCount}/>}
                     </div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 package com.sist.back.controller;
 
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.sist.back.service.UserService;
 import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.ChattingVO;
 import com.sist.back.vo.PostImgVO;
+import com.sist.back.vo.PostVO;
 import com.sist.back.vo.userVO;
 
 import lombok.RequiredArgsConstructor;

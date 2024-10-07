@@ -64,6 +64,14 @@ export default function SellerReviewModal(props) {
   };
   
   function send() {
+    if (selectedKeys.length === 0) {
+      alert("항목을 선택해 주세요.");
+      return;
+    }
+    const confirmation = confirm("작성한 후기는 수정할 수 없습니다. 계속 진행하시겠습니까?");
+    if (!confirmation) {
+      return;
+    }
     axios({
       url: SELLER_REVIEW_URL,
       method: "post",
