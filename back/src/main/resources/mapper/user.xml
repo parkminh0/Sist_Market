@@ -226,16 +226,25 @@
         SELECT * FROM setalarm WHERE userkey = #{userkey}
     </select>
     <!-- LikeUser 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getLikeUsersByUserKey" resultType="com.sist.back.vo.LikeUserVO" parameterType="String">
-        SELECT * FROM likeuser WHERE userkey = #{userkey}
+    <select id="getLikeUsersByUserKey" resultMap="likeuserMap" parameterType="String">
+        SELECT l.*, u.*
+        FROM likeuser l
+        JOIN user u ON l.likeuserkey = u.userkey
+        WHERE l.userkey = #{userkey}
     </select>
     <!-- Blocked 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getBlockedUsersByUserKey" resultType="com.sist.back.vo.BlockedVO" parameterType="String">
-        SELECT * FROM blocked WHERE userkey = #{userkey}
+    <select id="getBlockedUsersByUserKey" resultMap="blockedMap" parameterType="String">
+        SELECT b.*, u.*
+        FROM blocked b
+        JOIN user u ON b.blockeduserkey = u.userkey
+        WHERE b.userkey = #{userkey}
     </select>
     <!-- Nosee 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getNoseeUsersByUserKey" resultType="com.sist.back.vo.NoseeVO" parameterType="String">
-        SELECT * FROM nosee WHERE userkey = #{userkey}
+    <select id="getNoseeUsersByUserKey" resultMap="noseeMap" parameterType="String">
+        SELECT n.*, u.*
+        FROM nosee n
+        JOIN user u ON n.noseeuserkey = u.userkey
+        WHERE n.userkey = #{userkey}
     </select>
     
 
