@@ -204,18 +204,10 @@ export default function page() {
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
-      const goodTemps = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2)
-      .reduce((sum, item) => sum + item.count, 0);
-      const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
-      .reduce((sum, item) => sum + item.count, 0);
-      const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
-      
     });
-    Promise.all([
-      axios.get("/user/buyingReview", { params: { userkey: userkey} }),
-      axios.get("/user/sellingReview", { params: { userkey: userkey} })
-    ]).then(([res1, res2]) => {
-        setReviewCount([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
+    axios.get("/user/allReview", { params: { userkey: userkey} 
+    }).then((res) => {
+      setReviewCount(res.data.count);
     });
     setLoading(true);
     getData();

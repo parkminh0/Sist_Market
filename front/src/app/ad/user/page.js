@@ -8,6 +8,7 @@ import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
+import PostDetail from "@/component/admin/post/detail/PostDetail";
 import {
   Avatar,
   Box,
@@ -166,24 +167,8 @@ export default function Page() {
       });
   }
 
-  //모달창
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 1200,
-    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
-    overflowY: 'auto',  // 세로 스크롤 추가
-    bgcolor: 'background.paper',
-    border: '2px solid #blue',
-    boxShadow: 24,
-    p: 4,
-  };
   
   
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); 
 
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
@@ -291,6 +276,54 @@ export default function Page() {
       }
     });
   }
+
+  //포스트 모달
+  //모달창
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 1200,
+    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
+    overflowY: 'auto',  // 세로 스크롤 추가
+    bgcolor: 'background.paper',
+    border: '2px solid #blue',
+    boxShadow: 24,
+    p: 4,
+  };
+
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); 
+
+  const [openPD, setOpenPD] = useState(false); // openPD 상태 정의
+  const [pdkey, setPdkey] = useState("0"); // pdkey 상태 정의
+
+
+  function openPostDetail(postkey) {
+    // 해당 게시글의 상세 정보를 API로 불러옵니다.
+    axios({
+      url: `/user/api/postDetail`, // 게시글 상세 정보 API URL
+      method: "get",
+      params: { postkey: postkey },
+    })
+      .then((response) => {
+        setSelectedPost(response.data); // 게시글 정보 상태에 저장
+        setPdkey(postkey); // 선택된 게시글 키 상태에 저장
+        setOpenPD(true); // 모달 열기
+      });
+  }
+
+  // 게시글 상세 모달 닫기 함수
+  function openPostDetail(postkey) {
+    setPdkey(postkey);  // 클릭한 게시글의 postkey 설정
+    setOpenPD(true);    // 모달 열기
+  }
+
+  const closePostDetail = () => {
+    setOpenPD(false); // 모달을 닫음
+  };
+  
 
 
   return (
@@ -414,7 +447,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRegist_start_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                             <span style={{ margin: "0 10px" }}>~</span>
                             <TextField
@@ -426,7 +458,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRegist_end_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                           </div>
                         </div>
@@ -490,7 +521,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRecent_login_start_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                             <span style={{ margin: "0 10px" }}>~</span>
                             <TextField
@@ -502,7 +532,6 @@ export default function Page() {
                               onChange={(e) =>
                                 setRecent_login_end_date(e.target.value)
                               }
-                              onKeyDown={(e) => e.preventDefault()}
                             />
                           </div>
                         </div>
@@ -933,7 +962,8 @@ export default function Page() {
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
+                          style={{ cursor: "pointer", textAlign: "center" }}
+                          onClick={() => openPostDetail(post.postkey)}
                         >
                           {post.title || ""}
                         </td>
@@ -1040,7 +1070,14 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {likeUser.likeuserkey || ""}
+                          
+                          <Box gap={2} display="flex" alignItems="center">
+                          <Avatar 
+                              alt={likeUser?.uvo?.nickname || "Unknown"} 
+                              src={likeUser?.uvo?.imgurl || "/default-avatar.png"} 
+                            />
+                            {likeUser?.uvo?.nickname || "Unknown"}
+                            </Box>
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
@@ -1143,7 +1180,14 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {blockedUser.blockeduserkey || ""}
+                          <Box display="flex" alignItems="center" gap={2}>
+                              <Avatar
+                                alt={blockedUser.uvo?.nickname || "Unknown"}  // 사용자 닉네임
+                                src={blockedUser.uvo?.imgurl || "/default-avatar.png"}  // 사용자 아바타 이미지
+                              />
+                              {blockedUser.uvo?.nickname || "Unknown"}
+                          </Box>
+                          
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
@@ -1191,13 +1235,20 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {noseeUser.noseeuserkey || ""}
+                          
+                          <Box display="flex" alignItems="center" gap={2}>
+                              <Avatar
+                                alt={noseeUser.uvo?.nickname || "Unknown"}  // 사용자 닉네임
+                                src={noseeUser.uvo?.imgurl || "/default-avatar.png"}  // 사용자 아바타 이미지
+                              />
+                              {noseeUser.uvo?.nickname || "Unknown"}
+                            </Box>
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {noseeUser.create_dtm || ""}
+                           {noseeUser.create_dtm || ""}
                         </td>
                       </tr>
                     ))
@@ -1416,6 +1467,15 @@ export default function Page() {
         
       </div>
     </div>
+
+    {/**모달창 */}
+    {openPD && (
+          <PostDetail
+            openPD={openPD}
+            closePostDetail={closePostDetail}
+            postkey={pdkey}
+          />
+        )}
         </Box>
       </Modal>
 

@@ -360,5 +360,16 @@ public class UserService {
         return mapper.getRestList(userkey,limitpostkey,lastpostkey);
     }
 
+    public int getPostCountByUserKey(String userkey){
+        return mapper.getPostCountByUserKey(userkey);
+    }
+
+    public List<PostVO> getPostsByUserKey(Map<String, Object> pmap){
+      
+        List<PostVO> p_list = mapper.getPostsByUserKey(pmap);
+        
+        return p_list;
+    }
+
 
 }

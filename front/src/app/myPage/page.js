@@ -202,7 +202,7 @@ export default function page() {
               >
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/profile"
+                  href="/myPage/profile?tab=badge" 
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">

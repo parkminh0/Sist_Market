@@ -72,9 +72,6 @@ export default function Page() {
       })
         .then(() => {
           getData();
-        })
-        .catch(() => {
-          console.error('이미지 변경 실패');
         });
     }
   }
@@ -85,11 +82,7 @@ export default function Page() {
         params: { userkey: userkey }
       }
     ).then(() => {
-      console.log('이미지 삭제 성공');
       getData();
-    })
-    .catch(() => {
-      console.error('이미지 삭제 실패');
     });
   }
   

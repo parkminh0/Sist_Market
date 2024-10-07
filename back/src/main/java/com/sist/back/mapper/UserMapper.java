@@ -121,4 +121,9 @@ public interface UserMapper {
     List<PostVO> getMorePost(String userkey,String limitpostkey,String lastpostkey);
     int getRestList(String userkey,String limitpostkey,String lastpostkey);
 
+    List<PostVO> getPostsByUserKey(Map<String, Object> pmap);
+    int getPostCountByUserKey(String userkey);
+
+    
+
 }

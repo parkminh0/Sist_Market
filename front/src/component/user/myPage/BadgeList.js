@@ -10,6 +10,7 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
     const API_URL = "/user/badge/getBadge";
     const REP_URL = "/user/badge/representBadge";
     const CAN_URL = "/user/badge/cancelRep";
+    const GIVE_BADGE_URL = "/user/badge/giveBadge";
 
     const [list, setList] = useState([]);
     const [unlockedBadgeKeys, setUnlockedBadgeKeys] = useState([]);
@@ -20,9 +21,18 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
     const userkey = userKey;
 
     useEffect(() => {
+        giveBadgeToUser();
         getAllData();
         getData();
     }, []);
+
+    function giveBadgeToUser() {
+        axios.get(GIVE_BADGE_URL, {
+            params: { userkey: userkey }
+        }).then((res) => {
+            getData();
+        });
+    }
 
     function getAllData() {
         axios.get(ALL_URL).then((res) => {
@@ -85,7 +95,7 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
                     <Box sx={{ marginTop: 2 }}>
                         <LockIcon sx={{ fontSize: 60, color: '#FFC107' }} />
                         <Typography variant="body2" sx={{ color: '#888' }}>
-                            아직 획득한 황금배지가 없어요.
+                            아직 대표 배지로 설정한 황금배지가 없어요.
                             <br /> '황금배지'만 대표 배지로 설정할 수 있어요.
                         </Typography>
                     </Box>
@@ -119,7 +129,7 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
             </Grid>
 
             <Modal open={open} onClose={modalClose} aria-labelledby="badge-modal-title">
-                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 300, bgcolor: 'background.paper',
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 350, bgcolor: 'background.paper',
                         borderRadius: 4, boxShadow: 24, p: 4, textAlign: 'center', cursor: 'pointer' }}>
                     {selectedBadge && (
                         <>
@@ -129,9 +139,23 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
                                 <LockIcon sx={{ fontSize: 80, color: selectedBadge.isrepresentable == "1" ? '#FFC107' : '#666', margin: '0 auto 16px' }} />
                             )}
                             <Typography variant="h6">{selectedBadge.name}</Typography>
-                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
+                            {/* <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
                                 {unlockedBadgeKeys.includes(selectedBadge.badgekey) ? selectedBadge.postcontent : selectedBadge.precontent}
-                            </Typography>
+                            </Typography> */}
+                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
+                    {unlockedBadgeKeys.includes(selectedBadge.badgekey)
+                        ? selectedBadge.postcontent.split('.').map((sentence, index) => (
+                            <span key={index}>
+                                {sentence.trim() && `${sentence.trim()}.`}<br />
+                            </span>
+                        ))
+                        : selectedBadge.precontent.split('.').map((sentence, index) => (
+                            <span key={index}>
+                                {sentence.trim() && `${sentence.trim()}.`}<br />
+                            </span>
+                        ))
+                    }
+                </Typography>
                             {/* 대표 배지 설정 O */}
                             {selectedBadge && repBadge && selectedBadge.badgekey == repBadge.badgekey ? (
                                 <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { cancelRep(); modalClose(); }}>
