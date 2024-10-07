@@ -45,6 +45,9 @@ export default function Page() {
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
+  //const [tCount, setTCount] = useState({});
+  const [tDel, setTDel] = useState(0);
+  const [tAct, setTAct] = useState(0);
 
   const [search_type, setSearch_type] = useState("name");
   const [type, setType] = useState("");
@@ -111,6 +114,8 @@ export default function Page() {
       setCount(response.data.ucvo);
       setDel(response.data.ucvo.cntDel);
       setAct(response.data.ucvo.cntNotDel);
+      setTAct(response.data.ucvo.cntTNotDel);
+      setTDel(response.data.ucvo.cntTDel);
     });
   }
   // 페이징 처리 함수
@@ -169,9 +174,6 @@ export default function Page() {
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
-
-  
-  
 
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
@@ -372,26 +374,23 @@ export default function Page() {
             <Top_Analytic
               title="전체 회원"
               count={count.cntAll}
-              percentage={59.3}
-              extra="35,000"
+              extra={count.cntTAll}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="회원"
               count={act}
-              percentage={70.5}
-              extra="8,900"
+              extra={tAct}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="탈퇴회원"
               count={del}
-              percentage={27.4}
               isLoss
               color="warning"
-              extra="1,943"
+              extra={tDel}
             />
           </Grid>
         </Grid>
