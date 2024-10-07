@@ -56,6 +56,16 @@
         <collection property="ub_list" ofType="com.sist.back.vo.UserBadgeVO" select="getUserBadgesByUserKey" column="userkey"/>
     </resultMap>
 
+    <resultMap id="mypageMap" type="com.sist.back.vo.userVO">
+        <id column="userkey" property="userkey"/>
+        <!--wishlist 매핑-->
+        <collection property="w_list" ofType="com.sist.back.vo.WishlistVO" select="getWishlistByUserKey" column="userkey"/>
+        <!--buy_list 매핑-->
+        <collection property="buy_list" ofType="com.sist.back.vo.PostVO" select="getBuyListMyPage" column="userkey"/>
+        <!--cell_list 매핑-->
+        <collection property="cell_list" ofType="com.sist.back.vo.PostVO" select="getCellListMyPage" column="userkey"/>
+    </resultMap>
+
      <!-- AddressVO와 TownVO를 조인하여 가져오는 매핑 -->
     <resultMap id="addressResultMap" type="com.sist.back.vo.AddressVO">
         <id column="addresskey" property="addresskey"/>
@@ -123,7 +133,7 @@
 
     <resultMap id="wishlistResultMap" type="com.sist.back.vo.WishlistVO">
         <result column="postkey" property="postkey"/>
-        <association property="pvo" javaType="com.sist.back.vo.PostVO" select="com.sist.back.mapper.PostMapper.getPostByPostKey" column="postkey"/>
+        <association property="pvo" javaType="com.sist.back.vo.PostVO" select="com.sist.back.mapper.PostMapper.getPost_simple" column="postkey"/>
     </resultMap>
 
     <resultMap id="interestcategoryResultMap" type="com.sist.back.vo.InterestCategoryVO">
@@ -133,15 +143,15 @@
 
     <resultMap id="likeuserMap" type="com.sist.back.vo.LikeUserVO">
         <result column="likeuserkey" property="likeuserkey"/>
-        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="likeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="likeuserkey"/>
     </resultMap>
     <resultMap id="blockedMap" type="com.sist.back.vo.BlockedVO">
         <result column="blockeduserkey" property="blockeduserkey"/>
-        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="blockeduserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="blockeduserkey"/>
     </resultMap>
     <resultMap id="noseeMap" type="com.sist.back.vo.NoseeVO">
         <result column="noseeuserkey" property="noseeuserkey"/>
-        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserForAdmin" column="noseeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="noseeuserkey"/>
     </resultMap>
 
     <!-- estimateuserkey로 user 닉네임과 imgurl -->
@@ -160,6 +170,13 @@
     <!-- 관리자 유저 정보 가져오기 -->
     <select id="getUserForAdmin" parameterType="String" resultMap="userResultMap">
       SELECT * FROM user
+      WHERE userkey = #{userkey}
+    </select>
+
+    <!-- 관리자 유저 정보 가져오기 -->
+    <select id="getUserForMyPage" parameterType="String" resultMap="mypageMap">
+      SELECT *
+      FROM `user`
       WHERE userkey = #{userkey}
     </select>
 
@@ -201,6 +218,21 @@
         SELECT * FROM `category` WHERE categorykey = #{categorykey}
     </select>
 
+    <select id="getBuyListMyPage" resultMap="com.sist.back.mapper.PostMapper.post_image_map" parameterType="String">
+        SELECT *
+        FROM `post`
+        WHERE dealuserkey = #{userkey}
+        AND poststatus = 3
+        ORDER BY deal_dtm desc
+    </select>
+
+    <select id="getCellListMyPage" resultMap="com.sist.back.mapper.PostMapper.post_image_map" parameterType="String">
+        SELECT *
+        FROM `post`
+        WHERE userkey = #{userkey}
+        AND poststatus <![CDATA[>]]> 0
+        ORDER BY create_dtm desc
+    </select>
     <select id="getBuyListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
         SELECT *
         FROM `post`
@@ -226,25 +258,16 @@
         SELECT * FROM setalarm WHERE userkey = #{userkey}
     </select>
     <!-- LikeUser 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getLikeUsersByUserKey" resultMap="likeuserMap" parameterType="String">
-        SELECT l.*, u.*
-        FROM likeuser l
-        JOIN user u ON l.likeuserkey = u.userkey
-        WHERE l.userkey = #{userkey}
+    <select id="getLikeUsersByUserKey" resultType="com.sist.back.vo.LikeUserVO" parameterType="String">
+        SELECT * FROM likeuser WHERE userkey = #{userkey}
     </select>
     <!-- Blocked 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getBlockedUsersByUserKey" resultMap="blockedMap" parameterType="String">
-        SELECT b.*, u.*
-        FROM blocked b
-        JOIN user u ON b.blockeduserkey = u.userkey
-        WHERE b.userkey = #{userkey}
+    <select id="getBlockedUsersByUserKey" resultType="com.sist.back.vo.BlockedVO" parameterType="String">
+        SELECT * FROM blocked WHERE userkey = #{userkey}
     </select>
     <!-- Nosee 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getNoseeUsersByUserKey" resultMap="noseeMap" parameterType="String">
-        SELECT n.*, u.*
-        FROM nosee n
-        JOIN user u ON n.noseeuserkey = u.userkey
-        WHERE n.userkey = #{userkey}
+    <select id="getNoseeUsersByUserKey" resultType="com.sist.back.vo.NoseeVO" parameterType="String">
+        SELECT * FROM nosee WHERE userkey = #{userkey}
     </select>
     
 
@@ -278,11 +301,15 @@
 
     <!-- 관리자 유저 정보 카운트 -->
     <select id="countForAdmin" resultType="com.sist.back.vo.UserCountVO">
-      SELECT COUNT(*) AS cntAll, 
-          COUNT(CASE WHEN isdeleted = 0 THEN 1 END) AS cntNotDel,
-          COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS cntDel
-        FROM user
-    </select> 
+      SELECT 
+        COUNT(*) AS cntAll, 
+        COUNT(CASE WHEN isdeleted = 0 THEN 1 END) AS cntNotDel,
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS cntDel,
+        COUNT(CASE WHEN DATE(create_dtm) = CURDATE() THEN 1 END) AS cntTAll,
+        COUNT(CASE WHEN isdeleted = 0 AND DATE(create_dtm) = CURDATE() THEN 1 END) AS cntTNotDel,
+        COUNT(CASE WHEN isdeleted = 1 AND DATE(delete_dtm) = CURDATE() THEN 1 END) AS cntTDel
+      FROM user
+    </select>
 
     <!-- 관리자 페이징 검색 -->
     <select id="searchForAdminPaging" parameterType="map" resultType="int">
@@ -542,6 +569,19 @@
         ) c 
         WHERE c.rnum BETWEEN #{begin} AND #{end}
     </select>
+
+    <insert id="addLikeCategory" parameterType="Map">
+      INSERT
+      INTO `interestcategory`(userkey,categorykey)
+      VALUES (#{userkey},#{categorykey})
+    </insert>
+
+    <insert id="addLikeKeyword" parameterType="Map">
+      INSERT
+      INTO `keyword`(userkey, content)
+      VALUES(#{userkey}, #{content} )
+    </insert>
+
 
     
     <!-- buy_list -->
@@ -821,9 +861,7 @@
           ) AS temp
       )
     </update>
-
     <select id="searchNickname" parameterType="String">
       SELECT nickname FROM user WHERE userkey = #{userkey}
     </select>
 </mapper>
-

@@ -210,6 +210,14 @@ public class UserService {
         return likelist;
     }
 
+    public int addLikeCategory(String userkey, String categorykey){
+        return mapper.addLikeCategory(userkey, categorykey);
+    }
+
+    public int addLikeKeyword(String userkey, String content){
+        return mapper.addLikeKeyword(userkey, content);
+    }
+
     public int getBuyTotalCount(String userkey) {
         int likecount = mapper.getBuyTotalCount(userkey);
         return likecount;

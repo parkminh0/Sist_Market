@@ -12,6 +12,8 @@ import PostDetail from "@/component/admin/post/detail/PostDetail";
 import {
   Avatar,
   Box,
+  Backdrop,
+  CircularProgress,
   Button,
   Checkbox,
   FormControl,
@@ -43,6 +45,9 @@ export default function Page() {
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
+  //const [tCount, setTCount] = useState({});
+  const [tDel, setTDel] = useState(0);
+  const [tAct, setTAct] = useState(0);
 
   const [search_type, setSearch_type] = useState("name");
   const [type, setType] = useState("");
@@ -109,6 +114,8 @@ export default function Page() {
       setCount(response.data.ucvo);
       setDel(response.data.ucvo.cntDel);
       setAct(response.data.ucvo.cntNotDel);
+      setTAct(response.data.ucvo.cntTNotDel);
+      setTDel(response.data.ucvo.cntTDel);
     });
   }
   // 페이징 처리 함수
@@ -118,7 +125,7 @@ export default function Page() {
 
   function doSrchFrm(cPage) {
     let now = cPage;
-
+    setLoading(true);
     axios({
       url: `${API_URL_2}?cPage=${cPage}`,
       method: "post",
@@ -134,6 +141,7 @@ export default function Page() {
       },
     })
       .then((response) => {
+        setLoading(false);
         setUserlist(response.data.ar);
         setTotalPage(response.data.totalPage);
         setTotalRecords(response.data.totalRecord);
@@ -167,9 +175,6 @@ export default function Page() {
       });
   }
 
-  
-  
-
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
     setUserkey(userkey); 
@@ -197,8 +202,9 @@ export default function Page() {
   const [tvo, setTvo] = useState([]);
 
   function editUser(userkey){
+    setLoading(true);
     setUserkey(userkey);
-    setOpen(true); 
+    
 
     if (userkey) {
       
@@ -221,7 +227,9 @@ export default function Page() {
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
-        console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
+        setLoading(false);
+        setOpen(true); 
+        //console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
       });
     }
   }
@@ -324,11 +332,34 @@ export default function Page() {
     setOpenPD(false); // 모달을 닫음
   };
   
+  // 프로그레스 띄우기용
+  const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useState([]);
 
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
+        {loading && (
+            <Backdrop
+              open={loading}
+              sx={(theme) => ({
+                position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                justifyContent: "center", // 수평 중앙 정렬
+                alignItems: "center", // 수직 중앙 정렬
+                color: "#fff",
+                zIndex: theme.zIndex.drawer + 1,
+                backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+              })}
+            >
+              <CircularProgress size={100} color="inherit" />
+            </Backdrop>
+          )}
         <Grid
           container
           spacing={3}
@@ -343,26 +374,23 @@ export default function Page() {
             <Top_Analytic
               title="전체 회원"
               count={count.cntAll}
-              percentage={59.3}
-              extra="35,000"
+              extra={count.cntTAll}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="회원"
               count={act}
-              percentage={70.5}
-              extra="8,900"
+              extra={tAct}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="탈퇴회원"
               count={del}
-              percentage={27.4}
               isLoss
               color="warning"
-              extra="1,943"
+              extra={tDel}
             />
           </Grid>
         </Grid>
@@ -662,68 +690,61 @@ export default function Page() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(userlist || []).map((item, i) => (
-                      <TableRow key={i} hover tabIndex={-1} role="checkbox"
-                      onClick={() => handleRowCheck({ target: { checked: !checkedItems.includes(item.userkey) } }, item.userkey)}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            disableRipple
-                            name="use_check[]"
-                            className="rowChk"
-                            checked={checkedItems.includes(item.userkey)} // 개별 체크박스 상태 관리
-                            onChange={(e) => handleRowCheck(e, item.userkey)} // 개별 체크박스 핸들러 연결
-                          />
-                        </TableCell>
-                        <TableCell component="th" scope="row">
-                            <Box gap={2} display="flex" alignItems="center">
-                              <Avatar alt={item.name} src={item.imgurl} />
-                              {item.name}
-                            </Box>
-                        </TableCell>
-                        <TableCell align="right">
-                          {
-                            new Date(item.create_dtm)
-                              .toISOString()
-                              .split("T")[0]
-                          }
-                        </TableCell>
-                        <TableCell>
-                            {item.id}
-                        </TableCell>
-                        <TableCell align="center">{item.nickname}</TableCell>
-                        <TableCell align="center">{item.phone}</TableCell>
-                        <TableCell>{item.email}</TableCell>
-                        <TableCell align="center">
-                          {item.isdeleted == 0 ? "X" : "O"}
-                        </TableCell>
-                        <TableCell align="center">
-                        
-                          {item.isauthorized == 0 ? "X" : "O"}
-                        </TableCell>
-                        <TableCell align="right">
-                          {new Date(item.login_dtm).toISOString().split("T")[0]}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+  {userlist && userlist.length > 0 ? (
+    // userlist에 데이터가 있을 때 렌더링
+    userlist.map((item, i) => (
+      <TableRow
+        key={i}
+        hover
+        tabIndex={-1}
+        role="checkbox"
+        onClick={() => handleRowCheck({ target: { checked: !checkedItems.includes(item.userkey) } }, item.userkey)}
+      >
+        <TableCell padding="checkbox">
+          <Checkbox
+            disableRipple
+            name="use_check[]"
+            className="rowChk"
+            checked={checkedItems.includes(item.userkey)}
+            onChange={(e) => handleRowCheck(e, item.userkey)}
+          />
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Box gap={2} display="flex" alignItems="center">
+            <Avatar alt={item.name} src={item.imgurl} />
+            {item.name}
+          </Box>
+        </TableCell>
+        <TableCell align="right">
+          {new Date(item.create_dtm).toISOString().split("T")[0]}
+        </TableCell>
+        <TableCell>{item.id}</TableCell>
+        <TableCell align="center">{item.nickname}</TableCell>
+        <TableCell align="center">{item.phone}</TableCell>
+        <TableCell>{item.email}</TableCell>
+        <TableCell align="center">{item.isdeleted === 0 ? "X" : "O"}</TableCell>
+        <TableCell align="center">{item.isauthorized === 0 ? "X" : "O"}</TableCell>
+        <TableCell align="right">
+          {new Date(item.login_dtm).toISOString().split("T")[0]}
+        </TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell align="center" colSpan={10}>
+        <Box sx={{ py: 15, textAlign: "center" }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            검색된 사용자 목록이 없습니다.
+          </Typography>
+          <Typography variant="body2">
+            검색 조건을 확인해주세요.
+          </Typography>
+        </Box>
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
 
-                    {userlist == null ||
-                      (userlist.length == 0 && (
-                        <TableRow>
-                          <TableCell align="center" colSpan={10}>
-                            <Box sx={{ py: 15, textAlign: "center" }}>
-                              <Typography variant="h6" sx={{ mb: 1 }}>
-                                검색된 사용자 목록이 없습니다.
-                              </Typography>
-
-                              <Typography variant="body2">
-                                검색 조건을 확인해주세요.
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
                 </Table>
               </TableContainer>
               {/* Pagination을 가운데에 배치 */}
@@ -1034,7 +1055,7 @@ export default function Page() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
                         매너 평가가 없습니다.
                       </td>
                     </tr>
@@ -1144,7 +1165,7 @@ export default function Page() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
                         사용자 뱃지가 없습니다.
                       </td>
                     </tr>

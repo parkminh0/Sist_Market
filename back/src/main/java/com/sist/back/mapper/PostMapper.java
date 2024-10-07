@@ -20,6 +20,8 @@ public interface PostMapper {
 
     int incViewqty(int postkey);
 
+    PostVO[] getAdPost_simple(Map<String, Object> map);
+
     PostVO getPostByPostKey(int postkey);
 
     PostVO getPostDetailByPostKey(int postkey);

@@ -36,6 +36,8 @@ public class ApiSecurityConfig {
                                 .requestMatchers("/user/api/admin/userDel").permitAll()
                                 .requestMatchers("/user/api/admin/userEditReal").permitAll()
                                 .requestMatchers("/user/api/admin/checkUserDel").permitAll()
+                                .requestMatchers("/user/api/like/category").permitAll()
+                                .requestMatchers("/user/api/like/keyword").permitAll()
                                 .requestMatchers("/user/api/likeLists").permitAll()
                                 .requestMatchers("/user/api/buyList").permitAll()
                                 .requestMatchers("/user/api/cellList").permitAll()

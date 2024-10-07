@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
 import com.sist.back.util.FileRenameUtil;
@@ -109,6 +108,15 @@ public class UserController {
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        map.put("ar", uvo);
+
+        return map;
+    }
+    @RequestMapping("/api/mypage/userEdit")
+    @ResponseBody
+    public Map<String, Object> getUserForMyPage(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserForMyPage(userkey);
         map.put("ar", uvo);
 
         return map;
@@ -406,7 +414,19 @@ public class UserController {
     public Map<String, Object> getLikeList(String userkey, String likewhat, String cPage) {
         Map<String, Object> l_map = new HashMap<>();
         // Paging
-        Paging page = new Paging(3, 3);
+        Paging page = null;
+        switch (likewhat) {
+            case "post":
+                page = new Paging(5, 3);
+                break;
+            case "category":
+                page = new Paging(3, 1);
+                break;
+            case "keyword":
+                page = new Paging(5, 2);
+                break;
+        }
+
         int totalRecord = service.getLikeCount(userkey, likewhat);
         l_map.put("totalCount", totalRecord);
         page.setTotalRecord(totalRecord);
@@ -429,6 +449,22 @@ public class UserController {
         List<WishlistVO> likeList = service.getLikeLists(get_map, likewhat);
         l_map.put("likeList", likeList);
         return l_map;
+    }
+
+    @RequestMapping("/api/like/category")
+    @ResponseBody
+    public Map<String, Object> addLikeCategory(String userkey, String categorykey) {
+        Map<String, Object> lc_map = new HashMap<>();
+        lc_map.put("result_insert", service.addLikeCategory(userkey, categorykey));
+        return lc_map;
+    }
+    
+    @RequestMapping("/api/like/keyword")
+    @ResponseBody
+    public Map<String, Object> addLikeKeyword(String userkey, String content) {
+        Map<String, Object> lk_map = new HashMap<>();
+        lk_map.put("result_insert", service.addLikeKeyword(userkey, content));
+        return lk_map;
     }
 
     // 사용자 구매목록

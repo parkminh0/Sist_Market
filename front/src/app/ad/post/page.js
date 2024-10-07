@@ -254,7 +254,7 @@ export default function Page() {
   const [openPD, setOpenPD] = useState(false);
   const [pdkey, setPdkey] = useState("0");
 
-  function openPostDetail(postkey) {
+  function openPostDetail() {
     if (checkedItems.length == 0) {
       alert("상세내용을 확인할 게시글을 선택해주시기 바랍니다.");
       return;
@@ -843,10 +843,10 @@ export default function Page() {
                           <TableCell component="th" scope="row">
                             <Box gap={2} display="flex" alignItems="center">
                               <Avatar
-                                alt={prod.uvo.nickname}
-                                src={prod.uvo.imgurl}
+                                alt={prod.uvo ? prod.uvo.nickname : "-"}
+                                src={prod.uvo ? prod.uvo.imgurl : "-"}
                               />
-                              {prod.uvo.nickname}
+                              {prod.uvo ? prod.uvo.nickname : "-"}
                             </Box>
                           </TableCell>
                           <TableCell align="center">

@@ -25,6 +25,10 @@ public class PostService {
         return p_mapper.all();
     }
 
+    public PostVO[] getAdPost_simple(Map<String, Object> map) {
+        return p_mapper.getAdPost_simple(map);
+    }
+
     public int getViewqty(int postkey) {
         return p_mapper.getViewqty(postkey);
     }

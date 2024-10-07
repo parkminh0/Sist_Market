@@ -18,6 +18,22 @@
         SELECT * FROM `post`
         WHERE postkey = #{postkey}
     </select>
+    
+    <!-- DB 속도 실험용 -->
+    <resultMap id="adpost_simple" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="townkey" property="townkey" />
+        <result column="userkey" property="userkey" />
+        <result column="categorykey" property="categorykey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+    </resultMap>
+
+    <select id="getAdPost_simple" resultMap="adpost_simple" parameterType="int">
+        SELECT *
+        FROM `post`
+    </select>
 
 
     <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
@@ -115,6 +131,12 @@
     <select id="getPInfo_listByPostKey" resultType="com.sist.back.vo.PostInfoVO" parameterType="int">
         SELECT * FROM `post_info`
         WHERE postkey = #{postkey}
+    </select>
+
+    
+    <select id="getUvoSimple" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
     </select>
 
     
@@ -585,11 +607,11 @@
         <result column="townkey" property="townkey" />
         <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
         <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
-        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="uvo" select="getUvoSimple" column="userkey" javaType="com.sist.back.vo.userVO"/>
         <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
-        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <!-- <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
         <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
-        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" /> -->
     </resultMap>
 
     <select id="searchpost" resultMap="searchpostMap" parameterType="map">
