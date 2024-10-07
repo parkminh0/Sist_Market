@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sist.back.service.DBChangeService;
 import com.sist.back.service.QnaImgService;
 import com.sist.back.service.QnaService;
 import com.sist.back.util.FileRenameUtil;
@@ -41,6 +42,9 @@ public class QnaController {
 
     @Autowired
     private QnaImgService qi_service;
+
+    @Autowired
+    private DBChangeService db_service;
 
     @RequestMapping("/empty")
     @ResponseBody
@@ -140,6 +144,8 @@ public class QnaController {
     public Map<String, Object> answer(@RequestBody QnaVO qvo) {
         Map<String, Object> map = new HashMap<>();
         int cnt = q_service.answer(qvo);
+        qvo = q_service.getQuestion(qvo.getQnakey());
+        db_service.onDatabaseChange("/myPage/qna/view/"+qvo.getQnakey(), "문의 답변이 도착했어요!", "문의", qvo.getUserkey());
         map.put("cnt", cnt);
         return map;
     }

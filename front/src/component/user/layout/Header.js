@@ -597,10 +597,15 @@ export default function Header() {
     }
   };
   // #endregion
-
-  // 알림 창
-  const notificationCount = useRef(30);
+  const[notificationCount, setNotificationCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(()=>{
+    axios.get(`/alarm`, {
+      params: {
+        userkey : userkey}}).then((res)=>{
+          setNotificationCount(res.data.length);
+        })
+  },[]);
 
   const toggleNotifications = () => {
     setIsOpen(!isOpen);
@@ -654,7 +659,7 @@ export default function Header() {
                       }}
                     >
                       <NotificationIcon
-                        notificationCount={notificationCount.current}
+                        notificationCount={notificationCount}
                         notifications={notifications}
                       />
                     </div>

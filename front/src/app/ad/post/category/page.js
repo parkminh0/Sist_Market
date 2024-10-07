@@ -163,7 +163,6 @@ export default function Page() {
   }, []);
 
   function callData() {
-    console.log("hi");
     axios.get(API_URL).then((response) => {
       setCategoryList(response.data.category_list);
       setShowingData(true);

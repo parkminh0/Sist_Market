@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.sist.back.service.SseEmitterService;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 public class NotificationController {
@@ -33,4 +36,5 @@ public class NotificationController {
         sseEmitterService.sendNotificationToClients(message);
         return ResponseEntity.ok("Notification sent!");
     }
+    
 }

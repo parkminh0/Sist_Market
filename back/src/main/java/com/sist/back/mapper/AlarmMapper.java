@@ -11,4 +11,8 @@ public interface AlarmMapper {
     void addAlarm(String redirection, String message, String category, String userkey);
 
     List<AlarmVO> getAlarmForUser(String userkey);
+
+    int deleteNotifications(String alarmkey);
+
+    int deleteAllAlarms(String userkey);
 }

@@ -127,6 +127,6 @@ public interface UserMapper {
     List<PostVO> getPostsByUserKey(Map<String, Object> pmap);
     int getPostCountByUserKey(String userkey);
 
-    
+    String searchNickname(String userkey);
 
 }

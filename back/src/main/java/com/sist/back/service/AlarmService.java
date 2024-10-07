@@ -20,4 +20,12 @@ public class AlarmService {
     public List<AlarmVO> getAlarmForUser(String userkey){
         return a_mapper.getAlarmForUser(userkey);
     }
+
+    public int deleteNotifications(String alarmkey){
+        return a_mapper.deleteNotifications(alarmkey);
+    }
+
+    public int deleteAllAlarms(String userkey){
+        return a_mapper.deleteAllAlarms(userkey);
+    }
 }
