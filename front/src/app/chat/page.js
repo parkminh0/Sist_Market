@@ -18,10 +18,6 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-<<<<<<< HEAD
-import { useRouter } from "next/navigation";
-=======
->>>>>>> c3efe558533b5458dc2ce71910fa25fa6f320a9b
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -106,13 +102,11 @@ const ChatApp = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const isFirstRender = useRef(true);
   const [buyerUserkey, setBuyerUserkey] = useState(null);
+  const [alarmUrl, setAlarmUrl] = useState(new URL(window.location.href));
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const key = queryParams.get('chatroomkey');
-    setCurrentchatroomkey(key);
-    console.log(window.location.search);
-  }, [window.location.search]);
+    console.log(alarmUrl);
+  }, [alarmUrl]);
 
   useEffect(() => {
     if (oneTime.current) {

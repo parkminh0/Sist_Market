@@ -21,7 +21,6 @@ public class AlarmController {
     @RequestMapping("/alarm")
     public ResponseEntity<List<AlarmVO>> getMethodName(String userkey) {
         List<AlarmVO> list = a_service.getAlarmForUser(userkey);
-
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
     

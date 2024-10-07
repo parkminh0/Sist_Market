@@ -37,10 +37,6 @@ export default function Home() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-<<<<<<< HEAD
-=======
-      console.log(res.data);
->>>>>>> c3efe558533b5458dc2ce71910fa25fa6f320a9b
       setFree_list(res.data.free_list);
       setCate_list(res.data.cate_list);
     });

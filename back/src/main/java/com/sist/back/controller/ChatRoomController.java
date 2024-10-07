@@ -1,10 +1,6 @@
 package com.sist.back.controller;
 
 import java.util.List;
-<<<<<<< HEAD
-=======
-import java.util.stream.Collector;
->>>>>>> c3efe558533b5458dc2ce71910fa25fa6f320a9b
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +19,6 @@ import com.sist.back.service.UserService;
 import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.ChattingVO;
 import com.sist.back.vo.PostImgVO;
-<<<<<<< HEAD
-=======
-import com.sist.back.vo.PostVO;
->>>>>>> c3efe558533b5458dc2ce71910fa25fa6f320a9b
 import com.sist.back.vo.userVO;
 
 import lombok.RequiredArgsConstructor;
