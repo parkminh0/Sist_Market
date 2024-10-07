@@ -65,6 +65,15 @@ jobs:
       - name: SSH into EC2 and run Docker Compose
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
+            # 포트 6379 사용 중인지 확인하고, 사용 중이면 호스트의 Redis 서버 중지
+            if sudo lsof -i :6379; then
+              echo "6379 포트가 사용 중입니다. 호스트의 Redis 서버를 중지합니다."
+              sudo systemctl stop redis
+            else
+              echo "6379 포트가 사용 중이 아닙니다. Docker Redis를 실행합니다."
+            fi
+            
+            # Docker Compose로 Redis 실행
             cd /home/ubuntu/market
             docker-compose down
             docker-compose up -d --build
