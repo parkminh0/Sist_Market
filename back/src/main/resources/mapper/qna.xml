@@ -206,4 +206,22 @@
 		SELECT * FROM qna
 		WHERE qnakey = #{qnakey}
 	</select>
+
+    <!-- 오늘 날짜와 같은 문의사항 수 반환 -->
+    <select id="todayCount" resultType="int">
+        SELECT COUNT(*)
+        FROM qna q
+        WHERE q.isdeleted = 0
+        AND DATE(q.create_dtm) = CURRENT_DATE()
+    </select>
+
+    <!-- 오늘 날짜와 같은 문의사항 중 답변 여부에 따른 수 반환 -->
+    <select id="selectTodayCount" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM qna q
+        WHERE q.isdeleted = 0
+        AND q.isanswered = #{isanswered}
+        AND DATE(q.create_dtm) = CURRENT_DATE()
+    </select>
+
 </mapper>

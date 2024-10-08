@@ -54,81 +54,99 @@
         WHERE userkey = #{userkey} AND badgekey = #{badgekey}
     </update>
 
-    <!-- 배지 부여 -->
-    <insert id="giveBadge" parameterType="string">
+    <!-- 배지 부여(1,3,6.상대방에게 후기 1,5,10개 남기기) -->
+    <insert id="giveBadgeForReviews" parameterType="string">
         INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
-        <!-- 다른 테이블에서 데이터를 선택하고 삽입할 때는 VALUES 대신에 SELECT -->
-        SELECT #{userkey}, 1, NOW(), 0 FROM manner
-        WHERE userkey = #{userkey}
-        AND estimateuserkey = #{userkey}
-        AND 1 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 1
+        SELECT #{userkey}, CASE
+                WHEN review_count = 1 THEN 1
+                WHEN review_count = 5 THEN 3
+                WHEN review_count = 10 THEN 6
+            END AS badgekey, NOW(), 0
+        FROM (
+            SELECT estimateuserkey, COUNT(*) AS review_count
+            FROM manner
+            WHERE estimateuserkey = #{userkey}
+            GROUP BY estimateuserkey
+        ) AS review_data
+        WHERE review_count IN (1, 5, 10)
+        AND NOT EXISTS (
+            SELECT 1 FROM userbadge 
+            WHERE userkey = #{userkey} 
+            AND badgekey = CASE
+                WHEN review_count = 1 THEN 1
+                WHEN review_count = 5 THEN 3
+                WHEN review_count = 10 THEN 6
+            END
+        )
+    </insert>
 
-        UNION ALL
+    <!-- 배지 부여(5.시간 약속 후기 5개 or 9.첫 긍정적 후기 받기) -->
+    <insert id="giveBadgeForGoodReviews" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, 
+            CASE 
+                WHEN review_count = 5 THEN 5
+                WHEN positive_review_count = 1 THEN 9
+            END AS badgekey, 
+            NOW(), 0
+        FROM (
+            SELECT userkey,
+                COUNT(CASE WHEN reviewlistkey IN (5, 12, 26, 30) THEN 1 END) AS review_count,
+                COUNT(CASE WHEN ismanner = 1 THEN 1 END) AS positive_review_count
+            FROM manner
+            WHERE userkey = #{userkey}
+            GROUP BY userkey
+        ) AS badge_data
+        WHERE (review_count = 5 OR positive_review_count = 1)
+        AND NOT EXISTS (
+            SELECT 1 FROM userbadge 
+            WHERE userkey = #{userkey} 
+            AND badgekey = CASE 
+                WHEN review_count = 5 THEN 5 
+                WHEN positive_review_count = 1 THEN 9 
+            END
+        )
+    </insert>
 
-        SELECT #{userkey}, 2, NOW(), 0 FROM keyword
+    <!-- 배지 부여(2.관심 키워드 설정) -->
+    <insert id="giveBadgeFirstKeyword" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, 2, NOW(), 0 
+        FROM keyword
         WHERE userkey = #{userkey}
         AND 2 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 1
+        GROUP BY userkey
+        HAVING COUNT(*) = 1
+    </insert>
 
-        UNION ALL
-
-        SELECT #{userkey}, 3, NOW(), 0 FROM manner
-        WHERE userkey = #{userkey}
-        AND estimateuserkey = #{userkey}
-        AND 3 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 5
-
-        UNION ALL
-
-        SELECT #{userkey}, 4, NOW(), 0 FROM post
-        WHERE userkey = #{userkey}
-        AND 4 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 20
-
-        UNION ALL
-
-        SELECT #{userkey}, 5, NOW(), 0 FROM manner
-        WHERE userkey = #{userkey}
-        AND reviewlistkey IN (5, 12, 26, 30)
-        AND 5 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 5
-
-        UNION ALL
-
-        SELECT #{userkey}, 6, NOW(), 0 FROM manner
-        WHERE userkey = #{userkey}
-        AND estimateuserkey = #{userkey}
-        AND 6 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 10
-
-        UNION ALL
-
-        SELECT #{userkey}, 7, NOW(), 0 FROM post
-        WHERE userkey = #{userkey}
-        AND 7 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 1
-
-        UNION ALL
-
-        SELECT #{userkey}, 8, NOW(), 0 FROM post
-        WHERE userkey = #{userkey}
-        AND 8 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 5
-
-        UNION ALL
-
-        SELECT #{userkey}, 9, NOW(), 0 FROM manner
-        WHERE userkey = #{userkey}
-        AND ismanner = 1
-        AND 9 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 1
-
-        UNION ALL SELECT #{userkey}, 10, NOW(), 0
-        FROM post
-        WHERE userkey = #{userkey}
-        AND 10 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
-        HAVING COUNT(*) &gt;= 50;
+    <!-- 배지 부여(4.판매글 20개 or 7.첫 판매글 or 8.판매글 5개 or 10.판매글 50개) -->
+    <insert id="giveBadgeForPosts" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, 
+            CASE 
+                WHEN post_count = 1 THEN 7
+                WHEN post_count = 5 THEN 8
+                WHEN post_count = 20 THEN 4
+                WHEN post_count = 50 THEN 10
+            END AS badgekey, 
+            NOW(), 0
+        FROM (
+            SELECT userkey, COUNT(*) AS post_count
+            FROM post
+            WHERE userkey = #{userkey}
+            GROUP BY userkey
+        ) AS post_data
+        WHERE post_count IN (1, 5, 20, 50)
+        AND NOT EXISTS (
+            SELECT 1 FROM userbadge 
+            WHERE userkey = #{userkey} 
+            AND badgekey = CASE 
+                WHEN post_count = 1 THEN 7 
+                WHEN post_count = 5 THEN 8 
+                WHEN post_count = 20 THEN 4 
+                WHEN post_count = 50 THEN 10 
+            END
+        )
     </insert>
 
     <!-- 배지 편집 -->

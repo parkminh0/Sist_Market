@@ -328,11 +328,7 @@ export default function Page() {
                               )}
                             </TableCell>
                             <TableCell align="center">
-                              {
-                                new Date(badge.update_dtm)
-                                  .toISOString()
-                                  .split("T")[0]
-                              }
+                              {badge.update_dtm ? new Date(badge.update_dtm).toISOString().split("T")[0] : "-"}
                             </TableCell>
                             <TableCell align="center">
                               {badge.isrepresentable === "0" ? "X" : "O"}

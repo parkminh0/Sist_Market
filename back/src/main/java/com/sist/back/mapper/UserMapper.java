@@ -38,6 +38,7 @@ public interface UserMapper {
 
     userVO getUserForAdmin(String userkey);
     userVO getUserForMyPage(String userkey);
+    userVO getUserProfile(String userkey);
     
     int userDelForAdmin(String userkey);
 

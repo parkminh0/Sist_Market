@@ -29,6 +29,7 @@ import com.sist.back.vo.userVO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.sist.back.service.BadgeService;
 
 @Controller
 @RequestMapping("/user")
@@ -42,6 +43,9 @@ public class UserController {
 
     @Autowired
     UserService service;
+
+    @Autowired
+    BadgeService b_service;
 
     @Value("${server.upload.user.image}")
     private String userImgPath;
@@ -171,6 +175,16 @@ public class UserController {
     public Map<String, Object> getUser(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        map.put("uvo", uvo);
+        return map;
+    }
+
+    //유저 프로필
+    @RequestMapping("/api/getUserProfile")
+    @ResponseBody
+    public Map<String, Object> getUserProfile(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserProfile(userkey);
         map.put("uvo", uvo);
         return map;
     }
@@ -463,8 +477,15 @@ public class UserController {
     @ResponseBody
     public Map<String, Object> addLikeKeyword(String userkey, String content) {
         Map<String, Object> lk_map = new HashMap<>();
+
+        giveBadgeFirstKeyword(userkey);
+
         lk_map.put("result_insert", service.addLikeKeyword(userkey, content));
         return lk_map;
+    }
+
+    public int giveBadgeFirstKeyword(String userkey) {
+        return b_service.giveBadgeFirstKeyword(userkey);
     }
 
     // 사용자 구매목록

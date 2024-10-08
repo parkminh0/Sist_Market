@@ -33,6 +33,7 @@ public class ApiSecurityConfig {
                                 .requestMatchers("/user/api/search_user_admin").permitAll()
                                 .requestMatchers("/user/api/mypage/userEdit").permitAll()
                                 .requestMatchers("/user/api/admin/userEdit").permitAll()
+                                .requestMatchers("/user/api/getUserProfile").permitAll()
                                 .requestMatchers("/user/api/admin/userDel").permitAll()
                                 .requestMatchers("/user/api/admin/userEditReal").permitAll()
                                 .requestMatchers("/user/api/admin/checkUserDel").permitAll()

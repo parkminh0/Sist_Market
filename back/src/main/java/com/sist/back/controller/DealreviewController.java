@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sist.back.service.AlarmService;
+import com.sist.back.service.BadgeService;
 import com.sist.back.service.DBChangeService;
 import com.sist.back.service.DealreviewService;
 import com.sist.back.util.Paging;
@@ -24,6 +24,9 @@ public class DealreviewController {
 
     @Autowired
     private DBChangeService db_service;
+
+    @Autowired
+    private BadgeService b_service;
 
     @RequestMapping("/allReview")
     @ResponseBody
@@ -129,6 +132,10 @@ public class DealreviewController {
         int toPost = d_service.sellerReview(reviewlistkey, postkey);
         int toManner = d_service.addManner(userkey, reviewlistkey, estimateuserkey);
         db_service.onDatabaseChange("/myPage/profile", "거래 후기가 도착했어요!", "후기", userkey);
+
+        giveBadgeForReviews(estimateuserkey);
+        giveBadgeForGoodReviews(userkey);
+
         map.put("toPost", toPost);
         map.put("toManner", toManner);
         return map;
@@ -141,6 +148,10 @@ public class DealreviewController {
         int toPost = d_service.sellerReview(reviewlistkey, postkey);
         int toManner = d_service.addManner(userkey, reviewlistkey, estimateuserkey);
         db_service.onDatabaseChange("/myPage/profile", "거래 후기가 도착했어요!", "후기", userkey);
+
+        giveBadgeForReviews(estimateuserkey);
+        giveBadgeForGoodReviews(userkey);
+
         map.put("toPost", toPost);
         map.put("toManner", toManner);
         return map;
@@ -155,5 +166,13 @@ public class DealreviewController {
         return map;
     }
     
-    
+    //배지 부여(후기 작성)
+    public int giveBadgeForReviews(String userkey) {
+        return b_service.giveBadgeForReviews(userkey);
+    }
+
+    //배지 부여(긍정적 후기 받기)
+    public int giveBadgeForGoodReviews(String userkey) {
+        return b_service.giveBadgeForGoodReviews(userkey);
+    }
 }

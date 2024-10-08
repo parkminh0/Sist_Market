@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.back.service.BadgeService;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
@@ -64,6 +65,9 @@ public class PostController {
 
     @Autowired
     SearchlogService searchlogService;
+
+    @Autowired
+    BadgeService b_service;
 
     @Value("${server.upload.post.image}")
     private String postImgPath;
@@ -292,10 +296,21 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         res.put("savePostKey", newPostKey);
         return res;
     }
+
+     //배지 부여 함수
+     public int giveBadgeForPosts(String userkey) {
+        return b_service.giveBadgeForPosts(userkey);
+    }
+
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
@@ -362,6 +377,11 @@ public class PostController {
                 } catch (Exception e) {
                 }
             }
+        }
+
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
         }
 
         Map<String, Object> res = new HashMap<>();
