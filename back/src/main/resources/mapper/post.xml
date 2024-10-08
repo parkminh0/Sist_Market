@@ -249,6 +249,14 @@
          AND isdeleted = 0
     </select>
 
+
+    <select id="getLikeCate" resultType="com.sist.back.vo.categoryVO" parameterType="String">
+        SELECT *
+        FROM `interestcategory`
+        WHERE userkey = #{userkey}
+    </select>
+
+    
     <!-- 조회수 증가 -->
     <select id="getViewqty" resultType="int" parameterType="int">
         SELECT viewqty
@@ -610,8 +618,8 @@
         <association property="uvo" select="getUvoSimple" column="userkey" javaType="com.sist.back.vo.userVO"/>
         <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
         <!-- <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
-        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
-        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" /> -->
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>-->
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" /> 
     </resultMap>
 
     <select id="searchpost" resultMap="searchpostMap" parameterType="map">
@@ -856,17 +864,52 @@
         LEFT JOIN wishlist w on p.postkey = w.postkey
         LEFT JOIN chatroom c on p.postkey = c.postkey
         WHERE p.isdeleted = 0
-        <if test="type = 1">
+        <!-- 오늘 -->
+        <if test="type == 1">
+            AND DATE(p.create_dtm) = DATE(now())
+            <if test="dateType == 1">
+            </if>
+            <if test="dateType == 2">
             AND (DATE(w.create_dtm) = DATE(NOW()) or w.create_dtm is null)
+            </if>
+            <if test="dateType == 3">
+            AND (DATE(c.create_dtm) = DATE(NOW()) or c.create_dtm is null)
+            </if>
         </if>
-        <if test="type = 2">
+        <!-- 1주 -->
+        <if test="type == 2">
+            AND (WEEK(p.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR p.create_dtm is null)
+            <if test="dateType == 1">
+            </if>
+            <if test="dateType == 2">
             AND (WEEK(w.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR w.create_dtm is null)
+            </if>
+            <if test="dateType == 3">
+            AND (WEEK(c.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR c.create_dtm is null)
+            </if>
         </if>
-        <if test="type = 3">
+        <!-- 1달 -->
+        <if test="type == 3">
+            and (p.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR p.create_dtm IS NULL)
+            <if test="dateType == 1">
+            </if>
+            <if test="dateType == 2">
             and (w.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR w.create_dtm IS NULL)
+            </if>
+            <if test="dateType == 3">
+            and (c.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR c.create_dtm IS NULL)
+            </if>
         </if>
         GROUP BY p.postkey
+        <if test="dateType == 1">
+        order by p.viewqty desc
+        </if>
+        <if test="dateType == 2">
         order by likedqty desc
+        </if>
+        <if test="dateType == 3">
+        order by chatroomqty desc
+        </if>
         LIMIT 10
     </select>
     <!-- 

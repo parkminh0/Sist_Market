@@ -89,5 +89,12 @@ public class QnaService {
         return q_mapper.getQuestion(qnakey);
     }
 
+    public int todayCount() {
+        return q_mapper.todayCount();
+    }
+
+    public int selectTodayCount(String isanswered) {
+        return q_mapper.selectTodayCount(isanswered);
+    }
 }
 

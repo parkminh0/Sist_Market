@@ -57,11 +57,6 @@ public class BadgeService {
         return cnt;
     }
 
-    public int giveBadge(String userkey) {
-        int cnt = b_mapper.giveBadge(userkey);
-        return cnt;
-    }
-
     public int editBadge(String badgekey, String name, String imgurl, String precontent, String postcontent, String isrepresentable) {
         int cnt = b_mapper.editBadge(badgekey, name, imgurl, precontent, postcontent, isrepresentable);
         return cnt;
@@ -74,6 +69,26 @@ public class BadgeService {
 
     public int badgeOn(String badgekey) {
         int cnt = b_mapper.badgeOn(badgekey);
+        return cnt;
+    }
+    
+    public int giveBadgeForReviews(String userkey) {
+        int cnt = b_mapper.giveBadgeForReviews(userkey);
+        return cnt;
+    }
+
+    public int giveBadgeForGoodReviews(String userkey) {
+        int cnt = b_mapper.giveBadgeForGoodReviews(userkey);
+        return cnt;
+    }
+
+    public int giveBadgeFirstKeyword(String userkey) {
+        int cnt = b_mapper.giveBadgeFirstKeyword(userkey);
+        return cnt;
+    }
+
+    public int giveBadgeForPosts(String userkey) {
+        int cnt = b_mapper.giveBadgeForPosts(userkey);
         return cnt;
     }
 }

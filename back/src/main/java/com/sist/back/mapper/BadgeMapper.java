@@ -20,11 +20,17 @@ public interface BadgeMapper {
 
     int cancelRep(String userkey, String badgekey);
 
-    int giveBadge(String userkey);
-
     int editBadge(String badgekey, String name, String imgurl, String precontent, String postcontent, String isrepresentable);
 
     int badgeOff(String badgekey);
 
     int badgeOn(String badgekey);
+
+    int giveBadgeForReviews(String userkey);
+
+    int giveBadgeForGoodReviews(String userkey);
+
+    int giveBadgeFirstKeyword(String userkey);
+    
+    int giveBadgeForPosts(String userkey);
 }

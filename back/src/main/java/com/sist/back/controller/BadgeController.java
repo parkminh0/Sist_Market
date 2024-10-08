@@ -78,14 +78,6 @@ public class BadgeController {
         return map;
     }
 
-    @RequestMapping("/giveBadge")
-    @ResponseBody
-    public Map<String, Object> giveBadge(String userkey) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("cnt", b_service.giveBadge(userkey));
-        return map;
-    }
-
     @RequestMapping("/editBadge")
     @ResponseBody
     public Map<String, Object> editBadge(String badgekey, String name, MultipartFile image, String precontent, String postcontent, String isrepresentable, String existingImageUrl) {

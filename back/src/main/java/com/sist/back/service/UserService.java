@@ -161,6 +161,9 @@ public class UserService {
     public userVO getUserForMyPage(String userkey) {
         return mapper.getUserForMyPage(userkey);
     }
+    public userVO getUserProfile(String userkey) {
+        return mapper.getUserProfile(userkey);
+    }
 
     public int userDelForAdmin(String userkey) {
         return mapper.userDelForAdmin(userkey);

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.back.service.BadgeService;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
@@ -65,6 +66,9 @@ public class PostController {
     @Autowired
     SearchlogService searchlogService;
 
+    @Autowired
+    BadgeService b_service;
+
     @Value("${server.upload.post.image}")
     private String postImgPath;
 
@@ -75,7 +79,6 @@ public class PostController {
         return res;
     }
 
-    
     @RequestMapping("/postdetail")
     public Map<String, Object> getPostDetailByPostKey(int postkey) {
         Map<String, Object> e_map = new HashMap<>();
@@ -293,10 +296,21 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         res.put("savePostKey", newPostKey);
         return res;
     }
+
+     //배지 부여 함수
+     public int giveBadgeForPosts(String userkey) {
+        return b_service.giveBadgeForPosts(userkey);
+    }
+
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
@@ -365,6 +379,11 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         p_service.editPost(vo);
         res.put("savePostKey", vo.getPostkey());
@@ -414,11 +433,16 @@ public class PostController {
 
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
-    public Map<String, Object> main(String region1, String region2) {
+    public Map<String, Object> main(String region1, String region2, String userkey) {
         categoryVO[] c_list = categoryService.all();
         // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
         List<Integer> randomCategories = new ArrayList<>();
         Random random = new Random();
+
+        categoryVO[] lc_list = p_service.getLikeCate(userkey);
+        for(int i=0; i<lc_list.length; i++){
+            randomCategories.add(Integer.parseInt(lc_list[i].getCategorykey()));
+        }
 
         // 중복되지 않는 숫자 3개를 뽑는 반복문
         while (randomCategories.size() < 3) {

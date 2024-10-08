@@ -74,24 +74,23 @@
     </select>
 
     <select id="todayReport" resultType="com.sist.back.vo.admin.TodayReportVO">
-    SELECT COUNT(CASE WHEN p.poststatus = 3 THEN 1 END) AS dealcnt, 
-           IFNULL(SUM(IFNULL(p.lastprice, 0)), 0) AS dealSum,
-       COUNT(*) AS newPost,
+    SELECT COUNT(CASE WHEN p.poststatus = 3 AND date(p.deal_dtm) = date(now()) THEN 1 END) AS dealcnt, 
+       IFNULL(SUM(IFNULL(p.lastprice, 0)), 0) AS dealSum,
+       COUNT(CASE WHEN date(p.create_dtm) = date(now()) THEN 1 END) AS newPost,
        (
         SELECT COUNT(*) 
           FROM `user` u
         WHERE u.isdeleted = 0
-          AND DATE_FORMAT(u.create_dtm, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+          AND DATE(u.create_dtm) = DATE(now())
         ) AS newUser,
             (
         SELECT COUNT(*) 
           FROM `chatroom` c
         WHERE c.isdeleted = 0
-          AND DATE_FORMAT(c.create_dtm, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+          AND DATE(c.create_dtm) = DATE(now())
         ) AS newChat
     FROM post p
     WHERE p.isdeleted = 0
-      AND DATE_FORMAT(p.create_dtm, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
     </select>
     
     <select id="dealstatistic" resultType="com.sist.back.vo.admin.DealStatisticVO">
@@ -131,5 +130,64 @@
       GROUP BY p.categorykey
       ORDER BY dealcnt DESC, dealprice DESC
       LIMIT 5
+    </select>
+
+    <select id="dealchart" parameterType="String" resultType="com.sist.back.vo.admin.DealchartVO">
+    SELECT 
+      <if test="type == 1">
+        DATE_FORMAT(x.dtm, '%m-%d') AS dtm, 
+      </if>
+      <if test="type == 2">
+        x.dtm, 
+      </if>
+      <if test="type == 3">
+        x.dtm, 
+      </if>
+      x.cnt, 
+      x.price 
+      FROM (        
+        SELECT 
+          <if test="type == 1">
+            DATE(p.deal_dtm) AS dtm, 
+          </if>
+          <if test="type == 2">
+            CONCAT(
+                DATE_FORMAT(MIN(DATE_ADD(p.deal_dtm, INTERVAL(1 - DAYOFWEEK(p.deal_dtm)) DAY)), '%y-%m-%d'), 
+                ' ~ ', 
+                DATE_FORMAT(MAX(DATE_ADD(p.deal_dtm, INTERVAL(7 - DAYOFWEEK(p.deal_dtm)) DAY)), '%y-%m-%d')
+            ) AS dtm, 
+          </if>
+          <if test="type == 3">
+            DATE_FORMAT(p.deal_dtm, '%Y-%m') AS dtm,
+          </if>
+          COUNT(*) AS cnt, 
+          SUM(IFNULL(p.lastprice, 0)) AS price
+          FROM post p
+        WHERE p.isdeleted = 0
+          AND p.poststatus = 3
+          AND p.deal_dtm IS NOT NULL
+          AND p.deal_dtm <![CDATA[>=]]> #{start_dtm}
+          AND p.deal_dtm <![CDATA[<=]]> #{end_dtm}
+        GROUP BY 
+        <if test="type != 2">
+          dtm
+        </if>
+        <if test="type == 2">
+          YEAR(p.deal_dtm), WEEK(p.deal_dtm, 1)
+        </if>
+        ORDER BY dtm
+      ) x
+    </select>
+
+    <select id="analpostcatepie" parameterType="String" resultType="com.sist.back.vo.admin.AnalpostcatepieVO">
+    SELECT c.img_url, c.categoryname, COUNT(*) AS cnt, SUM(IFNULL(p.lastprice, 0)) AS price
+      FROM post p
+      JOIN category c ON c.categorykey = p.categorykey
+    WHERE p.isdeleted = 0
+      AND p.poststatus = 3
+      AND p.deal_dtm IS NOT NULL
+      AND p.deal_dtm <![CDATA[>=]]> #{start_dtm}
+      AND p.deal_dtm <![CDATA[<=]]> #{end_dtm}
+    GROUP BY c.categorykey
     </select>
 </mapper>

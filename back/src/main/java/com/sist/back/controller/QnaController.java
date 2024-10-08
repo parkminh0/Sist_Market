@@ -274,5 +274,21 @@ public class QnaController {
         map.put("nowPage", nowPage);
         return map;
     }
+
+    @RequestMapping("/todayCount")
+    @ResponseBody
+    public Map<String, Object> todayCount() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", q_service.todayCount());
+        return map;
+    }
+
+    @RequestMapping("/selectTodayCount")
+    @ResponseBody
+    public Map<String, Object> selectTodayCount(String isanswered) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", q_service.selectTodayCount(isanswered));
+        return map;
+    }
 }
 

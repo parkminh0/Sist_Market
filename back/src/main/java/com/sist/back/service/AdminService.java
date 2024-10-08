@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import com.sist.back.mapper.AdminMapper;
 import com.sist.back.vo.QnaVO;
 import com.sist.back.vo.categoryVO;
+import com.sist.back.vo.admin.AnalpostcatepieVO;
 import com.sist.back.vo.admin.DealStatisticVO;
+import com.sist.back.vo.admin.DealchartVO;
 import com.sist.back.vo.admin.PostOverviewVO;
 import com.sist.back.vo.admin.TodayReportVO;
 import com.sist.back.vo.admin.TotalVO;
@@ -59,5 +61,13 @@ public class AdminService {
 
     public List<categoryVO> catedealstatistic(String type) {
         return adminMapper.catedealstatistic(type);
+    }
+
+    public List<DealchartVO> dealchart(String type, String start_dtm, String end_dtm) {
+        return adminMapper.dealchart(type, start_dtm, end_dtm);
+    }
+
+    public List<AnalpostcatepieVO> analpostcatepie(String start_dtm, String end_dtm) {
+        return adminMapper.analpostcatepie(start_dtm, end_dtm);
     }
 }

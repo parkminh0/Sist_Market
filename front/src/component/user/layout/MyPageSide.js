@@ -205,40 +205,15 @@ export default function MyPageSide(props) {
         </div>
         <div data-v-7bcac446="" className="snb_list1">
           <strong data-v-7bcac446="" className="snb_title">
-            나의 동네생활
-          </strong>
-          <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                동네생활 활동
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div data-v-7bcac446="" className="snb_list1">
-          <strong data-v-7bcac446="" className="snb_title">
             기타
           </strong>
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                내 동네 설정
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                동네 인증하기
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
+            {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 키워드 알림 설정
               </Link>
-            </li>
-          </ul>
-        </div>
-        <div data-v-7bcac446="" className="snb_list1">
-          <li data-v-7a824f04="" className="menu_item">
+            </li> */}
+            <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link" onClick={handleFaqOpen}>
                     자주 묻는 질문
               </Link>
@@ -250,6 +225,7 @@ export default function MyPageSide(props) {
                 약관 및 정책
               </Link>
             </li>
+          </ul>
         </div>
       </nav>
     </div>
