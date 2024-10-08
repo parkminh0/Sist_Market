@@ -8,7 +8,7 @@
         VALUES(#{boardkey}, #{fname}, #{imgweburl})
 	</insert>
 
-  <delete id="BoardImgDelete">
+  <!-- <delete id="BoardImgDelete">
       DELETE FROM boardimg
       WHERE boardkey = #{boardkey}
       <if test="imgweburl != null and imgweburl.size() > 0">
@@ -17,7 +17,16 @@
             #{url}
         </foreach>
       </if>
-  </delete>
+  </delete> -->
+
+  <delete id="BoardImgDelete" parameterType="map">
+  DELETE FROM boardimg
+  WHERE boardkey = #{boardkey}
+  <if test="boardkey != null">
+    AND boardkey IS NOT NULL
+  </if>
+</delete>
+
 
   <select id="getImgurl" resultType="String">
     SELECT imgweburl FROM boardimg WHERE boardkey = #{boardkey}

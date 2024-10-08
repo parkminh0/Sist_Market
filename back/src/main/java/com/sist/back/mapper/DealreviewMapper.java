@@ -30,6 +30,6 @@ public interface DealreviewMapper {
 
     int addManner(String userkey, String reviewlistkey, String estimateuserkey);
 
-    int hideReview(String postkey);
+    int hideReview(String postkey, String userkey);
 
 }

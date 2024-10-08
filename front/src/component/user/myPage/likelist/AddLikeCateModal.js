@@ -102,6 +102,10 @@ import {
                 select
                 fullWidth
                 size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#FF8000', },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#FF8000', }
+                }}
                 value={categorykey}
                 onChange={(e) => setCategorykey(e.target.value)}
               >
@@ -121,10 +125,22 @@ import {
               onClick={() => {
                 addCategory();
               }}
+              sx={{
+                color:"#22aa22",
+                marginRight: '0 !important',
+              }}
             >
               제출
             </Button>
-            <Button onClick={()=>handleClosePO(false)}>취소</Button>
+            <Button
+              onClick={()=>handleClosePO(false)}
+              sx={{
+                color:"#ff4f00",
+                marginLeft: '0 !important',
+              }}
+            >
+              취소
+            </Button>
           </DialogActions>
         </Dialog>
       </Fragment>

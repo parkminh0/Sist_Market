@@ -135,4 +135,25 @@ public class AdminController {
         return res;
     }
 
+    @GetMapping("/analuserbytime")
+    public Map<String, Object> analuserbytime(String start_dtm, String end_dtm) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_analuserbytime", adminService.analuserbytime(start_dtm, end_dtm));
+        return res;
+    }
+
+    @GetMapping("/analuserbyday")
+    public Map<String, Object> analuserbyday(String start_dtm, String end_dtm) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_analuserbyday", adminService.analuserbyday(start_dtm, end_dtm));
+        return res;
+    }
+
+    @GetMapping("/analregion")
+    public Map<String, Object> analregion(String region1, String region2, String region3) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_analregion", adminService.analregion(region1, region2, region3));
+        return res;
+    }
+
 }

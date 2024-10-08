@@ -233,15 +233,15 @@ export default function page() {
     if (temp <= 15) {
       return '#555555';
     } else if (temp <= 30) {
-      return '#2E64FE';
+      return '#58D3F7';
     } else if (temp <= 45) {
-      return 'skyblue';
-    } else if (temp <= 60) {
-      return '#01DF3A';
-    } else if (temp <= 80) {
       return '#F2F5A9';
-    } else {
+    } else if (temp <= 60) {
+      return '#FFFF00';
+    } else if (temp <= 80) {
       return 'orange';
+    } else {
+      return '#FF4000';
     }
   }
 

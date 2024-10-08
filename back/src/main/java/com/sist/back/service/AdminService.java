@@ -9,6 +9,8 @@ import com.sist.back.mapper.AdminMapper;
 import com.sist.back.vo.QnaVO;
 import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.admin.AnalpostcatepieVO;
+import com.sist.back.vo.admin.AnalregionVO;
+import com.sist.back.vo.admin.AnaluserbydayVO;
 import com.sist.back.vo.admin.DealStatisticVO;
 import com.sist.back.vo.admin.DealchartVO;
 import com.sist.back.vo.admin.PostOverviewVO;
@@ -69,5 +71,17 @@ public class AdminService {
 
     public List<AnalpostcatepieVO> analpostcatepie(String start_dtm, String end_dtm) {
         return adminMapper.analpostcatepie(start_dtm, end_dtm);
+    }
+
+    public List<AnaluserbydayVO> analuserbytime(String start_dtm, String end_dtm) {
+        return adminMapper.analuserbytime(start_dtm, end_dtm);
+    }
+
+    public List<AnaluserbydayVO> analuserbyday(String start_dtm, String end_dtm) {
+        return adminMapper.analuserbyday(start_dtm, end_dtm);
+    }
+
+    public List<AnalregionVO> analregion(String region1, String region2, String region3) {
+        return adminMapper.analregion(region1, region2, region3);
     }
 }

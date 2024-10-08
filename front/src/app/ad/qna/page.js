@@ -192,7 +192,6 @@ export default function Page() {
             <Top_Analytic
               title="전체"
               count={allRecord || 0}
-              // percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
               extra={todayCount.toString()}
             />
           </Grid>
@@ -200,7 +199,6 @@ export default function Page() {
             <Top_Analytic
               title="답변 완료"
               count={answeredRecord || 0}
-              // percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
               extra={todayCount2.toString()}
             />
           </Grid>
@@ -208,7 +206,6 @@ export default function Page() {
             <Top_Analytic
               title="답변 대기"
               count={unansweredRecord || 0}
-              // percentage={allRecord > 0 ? ((unansweredRecord / allRecord) * 100).toFixed(1) : 0}
               isLoss
               color="warning"
               extra={todayCount1.toString()}

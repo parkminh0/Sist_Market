@@ -57,6 +57,7 @@ export default function Page() {
   const [isauthorized, setIsauthorized] = useState("");
   const [recent_login_start_date, setRecent_login_start_date] = useState("");
   const [recent_login_end_date, setRecent_login_end_date] = useState("");
+  const [userReportCount,setUserReportCount] = useState(0);
 
   //유저 검색
   const API_URL_2 = "/user/api/search_user_admin";
@@ -148,7 +149,7 @@ export default function Page() {
         setPage(response.data.page);
       })
       .catch((error) => {
-        console.error("Error during search:", error);
+        //console.error("Error during search:", error);
       });
   }
 
@@ -157,8 +158,8 @@ export default function Page() {
     if (!confirmed) {
       return; 
     }
-    console.log("delete_choice 함수 호출됨");
-    console.log("DEL_URL:", DEL_URL);
+    //console.log("delete_choice 함수 호출됨");
+    //console.log("DEL_URL:", DEL_URL);
     axios
       .post(DEL_URL, checkedItems)
       .then((response) => {
@@ -170,7 +171,7 @@ export default function Page() {
         getCount();
       })
       .catch((error) => {
-        console.error("Error deleting users:", error);
+        //console.error("Error deleting users:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
@@ -227,6 +228,7 @@ export default function Page() {
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
+        setUserReportCount(res.data.userReportCount);
         setLoading(false);
         setOpen(true); 
         //console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
@@ -442,6 +444,15 @@ export default function Page() {
                       style={{ width: "auto" }}
                       onChange={(e) => {
                         setType(e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (!type.trim()) {
+                            alert("검색할 단어를 입력하세요.");
+                            return;
+                          }
+                          doSrchFrm(0);
+                        }
                       }}
                       sx={{ marginLeft: 2 }}
                       size="small"
@@ -868,6 +879,18 @@ export default function Page() {
                    
                     </tr>
                     <tr>
+                    <th scope="row">신고수</th>
+                    <td>
+                      <span
+                        className="fText eMarketChecker"
+                        style={{ width: "400px", display: "inline-block" }}
+                      >
+                        {userReportCount || "0"} 
+                      </span>
+                    </td>
+                   
+                    </tr>
+                    <tr>
                       <th scope="row">이메일</th>
                       <td>
                         <input
@@ -967,7 +990,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">게시글 키</th>
+                    <th scope="col">게시글 번호</th>
                     <th scope="col">제목</th>
                   </tr>
                 </thead>
@@ -1018,7 +1041,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">평가자 키</th>
+                    <th scope="col">평가자</th>
                     <th scope="col">매너</th>
                     <th scope="col">간편후기</th>
                   </tr>
@@ -1189,7 +1212,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">차단 사용자 번호</th>
+                    <th scope="col">차단 사용자</th>
                     <th scope="col">차단 날짜</th>
                   </tr>
                 </thead>
@@ -1244,7 +1267,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">미노출 사용자 번호</th>
+                    <th scope="col">미노출 사용자</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1450,7 +1473,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">키워드</th>
+                    <th scope="col">키워드 번호</th>
                     <th scope="col">키워드 내용</th>
                   </tr>
                 </thead>

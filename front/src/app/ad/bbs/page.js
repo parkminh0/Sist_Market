@@ -64,7 +64,14 @@ export default function Page() {
   useEffect(() => {
     getCateData();
     getBbsData(1);
+    getCount();
   }, []);
+
+  useEffect(() => {
+    bc_list.forEach((bc) => {
+        getSelectCount1(bc.key);
+    });
+  }, [bc_list]); 
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
@@ -152,6 +159,8 @@ export default function Page() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [todayCount, setTodayCount] = useState(0);
+  const [categoryCounts, setCategoryCounts] = useState({});
 
   const handleAddModalOpen = (e) => { setAddModalOpen(true);};
   const handleAddModalClose = () => { setAddModalOpen(false); };
@@ -163,7 +172,10 @@ export default function Page() {
     setDetailModalOpen(false);
     setSelectedBoardKey(null);
   };
-  const handleEditModalOpen = () => { setEditModalOpen(true); };
+  const handleEditModalOpen = (boardkey) => {
+    setSelectedBoardKey(boardkey);
+    setEditModalOpen(true); 
+  };
   const handleEditModalClose = () => { setEditModalOpen(false); };
 
   function getBbsData(cPage) {
@@ -192,6 +204,25 @@ export default function Page() {
       });
   }
 
+  function getCount() {
+    axios.get("/admin/board/todayCount").then((res) => {
+      setTodayCount(res.data.cnt);
+    });
+  }
+
+  function getSelectCount1(categorykey) {
+    axios.get("/admin/board/selectTodayCount", {
+      params: {
+        categorykey: categorykey,
+      }
+    }).then((res) => {
+      setCategoryCounts((prevCounts) => ({
+        ...prevCounts,
+        [categorykey]: res.data.cnt
+      }));
+    });
+  }
+  
   function changePage(pNum) {
     getBbsData(pNum);
   }
@@ -247,8 +278,6 @@ export default function Page() {
     return map;
   }, {});
 
-  // #endregion
-
   return (
     <>
       <PageContainer title="Dashboard" description="this is Dashboard">
@@ -293,8 +322,7 @@ export default function Page() {
               <Top_Analytic
                 title="전체"
                 count={initialTotalBbsCount}
-                percentage={initialTotalBbsCount > 0 ? ((bc_list.length / initialTotalBbsCount) * 100).toFixed(1) : 0}
-                extra={(initialTotalBbsCount || 0).toString()}
+                extra={todayCount.toString()}
               />
             </Grid>
             {bc_list &&
@@ -312,12 +340,11 @@ export default function Page() {
                   <Top_Analytic
                     title={ar.value}
                     count={ar.count}
-                    percentage={ar.count > 0 ? ((ar.count / initialTotalBbsCount) * 100).toFixed(1) : "0"}
-                    extra={(ar.count || 0).toString()}
+                    extra={categoryCounts[ar.key] ? categoryCounts[ar.key].toString() : '0'}
                   />
                 </Grid>
               ))}
-          </Grid>
+            </Grid>
           <Grid
             container
             spacing={1}
@@ -499,7 +526,7 @@ export default function Page() {
                         <TableCell align="center">제목</TableCell>
                         <TableCell align="center">작성일</TableCell>
                         <TableCell align="center">수정일</TableCell>
-                        <TableCell align="center">조회</TableCell>
+                        <TableCell align="center">조회수</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
