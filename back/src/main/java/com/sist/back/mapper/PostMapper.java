@@ -78,7 +78,7 @@ public interface PostMapper {
 
     List<PostVO> getTop4();
 
-    List<PostVO> postTop10Statistic(String type);
+    List<PostVO> postTop10Statistic(String type, String dateType);
 
     List<String> townAll();
 }

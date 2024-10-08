@@ -11,6 +11,8 @@ const DealStatistic = () => {
   const [dealstatistic, setDealstatisticVO] = useState([]);
 
   const [daySeriescolumnchart, setDaySeriescolumnchart] = useState([]);
+  const [weekSeriescolumnchart, setWeekSeriescolumnchart] = useState([]);
+  const [monthSeriescolumnchart, setMonthSeriescolumnchart] = useState([]);
   // 초기 세팅
   useEffect(() => {
     axios({
@@ -25,16 +27,41 @@ const DealStatistic = () => {
   }, []);
 
   useEffect(() => {
-    setDaySeriescolumnchart([
-      {
-        name: "거래 건수",
-        data: [
-          dealstatistic.dayavg,
-          dealstatistic.yesterday,
-          dealstatistic.today,
-        ],
-      },
-    ]);
+    if (dealstatistic && Object.keys(dealstatistic).length > 0) {
+      // 일별
+      setDaySeriescolumnchart([
+        {
+          name: "거래 건수",
+          data: [
+            dealstatistic.dayavg,
+            dealstatistic.yesterday,
+            dealstatistic.today,
+          ],
+        },
+      ]);
+      // 주별
+      setWeekSeriescolumnchart([
+        {
+          name: "거래 건수",
+          data: [
+            dealstatistic.weekavg,
+            dealstatistic.lastweek,
+            dealstatistic.thisweek,
+          ],
+        },
+      ]);
+      // 월별
+      setMonthSeriescolumnchart([
+        {
+          name: "거래 건수",
+          data: [
+            dealstatistic.monthavg,
+            dealstatistic.lastmonth,
+            dealstatistic.thismonth,
+          ],
+        },
+      ]);
+    }
   }, [dealstatistic]);
 
   const dayOptionscolumnchart = {
@@ -92,17 +119,6 @@ const DealStatistic = () => {
     },
   };
 
-  // 주별
-  const weekSeriescolumnchart = [
-    {
-      name: "거래 건수",
-      data: [
-        dealstatistic.weekavg,
-        dealstatistic.lastweek,
-        dealstatistic.thisweek,
-      ],
-    },
-  ];
   const weekOptionscolumnchart = {
     chart: {
       type: "bar",
@@ -158,17 +174,6 @@ const DealStatistic = () => {
     },
   };
 
-  // 월별
-  const monthSeriescolumnchart = [
-    {
-      name: "거래 건수",
-      data: [
-        dealstatistic.monthavg,
-        dealstatistic.lastmonth,
-        dealstatistic.thismonth,
-      ],
-    },
-  ];
   const monthOptionscolumnchart = {
     chart: {
       type: "bar",
@@ -242,31 +247,37 @@ const DealStatistic = () => {
             </TabList>
           </Box>
           <TabPanel value="1">
-            <Chart
-              options={dayOptionscolumnchart}
-              series={daySeriescolumnchart}
-              type="bar"
-              height={340}
-              width={"100%"}
-            />
+            {dayOptionscolumnchart && daySeriescolumnchart.length > 0 && (
+              <Chart
+                options={dayOptionscolumnchart}
+                series={daySeriescolumnchart}
+                type="bar"
+                height={340}
+                width={"100%"}
+              />
+            )}
           </TabPanel>
           <TabPanel value="2">
-            <Chart
-              options={weekOptionscolumnchart}
-              series={weekSeriescolumnchart}
-              type="bar"
-              height={340}
-              width={"100%"}
-            />
+            {weekOptionscolumnchart && weekSeriescolumnchart.length > 0 && (
+              <Chart
+                options={weekOptionscolumnchart}
+                series={weekSeriescolumnchart}
+                type="bar"
+                height={340}
+                width={"100%"}
+              />
+            )}
           </TabPanel>
           <TabPanel value="3">
-            <Chart
-              options={monthOptionscolumnchart}
-              series={monthSeriescolumnchart}
-              type="bar"
-              height={340}
-              width={"100%"}
-            />
+            {monthOptionscolumnchart && monthSeriescolumnchart.length > 0 && (
+              <Chart
+                options={monthOptionscolumnchart}
+                series={monthSeriescolumnchart}
+                type="bar"
+                height={340}
+                width={"100%"}
+              />
+            )}
           </TabPanel>
         </TabContext>
       </Box>

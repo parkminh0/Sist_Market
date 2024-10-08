@@ -75,7 +75,6 @@ public class PostController {
         return res;
     }
 
-    
     @RequestMapping("/postdetail")
     public Map<String, Object> getPostDetailByPostKey(int postkey) {
         Map<String, Object> e_map = new HashMap<>();

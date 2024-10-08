@@ -190,10 +190,9 @@ public class PostService {
         return ar;
     }
 
-    public PostVO[] postTop10Statistic(String type) {
+    public PostVO[] postTop10Statistic(String type, String dateType) {
         PostVO[] ar = null;
-        List<PostVO> list = p_mapper.postTop10Statistic(type);
-        System.out.println(list.size());
+        List<PostVO> list = p_mapper.postTop10Statistic(type, dateType);
         if (list != null && list.size() > 0) {
             ar = new PostVO[list.size()];
             list.toArray(ar);
