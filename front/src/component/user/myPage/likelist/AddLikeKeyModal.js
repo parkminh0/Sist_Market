@@ -7,6 +7,7 @@ import {
     OutlinedInput,
     InputAdornment,
     Button,
+    TextField,
   } from "@mui/material";
   import { Fragment, useEffect, useRef, useState } from "react";
   import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
@@ -81,11 +82,15 @@ import {
           </DialogTitle>
           <DialogContent>
             <FormControl fullWidth margin="dense">
-              <OutlinedInput
+              <TextField
                 size="small"
                 id="keyword"
                 name="keyword"
                 placeholder="키워드를 입력해주세요."
+                sx={{
+                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#FF8000', },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#FF8000', }
+                }}
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 aria-describedby="outlined-weight-helper-text"
@@ -101,10 +106,20 @@ import {
               onClick={() => {
                 addKeyword();
               }}
+              sx={{
+                color:"#22aa22",
+                marginRight: '0 !important',
+              }}
             >
               제출
             </Button>
-            <Button onClick={()=>{handleClosePO(false)}}>취소</Button>
+            <Button
+              onClick={()=>{handleClosePO(false)}}
+              sx={{
+                color:"#ff4f00",
+                marginLeft: '0 !important',
+              }}
+            >취소</Button>
           </DialogActions>
         </Dialog>
       </Fragment>
