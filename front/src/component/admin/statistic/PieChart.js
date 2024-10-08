@@ -1,14 +1,11 @@
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { useTheme } from "@mui/material/styles";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import DashboardCard from "../shared/DashboardCard";
 import { useState } from "react";
 
 export default function PieChart({ title, label, data }) {
-  const [postStatusCnt, setPostStatusCnt] = useState([]);
-  const [total, setTotal] = useState(0);
-
   // chart color
   const theme = useTheme();
   const c1 = "#2c3e50";
@@ -79,18 +76,27 @@ export default function PieChart({ title, label, data }) {
   return (
     <DashboardCard title={title}>
       <Grid container spacing={1}>
-        <Grid item xs={12} sm={12}>
-          <Chart
-            options={optionscolumnchart}
-            series={
-              seriescolumnchart && seriescolumnchart.length > 0
-                ? seriescolumnchart
-                : [0]
-            }
-            type="donut"
-            height={300}
-            width={"100%"}
-          />
+        <Grid item xs={12} sm={12} height={300}>
+          {optionscolumnchart &&
+          seriescolumnchart &&
+          seriescolumnchart.length > 0 ? (
+            <Chart
+              options={optionscolumnchart}
+              series={seriescolumnchart}
+              type="donut"
+              height={300}
+              width={"100%"}
+            />
+          ) : (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100%"
+            >
+              결과가 존재하지 않습니다.
+            </Box>
+          )}
         </Grid>
       </Grid>
     </DashboardCard>

@@ -26,6 +26,8 @@ import DashboardCard from "@/component/admin/shared/DashboardCard";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import PieChart from "@/component/admin/statistic/PieChart";
+import AnalUserDay from "@/component/admin/statistic/AnalUserDay";
+import AnalUserTable from "@/component/admin/statistic/AnalUserTable";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -33,6 +35,69 @@ const Page = () => {
   const [date1, setDate1] = useState("1");
   const [start_dtm, setStart_dtm] = useState(new Date());
   const [end_dtm, setEnd_dtm] = useState(new Date());
+
+  // 지역 위한 useEffect
+  const [region1, setRegion1] = useState([]);
+  const [region2, setRegion2] = useState([]);
+  const [region3, setRegion3] = useState([]);
+
+  const [selReg1, setSelReg1] = useState("null");
+  const [selReg2, setSelReg2] = useState("null");
+  const [selReg3, setSelReg3] = useState("null");
+
+  // region1
+  useEffect(() => {
+    axios({
+      url: "/town/getAllRegion1", // 실제 검색 API
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion1(res.data.getAllRegion1); // 데이터 업데이트
+      setRegion2([]);
+      setRegion3([]);
+    });
+    setRegionList([]);
+  }, []);
+
+  // region2
+  useEffect(() => {
+    axios({
+      url: "/town/getAllRegion2", // 실제 검색 API
+      method: "get",
+      params: {
+        region1: selReg1,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion2(res.data.getAllRegion2); // 데이터 업데이트
+      setSelReg2("null");
+      setSelReg3("null");
+      setRegion3([]);
+    });
+    setRegionList([]);
+  }, [selReg1]);
+
+  // region3
+  useEffect(() => {
+    axios({
+      url: "/town/getAllRegion3",
+      method: "get",
+      params: {
+        region2: selReg2,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setRegion3(res.data.getAllRegion3); // 데이터 업데이트
+      setSelReg3("null");
+    });
+    setRegionList([]);
+  }, [selReg2]);
 
   // 일자 선택
   const handleDateClick = (value, type) => {
@@ -44,11 +109,6 @@ const Page = () => {
     setSelectedValue("");
   };
 
-  useEffect(() => {
-    setSelectedValue(1);
-    setDateByBtn();
-  }, [date1]);
-
   // #region 일별
   const [selectedValue, setSelectedValue] = useState(1);
   const handleButtonClick = (value) => {
@@ -58,9 +118,6 @@ const Page = () => {
   useEffect(() => {
     setDateByBtn();
   }, [selectedValue]);
-  // #endregion
-
-  // #region 주별
   // #endregion
 
   function setDateByBtn() {
@@ -141,6 +198,20 @@ const Page = () => {
   const [resList, setResList] = useState([]);
   const [cntList, setCntList] = useState([]);
   const [priceList, setPriceList] = useState([]);
+  const [usertimeList, setUsertimeList] = useState([]);
+  const [userdayList, setUserdayList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+
+  useEffect(() => {
+    setSelectedValue(1);
+    setDateByBtn();
+    setResList([]);
+    setCntList([]);
+    setPriceList([]);
+    setUsertimeList([]);
+    setUserdayList([]);
+    setRegionList([]);
+  }, [date1]);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -149,6 +220,7 @@ const Page = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // #region 검색
   function doSrchFrm() {
     let tmpS = start_dtm;
     let tmpE = end_dtm;
@@ -194,8 +266,57 @@ const Page = () => {
         setCntList(res.data.res_cntList);
         setPriceList(res.data.res_priceList);
       });
+    } else if (analTypeValue == 3) {
+      if (date1 == "1") {
+        axios({
+          url: "/ad/analuserbytime",
+          method: "get",
+          params: {
+            start_dtm: tmpS,
+            end_dtm: tmpE,
+            type: date1,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          setUsertimeList(res.data.res_analuserbytime);
+        });
+      } else if (date1 == "2") {
+        axios({
+          url: "/ad/analuserbyday",
+          method: "get",
+          params: {
+            start_dtm: tmpS,
+            end_dtm: tmpE,
+            type: date1,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          setUserdayList(res.data.res_analuserbyday);
+        });
+      }
+    } else if (analTypeValue == 4) {
+      axios({
+        url: "/ad/analregion",
+        method: "get",
+        params: {
+          region1: selReg1,
+          region2: selReg2,
+          region3: selReg3,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        console.log(res.data.res_analregion);
+        setRegionList(res.data.res_analregion);
+      });
     }
   }
+  // #endregion
 
   // chart color
   const theme = useTheme();
@@ -330,6 +451,13 @@ const Page = () => {
 
   function analTypeChange(value) {
     setAnalTypeValue(value);
+    setDate1("1");
+    setDealchart([]);
+    setCntList([]);
+    setPriceList([]);
+    setUsertimeList([]);
+    setUserdayList([]);
+    setRegionList([]);
   }
 
   return (
@@ -369,6 +497,8 @@ const Page = () => {
                       >
                         <MenuItem value="1">거래 분석</MenuItem>
                         <MenuItem value="2">카테고리 분석</MenuItem>
+                        <MenuItem value="3">사용자 분석</MenuItem>
+                        <MenuItem value="4">지역 분석</MenuItem>
                       </Select>
                     </FormControl>
                   </li>
@@ -386,6 +516,7 @@ const Page = () => {
                           defaultValue="1"
                           className="fSelect"
                           name="date1"
+                          value={date1}
                           onChange={(e) => setDate1(e.target.value)}
                         >
                           <MenuItem value="1">일별</MenuItem>
@@ -394,18 +525,103 @@ const Page = () => {
                         </Select>
                       </FormControl>
                     </li>
+                  ) : analTypeValue == 2 ? (
+                    ""
+                  ) : analTypeValue == 3 ? (
+                    <li
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      <span style={{ width: "120px" }}>분류</span>
+                      <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                          defaultValue="1"
+                          className="fSelect"
+                          name="date1"
+                          value={date1}
+                          onChange={(e) => setDate1(e.target.value)}
+                        >
+                          <MenuItem value="1">시간별</MenuItem>
+                          <MenuItem value="2">일별</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </li>
+                  ) : analTypeValue == 4 ? (
+                    ""
                   ) : (
                     ""
                   )}
-                  <li
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span style={{ width: "120px" }}>기간</span>
-                    {analTypeValue == 1 ? (
-                      date1 == "1" ? (
+                  {analTypeValue != 4 && (
+                    <li
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ width: "120px" }}>기간</span>
+                      {analTypeValue == 1 ? (
+                        date1 == "1" ? (
+                          <RadioGroup
+                            row
+                            defaultValue="1"
+                            name="date2"
+                            className="fChk"
+                            sx={{ marginLeft: 1 }}
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7].map((value, index) => {
+                              const labels = [
+                                "오늘",
+                                "어제",
+                                "3일",
+                                "7일",
+                                "1개월",
+                                "3개월",
+                                "6개월",
+                              ];
+                              return (
+                                <FormControlLabel
+                                  key={value}
+                                  value={value}
+                                  control={
+                                    <Button
+                                      size="small"
+                                      variant={
+                                        selectedValue === value
+                                          ? "contained"
+                                          : "outlined"
+                                      }
+                                      onClick={() => handleButtonClick(value)}
+                                    >
+                                      {labels[index]}
+                                    </Button>
+                                  }
+                                  label=""
+                                />
+                              );
+                            })}
+                          </RadioGroup>
+                        ) : date1 == "2" ? (
+                          <>
+                            최근{" "}
+                            <TextField
+                              type="number"
+                              size="small"
+                              sx={{ width: 80 }}
+                              inputProps={{ min: 1 }}
+                              value={selectedValue}
+                              onChange={(e) =>
+                                handleButtonClick(e.target.value)
+                              }
+                            />
+                            주
+                          </>
+                        ) : (
+                          ""
+                        )
+                      ) : analTypeValue == 2 ? (
                         <RadioGroup
                           row
                           defaultValue="1"
@@ -445,101 +661,169 @@ const Page = () => {
                             );
                           })}
                         </RadioGroup>
-                      ) : date1 == 2 ? (
-                        <>
-                          최근{" "}
-                          <TextField
-                            type="number"
-                            size="small"
-                            sx={{ width: 80 }}
-                            inputProps={{ min: 1 }}
-                            value={selectedValue}
-                            onChange={(e) => handleButtonClick(e.target.value)}
-                          />
-                          주
-                        </>
+                      ) : analTypeValue == 3 ? (
+                        date1 == "1" ? (
+                          <RadioGroup
+                            row
+                            defaultValue="1"
+                            name="date2"
+                            className="fChk"
+                            sx={{ marginLeft: 1 }}
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7].map((value, index) => {
+                              const labels = [
+                                "오늘",
+                                "어제",
+                                "3일",
+                                "7일",
+                                "1개월",
+                                "3개월",
+                                "6개월",
+                              ];
+                              return (
+                                <FormControlLabel
+                                  key={value}
+                                  value={value}
+                                  control={
+                                    <Button
+                                      size="small"
+                                      variant={
+                                        selectedValue === value
+                                          ? "contained"
+                                          : "outlined"
+                                      }
+                                      onClick={() => handleButtonClick(value)}
+                                    >
+                                      {labels[index]}
+                                    </Button>
+                                  }
+                                  label=""
+                                />
+                              );
+                            })}
+                          </RadioGroup>
+                        ) : date1 == "2" ? (
+                          <>
+                            최근{" "}
+                            <TextField
+                              type="number"
+                              size="small"
+                              sx={{ width: 80 }}
+                              inputProps={{ min: 1 }}
+                              value={selectedValue}
+                              onChange={(e) =>
+                                handleButtonClick(e.target.value)
+                              }
+                            />
+                            주
+                          </>
+                        ) : (
+                          ""
+                        )
                       ) : (
                         ""
-                      )
-                    ) : analTypeValue == 2 ? (
-                      <RadioGroup
-                        row
-                        defaultValue="1"
-                        name="date2"
-                        className="fChk"
-                        sx={{ marginLeft: 1 }}
-                      >
-                        {[1, 2, 3, 4, 5, 6, 7].map((value, index) => {
-                          const labels = [
-                            "오늘",
-                            "어제",
-                            "3일",
-                            "7일",
-                            "1개월",
-                            "3개월",
-                            "6개월",
-                          ];
-                          return (
-                            <FormControlLabel
-                              key={value}
-                              value={value}
-                              control={
-                                <Button
-                                  size="small"
-                                  variant={
-                                    selectedValue === value
-                                      ? "contained"
-                                      : "outlined"
-                                  }
-                                  onClick={() => handleButtonClick(value)}
-                                >
-                                  {labels[index]}
-                                </Button>
-                              }
-                              label=""
-                            />
-                          );
-                        })}
-                      </RadioGroup>
-                    ) : (
-                      ""
-                    )}
-                    <TextField
-                      id="start_date"
-                      type={date1 && date1 == "3" ? "month" : "date"}
-                      className="fText gDate"
-                      name="start_date"
-                      size="small"
-                      sx={{ marginLeft: date1 == "3" ? 0 : 2 }}
-                      inputProps={{
-                        readOnly: date1 == "2" ? true : false,
+                      )}
+                      <TextField
+                        id="start_date"
+                        type={date1 && date1 == "3" ? "month" : "date"}
+                        className="fText gDate"
+                        name="start_date"
+                        size="small"
+                        sx={{ marginLeft: date1 == "3" ? 0 : 2 }}
+                        inputProps={{
+                          readOnly: date1 == "2" ? true : false,
+                        }}
+                        value={
+                          start_dtm &&
+                          typeof start_dtm.toISOString === "function"
+                            ? start_dtm.toISOString().split("T")[0]
+                            : start_dtm
+                        }
+                        onChange={(e) =>
+                          handleDateClick(e.target.value, "start")
+                        }
+                      />
+                      <span style={{ margin: "0 10px" }}>~</span>
+                      <TextField
+                        id="end_date"
+                        type={date1 && date1 == "3" ? "month" : "date"}
+                        className="fText gDate"
+                        name="end_date"
+                        size="small"
+                        inputProps={{
+                          readOnly: date1 == "2" ? true : false,
+                        }}
+                        value={
+                          end_dtm && typeof end_dtm.toISOString === "function"
+                            ? end_dtm.toISOString().split("T")[0]
+                            : end_dtm
+                        }
+                        defaultValue={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => handleDateClick(e.target.value, "end")}
+                      />
+                    </li>
+                  )}
+                  {analTypeValue == 4 && (
+                    <li
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "20px",
                       }}
-                      value={
-                        start_dtm && typeof start_dtm.toISOString === "function"
-                          ? start_dtm.toISOString().split("T")[0]
-                          : start_dtm
-                      }
-                      onChange={(e) => handleDateClick(e.target.value, "start")}
-                    />
-                    <span style={{ margin: "0 10px" }}>~</span>
-                    <TextField
-                      id="end_date"
-                      type={date1 && date1 == "3" ? "month" : "date"}
-                      className="fText gDate"
-                      name="end_date"
-                      size="small"
-                      inputProps={{
-                        readOnly: date1 == "2" ? true : false,
-                      }}
-                      value={
-                        end_dtm && typeof end_dtm.toISOString === "function"
-                          ? end_dtm.toISOString().split("T")[0]
-                          : end_dtm
-                      }
-                      defaultValue={new Date().toISOString().split("T")[0]}
-                      onChange={(e) => handleDateClick(e.target.value, "end")}
-                    />
-                  </li>
+                    >
+                      <span style={{ width: "120px" }}>작성지</span>
+                      <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
+                        <Select
+                          className="fSelect category eCategory"
+                          id="region1"
+                          name="region1"
+                          value={selReg1}
+                          onChange={(e) => setSelReg1(e.target.value)}
+                        >
+                          <MenuItem value="null">- 전체 -</MenuItem>
+                          {region1.map((reg1, i) => (
+                            <MenuItem value={reg1} key={i}>
+                              {reg1}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
+                        <Select
+                          className="fSelect category eCategory"
+                          id="region2"
+                          name="region2"
+                          value={selReg2}
+                          onChange={(e) => setSelReg2(e.target.value)}
+                        >
+                          <MenuItem value="null">- 전체 -</MenuItem>
+                          {region2 &&
+                            region2.map((reg2, i) => (
+                              <MenuItem value={reg2} key={i}>
+                                {reg2}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl sx={{ minWidth: 120 }} size="small">
+                        <Select
+                          className="fSelect category eCategory"
+                          id="region3"
+                          name="region3"
+                          value={selReg3}
+                          onChange={(e) => setSelReg3(e.target.value)}
+                        >
+                          <MenuItem value="null">- 전체 -</MenuItem>
+                          {region3 &&
+                            region3.map((reg3, i) => (
+                              <MenuItem value={reg3} key={i}>
+                                {reg3}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </li>
+                  )}
                   {/* 검색 버튼 */}
                   <li style={{ textAlign: "center", marginTop: "20px" }}>
                     <Button
@@ -561,13 +845,20 @@ const Page = () => {
           <Grid item xs={12} sx={{ mb: 0.3 }}>
             <Typography variant="h5">
               통계 그래프
-              {analTypeValue == 1 ? "(거래분석)" : "(카테고리 분석)"}
+              {analTypeValue == 1
+                ? "(거래분석)"
+                : analTypeValue == 2
+                  ? "(카테고리 분석)"
+                  : analTypeValue == 3
+                    ? "(사용자 분석)"
+                    : ""}
             </Typography>
           </Grid>
           {analTypeValue == 1 ? (
             <DashboardCard>
               {optionscolumnchart && seriescolumnchart.length > 0 && (
                 <Chart
+                  key={JSON.stringify(seriescolumnchart)}
                   options={optionscolumnchart}
                   series={seriescolumnchart}
                   type="bar"
@@ -576,7 +867,7 @@ const Page = () => {
                 />
               )}
             </DashboardCard>
-          ) : (
+          ) : analTypeValue == 2 ? (
             <>
               <Grid container spacing={2} style={{ marginBottom: "50px" }}>
                 <Grid item xs={6} lg={6}>
@@ -666,6 +957,123 @@ const Page = () => {
                 </Grid>
               </Grid>
             </>
+          ) : analTypeValue == 3 ? (
+            <>
+              {date1 == 1
+                ? usertimeList &&
+                  usertimeList.length > 0 && (
+                    <>
+                      <div style={{ marginBottom: "50px" }}>
+                        <AnalUserDay
+                          key={JSON.stringify(usertimeList)}
+                          record={usertimeList}
+                        />
+                      </div>
+                      <AnalUserTable
+                        key={JSON.stringify(usertimeList)}
+                        record={usertimeList}
+                      />
+                    </>
+                  )
+                : userdayList &&
+                  userdayList.length > 0 && (
+                    <>
+                      <div style={{ marginBottom: "50px" }}>
+                        <AnalUserDay
+                          key={JSON.stringify(userdayList)}
+                          record={userdayList}
+                        />
+                      </div>
+                      <AnalUserTable
+                        key={JSON.stringify(userdayList)}
+                        record={userdayList}
+                      />
+                    </>
+                  )}
+            </>
+          ) : analTypeValue == 4 ? (
+            <>
+              <Grid container spacing={2} style={{ marginBottom: "50px" }}>
+                <Grid item xs={6} lg={6}>
+                  <PieChart
+                    title="사용자 분포"
+                    label={regionList
+                      .filter((item) => item.u_cnt !== 0)
+                      .map((item) => {
+                        if (selReg1 != "null" && selReg2 != "null") {
+                          return `${item.region3}`;
+                        } else if (selReg1 != "null" && selReg2 == "null") {
+                          return `${item.region2}`;
+                        } else if (selReg1 == "null") {
+                          return `${item.region1}`;
+                        }
+                      })}
+                    data={regionList
+                      .filter((item) => item.u_cnt !== 0)
+                      .map((item) => item.u_cnt)}
+                  />
+                </Grid>
+                <Grid item xs={6} lg={6}>
+                  <PieChart
+                    title="게시글 분포"
+                    label={regionList
+                      .filter((item) => item.p_cnt !== 0)
+                      .map((item) => {
+                        if (selReg1 != "null" && selReg2 != "null") {
+                          return `${item.region3}`;
+                        } else if (selReg1 != "null" && selReg2 == "null") {
+                          return `${item.region2}`;
+                        } else if (selReg1 == "null") {
+                          return `${item.region1}`;
+                        }
+                      })}
+                    data={regionList
+                      .filter((item) => item.p_cnt !== 0)
+                      .map((item) => item.p_cnt)}
+                  />
+                </Grid>
+                <Grid item xs={6} lg={6}>
+                  <PieChart
+                    title="거래 분포"
+                    label={regionList
+                      .filter((item) => item.d_cnt !== 0)
+                      .map((item) => {
+                        if (selReg1 != "null" && selReg2 != "null") {
+                          return `${item.region3}`;
+                        } else if (selReg1 != "null" && selReg2 == "null") {
+                          return `${item.region2}`;
+                        } else if (selReg1 == "null") {
+                          return `${item.region1}`;
+                        }
+                      })}
+                    data={regionList
+                      .filter((item) => item.d_cnt !== 0)
+                      .map((item) => item.d_cnt)}
+                  />
+                </Grid>
+                <Grid item xs={6} lg={6}>
+                  <PieChart
+                    title="거래금액 분포"
+                    label={regionList
+                      .filter((item) => item.d_price !== 0)
+                      .map((item) => {
+                        if (selReg1 != "null" && selReg2 != "null") {
+                          return `${item.region3}`;
+                        } else if (selReg1 != "null" && selReg2 == "null") {
+                          return `${item.region2}`;
+                        } else if (selReg1 == "null") {
+                          return `${item.region1}`;
+                        }
+                      })}
+                    data={regionList
+                      .filter((item) => item.d_price !== 0)
+                      .map((item) => item.d_price)}
+                  />
+                </Grid>
+              </Grid>
+            </>
+          ) : (
+            ""
           )}
         </Grid>
       </Box>
