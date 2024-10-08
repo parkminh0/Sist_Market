@@ -21,8 +21,8 @@ public class AlarmService {
         return a_mapper.getAlarmForUser(userkey);
     }
 
-    public int deleteNotifications(String alarmkey){
-        return a_mapper.deleteNotifications(alarmkey);
+    public int deleteNotifications(String message, String redirection){
+        return a_mapper.deleteNotifications(message, redirection);
     }
 
     public int deleteAllAlarms(String userkey){

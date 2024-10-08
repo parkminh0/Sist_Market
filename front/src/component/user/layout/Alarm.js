@@ -1,39 +1,76 @@
-'use client'
+// 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { AlertTriangle, X } from 'lucide-react'
+// import React, { useState, useEffect } from 'react'
+// import { AlertTriangle, X } from 'lucide-react'
 
-export default function Alarm() {
-  const [isVisible, setIsVisible] = useState(false)
+// export default function BottomLeftAlert() {
+//    const [isVisible, setIsVisible] = useState(false)
+//   const [alarm, setAlarm] = useState('알림을 기다리는 중...');
+//   const eventSource = new EventSource("http://localhost:8080/subscribe");
+//   useEffect(() => {
+//     eventSource.addEventListener("notification", function (event) {
+//       const notification = event.data;
+//       console.log(notification);
+//       setAlarm(notification);
+//       alert(notification);
+//     })
+//   });
+//   eventSource.onerror = function () {
+//     console.error("SSE 연결이 끊어졌습니다.");
+//     eventSource.close();
+//   };
+//   useEffect(() => {
+//     setIsVisible(true)
+//     // const timer = setTimeout(() => {
+//     //   setIsVisible(false)
+//     // }, 5000)
 
-  useEffect(() => {
-    // 컴포넌트가 마운트되면 알림을 표시합니다
-    setIsVisible(true)
+//     return () => clearTimeout(timer)
+//   }, [])
 
-    // 5초 후에 알림을 숨깁니다
-    const timer = setTimeout(() => {
-      setIsVisible(false)
-    }, 5000)
+//   if (!isVisible) return null
 
-    // 컴포넌트가 언마운트되면 타이머를 정리합니다
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (!isVisible) return null
-
-  return (
-    <div className="fixed bottom-4 right-4 max-w-sm z-50">
-      <div className="bg-orange-50 border-l-4 border-orange-400 p-4 flex items-center shadow-lg rounded-lg">
-        <AlertTriangle className="h-5 w-5 text-orange-400 mr-3" />
-        <span className="text-orange-800 flex-grow">이것은 경고 알림입니다.</span>
-        <button 
-          onClick={() => setIsVisible(false)} 
-          className="ml-2 text-orange-400 hover:text-orange-600 focus:outline-none"
-          aria-label="알림 닫기"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-    </div>
-  )
-}
+//   return (
+//     <div style={{
+//       position: 'fixed',
+//       bottom: '16px',
+//       right: '16px',
+//       maxWidth: '24rem',
+//       zIndex: 50
+//     }} role="alert">
+//       <div style={{
+//         backgroundColor: '#fff8ed',
+//         borderLeft: '4px solid #fb923c',
+//         padding: '16px',
+//         display: 'flex',
+//         alignItems: 'center',
+//         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+//         borderRadius: '0.5rem'
+//       }}>
+//         <img src='/img/Orange_img.png' style={{
+//           height: '24px',
+//           width: '20px',
+//           marginRight: '12px'
+//         }} aria-hidden="true" />
+//         <span style={{
+//           color: '#9a3412',
+//           flexGrow: 1
+//         }}>{alarm}</span>
+//         <button
+//           onClick={() => setIsVisible(false)}
+//           style={{
+//             marginLeft: '8px',
+//             color: '#fb923c',
+//             cursor: 'pointer',
+//             outline: 'none'
+//           }}
+//           onFocus={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px #fb923c'}
+//           onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}
+//           aria-label="알림 닫기"
+//         >
+//           <X style={{ height: '20px', width: '20px' }} />
+//         </button>
+//       </div>
+//     </div>
+//   )
+// }

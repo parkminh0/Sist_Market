@@ -85,6 +85,9 @@ export default function SellerReviewModal(props) {
     }).then((res) => {
       setMannerTemp();
       alert("후기 작성 완료")
+      if (props.onReviewSubmit) {
+        props.onReviewSubmit(selectedKeys); // 선택된 키를 부모에게 전달
+      }
       onClose();
     }).catch((error) => {
       console.error("후기 작성 중 오류가 발생했습니다.", error);
