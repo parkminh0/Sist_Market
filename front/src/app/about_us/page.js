@@ -1,7 +1,24 @@
+"use client"
 import Link from "next/link";
 import React from "react";
+import { useRef } from "react";
+
 
 export default function Page() {
+  const scrollRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+  
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       <article className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wo _1h4pbgy92o _1h4pbgy936 _1h4pbgy7kw">
@@ -31,29 +48,11 @@ export default function Page() {
           </div>
         </section>
         <div className="_1h4pbgy7zs _1h4pbgy84o _1h4pbgy89k _1h4pbgy8eg">
-          <svg
-            width="60"
-            height="100"
-            viewBox="0 0 60 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clipPath="url(#clip0_3168_55581)">
-              <path
-                d="M30.2378 36.8945C14.0894 36.8945 0.998047 49.7076 0.998047 65.856C0.998047 88.1831 30.3185 100.032 30.2378 99.998C30.1572 100.032 59.4776 88.1831 59.4776 65.856C59.4776 49.7076 46.3862 36.8945 30.2378 36.8945ZM30.2378 77.5781C28.0487 77.5777 25.9089 76.9282 24.0889 75.7117C22.2689 74.4952 20.8505 72.7664 20.0131 70.7438C19.1756 68.7212 18.9567 66.4957 19.384 64.3487C19.8113 62.2017 20.8657 60.2297 22.4137 58.6819C23.9618 57.1341 25.9341 56.0801 28.0812 55.6532C30.2282 55.2262 32.4537 55.4455 34.4761 56.2834C36.4986 57.1212 38.2272 58.5399 39.4433 60.3601C40.6595 62.1803 41.3086 64.3203 41.3086 66.5094C41.3086 67.9631 41.0222 69.4026 40.4659 70.7457C39.9095 72.0887 39.094 73.309 38.0659 74.3369C37.0379 75.3647 35.8174 76.18 34.4743 76.7362C33.1311 77.2923 31.6916 77.5784 30.2378 77.5781Z"
-                fill="#FF6F0F"
-              ></path>
-              <path
-                d="M36.8216 0C29.9976 0 25.2467 4.76709 24.4985 10.3811C15.3999 7.8665 8.27148 14.761 8.27148 22.3916C8.27148 28.2093 12.2602 32.9119 17.604 34.4384C21.9053 35.6665 29.6488 34.753 29.6488 34.753C29.6105 32.8715 31.3427 30.8066 34.0126 28.9272C41.6089 23.5814 47.5556 21.0627 48.4752 13.775C49.435 6.16657 43.7726 0 36.8216 0Z"
-                fill="#00A05B"
-              ></path>
-            </g>
-            <defs>
-              <clipPath id="clip0_3168_55581">
-                <rect width="60" height="100" fill="white"></rect>
-              </clipPath>
-            </defs>
-          </svg>
+          <img
+            src="/img/orange_img.png"
+            alt="당근마켓 로고"
+            style={{ width: "80px", height: "100px" }}
+          />
         </div>
         <article className="ahizi48 ahizi41 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy7zs _1h4pbgy84o _1h4pbgy89k _1h4pbgy8eg _1h4pbgy8jc">
           <section className="_1h4pbgy9vc _1h4pbgy914 _1h4pbgya2w">
@@ -64,7 +63,7 @@ export default function Page() {
             />
             <div className="_1h4pbgy9vc _1h4pbgy90g">
               <h2 className="_1h4pbgy794 _1h4pbgy79f _1h4pbgy79o _1h4pbgy7ag _1h4pbgy7c8">
-                <font style={{ verticalAlign: "inherit" }}>당근이란?</font>
+                <font style={{ verticalAlign: "inherit" }}>오렌지란?</font>
               </h2>
               <p className="_1h4pbgy78g _1h4pbgy78r _1h4pbgy798 _1h4pbgy7ao _1h4pbgy7c8">
                 <font style={{ verticalAlign: "inherit" }}>
@@ -374,299 +373,7 @@ export default function Page() {
             </div>
           </section>
         </article>
-        <article className="ahizi4k _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy7zs _1h4pbgy84o _1h4pbgy89k _1h4pbgy8eg _1h4pbgy8jc ahizi41 _1h4pbgy9vc _1h4pbgy91s">
-          <h2 className="_1h4pbgy794 _1h4pbgy79f _1h4pbgy79o _1h4pbgy7ag _1h4pbgy7c8">
-            <font style={{ verticalAlign: "inherit" }}>
-              전 세계 3,200만 명 이상의 이웃으로부터 신뢰를 받고 있습니다.
-            </font>
-          </h2>
-          <div className="ahizi4l ahizi43">
-            <div className="_1n1zga84 _1n1zga80 _1h4pbgya0o">
-              <div
-                id="scroll_div"
-                className="_1n1zga85 _1h4pbgy9zk _1h4pbgy8jc"
-              >
-                <div className="ahizi4m _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy7zs _1h4pbgy84o _1h4pbgy89k _1h4pbgy8eg _1h4pbgy8jc">
-                  <section className="ahizi4n _1h4pbgy7eo _1h4pbgy7jc _1h4pbgy7o0 _1h4pbgy7so _1h4pbgy95k _1h4pbgy3oo _1h4pbgy9vc _1h4pbgy90o">
-                    <div className="_1h4pbgy9vc _1h4pbgy900">
-                      <div className="_1h4pbgy78g _1h4pbgy7ag _1h4pbgy88">
-                        <font style={{ verticalAlign: "inherit" }}>애덤스</font>
-                      </div>
-                      <div className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy900">
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            width: "14px",
-                            height: "14px",
-                          }}
-                          data-seed-icon="icon_location_fill"
-                          data-seed-icon-version="0.2.1"
-                        >
-                          <svg
-                            id="icon_location_fill"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M2.19995 10.5798C2.19995 5.16739 6.58756 0.779785 12 0.779785C17.4123 0.779785 21.8 5.16739 21.8 10.5798C21.8 13.9799 19.5985 17.1391 17.4217 19.3764C16.3174 20.5113 15.1817 21.4481 14.2536 22.1055C13.7903 22.4337 13.3694 22.6988 13.0225 22.8857C12.8498 22.9788 12.6843 23.0584 12.5339 23.1169C12.4059 23.1666 12.2081 23.2342 12 23.2342C11.7918 23.2342 11.594 23.1666 11.466 23.1169C11.3156 23.0584 11.1501 22.9788 10.9774 22.8857C10.6305 22.6988 10.2096 22.4337 9.74627 22.1055C8.81823 21.4481 7.68247 20.5113 6.57819 19.3764C4.40138 17.1391 2.19995 13.9799 2.19995 10.5798ZM8.38442 10.1041C8.38442 8.10725 10.0031 6.48852 12 6.48852C13.9968 6.48852 15.6155 8.10725 15.6155 10.1041C15.6155 12.1009 13.9968 13.7196 12 13.7196C10.0031 13.7196 8.38442 12.1009 8.38442 10.1041Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                        <span className="_1h4pbgy78w _1h4pbgy7ao _1h4pbgy8g">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            토론토, 캐나다
-                          </font>
-                        </span>
-                      </div>
-                    </div>
-                    <p className="_1h4pbgy780 _1h4pbgy7ao _1h4pbgy88">
-                      <font style={{ verticalAlign: "inherit" }}>
-                        신뢰할 수 있고 사려 깊은 사람들에게 물건을 판매하고
-                        싶다면 이 앱을 사용하세요. 다른 마켓플레이스에서 판매할
-                        물건을 옮기는 데 많은 어려움을 겪었지만 Karrot에서는
-                        아주 쉽게 되었습니다.
-                      </font>
-                    </p>
-                  </section>
-                  <section className="ahizi4n _1h4pbgy7eo _1h4pbgy7jc _1h4pbgy7o0 _1h4pbgy7so _1h4pbgy95k _1h4pbgy3oo _1h4pbgy9vc _1h4pbgy90o">
-                    <div className="_1h4pbgy9vc _1h4pbgy900">
-                      <div className="_1h4pbgy78g _1h4pbgy7ag _1h4pbgy88">
-                        <font style={{ verticalAlign: "inherit" }}>아이샤</font>
-                      </div>
-                      <div className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy900">
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            width: "14px",
-                            height: "14px",
-                          }}
-                          data-seed-icon="icon_location_fill"
-                          data-seed-icon-version="0.2.1"
-                        >
-                          <svg
-                            id="icon_location_fill"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M2.19995 10.5798C2.19995 5.16739 6.58756 0.779785 12 0.779785C17.4123 0.779785 21.8 5.16739 21.8 10.5798C21.8 13.9799 19.5985 17.1391 17.4217 19.3764C16.3174 20.5113 15.1817 21.4481 14.2536 22.1055C13.7903 22.4337 13.3694 22.6988 13.0225 22.8857C12.8498 22.9788 12.6843 23.0584 12.5339 23.1169C12.4059 23.1666 12.2081 23.2342 12 23.2342C11.7918 23.2342 11.594 23.1666 11.466 23.1169C11.3156 23.0584 11.1501 22.9788 10.9774 22.8857C10.6305 22.6988 10.2096 22.4337 9.74627 22.1055C8.81823 21.4481 7.68247 20.5113 6.57819 19.3764C4.40138 17.1391 2.19995 13.9799 2.19995 10.5798ZM8.38442 10.1041C8.38442 8.10725 10.0031 6.48852 12 6.48852C13.9968 6.48852 15.6155 8.10725 15.6155 10.1041C15.6155 12.1009 13.9968 13.7196 12 13.7196C10.0031 13.7196 8.38442 12.1009 8.38442 10.1041Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                        <span className="_1h4pbgy78w _1h4pbgy7ao _1h4pbgy8g">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            토론토, 캐나다
-                          </font>
-                        </span>
-                      </div>
-                    </div>
-                    <p className="_1h4pbgy780 _1h4pbgy7ao _1h4pbgy88">
-                      <font style={{ verticalAlign: "inherit" }}>
-                        이 앱은 사용하기 정말 간단합니다. 지금까지는 아주 좋은
-                        경험을 했고 아무 문제 없이 판매할 수 있었습니다!
-                      </font>
-                    </p>
-                  </section>
-                  <section className="ahizi4n _1h4pbgy7eo _1h4pbgy7jc _1h4pbgy7o0 _1h4pbgy7so _1h4pbgy95k _1h4pbgy3oo _1h4pbgy9vc _1h4pbgy90o">
-                    <div className="_1h4pbgy9vc _1h4pbgy900">
-                      <div className="_1h4pbgy78g _1h4pbgy7ag _1h4pbgy88">
-                        <font style={{ verticalAlign: "inherit" }}>
-                          고소하다
-                        </font>
-                      </div>
-                      <div className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy900">
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            width: "14px",
-                            height: "14px",
-                          }}
-                          data-seed-icon="icon_location_fill"
-                          data-seed-icon-version="0.2.1"
-                        >
-                          <svg
-                            id="icon_location_fill"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M2.19995 10.5798C2.19995 5.16739 6.58756 0.779785 12 0.779785C17.4123 0.779785 21.8 5.16739 21.8 10.5798C21.8 13.9799 19.5985 17.1391 17.4217 19.3764C16.3174 20.5113 15.1817 21.4481 14.2536 22.1055C13.7903 22.4337 13.3694 22.6988 13.0225 22.8857C12.8498 22.9788 12.6843 23.0584 12.5339 23.1169C12.4059 23.1666 12.2081 23.2342 12 23.2342C11.7918 23.2342 11.594 23.1666 11.466 23.1169C11.3156 23.0584 11.1501 22.9788 10.9774 22.8857C10.6305 22.6988 10.2096 22.4337 9.74627 22.1055C8.81823 21.4481 7.68247 20.5113 6.57819 19.3764C4.40138 17.1391 2.19995 13.9799 2.19995 10.5798ZM8.38442 10.1041C8.38442 8.10725 10.0031 6.48852 12 6.48852C13.9968 6.48852 15.6155 8.10725 15.6155 10.1041C15.6155 12.1009 13.9968 13.7196 12 13.7196C10.0031 13.7196 8.38442 12.1009 8.38442 10.1041Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                        <span className="_1h4pbgy78w _1h4pbgy7ao _1h4pbgy8g">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            토론토, 캘리포니아
-                          </font>
-                        </span>
-                      </div>
-                    </div>
-                    <p className="_1h4pbgy780 _1h4pbgy7ao _1h4pbgy88">
-                      <font style={{ verticalAlign: "inherit" }}>
-                        이 앱은 매우 사용자 친화적입니다. 관리자는 사기꾼을 거의
-                        즉시 처리합니다. 누군가가 모든 사람의 안전을 지켜보고
-                        있다는 것을 아는 것은 좋습니다. 저는 확실히 이 앱을 계속
-                        사용할 것입니다.
-                      </font>
-                    </p>
-                  </section>
-                  <section className="ahizi4n _1h4pbgy7eo _1h4pbgy7jc _1h4pbgy7o0 _1h4pbgy7so _1h4pbgy95k _1h4pbgy3oo _1h4pbgy9vc _1h4pbgy90o">
-                    <div className="_1h4pbgy9vc _1h4pbgy900">
-                      <div className="_1h4pbgy78g _1h4pbgy7ag _1h4pbgy88">
-                        <font style={{ verticalAlign: "inherit" }}>데브</font>
-                      </div>
-                      <div className="_1h4pbgy9ug _1h4pbgy9wo _1h4pbgy900">
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            width: "14px",
-                            height: "14px",
-                          }}
-                          data-seed-icon="icon_location_fill"
-                          data-seed-icon-version="0.2.1"
-                        >
-                          <svg
-                            id="icon_location_fill"
-                            width="100%"
-                            height="100%"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-karrot-ui-icon="true"
-                          >
-                            <g>
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M2.19995 10.5798C2.19995 5.16739 6.58756 0.779785 12 0.779785C17.4123 0.779785 21.8 5.16739 21.8 10.5798C21.8 13.9799 19.5985 17.1391 17.4217 19.3764C16.3174 20.5113 15.1817 21.4481 14.2536 22.1055C13.7903 22.4337 13.3694 22.6988 13.0225 22.8857C12.8498 22.9788 12.6843 23.0584 12.5339 23.1169C12.4059 23.1666 12.2081 23.2342 12 23.2342C11.7918 23.2342 11.594 23.1666 11.466 23.1169C11.3156 23.0584 11.1501 22.9788 10.9774 22.8857C10.6305 22.6988 10.2096 22.4337 9.74627 22.1055C8.81823 21.4481 7.68247 20.5113 6.57819 19.3764C4.40138 17.1391 2.19995 13.9799 2.19995 10.5798ZM8.38442 10.1041C8.38442 8.10725 10.0031 6.48852 12 6.48852C13.9968 6.48852 15.6155 8.10725 15.6155 10.1041C15.6155 12.1009 13.9968 13.7196 12 13.7196C10.0031 13.7196 8.38442 12.1009 8.38442 10.1041Z"
-                                fill="currentColor"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                        <span className="_1h4pbgy78w _1h4pbgy7ao _1h4pbgy8g">
-                          <font style={{ verticalAlign: "inherit" }}>
-                            토론토, 캐나다
-                          </font>
-                        </span>
-                      </div>
-                    </div>
-                    <p className="_1h4pbgy780 _1h4pbgy7ao _1h4pbgy88">
-                      <font style={{ verticalAlign: "inherit" }}>
-                        Karrot에서 내 개인 물품을 판매하면서 간단하고
-                        쉬워졌습니다. Karrot에서 온라인 판매에 대해 많은 것을
-                        배우고 있습니다. 필요한 물건을 위해 추가 수입을 올리도록
-                        도와주셔서 감사합니다, Karrot!
-                      </font>
-                    </p>
-                  </section>
-                </div>
-              </div>
-
-              <div
-                id="left_scroll_div"
-                className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga87 _1n1zga89"
-              ></div>
-              <div
-                id="right_scroll_div"
-                className="_1n1zga86 _1h4pbgya0w _1h4pbgy98o _1h4pbgy8tk _1h4pbgy8gg _1h4pbgy9u0 _1h4pbgy9ub _1n1zga88"
-              ></div>
-
-              <div className="_1n1zga8a _1n1zga8b">
-                <div
-                  id="left_scroll_btn"
-                  className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8e _1n1zga8g"
-                >
-                  <span
-                    style={{ display: "inline-flex" }}
-                    className="_1n1zga8h"
-                    data-seed-icon="icon_chevron_left_thin"
-                    data-seed-icon-version="0.2.1"
-                  >
-                    <svg
-                      id="icon_chevron_left_thin"
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-karrot-ui-icon="true"
-                    >
-                      <g>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M16.6225 3.17006C16.8525 3.40006 16.8525 3.78006 16.6225 4.01006L8.63245 12.0001L16.6225 19.9901C16.8525 20.2201 16.8525 20.6001 16.6225 20.8301C16.3925 21.0601 16.0125 21.0601 15.7825 20.8301L7.37245 12.4201C7.14245 12.1901 7.14245 11.8101 7.37245 11.5801L15.7825 3.17006C16.0125 2.94006 16.3925 2.94006 16.6225 3.17006Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </span>
-                </div>
-              </div>
-
-              <div className="_1n1zga8a _1n1zga8c">
-                <div
-                  id="right_scroll_btn"
-                  className="_1n1zga8d _1h4pbgya0w _1h4pbgy9dc _1h4pbgy1u0 _1h4pbgy8i8 _1h4pbgy8sg _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy98g _1h4pbgy9yw _1h4pbgy9u0 _1h4pbgy9uj _1h4pbgya5s _1n1zga8f"
-                >
-                  <span
-                    style={{ display: "inline-flex" }}
-                    className="_1n1zga8h"
-                    data-seed-icon="icon_chevron_right_thin"
-                    data-seed-icon-version="0.2.1"
-                  >
-                    <svg
-                      id="icon_chevron_right_thin"
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-karrot-ui-icon="true"
-                    >
-                      <g>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M8.22246 3.17006L16.6325 11.5801C16.8625 11.8101 16.8625 12.1901 16.6325 12.4201L8.22246 20.8301C7.99246 21.0601 7.61246 21.0601 7.38246 20.8301C7.15246 20.6001 7.15246 20.2201 7.38246 19.9901L15.3725 12.0001L7.38246 4.01006C7.15246 3.78006 7.15246 3.40006 7.38246 3.17006C7.61246 2.94006 7.99246 2.94006 8.22246 3.17006Z"
-                          fill="currentColor"
-                        ></path>
-                      </g>
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
+        
       </article>
     </>
   );
