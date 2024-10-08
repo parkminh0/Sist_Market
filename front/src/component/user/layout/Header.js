@@ -1079,6 +1079,11 @@ export default function Header() {
                   fontSize: "14px",
                   outline: "none",
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    jwtLogin();
+                  }
+                }}
                 onChange={handleChange}
                 onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
                 onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
@@ -1100,6 +1105,11 @@ export default function Header() {
                   boxSizing: "border-box",
                   fontSize: "14px",
                   outline: "none",
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    jwtLogin();
+                  }
                 }}
                 onChange={handleChange}
                 onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
