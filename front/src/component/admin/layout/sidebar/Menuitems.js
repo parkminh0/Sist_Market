@@ -69,14 +69,9 @@ const Menuitems = [
     href: "/ad/statistic",
   },
   {
-    title: "거래 분석",
+    title: "통계 분석",
     icon: IconChartBar,
-    href: "/ad/statistic/deal",
-  },
-  {
-    title: "게시글 분석",
-    icon: IconReportAnalytics,
-    href: "/ad/statistic/post",
+    href: "/ad/statistic/analyze",
   },
   {
     navlabel: true,
