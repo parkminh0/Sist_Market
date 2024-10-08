@@ -32,8 +32,8 @@ export default function AddModal(props) {
 
   const [bc_list, setBc_list] = useState([]);
   const [content, setContent] = useState(); // 에디터에 적히는 값 콘솔에 출력
-  const [title, setTitle] = useState();
-  const [categoryname, setCategoryName] = useState();
+  const [title, setTitle] = useState('');
+  const [categoryname, setCategoryName] = useState(''); 
   const [userkey, setUserkey] = useState("1");
   const boardkey = useRef(1);
   const quillRef = useRef(); // 레퍼런스 객체로서 DOM 요소 접근 조작 가능
@@ -73,6 +73,11 @@ export default function AddModal(props) {
   };
 
   const uploadContent = async () => {
+    if (!title || title.trim() === "") {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+    console.log(categoryname);
     const formData = new FormData();
     formData.append('boardkey', boardkey.current);
     formData.append('content', content);
@@ -168,29 +173,25 @@ export default function AddModal(props) {
         <Dialog open={open} onClose={onClose} PaperProps={{ sx: { padding: '20px', width: '800px', height: '640px', maxWidth: '90%', borderRadius: '16px', } }} disableEnforceFocus disableAutoFocus aria-hidden={!open}>
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '10px', marginTop: '10px' }}>
-              <select className="fSelect" id="sel_board_no" name="sel_board_no" value={categoryname} onChange={(e) => setCategoryName(e.target.value)}
-                style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', fontSize: '16px !important' }}>
+              <select className="fSelect" id="sel_board_no" name="sel_board_no" value={categoryname || ''} onChange={(e) => setCategoryName(e.target.value)}
+                      style={{ flex: '1', height: '40px', padding: '10px', boxSizing: 'border-box', fontSize: '16px !important' }}>
                 <option value="" disabled hidden>:::카테고리 선택:::</option>
                 {bc_list && bc_list.map((bc, i) => (
                   <option key={i} value={bc.value}>{bc.value}</option>
                 ))}
               </select>
-              <TextField id="title1" name="title1" placeholder="제목" required fullWidth value={title} onChange={(e) => setTitle(e.target.value)}
-                variant="outlined" size="small" sx={{ height: '40px', boxSizing: 'border-box' }} />
+                <TextField id="title1" name="title1" placeholder="제목" required fullWidth value={title || ''} onChange={(e) => setTitle(e.target.value)} variant="outlined"
+                          size="small" sx={{ height: '40px', boxSizing: 'border-box' }} />
             </Box>
           </Box>
           <DialogContent sx={{ width: '100%', height: '410px', overflow: 'auto', padding: 0, marginTop: '10px' }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
               <ReactQuill theme="snow" ref={quillRef} modules={modules} formats={formats} onChange={setContent} 
-                style={{ height: '400px', width: '100%', marginLeft: '0', marginRight: '0' }} /> {/* 좌우 정확한 맞춤 */}
+                style={{ height: '400px', width: '100%', marginLeft: '0', marginRight: '0' }} />
             </Box>
           </DialogContent>
           <DialogActions className="dialog-actions" sx={{ justifyContent: 'center', paddingBottom: '20px' }}>
           <Button variant="contained" color="success" onClick={uploadContent} sx={{ fontSize: '12px', color: 'white', marginRight: "10px", }}>
-            {/* <Button type="submit" onClick={uploadContent} className="submit-button" sx={{ backgroundColor: '#FF8000', color: 'white', marginRight: '10px', '&:hover': { backgroundColor: '#e67300' } }}>
-            
-              저장
-            </Button> */}
               저장
             </Button>
             <Button variant="contained" sx={{ backgroundColor: '#BDBDBD', color: 'white', '&:hover': { backgroundColor: 'gray' }}} onClick={() => { onClose(); }} >

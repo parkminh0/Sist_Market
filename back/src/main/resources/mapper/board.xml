@@ -130,12 +130,16 @@
 	</update>
     
     <!-- 조회수 증가 -->
-	<update id="hit" parameterType="String">
-		UPDATE board
-		SET viewqty = viewqty + 1
-		WHERE boardkey = #{boardkey}
-	</update>
-
+    <select id="getHit" resultType="int" parameterType="int">
+        SELECT viewqty
+        FROM board
+        WHERE boardkey = #{boardkey}
+    </select>
+    <update id="incHit" parameterType="int">
+        UPDATE board
+        SET viewqty = viewqty + 1
+        WHERE boardkey = #{boardkey}
+    </update>
 
 
     <!-- ######################게시판 카테고리 관리###################### -->
@@ -254,6 +258,21 @@
         </where>
     </select>
 
+    <!-- 오늘 날짜와 같은 글 수 반환 -->
+    <select id="todayCount" resultType="int">
+        SELECT COUNT(*)
+        FROM board b
+        WHERE b.isdeleted = 0
+        AND DATE(b.create_dtm) = CURRENT_DATE()
+    </select>
 
+    <!-- 오늘 날짜와 같은 글 중 카테고리 따른 수 반환 -->
+    <select id="selectTodayCount" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM board b
+        WHERE b.isdeleted = 0
+        AND b.categorykey = #{categorykey}
+        AND DATE(b.create_dtm) = CURRENT_DATE()
+    </select>
 
 </mapper>

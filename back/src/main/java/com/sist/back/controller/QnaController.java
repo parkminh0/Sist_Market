@@ -82,7 +82,8 @@ public class QnaController {
             MultipartFile f = file;
 
             String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
-            String webPath = "http://localhost:3000/img/qna/";
+            // String webPath = "http://localhost:3000/img/qna/";
+            String webPath = "/img/qna/";
             String sendFname = URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 
             StringBuffer sb = new StringBuffer();

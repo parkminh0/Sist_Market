@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Link from "next/link";
 import BoardSide from "@/component/user/layout/BoardSide";
+import Cookies from "js-cookie";
 
 export default function page( props ) {
 
@@ -18,7 +19,26 @@ export default function page( props ) {
   const cPage = searchParams.get('cPage');
   const [bclist, setBclist] = useState([]); 
   const categorykey = searchParams.get('categorykey');
-  
+  const [viewqty, setViewqty] = useState(0);
+
+  function updateViewqty(boardkey) {
+    axios({
+      url: "/admin/board/incHit",
+      method: "get",
+      params: {
+        boardkey: boardkey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.data.result > 0) {
+        setViewqty(res.data.viewqty);
+      }
+    });
+  }
+
+
   // 목록버튼 클릭 시 이전 페이지로 이동
   function handleGoBack() {
     router.push(`/Board/list/${categorykey}?cPage=${cPage}`);
@@ -38,6 +58,7 @@ export default function page( props ) {
   }
 
   useEffect(() => {
+    incViewqty(boardkey);
     getData();
     getBcList();
   }, []);
@@ -56,6 +77,50 @@ export default function page( props ) {
     .catch((error) => {
         //console.error("데이터 로딩 오류:", error);  
     });
+  }
+
+  function incViewqty(boardkey) {
+    var userkey = Cookies.get("userkey");
+    if (userkey == undefined) {
+      userkey = 0;
+    }
+    var cookie = Cookies.get("viewedBoard");
+    if (cookie != undefined) {
+      if (cookie.includes(`/${userkey}`)) {
+        // 유저가 있을 때
+        var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
+        var beforeCookie = cookie.substring(0, cookie.indexOf(`/${userkey}`));
+        var userCookie = userCookieTmp;
+        var afterCookie = "";
+        if (userCookieTmp.indexOf("/") > 0) {
+          userCookie = userCookieTmp.substring(0, userCookieTmp.indexOf("/"));
+          afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
+        }
+        if (!userCookie.includes(`[${boardkey}]`)) {
+          // 새로운 페이지 일 때
+          updateViewqty(boardkey);
+          Cookies.remove("viewedBoard");
+          Cookies.set("viewedBoard", `${beforeCookie}${userCookie}_[${boardkey}]${afterCookie}`, {
+            expires: 1 / (24 * 60), // 1분
+            // expires: 1, // 하루(24시간)
+          });
+        } // 이미 본 페이지 일 때는 다른 작업없음
+      } else {
+        // 새로운 유저
+        updateViewqty(boardkey);
+        Cookies.set("viewedBoard", `${cookie}/${userkey}_[${boardkey}]`, {
+          expires: 1 / (24 * 60), // 1분
+          // expires: 1, // 하루(24시간)
+        });
+      }
+    } else {
+      // 쿠키가 아예 없을 때
+      updateViewqty(boardkey);
+      Cookies.set("viewedBoard", `/${userkey}_[${boardkey}]`, {
+        expires: 1 / (24 * 60), // 1분
+        // expires: 1, // 하루(24시간)
+      });
+    }
   }
 
   return (
@@ -120,9 +185,15 @@ export default function page( props ) {
                                                     }}>
                                                     {ar.categorykey == 1 ? '공지사항' : '이벤트'}
                                                 </TableCell>
-                                                <TableCell align="left" sx={{ width: '85%' }}>
+                                                <TableCell align="left" sx={{ width: '70%' }}>
                                                     <div>{ar.create_dtm}</div>
                                                     <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{ar.title}</div> {/* 제목 굵게 */}
+                                                </TableCell>
+                                                <TableCell align="left" sx={{ width: '15%' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <div style={{ fontWeight: 'bold' }}>조회수</div>
+                                                        <div>{ar.viewqty}</div>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
 

@@ -94,9 +94,10 @@ public class BoardController {
     @ResponseBody
     public Map<String, Object> boardAdd(BoardVO bvo, String categoryname) {
         Map<String, Object> map = new HashMap<>();
-        // 추후에 userkey, townkey 기입해줘야함
-        bvo.setCategorykey("1");
-        bvo.setTownkey("1");
+
+        bvo.setViewqty("0");
+        bvo.setCategorykey(b_service.changeCategoryname(categoryname));
+
         int chk = b_service.boardAdd(bvo);
 
         List<String> list = new ArrayList<>();
@@ -119,7 +120,8 @@ public class BoardController {
             MultipartFile f = file;
 
             String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
-            String webPath = "http://localhost:3000/img/admin/board/";
+            // String webPath = "http://localhost:3000/img/admin/board/";
+            String webPath = "/img/admin/board/";
             String sendFname = URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 
             StringBuffer sb = new StringBuffer();
@@ -173,6 +175,7 @@ public class BoardController {
     @RequestMapping("/edit")
     @ResponseBody
     public Map<String, Object> edit(BoardVO bvo, String categoryname) {
+        System.out.println("content: " + bvo.getContent());
         Map<String, Object> map = new HashMap<>();
         
         bvo.setCategorykey(b_service.changeCategoryname(categoryname));
@@ -367,6 +370,33 @@ public class BoardController {
             map.put("totalRecord", p.getTotalRecord());
             map.put("numPerPage", p.getNumPerPage());
         }
+        return map;
+    }
+
+    @RequestMapping("/todayCount")
+    @ResponseBody
+    public Map<String, Object> todayCount() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", b_service.todayCount());
+        return map;
+    }
+
+    @RequestMapping("/selectTodayCount")
+    @ResponseBody
+    public Map<String, Object> selectTodayCount(String categorykey) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", b_service.selectTodayCount(categorykey));
+        return map;
+    }
+
+    @RequestMapping("/incHit")
+    @ResponseBody
+    public Map<String, Object> incHit(int boardkey) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("boardkey", boardkey);
+        map.put("result", b_service.incHit(boardkey));
+        map.put("viewqty", b_service.getHit(boardkey));
+
         return map;
     }
 }
