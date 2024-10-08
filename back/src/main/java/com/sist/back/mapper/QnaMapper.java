@@ -37,5 +37,9 @@ public interface QnaMapper {
 
     QnaVO getQuestion(String qnakey);
 
+    int todayCount();
+
+    int selectTodayCount(String isanswered);
+
 }
 

@@ -41,7 +41,7 @@ export default function page(props) {
             userType: whatnow,
         }
       }).then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           setUserlist(res.data.userlist);
           setUserCounts([res.data.user1Count,
                          res.data.user2Count,

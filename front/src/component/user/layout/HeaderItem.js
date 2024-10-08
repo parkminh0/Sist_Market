@@ -18,7 +18,6 @@ export default function HeaderItem() {
       data_href: "/post",
     },
     { title: "카테고리", path: "/category", data_href: "/category" },
-    { title: "동네생활", path: "/#", data_href: "/#" },
     { title: "채팅하기", path: "/chat", data_href: "/chat" },
     { title: "마이페이지", path: "/myPage", data_href: "/myPage" },
     { title: "회사 소개", path: "/about_us", data_href: "/about_us" },

@@ -53,6 +53,9 @@ export default function Page() {
   const [allRecord, setAllRecord] = useState(0);
   const [answeredRecord, setAnsweredRecord] = useState(0);
   const [unansweredRecord, setUnansweredRecord] = useState(0);
+  const [todayCount, setTodayCount] = useState(0);
+  const [todayCount1, setTodayCount1] = useState(0);
+  const [todayCount2, setTodayCount2] = useState(0);
 
   const handleQuestionModalOpen = (qnakey) => { 
     setSelectedQnaKey(qnakey);
@@ -70,6 +73,9 @@ export default function Page() {
 
   useEffect(() => {
     search(1);
+    getCount();
+    getSelectCount1();
+    getSelectCount2();
   }, []);
   
   const handleAllCheck = (e) => {
@@ -96,6 +102,32 @@ export default function Page() {
     setCheckedItems(updatedCheckedItems);
     setAllChecked(updatedCheckedItems.length === list.length);
   };
+
+  function getCount() {
+    axios.get("/qna/todayCount").then((res) => {
+      setTodayCount(res.data.cnt);
+    });
+  }
+
+  function getSelectCount1() {
+    axios.get("/qna/selectTodayCount", {
+      params: {
+        isanswered: 0,
+      }
+    }).then((res) => {
+      setTodayCount1(res.data.cnt);
+    });
+  }
+
+  function getSelectCount2() {
+    axios.get("/qna/selectTodayCount", {
+      params: {
+        isanswered: 1,
+      }
+    }).then((res) => {
+      setTodayCount2(res.data.cnt);
+    });
+  }
 
   function delete_choice() {
     if (checkedItems.length === 0) {
@@ -160,26 +192,26 @@ export default function Page() {
             <Top_Analytic
               title="전체"
               count={allRecord || 0}
-              percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
-              extra={(allRecord || 0).toString()}
+              // percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
+              extra={todayCount.toString()}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="답변 완료"
               count={answeredRecord || 0}
-              percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
-              extra={(answeredRecord || 0).toString()}
+              // percentage={allRecord > 0 ? ((answeredRecord / allRecord) * 100).toFixed(1) : 0}
+              extra={todayCount2.toString()}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="답변 대기"
               count={unansweredRecord || 0}
-              percentage={allRecord > 0 ? ((unansweredRecord / allRecord) * 100).toFixed(1) : 0}
+              // percentage={allRecord > 0 ? ((unansweredRecord / allRecord) * 100).toFixed(1) : 0}
               isLoss
               color="warning"
-              extra={(unansweredRecord || 0).toString()}
+              extra={todayCount1.toString()}
             />
           </Grid>
         </Grid>

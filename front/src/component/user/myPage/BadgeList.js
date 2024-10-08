@@ -139,19 +139,16 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
                                 <LockIcon sx={{ fontSize: 80, color: selectedBadge.isrepresentable == "1" ? '#FFC107' : '#666', margin: '0 auto 16px' }} />
                             )}
                             <Typography variant="h6">{selectedBadge.name}</Typography>
-                            {/* <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
-                                {unlockedBadgeKeys.includes(selectedBadge.badgekey) ? selectedBadge.postcontent : selectedBadge.precontent}
-                            </Typography> */}
-                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
+                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2, wordBreak: 'keep-all' }}>
                     {unlockedBadgeKeys.includes(selectedBadge.badgekey)
                         ? selectedBadge.postcontent.split('.').map((sentence, index) => (
                             <span key={index}>
-                                {sentence.trim() && `${sentence.trim()}.`}<br />
+                                {sentence.trim() && `${sentence.trim()}`}<br />
                             </span>
                         ))
                         : selectedBadge.precontent.split('.').map((sentence, index) => (
                             <span key={index}>
-                                {sentence.trim() && `${sentence.trim()}.`}<br />
+                                {sentence.trim() && `${sentence.trim()}`}<br />
                             </span>
                         ))
                     }
