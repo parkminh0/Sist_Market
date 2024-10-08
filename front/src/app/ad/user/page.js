@@ -976,7 +976,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">게시글 키</th>
+                    <th scope="col">게시글 번호</th>
                     <th scope="col">제목</th>
                   </tr>
                 </thead>
@@ -1027,7 +1027,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">평가자 키</th>
+                    <th scope="col">평가자</th>
                     <th scope="col">매너</th>
                     <th scope="col">간편후기</th>
                   </tr>
@@ -1198,7 +1198,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">차단 사용자 번호</th>
+                    <th scope="col">차단 사용자</th>
                     <th scope="col">차단 날짜</th>
                   </tr>
                 </thead>
@@ -1253,7 +1253,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">미노출 사용자 번호</th>
+                    <th scope="col">미노출 사용자</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1459,7 +1459,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">키워드</th>
+                    <th scope="col">키워드 번호</th>
                     <th scope="col">키워드 내용</th>
                   </tr>
                 </thead>

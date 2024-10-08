@@ -127,13 +127,13 @@ export default function page( props ) {
                                             </TableRow>
 
                                             <TableRow
-    key={ar.boardkey + "_content"}  
-    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
->
-    <TableCell align="left" colSpan={2} sx={{ width: '100%', padding: '20px 16px' }}>
-        <div dangerouslySetInnerHTML={{ __html: ar.content }} />
-    </TableCell>
-</TableRow>
+                                                key={ar.boardkey + "_content"}  
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell align="left" colSpan={2} sx={{ width: '100%', padding: '20px 16px' }}>
+                                                    <div dangerouslySetInnerHTML={{ __html: ar.content }} />
+                                                </TableCell>
+                                            </TableRow>
                                         </TableBody>
                                     </Table>
                                 </div>
