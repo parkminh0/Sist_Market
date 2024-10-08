@@ -57,6 +57,7 @@ export default function Page() {
   const [isauthorized, setIsauthorized] = useState("");
   const [recent_login_start_date, setRecent_login_start_date] = useState("");
   const [recent_login_end_date, setRecent_login_end_date] = useState("");
+  const [userReportCount,setUserReportCount] = useState(0);
 
   //유저 검색
   const API_URL_2 = "/user/api/search_user_admin";
@@ -227,6 +228,7 @@ export default function Page() {
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
+        setUserReportCount(res.data.userReportCount);
         setLoading(false);
         setOpen(true); 
         //console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
@@ -872,6 +874,18 @@ export default function Page() {
                         style={{ width: "400px", display: "inline-block" }}
                       >
                         {ar.mannertemp || "0"} 도
+                      </span>
+                    </td>
+                   
+                    </tr>
+                    <tr>
+                    <th scope="row">신고수</th>
+                    <td>
+                      <span
+                        className="fText eMarketChecker"
+                        style={{ width: "400px", display: "inline-block" }}
+                      >
+                        {userReportCount || "0"} 
                       </span>
                     </td>
                    

@@ -385,4 +385,8 @@ public class UserService {
     public String searchNickname(String userkey){
         return mapper.searchNickname(userkey);
     }
+
+    public int getReportCountByUserKey(String userkey){
+        return mapper.getReportCountByUserKey(userkey);
+    }
 }

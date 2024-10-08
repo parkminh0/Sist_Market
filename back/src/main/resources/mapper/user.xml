@@ -154,6 +154,12 @@
         <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="noseeuserkey"/>
     </resultMap>
 
+    <select id="getReportCountByUserKey" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM userreport
+        WHERE reportuserkey = #{userkey}
+    </select>
+
     <!-- estimateuserkey로 user 닉네임과 imgurl -->
     <select id="getUserInfoByEstimateUserKey" parameterType="String" resultType="com.sist.back.vo.userVO">
         SELECT *

@@ -112,6 +112,8 @@ public class UserController {
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        int userReportCount = service.getReportCountByUserKey(userkey);
+        map.put("userReportCount", userReportCount);
         map.put("ar", uvo);
 
         return map;
