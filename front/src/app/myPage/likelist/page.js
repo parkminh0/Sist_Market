@@ -250,7 +250,31 @@ export default function Page() {
                         {" "}
                         SHOP 바로가기{" "}
                       </a>
-                      : ''
+                      :
+                      display=="카테고리"?
+                      <div
+                        data-v-420a5cda=""
+                        data-v-24868902=""
+                        variant="contained"
+                        className="btn outlinegrey small"
+                        onClick={likeCate}
+                      >
+                        {" "}
+                        등록하기
+                        {" "}
+                      </div>
+                      :
+                      <div
+                        data-v-420a5cda=""
+                        data-v-24868902=""
+                        variant="contained"
+                        className="btn outlinegrey small"
+                        onClick={likeKey}
+                      >
+                        {" "}
+                        등록하기
+                        {" "}
+                      </div>
                       }
                     </div>
                   </div>
@@ -272,9 +296,9 @@ export default function Page() {
                           variant="contained"
                           sx={{
                             fontSize:'18px',
-                            backgroundColor:'#2e642e',
+                            backgroundColor:'#ee3e00',
                             ":hover" : {
-                              backgroundColor: '#2e642e'
+                              backgroundColor: '#ff4f00'
                             }
                           }}
                           onClick={likeCate}
@@ -324,9 +348,9 @@ export default function Page() {
                           variant="contained"
                           sx={{
                             fontSize:'18px',
-                            backgroundColor:'#2e642e',
+                            backgroundColor:'#ee3e00',
                             ":hover" : {
-                              backgroundColor: '#2e642e'
+                              backgroundColor: '#ff4f00'
                             }
                           }}
                           onClick={likeKey}

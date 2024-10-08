@@ -53,11 +53,12 @@ import {
         }
 
         useEffect(()=>{
-            setLikeKeyList([]);
+          setKeyword("");
+            var tmpLcList = [];
             for(var i=0; i<props.likeList.length;i++){
-                likeKeyList.push(props.likeList[i].content);
+              tmpLcList.push(props.likeList[i].content);
             }
-            setLikeKeyList(likeKeyList);
+            setLikeKeyList(tmpLcList);
         },[openPO])
   
     return (
