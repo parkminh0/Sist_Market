@@ -102,7 +102,7 @@ export default function Page() {
                   <h3 className={styles.teamName}>서혁인</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>사용자 마이페이지(프로필,배지,후기)</li>
+                    <li className={styles.teamDescriptionItem}>사용자/마이페이지(프로필,배지,후기)</li>
                     <li className={styles.teamDescriptionItem}>QnA</li>
                     <li className={styles.teamDescriptionItem}>관리자 게시판</li>
                     <li className={styles.teamDescriptionItem}>관리자 배지</li>
@@ -117,7 +117,7 @@ export default function Page() {
                   <h3 className={styles.teamName}>안지은</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>jwtProvider Token관리</li>
+                    <li className={styles.teamDescriptionItem}>jwtProviderToken</li>
                     <li className={styles.teamDescriptionItem}>카카오 Api소셜로그인</li>
                     <li className={styles.teamDescriptionItem}>관리자 회원페이지</li>
                     <li className={styles.teamDescriptionItem}>공지사항 crud</li>
@@ -136,7 +136,7 @@ export default function Page() {
                   <ul className={styles.teamDescription}>
                     <li className={styles.teamDescriptionItem}>채팅</li>
                     <li className={styles.teamDescriptionItem}>알림</li>
-                    <li className={styles.teamDescriptionItem}>관리자 카테고리 페이지</li>
+                    <li className={styles.teamDescriptionItem}>관리자/카테고리 페이지</li>
                     <li className={styles.teamDescriptionItem}>텍스트 에디터</li>
                   </ul>
                 </div>
@@ -149,8 +149,8 @@ export default function Page() {
                   <h3 className={styles.teamName}>전민건</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>마이페이지/사용자페이지</li>
-                    <li className={styles.teamDescriptionItem}>(관리자/사용자) 게시글 상세</li>
+                    <li className={styles.teamDescriptionItem}>사용자/마이페이지</li>
+                    <li className={styles.teamDescriptionItem}>(관리자/사용자)게시글 상세</li>
                     <li className={styles.teamDescriptionItem}>가계부</li>
                     <li className={styles.teamDescriptionItem}>게시글 수정</li>
                   </ul>
