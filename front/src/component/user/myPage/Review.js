@@ -82,10 +82,12 @@ export default function Review({ userKey, onReviewCountChange }) {
     if (confirmHide) {
       axios.get(HIDE_URL, {
         params: {
-          postkey: postkey
+          postkey: postkey,
+          userkey: userkey
         }
       }).then((res) => {
         alert("후기가 숨겨졌습니다.");
+        getData(1);
       });
       handleMenuClose();
     }

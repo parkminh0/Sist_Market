@@ -159,9 +159,9 @@ public class DealreviewController {
 
     @RequestMapping("/hideReview")
     @ResponseBody
-    public Map<String, Object> hideReview(String postkey) {
+    public Map<String, Object> hideReview(String postkey, String userkey) {
         Map<String, Object> map = new HashMap<>();
-        int cnt = d_service.hideReview(postkey);
+        int cnt = d_service.hideReview(postkey, userkey);
         map.put("cnt", cnt);
         return map;
     }

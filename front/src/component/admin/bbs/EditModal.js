@@ -12,6 +12,7 @@ export default function Page(props) {
   const open = props.editModalOpen;
   const onClose = props.handleEditModalClose;
   const boardkey = props.boardkey;
+  console.log("aaaaa: " + props.boardkey);
 
   // formats로 사용자가 넣을 수 있는 데이터를 제한함
   const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width"];
@@ -46,7 +47,7 @@ export default function Page(props) {
         getCategoryname(boardkey);
       });
   }
-
+  
   function getCategoryname(boardkey) {
     axios.get(BC_URL, { params: { boardkey } })
         .then((res) => {
@@ -75,7 +76,13 @@ export default function Page(props) {
   };
 
   const uploadContent = async () => {
+    if (!title || title.trim() === "") {
+      alert("제목을 입력해주세요.");
+      return;
+    }
     const formData = new FormData();
+    console.log(content);
+    console.log(boardkey);
     formData.append('boardkey', boardkey);
     formData.append('content', content);
     formData.append('title', title);

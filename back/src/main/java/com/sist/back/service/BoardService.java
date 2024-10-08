@@ -60,10 +60,6 @@ public class BoardService {
         return b_mapper.del(boardkey);
     }
 
-    public int hit(String boardkey) {
-        return b_mapper.hit(boardkey);
-    }
-
     
     // 게시판 카테고리
     public KeyTableVO[] getAllBcList() {
@@ -124,5 +120,21 @@ public class BoardService {
         Integer count = b_mapper.searchForNoticeCount(map);
         return count != null ? count : 0;
     }
+
+    public int todayCount() {
+        return b_mapper.todayCount();
+    }
+
+    public int selectTodayCount(String categorykey) {
+        return b_mapper.selectTodayCount(categorykey);
+    }
     
+    public int getHit(int boardkey) {
+        return b_mapper.getHit(boardkey);
+    }
+
+    public int incHit(int boardkey) {
+        return b_mapper.incHit(boardkey);
+    }
+
 }
