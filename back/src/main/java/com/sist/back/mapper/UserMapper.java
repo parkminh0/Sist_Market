@@ -130,4 +130,6 @@ public interface UserMapper {
 
     String searchNickname(String userkey);
 
+    int getReportCountByUserKey(String userkey);
+
 }
