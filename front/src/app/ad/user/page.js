@@ -148,7 +148,7 @@ export default function Page() {
         setPage(response.data.page);
       })
       .catch((error) => {
-        console.error("Error during search:", error);
+        //console.error("Error during search:", error);
       });
   }
 
@@ -157,8 +157,8 @@ export default function Page() {
     if (!confirmed) {
       return; 
     }
-    console.log("delete_choice 함수 호출됨");
-    console.log("DEL_URL:", DEL_URL);
+    //console.log("delete_choice 함수 호출됨");
+    //console.log("DEL_URL:", DEL_URL);
     axios
       .post(DEL_URL, checkedItems)
       .then((response) => {
@@ -170,7 +170,7 @@ export default function Page() {
         getCount();
       })
       .catch((error) => {
-        console.error("Error deleting users:", error);
+        //console.error("Error deleting users:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
@@ -442,6 +442,15 @@ export default function Page() {
                       style={{ width: "auto" }}
                       onChange={(e) => {
                         setType(e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (!type.trim()) {
+                            alert("검색할 단어를 입력하세요.");
+                            return;
+                          }
+                          doSrchFrm(0);
+                        }
                       }}
                       sx={{ marginLeft: 2 }}
                       size="small"
