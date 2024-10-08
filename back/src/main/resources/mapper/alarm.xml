@@ -12,7 +12,7 @@
     </select>
 
     <delete id="deleteNotifications" parameterType="String">
-      DELETE FROM alarm WHERE alarmkey = #{alarmkey}
+      DELETE FROM alarm WHERE message = #{message} and redirection = #{redirection}
     </delete>
 
     <delete id="deleteAllAlarms" parameterType="String">

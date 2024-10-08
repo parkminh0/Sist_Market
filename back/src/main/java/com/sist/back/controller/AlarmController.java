@@ -27,8 +27,8 @@ public class AlarmController {
 
     @RequestMapping("/deleteNotification")
     @ResponseBody
-    public int deleteNotification(String alarmkey) {
-        return a_service.deleteNotifications(alarmkey);
+    public int deleteNotification(String message, String redirection) {
+        return a_service.deleteNotifications(message, redirection);
     }
 
     @RequestMapping("/deleteAllAlarms")

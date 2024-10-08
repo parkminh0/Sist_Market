@@ -105,6 +105,7 @@ const ChatApp = () => {
   const [buyerUserkey, setBuyerUserkey] = useState(null);
   const [alarmUrl, setAlarmUrl] = useState(new URL(window.location.href));
   const [isDisabled2, setIsDisabled2] = useState(false);
+  const [prove, setProve] = useState(false);
 
   useEffect(() => {
     console.log(alarmUrl);
@@ -610,7 +611,18 @@ const ChatApp = () => {
     } else if (postStatus === "3") {
       // postStatus가 3이 될 때 모달을 띄움
       handleSellerReportOpen();
+      if(prove){
       setIsDisabled(true); // 셀렉트 박스 비활성화
+      }else {
+        setIsDisabled(false);
+        axios.get("/adpost/updatePostStatus", {
+          params: {
+            postStatus: "2",
+            postkey: postkey.current,
+            dealuserkey: another,
+          }
+      })
+    }
     } else {
       setIsDisabled(false); // postStatus가 3이 아닐 경우 활성화
     }
@@ -844,12 +856,16 @@ const ChatApp = () => {
       });
     }
   };
-
+  const handleReviewSubmit = (selectedKeys) => {
+    if(selectedKeys !== '' && selectedKeys !== null){
+      setProve(true);
+    }
+  };
   return (
     <>
       <article className="article">
         <div>
-          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} buyerUserkey={buyerUserkey} />
+          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} buyerUserkey={buyerUserkey} onReviewSubmit={handleReviewSubmit} />
         </div>
         <nav className="sidebar">
           <Link className="anchor" href="chat">

@@ -12,7 +12,7 @@ public interface AlarmMapper {
 
     List<AlarmVO> getAlarmForUser(String userkey);
 
-    int deleteNotifications(String alarmkey);
+    int deleteNotifications(String message, String redirection);
 
     int deleteAllAlarms(String userkey);
 }

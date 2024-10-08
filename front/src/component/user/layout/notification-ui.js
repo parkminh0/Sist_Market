@@ -13,6 +13,7 @@ function NotificationUI({ notifications }) {
   const [displayCount, setDisplayCount] = useState(5);
   const [userkey, setUserkey] = useState(Cookies.get("userkey"));
   const router = useRouter(); // useRouter 훅은 항상 호출됨
+
   const handleNotificationClick = async (notification) => {
     let redirectPath = '';
     let tempQuery = '';
@@ -24,23 +25,39 @@ function NotificationUI({ notifications }) {
     } else if (notification.category === "문의") {
       redirectPath = notification.redirection;
     }
-    
     const query = new URLSearchParams(tempQuery).toString();
 
     // 쿼리 파라미터를 URL에 추가하기
     const fullPath = `${redirectPath}?${query}`;
     try {
+      console.log(notification);
       await axios.get("/deleteNotification", {
         params: {
-          alarmkey: notification.alarmkey}}).then(
-            window.location.href = fullPath
-          );
-    } catch(error){
+          alarmkey: notification.alarmkey,
+          message: notification.message,
+          redirection: notification.redirection
+        }
+      }).then(
+        window.location.href = fullPath
+      );
+    } catch (error) {
     }
   };
 
-  const removeAllAlarm = () =>{
-    axios.get("/deleteAllAlarms",{
+  const groupedNotifications = notifications.reduce((acc, notification) => {
+    const key = notification.message; // 메시지를 키로 사용
+    if (!acc[key]) {
+      acc[key] = { ...notification, count: 1 }; // 첫 번째 항목 추가
+    } else {
+      acc[key].count += 1; // 동일 메시지 수 증가
+    }
+    return acc;
+  }, {});
+
+  const displayNotifications = Object.values(groupedNotifications);
+
+  const removeAllAlarm = () => {
+    axios.get("/deleteAllAlarms", {
       params: {
         userkey: userkey
       }
@@ -61,7 +78,7 @@ function NotificationUI({ notifications }) {
   return (
     <div style={{ padding: '1rem 0.625rem', maxWidth: '440px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem' }}>
-        <button  onClick={removeAllAlarm}
+        <button onClick={removeAllAlarm}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{
@@ -91,7 +108,7 @@ function NotificationUI({ notifications }) {
           paddingRight: '0.5rem',
         }}
       >
-        {notifications.slice(0, displayCount).map((notification, index) => (
+        {displayNotifications.slice(0, displayCount).map((notification, index) => (
           <div
             key={notification.alarmkey}
             onClick={() => handleNotificationClick(notification)}
@@ -116,15 +133,15 @@ function NotificationUI({ notifications }) {
               <p style={{ fontSize: '0.875rem', color: '#EA580C', margin: '0.25rem 0', wordBreak: 'break-word' }}>{notification.message}</p>
             </div>
             <button style={{
-                color: '#FB923C',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '0.25rem',
-                borderRadius: '0.25rem',
-                transition: 'background-color 0.3s ease',
-                flexShrink: 0,
-              }}
+              color: '#FB923C',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.25rem',
+              borderRadius: '0.25rem',
+              transition: 'background-color 0.3s ease',
+              flexShrink: 0,
+            }}
               onMouseEnter={(e) => {
                 e.stopPropagation();
                 e.currentTarget.style.backgroundColor = '#FFF7ED';
