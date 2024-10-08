@@ -93,12 +93,13 @@ export default function Review({ userKey, onReviewCountChange }) {
   
   return (
     <Box sx={{ width: '100%', padding: 2 }}>
-      <Typography variant="h5" sx={{ mb: 3, color: '#000' }}>거래 후기 상세</Typography>
-      <Tabs value={selectedTab} onChange={tabChange} aria-label="deal review tabs" sx={{ width: '100%' }}>
+      <Tabs value={selectedTab} onChange={tabChange} aria-label="deal review tabs"
+            sx={{ width: '100%', '.Mui-selected': { color: '#FF9800 !important', }, '.MuiTabs-indicator': { backgroundColor: '#FF9800', }, }}>
         <Tab label="전체 후기" sx={{ flex: 1, color: '#000' }} />
         <Tab label="판매자 후기" sx={{ flex: 1, color: '#000' }} />
         <Tab label="구매자 후기" sx={{ flex: 1, color: '#000' }} />
       </Tabs>
+
       <Divider sx={{ my: 2 }} />
 
       <div className="empty_area">
