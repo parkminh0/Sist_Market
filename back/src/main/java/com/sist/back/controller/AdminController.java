@@ -5,9 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.AdminService;
 import com.sist.back.service.PostService;
+import com.sist.back.vo.admin.AnalpostcatepieVO;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,9 +104,34 @@ public class AdminController {
     }
 
     @GetMapping("/postTop10Statistic")
-    public Map<String, Object> postTop10Statistic(String type) {
+    public Map<String, Object> postTop10Statistic(String type, String dateType) {
         Map<String, Object> res = new HashMap<>();
-        res.put("res_postTop10Statistic", postService.postTop10Statistic(type));
+        res.put("res_postTop10Statistic", postService.postTop10Statistic(type, dateType));
+        return res;
+    }
+
+    @GetMapping("/dealchart")
+    public Map<String, Object> dealchart(String type, String start_dtm, String end_dtm) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_dealchart", adminService.dealchart(type, start_dtm, end_dtm));
+        return res;
+    }
+
+    @GetMapping("/analpostcatepie")
+    public Map<String, Object> analpostcatepie(String start_dtm, String end_dtm) {
+        List<AnalpostcatepieVO> list = adminService.analpostcatepie(start_dtm, end_dtm);
+        List<AnalpostcatepieVO> cntList = list.stream()
+                .sorted(Comparator.comparingInt(AnalpostcatepieVO::getCnt).reversed()) // cnt 역순 정렬
+                .limit(10) // 상위 10개 항목만 자름
+                .collect(Collectors.toList());
+        List<AnalpostcatepieVO> priceList = list.stream()
+                .sorted(Comparator.comparingInt(AnalpostcatepieVO::getPrice).reversed()) // cnt 역순 정렬
+                .limit(10) // 상위 10개 항목만 자름
+                .collect(Collectors.toList());
+        Map<String, Object> res = new HashMap<>();
+        res.put("res_resList", list);
+        res.put("res_cntList", cntList);
+        res.put("res_priceList", priceList);
         return res;
     }
 

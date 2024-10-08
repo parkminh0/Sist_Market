@@ -7,6 +7,8 @@ import {
   IconMessageChatbot,
   IconMedal2,
   IconAward,
+  IconReportAnalytics,
+  IconChartBar,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -66,11 +68,16 @@ const Menuitems = [
     icon: IconMedal2,
     href: "/ad/statistic",
   },
-  // {
-  //   title: "대시보드",
-  //   icon: IconMessageChatbot,
-  //   href: "/ad/qna",
-  // },
+  {
+    title: "거래 분석",
+    icon: IconChartBar,
+    href: "/ad/statistic/deal",
+  },
+  {
+    title: "게시글 분석",
+    icon: IconReportAnalytics,
+    href: "/ad/statistic/post",
+  },
   {
     navlabel: true,
     subheader: "고객센터",

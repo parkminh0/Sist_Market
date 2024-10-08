@@ -14,13 +14,13 @@ const Statistic = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/todayReport", // 실제 검색 API
+      url: "/ad/todayReport",
       method: "get",
       headers: {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      setTodayReportVO(res.data.res_todayReport); // 데이터 업데이트
+      setTodayReportVO(res.data.res_todayReport);
     });
   }, []);
 
@@ -31,61 +31,62 @@ const Statistic = () => {
           <Grid item xs={12} sx={{ mb: -2.25 }}>
             <Typography variant="h5">Today 리포트</Typography>
           </Grid>
-          <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
-            <Top_Analytic
-              title="거래건수"
-              count={new Intl.NumberFormat("ko-KR").format(
-                todayReportVO.dealcnt
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
-            <Top_Analytic
-              title="거래금액"
-              count={new Intl.NumberFormat("ko-KR").format(
-                todayReportVO.dealSum
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
-            <Top_Analytic
-              title="New 게시글"
-              count={new Intl.NumberFormat("ko-KR").format(
-                todayReportVO.newPost
-              )}
-              isLoss
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
-            <Top_Analytic
-              title="New 회원"
-              count={new Intl.NumberFormat("ko-KR").format(
-                todayReportVO.newUser
-              )}
-              //percentage={27.4}
-              isLoss
-              //color="warning"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
-            <Top_Analytic
-              title="New 채팅방"
-              count={new Intl.NumberFormat("ko-KR").format(
-                todayReportVO.newChat
-              )}
-              isLoss
-            />
-          </Grid>
-
-          <Grid item xs={12} lg={48 / 10}>
-            <DealStatistic />
-          </Grid>
-          <Grid item xs={12} lg={72 / 10}>
-            <CateStatistic />
-          </Grid>
-          <Grid item xs={12} lg={12}>
-            <PostStatistic />
-          </Grid>
+          {todayReportVO && Object.keys(todayReportVO).length > 0 && (
+            <>
+              <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
+                <Top_Analytic
+                  title="거래건수"
+                  count={new Intl.NumberFormat("ko-KR").format(
+                    todayReportVO.dealcnt || 0
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
+                <Top_Analytic
+                  title="거래금액"
+                  count={new Intl.NumberFormat("ko-KR").format(
+                    todayReportVO.dealSum || 0
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
+                <Top_Analytic
+                  title="New 게시글"
+                  count={new Intl.NumberFormat("ko-KR").format(
+                    todayReportVO.newPost || 0
+                  )}
+                  isLoss
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
+                <Top_Analytic
+                  title="New 회원"
+                  count={new Intl.NumberFormat("ko-KR").format(
+                    todayReportVO.newUser || 0
+                  )}
+                  isLoss
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={12 / 5} lg={12 / 5}>
+                <Top_Analytic
+                  title="New 채팅방"
+                  count={new Intl.NumberFormat("ko-KR").format(
+                    todayReportVO.newChat || 0
+                  )}
+                  isLoss
+                />
+              </Grid>
+              <Grid item xs={12} lg={48 / 10}>
+                <DealStatistic />
+              </Grid>
+              <Grid item xs={12} lg={72 / 10}>
+                <CateStatistic />
+              </Grid>
+              <Grid item xs={12} lg={12}>
+                <PostStatistic />
+              </Grid>
+            </>
+          )}
         </Grid>
       </Box>
     </PageContainer>
