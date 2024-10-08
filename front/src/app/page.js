@@ -32,6 +32,7 @@ export default function Home() {
       params: {
         region1: decodeURIComponent(Cookies.get("region1")),
         region2: decodeURIComponent(Cookies.get("region2")),
+        userkey: decodeURIComponent(Cookies.get("userkey")),
       },
       headers: {
         "Content-Type": "application/json",

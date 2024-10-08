@@ -249,6 +249,14 @@
          AND isdeleted = 0
     </select>
 
+
+    <select id="getLikeCate" resultType="com.sist.back.vo.categoryVO" parameterType="String">
+        SELECT *
+        FROM `interestcategory`
+        WHERE userkey = #{userkey}
+    </select>
+
+    
     <!-- 조회수 증가 -->
     <select id="getViewqty" resultType="int" parameterType="int">
         SELECT viewqty

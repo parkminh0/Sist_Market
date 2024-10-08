@@ -10,12 +10,15 @@ import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.TownVO;
+import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostImgVO;
 
 @Mapper
 public interface PostMapper {
     PostVO[] all();
 
+    categoryVO[] getLikeCate(String userkey);
+    
     int getViewqty(int postkey);
 
     int incViewqty(int postkey);

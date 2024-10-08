@@ -433,11 +433,16 @@ public class PostController {
 
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
-    public Map<String, Object> main(String region1, String region2) {
+    public Map<String, Object> main(String region1, String region2, String userkey) {
         categoryVO[] c_list = categoryService.all();
         // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
         List<Integer> randomCategories = new ArrayList<>();
         Random random = new Random();
+
+        categoryVO[] lc_list = p_service.getLikeCate(userkey);
+        for(int i=0; i<lc_list.length; i++){
+            randomCategories.add(Integer.parseInt(lc_list[i].getCategorykey()));
+        }
 
         // 중복되지 않는 숫자 3개를 뽑는 반복문
         while (randomCategories.size() < 3) {
