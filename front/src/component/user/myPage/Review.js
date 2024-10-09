@@ -1,172 +1,278 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, Divider, Tabs, Tab, Modal } from '@mui/material';
+import { Box, Typography, Avatar, Divider, Tabs, Tab, IconButton, Menu, MenuItem } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import Link from 'next/link';
 
 export default function Review({ userKey, onReviewCountChange }) {
+  const ALL_URL = "/user/allReview";
   const BUY_URL = "/user/buyingReview";
   const SELL_URL = "/user/sellingReview";
-
+  const HIDE_URL = "/user/hideReview"
+  
+  const userkey = userKey;
   const [selectedTab, setSelectedTab] = useState(0);
+  const [allList, setAllList] = useState([]);
   const [buyingList, setBuyingList] = useState([]);
   const [sellingList, setSellingList] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const userkey = userKey;
+  const [page, setPage] = useState({});
+  const [bPage, setBpage] = useState({});
+  const [sPage, setSpage] = useState({});
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
 
   useEffect(() => {
-    getData();
-  }, []);
+    getData(1);
+  }, [selectedTab]);
 
-  function getData() {
-    Promise.all([
-      axios.get(BUY_URL, { params: { userkey: userkey} }),
-      axios.get(SELL_URL, { params: { userkey: userkey} })
-    ]).then(([res1, res2]) => {
-        console.log(res2.data.selling_ar);
-        setBuyingList(res1.data.buying_ar);
-        setSellingList(res2.data.selling_ar);
-        onReviewCountChange([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
-    })
+  function getData(cPage) {
+    if (selectedTab === 0) {
+      axios.get(ALL_URL, { params: { userkey, cPage } }).then((res) => {
+        setAllList(res.data.all_ar);
+        setPage(res.data.page);
+        onReviewCountChange(res.data.count);
+      });
+    } else if (selectedTab === 1) {
+      axios.get(SELL_URL, { params: { userkey, cPage } }).then((res) => {
+        setSellingList(res.data.selling_ar);
+        setSpage(res.data.s_page);
+      });
+    } else if (selectedTab === 2) {
+      axios.get(BUY_URL, { params: { userkey, cPage } }).then((res) => {
+        setBuyingList(res.data.buying_ar);
+        setBpage(res.data.b_page);
+      });
+    }
   }
+
+  const changePage = (pNum) => {
+    getData(pNum);
+  };
 
   const tabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
 
   function filter(f) {
-    if (f == 'buyer') {
+    if (f === 'buyer') {
       return buyingList || [];
-    } else if (f == 'seller') {
+    } else if (f === 'seller') {
       return sellingList || [];
-    } else if (f == 'all') {
-      return [...(sellingList || []), ...(buyingList || [])]; //sellingList + buyingList (순서 상관 O)
+    } else if (f === 'all') {
+      return allList || [];
     } else {
       return [];
     }
-}
+  }
 
-  const modalOpen = (imgUrl) => {
-    setSelectedImage(imgUrl);
-    setOpenModal(true);
+  const handleMenuClick = (event, index) => {
+    setAnchorEl(event.currentTarget);  
+    setOpenMenuIndex(index);           
   };
 
-  const modalClose = () => {
-    setOpenModal(false);
-    setSelectedImage(null);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
   };
 
+  function hideReview(postkey) {
+    const confirmHide = window.confirm("한 번 숨긴 거래는 다시 볼 수 없습니다. 계속 하시겠습니까?");
+    if (confirmHide) {
+      axios.get(HIDE_URL, {
+        params: {
+          postkey: postkey,
+          userkey: userkey
+        }
+      }).then((res) => {
+        alert("후기가 숨겨졌습니다.");
+        getData(1);
+      });
+      handleMenuClose();
+    }
+  }
+  
   return (
     <Box sx={{ width: '100%', padding: 2 }}>
-      <Typography variant="h5" sx={{ mb: 3, color: '#000' }}>거래 후기 상세</Typography>
-      <Tabs value={selectedTab} onChange={tabChange} aria-label="deal review tabs" sx={{ width: '100%' }}>
+      <Tabs value={selectedTab} onChange={tabChange} aria-label="deal review tabs"
+            sx={{ width: '100%', '.Mui-selected': { color: '#FF9800 !important', }, '.MuiTabs-indicator': { backgroundColor: '#FF9800', }, }}>
         <Tab label="전체 후기" sx={{ flex: 1, color: '#000' }} />
         <Tab label="판매자 후기" sx={{ flex: 1, color: '#000' }} />
         <Tab label="구매자 후기" sx={{ flex: 1, color: '#000' }} />
       </Tabs>
+
       <Divider sx={{ my: 2 }} />
+
       <div className="empty_area">
-      {(selectedTab === 0 && (filter('all').length > 0 ? (
-        filter('all').map((review, index) => (
-          <React.Fragment key={index}>
-            <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
-              <Box sx={{ display: 'flex', flexGrow: 1 }}>
-                <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
-                    <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
+        {selectedTab === 0 && filter('all').length > 0 ? (
+          filter('all').map((review, index) => (
+            <React.Fragment key={index}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start', position: 'relative' }}>
+                <Box sx={{ display: 'flex', flexGrow: 1 }}>
+                  <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>
+                        {review.nickname}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
+                        {review.reviewType} • {review.region1} {review.region2} {review.region3}
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>
+                      {review.userreview || review.dealuserreview || '후기 내용이 없습니다.'}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
+                <IconButton aria-label="more" onClick={(event) => handleMenuClick(event, index)} sx={{ position: 'relative' }}>
+                  <MoreVertIcon/>
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={openMenuIndex === index} onClose={handleMenuClose}>
+                  <MenuItem onClick={() => hideReview(review.postkey)}>거래 후기 숨기기</MenuItem>
+                </Menu>
               </Box>
-              {(review.dealuserreviewimg || review.userreviewimg) && (
-                <Box sx={{ ml: 2 }}>
-                  <img src={review.dealuserreviewimg || review.userreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                    onClick={() => modalOpen(review.dealuserreviewimg || review.userreviewimg)} />
-                </Box>
-              )}
-            </Box>
-            {index < filter('all').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
-          </React.Fragment>
-        ))
-      ) : (
-        <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 거래 후기가 없습니다.</Typography>
-      )))}
+              {index < filter('all').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
+            </React.Fragment>
+          ))
+        ) : selectedTab === 0 && (
+          <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 거래 후기가 없습니다.</Typography>
+        )}
 
-      {(selectedTab === 1 && (filter('seller').length > 0 ? (
-        filter('seller').map((review, index) => (
-          <React.Fragment key={index}>
-            <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
-              <Box sx={{ display: 'flex', flexGrow: 1 }}>
-                <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
-                    <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
+        {selectedTab === 1 && filter('seller').length > 0 ? (
+          filter('seller').map((review, index) => (
+            <React.Fragment key={index}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start', position: 'relative' }}>
+                <Box sx={{ display: 'flex', flexGrow: 1 }}>
+                  <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>
+                        {review.nickname}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
+                        {review.reviewType} • {review.region1} {review.region2} {review.region3}
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>
+                        {review.userreview || '후기 내용이 없습니다.'}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
+                <IconButton aria-label="more" onClick={(event) => handleMenuClick(event, index)} sx={{ position: 'relative' }} >
+                  <MoreVertIcon/>
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={openMenuIndex === index} onClose={handleMenuClose}>
+                  <MenuItem onClick={() => hideReview(review.postkey)}>거래 후기 숨기기</MenuItem>
+                </Menu>
               </Box>
-              {review.userreviewimg && (
-                <Box sx={{ ml: 2 }}>
-                  <img src={review.userreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                    onClick={() => modalOpen(review.userreviewimg)} />
-                </Box>
-              )}
-            </Box>
-            {index < filter('seller').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
-          </React.Fragment>
-        ))
-      ) : (
-        <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 판매자 후기가 없습니다.</Typography>
-      )))}
+              {index < filter('seller').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
+            </React.Fragment>
+          ))
+        ) : selectedTab === 1 && (
+          <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 판매자 후기가 없습니다.</Typography>
+        )}
 
-      {(selectedTab === 2 && (filter('buyer').length > 0 ? (
-        filter('buyer').map((review, index) => (
-          <React.Fragment key={index}>
-            <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
-              <Box sx={{ display: 'flex', flexGrow: 1 }}>
-                <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>{review.nickname}</Typography>
-                    <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
-                      {review.reviewType} • {review.region1} {review.region2} {review.region3}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>{review.dealuserreview || '후기 내용이 없습니다.'}</Typography>
+        {selectedTab === 2 && filter('buyer').length > 0 ? (
+          filter('buyer').map((review, index) => (
+            <React.Fragment key={index}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2, mb: 2, alignItems: 'flex-start' }}>
+                <Box sx={{ display: 'flex', flexGrow: 1 }}>
+                  <Avatar src={review.imgurl || '/default-profile.png'} alt="프로필" sx={{ width: 56, height: 56, mr: 2 }} />
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#000', textAlign: 'left' }}>
+                        {review.nickname}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#666', textAlign: 'left' }}>
+                        {review.reviewType} • {review.region1} {review.region2} {review.region3}
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontSize: '1rem', mt: 1, color: '#000', textAlign: 'left' }}>
+                        {review.dealuserreview || '후기 내용이 없습니다.'}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
+                <IconButton aria-label="more" onClick={(event) => handleMenuClick(event, index)} sx={{ position: 'relative' }} >
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={openMenuIndex === index} onClose={handleMenuClose}>
+                  <MenuItem onClick={() => hideReview(review.postkey)}>거래 후기 숨기기</MenuItem>
+                </Menu>
               </Box>
-              {review.dealuserreviewimg && (
-                <Box sx={{ ml: 2 }}>
-                  <img src={review.dealuserreviewimg} alt="후기 이미지" style={{ width: '120px', height: '120px', borderRadius: '8px', cursor: 'pointer' }} 
-                    onClick={() => modalOpen(review.dealuserreviewimg)} />
-                </Box>
-              )}
-            </Box>
-            {index < filter('buyer').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
-          </React.Fragment>
-        ))
-      ) : (
-        <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 구매자 후기가 없습니다.</Typography>
-      )))}
+              {index < filter('buyer').length - 1 && (<Divider sx={{ width: '100%', mt: 2, mb: 2 }} />)}
+            </React.Fragment>
+          ))
+        ) : selectedTab === 2 && (
+          <Typography sx={{ textAlign: 'center', mt: 4, color: '#666' }}>받은 구매자 후기가 없습니다.</Typography>
+        )}
       </div>
       <Divider sx={{ width: '100%', mt: 2, mb: 2 }} />
-      <Modal open={openModal} onClose={modalClose} aria-labelledby="image-modal-title" aria-describedby="image-modal-description">
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80%', maxWidth: '500px', bgcolor: 'background.paper', 
-                  boxShadow: 24, p: 4, outline: 'none' }}>
-          {selectedImage && ( <img src={selectedImage} alt="확대된 이미지" style={{ width: '100%', height: 'auto', borderRadius: '8px' }}/> )}
-        </Box>
-      </Modal>
+
+      {/* 페이지네이션 */}
+      <div className="mPaginate">
+        {selectedTab === 0 && page.startPage > 1 && (
+          <Link href="#" onClick={() => { changePage(page.startPage - page.pagePerBlock) }} className="prev">
+            이전 {page.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 1 && sPage.startPage > 1 && (
+          <Link href="#" onClick={() => { changePage(sPage.startPage - sPage.pagePerBlock) }} className="prev">
+            이전 {sPage.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 2 && bPage.startPage > 1 && (
+          <Link href="#" onClick={() => { changePage(bPage.startPage - bPage.pagePerBlock) }} className="prev">
+            이전 {bPage.pagePerBlock}페이지
+          </Link>
+        )}
+
+        <ol>
+          {selectedTab === 0 && Array.from({ length: page.endPage - page.startPage + 1 }, (_, i) => page.startPage + i).map((pNum) => (
+            <li key={pNum}>
+              {page.nowPage === pNum ? (
+                <strong title="현재페이지">{pNum}</strong>
+              ) : (
+                <Link href="#" onClick={() => { changePage(pNum) }}>{pNum}</Link>
+              )}
+            </li>
+          ))}
+          {selectedTab === 1 && Array.from({ length: sPage.endPage - sPage.startPage + 1 }, (_, i) => sPage.startPage + i).map((pNum) => (
+            <li key={pNum}>
+              {sPage.nowPage === pNum ? (
+                <strong title="현재페이지">{pNum}</strong>
+              ) : (
+                <Link href="#" onClick={() => { changePage(pNum) }}>{pNum}</Link>
+              )}
+            </li>
+          ))}
+          {selectedTab === 2 && Array.from({ length: bPage.endPage - bPage.startPage + 1 }, (_, i) => bPage.startPage + i).map((pNum) => (
+            <li key={pNum}>
+              {bPage.nowPage === pNum ? (
+                <strong title="현재페이지">{pNum}</strong>
+              ) : (
+                <Link href="#" onClick={() => { changePage(pNum) }}>{pNum}</Link>
+              )}
+            </li>
+          ))}
+        </ol>
+
+        {selectedTab === 0 && page.endPage < page.totalPage && (
+          <Link href="#" onClick={() => { changePage(page.endPage + 1) }} className="next">
+            다음 {page.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 1 && sPage.endPage < sPage.totalPage && (
+          <Link href="#" onClick={() => { changePage(sPage.endPage + 1) }} className="next">
+            다음 {sPage.pagePerBlock}페이지
+          </Link>
+        )}
+        {selectedTab === 2 && bPage.endPage < bPage.totalPage && (
+          <Link href="#" onClick={() => { changePage(bPage.endPage + 1) }} className="next">
+            다음 {bPage.pagePerBlock}페이지
+          </Link>
+        )}
+      </div>
     </Box>
   );
 }
-
-

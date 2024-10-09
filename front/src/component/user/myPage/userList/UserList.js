@@ -5,6 +5,7 @@ import latestRemindsplitLink from 'next/link';
 import React, { useState } from 'react'
 import "/public/css/userlistcomponent.css";
 import UserModal from './UserModal';
+import { useRouter } from 'next/navigation';
 
 export default function UserList(props) {
     const userlist = props.userlist;
@@ -12,6 +13,7 @@ export default function UserList(props) {
     const getUserList = props.getUserList;
     const cPage = props.cPage;
 
+    const router = useRouter();
 
     const [open, setOpen] = useState(false);
     const [uvo, setUvo] = useState({});
@@ -34,8 +36,8 @@ export default function UserList(props) {
             'userkey': userkey,
           }
         }).then((res) => {
-            console.log(res.data);
-            getUserList(cPage);
+            getUserList(whatNow, cPage);
+            
         });
     }
 
@@ -45,7 +47,7 @@ export default function UserList(props) {
         return(
         <div key={index}>
             {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-            <div onDoubleClick={()=>handleOpen(ulvo.uvo)} className="userListComponents">
+            <Link href={ulvo.uvo?`/userPage?userkey=${ulvo.uvo.userkey}`:'#'} className="userListComponents">
             <div
                 className="purchase_list_display_item"
                 style={{ backgroundColor: "#FFFFFF" }}
@@ -75,7 +77,7 @@ export default function UserList(props) {
                     data-v-53e92c51=""
                     style={{fontSize: 20}}
                     >
-                    <span data-v-53e92c51="">{ulvo.uvo?ulvo.uvo.nickname:''}</span>
+                    <span data-v-53e92c51="" style={{lineHeight:'normal'}}>{ulvo.uvo?ulvo.uvo.nickname:''}</span>
                     </p>
                     <p
                     className="list_item_description"
@@ -106,7 +108,7 @@ export default function UserList(props) {
                 >
                     <Link
                     href="#"
-                    onClick={()=>{uncheckUser(ulvo.uvo.userkey)}}
+                    onClick={(e)=>{e.preventDefault(); uncheckUser(ulvo.uvo.userkey);}}
                     className="text-lookup last_description display_paragraph action_named_action"
                     style={{ color: "#222222CC" }}
                     >
@@ -115,7 +117,7 @@ export default function UserList(props) {
                 </div>
                 </div>
             </div>
-            </div>
+            </Link>
             {/* <!-- 여기까지 FOREACH --> */}
         </div>
         
@@ -130,15 +132,6 @@ export default function UserList(props) {
             <p data-v-24868902="" className="desc">
                 {whatNow=="likeUser" ? '모아보기': whatNow=="blockedUser" ? '차단':'게시글 미노출'} 사용자가 없습니다.
             </p>
-            <Link
-                data-v-420a5cda=""
-                data-v-24868902=""
-                href="/post"
-                className="btn outlinegrey small"
-            >
-                {" "}
-                SHOP 바로가기{" "}
-            </Link>
             {/* <!--  --> */}
         </div>}
         <UserModal open={open} handleClose={handleClose} uvo={uvo} whatNow={whatNow}/>

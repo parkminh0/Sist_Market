@@ -7,7 +7,6 @@ export default function HeaderItem() {
   const userkey = Cookies.get("userkey");
   const region1 = decodeURIComponent(Cookies.get("region1"));
   const region2 = decodeURIComponent(Cookies.get("region2"));
-  const region3 = decodeURIComponent(Cookies.get("region3"));
   let tmpLocParam = "";
   if (region1 != "undefined" && region1 != null && region1 != "") {
     tmpLocParam = "&loc1=" + region1 + "&loc2=" + region2;
@@ -19,7 +18,6 @@ export default function HeaderItem() {
       data_href: "/post",
     },
     { title: "카테고리", path: "/category", data_href: "/category" },
-    { title: "동네생활", path: "/#", data_href: "/#" },
     { title: "채팅하기", path: "/chat", data_href: "/chat" },
     { title: "마이페이지", path: "/myPage", data_href: "/myPage" },
     { title: "회사 소개", path: "/about_us", data_href: "/about_us" },

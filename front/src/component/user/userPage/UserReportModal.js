@@ -37,7 +37,6 @@ export default function UserReportModal(props) {
     function getData(ispostValue) {
         axios.get(API_URL)
             .then((res) => {
-                console.log(res.data);
                 setList(res.data.r_ar || []);
             });
     }

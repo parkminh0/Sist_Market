@@ -1,16 +1,24 @@
+'use client'
 import axios from "axios";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import "/public/css/celllist.css";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
+import { Button, TableCell, TableRow } from "@mui/material";
+import { useRouter } from "next/navigation";
+import CellDetail from "./CellDetail";
+import SellerReviewModal from "../../manner/SellerReviewModal";
+import ReviewDetail from "../buylist/ReviewDetail";
 
 export default function CellList(props) {
   // const param = useSearchParams();
   // alert(param.get("edit"));
   const celllist = props.celllist;
-  const whatNow = props.whatNow;
+  const cellNow = props.cellNow;
   const getCellList = props.getCellList;
   const cPage = props.cPage;
+
+  const router = useRouter();
 
   function getLatestRemind(clvo) {
     var remindDate = clvo.remind_dtm ? clvo.remind_dtm : clvo.create_dtm;
@@ -45,6 +53,44 @@ export default function CellList(props) {
     return remindDate;
   }
 
+
+  const[open,setOpen] = useState(false);
+  const[postkey,setPostkey] = useState(0);
+  function openDetail(postkey){
+    setPostkey(postkey);
+    setOpen(true);
+  }
+  function closeDetail(){
+    setOpen(false);
+    setPostkey(0);
+  }
+
+  const[reportOpen,setReportOpen] = useState(false);
+  function handleReportOpen(postkey){
+    setPostkey(postkey);
+    setReportOpen(true);
+  }
+  function handleReportClose(){
+    setReportOpen(false);
+    setPostkey(0);
+  }
+
+  const [rdOpen, setRdOpen] = useState(false);
+  const [rdvo, setRdvo] = useState({});
+  const [review, setReview] = useState("");
+  function openRd(rdvo, review){
+    setRdvo(rdvo);
+    setReview(review);
+    setRdOpen(true);
+  }
+  function closeRd(){
+    setRdOpen(false);
+    setReview("");
+    setRdvo({});
+  }
+
+
+
   function canRemindFunc(latestRemind) {
     var canRemind = true;
     const timeDiff = new Date() - new Date(latestRemind);
@@ -62,7 +108,6 @@ export default function CellList(props) {
         postkey: postkey,
       },
     }).then((res) => {
-      console.log(res);
       getCellList(cPage);
     });
   }
@@ -76,13 +121,13 @@ export default function CellList(props) {
         postkey: postkey,
       },
     }).then((res) => {
-      console.log(res.data);
       getCellList(cPage);
     });
   }
 
-  return celllist ? (
-    celllist.map((clvo, index) => {
+  return celllist.length>0 ? (
+    <>
+    {celllist.map((clvo, index) => {
       var price =
         clvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
       var latestRemind = getLatestRemind(clvo);
@@ -90,93 +135,81 @@ export default function CellList(props) {
       var canRemind = canRemindFunc(latestRemind);
       const detailLink = `/myPage/celllist/detail/${clvo.postkey}`;
       return (
-        <div key={index} data-v-eff62a72="">
-          {/* <!-- 여기서 FOREACH로 구매내역 뿌리기 --> */}
-          <Link
-            href={`/post/detail?postkey=${clvo.postkey}`}
-            data-v-53e92c51=""
-            data-v-eff62a72=""
+          <TableRow
+          key={index}
+            // onDoubleClick={()=>{router.push(`/post/detail?postkey=${clvo.postkey}`)}}
           >
-            <div
-              className="purchase_list_display_item"
-              style={{ backgroundColor: "#FFFFFF" }}
-              data-v-53e92c51=""
-            >
-              <div className="purchase_list_product" data-v-53e92c51="">
-                <div className="list_item_img_wrap" data-v-53e92c51="">
+            <TableCell colSpan={3}>
+                <div style={{
+                    display:'flex',
+                    alignItems: 'center',
+                  }}>
                   {clvo.pimg_list &&
-                  clvo.pimg_list.length > 0 &&
-                  clvo.pimg_list[0].imgurl != undefined ? (
-                    <img
-                      alt="product_image"
-                      src={clvo.pimg_list[0].imgurl}
-                      className="list_item_img"
-                      style={{ backgroundColor: "#ebf0f5" }}
-                      data-v-53e92c51=""
-                    />
-                  ) : (
-                    <ImageNotSupportedRoundedIcon
-                      style={{
-                        width: "80px", // 아이콘의 너비를 100%로 설정
-                        height: "80px", // 아이콘의 높이를 100%로 설정
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="list_item_title_wrap" data-v-53e92c51="">
-                  <p className="list_item_title" data-v-53e92c51="">
-                    {clvo.title}
-                  </p>
-                  <p className="list_item_description" data-v-53e92c51="">
-                    <span data-v-53e92c51="">{clvo.cvo.categoryname}</span>
-                  </p>
-                </div>
-              </div>
-              <div className="list_item_status_CL" data-v-53e92c51="">
-                <div
-                  className="list_item_column_CL column_secondary"
-                  data-v-53e92c51=""
-                >
-                  <p
-                    className="text-lookup secondary_title display_paragraph"
-                    style={{ color: "#22222280" }}
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-53e92c51=""
-                  >
+                    clvo.pimg_list.length > 0 &&
+                    clvo.pimg_list[0].imgurl != undefined ? (
+                      <img
+                        alt="product_image"
+                        src={clvo.pimg_list[0].imgurl}
+                        style={{
+                          backgroundColor: "#ebf0f5",
+                          width: "80px",
+                          minWidth: "80px",
+                          height: "80px",
+                          borderRadius: 23,
+                          overflow: 'hidden',
+                          }}
+                      />
+                    ) : (
+                      <ImageNotSupportedRoundedIcon
+                        style={{
+                          width: "80px", // 아이콘의 너비를 100%로 설정
+                          height: "80px", // 아이콘의 높이를 100%로 설정
+                          borderRadius: 23,
+                          overflow: 'hidden',
+                        }}
+                      />
+                    )}
+                  <div style={{
+                    display:'flex',
+                    flexDirection: 'column',
+                    marginLeft: '10px',
+                    width:'60%'
+                  }}>
+                    <div style={{
+                      marginBottom: '5px',
+                      fontSize:'16px',
+                      fontWeight: 'bold',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      }}>{clvo.title}</div>
+                    <div style={{
+                      marginTop: '5px',
+                      fontSize:'10px',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      }}>{clvo.cvo.categoryname}</div>
+                  </div>
+                  </div>
+              </TableCell>
+                <TableCell colSpan={2} style={{ color: "#22222280"}}>
                     {price}
-                  </p>
-                </div>
-                <div
-                  className="list_item_column_CL column_secondary"
-                  data-v-53e92c51=""
-                >
-                  <p
-                    className="text-lookup secondary_title display_paragraph"
-                    style={{ color: "#22222280" }}
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-53e92c51=""
-                  >
-                    {whatNow == "Hidden"
+                </TableCell>
+                <TableCell colSpan={2} style={{ color: "#22222280"}}>
+                    {cellNow == "Hidden"
                       ? clvo.update_dtm.split(" ")[0]
-                      : whatNow == "Sold"
+                      : cellNow == 3
                         ? clvo.create_dtm.split(" ")[0]
                         : clvo.create_dtm.split(" ")[0]}
-                  </p>
-                </div>
-                <div
-                  className="list_item_column_CL column_secondary"
-                  data-v-53e92c51=""
-                  style={{ textAlign: "right" }}
-                >
+                </TableCell>
+                {cellNow==1?
+                <TableCell colSpan={2}>
+                <div>
                   <div
-                    data-v-0b6ddb6a=""
-                    data-v-9ff60cb2=""
                     className="division_btn_box"
                   >
                     <button
-                      data-v-0b6ddb6a=""
                       className="btn_action"
                       style={
                         canRemind
@@ -203,21 +236,46 @@ export default function CellList(props) {
                             }
                       }
                     >
-                      <strong data-v-0b6ddb6a="" className="button_name">
+                      <strong className="button_name">
                         끌어올리기
                       </strong>
                     </button>
                   </div>
-                  <div style={{ fontSize: 10, textAlign: "right" }}>
+                  <div style={{ fontSize: 10, marginTop:'5px' }}>
                     최근일자: <br />
-                    {latestRemind}
+                    {latestRemind.substring(0,latestRemind.lastIndexOf(':'))}
                   </div>
                 </div>
-                <div
-                  className="list_item_column_CL column_last"
-                  data-v-53e92c51=""
-                >
-                  {whatNow == "Hidden" ? (
+                </TableCell>
+                :
+                ''  
+                }
+                { cellNow==3 ? 
+                  <TableCell colSpan={2}
+                  style={{color: "#22222280",
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                        }}
+                  >
+                  <div style={{
+                        display: 'flex',
+                        flexDirection:'column',
+                        textAlign:'center'
+                        }}>
+                    <Button variant="text" onClick={(e)=>{handleReportOpen(clvo.postkey);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#12dd21", margin:'2px 0'}}>후기 작성</Button>
+                    {clvo.dealuserreview!=null ? 
+                    <Button variant="text" onClick={(e)=>{openRd(clvo, clvo.dealuserreview);}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#ff5f00", margin:'2px 0'}}>받은 후기</Button>
+                    :
+                    <Button disableTouchRipple onClick={(e)=>{alert("아직 판매자가 후기를 등록하지 않았습니다.");}} style={{fontWeight:'bold', minWidth:'80px', color:"#fff", backgroundColor:"#aaaaaa", margin:'2px 0', cursor:'default'}}>받은 후기</Button>
+                    }
+                  </div>
+                  </TableCell>
+                  :
+                  ''
+              }
+                <TableCell colSpan={2} style={{textAlign:'right'}}>
+                  {cellNow == "Hidden" ? (
                     <Link
                       href="#"
                       onClick={() => {
@@ -228,9 +286,20 @@ export default function CellList(props) {
                     >
                       해제
                     </Link>
-                  ) : whatNow == "Sold" ? (
+                  ) : cellNow == 3 ? (
                     <Link
-                      href={detailLink}
+                      href="#"
+                      onClick={()=>{
+                        openDetail(clvo.postkey);
+                      }}
+                      className="last_item_txt text-lookup last_description display_paragraph action_named_action"
+                      style={{ color: "#222222CC" }}
+                    >
+                      확인
+                    </Link>
+                  ) : cellNow == 2 ? (
+                    <Link
+                      href={`/post/detail?postkey=${clvo.postkey}`}
                       className="last_item_txt text-lookup last_description display_paragraph action_named_action"
                       style={{ color: "#222222CC" }}
                     >
@@ -244,31 +313,39 @@ export default function CellList(props) {
                     >
                       수정
                     </Link>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Link>
+                  ) 
+                }
+                </TableCell>
           {/* <!-- 여기까지 FOREACH --> */}
-        </div>
+        </TableRow>
       );
-    })
+    })}
+    <CellDetail open={open} closeDetail={closeDetail} postkey={postkey} />
+    <SellerReviewModal reportOpen={reportOpen} handleReportClose={handleReportClose} postkey={postkey}/>
+    <ReviewDetail rdOpen={rdOpen} closeRd={closeRd} rdvo={rdvo}  who="Seller"/>
+    </>
   ) : (
-    <div data-v-24868902="" data-v-eff62a72="" className="empty_area">
-      {/* <!-- 없을 경우 --> */}
-      <p data-v-24868902="" className="desc">
-        구매 내역이 없습니다.
-      </p>
-      <Link
-        data-v-420a5cda=""
-        data-v-24868902=""
-        href="/post"
-        className="btn outlinegrey small"
-      >
-        {" "}
-        SHOP 바로가기{" "}
-      </Link>
-      {/* <!--  --> */}
-    </div>
+    <TableRow data-v-24868902="" data-v-eff62a72="" className="empty_area">
+      <TableCell colSpan={cellNow==1 ? 11 : 9} style={{textAlign:'center'}}>
+        {/* <!-- 없을 경우 --> */}
+        <p data-v-24868902="" className="desc">
+          {cellNow==1 ? '판매중' :
+          cellNow==2 ? '예약중' :
+          cellNow==3 ? '거래완료' : "숨김"} 내역이 없습니다.
+        </p>
+        {cellNow==1 ?
+        <Link
+          data-v-420a5cda=""
+          data-v-24868902=""
+          href="/post"
+          className="btn outlinegrey small"
+        >
+          {" "}
+          SHOP 바로가기{" "}
+        </Link>
+        : ''}
+        {/* <!--  --> */}
+      </TableCell>
+    </TableRow>
   );
 }

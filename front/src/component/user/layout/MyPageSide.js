@@ -4,9 +4,14 @@ import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import axios from "axios";
+import FaqModal from "@/app/customer/faq/page";
+import QnaModal from "@/app/customer/qna/page";
 
-export default function MyPageSide() {
-  const pathname = usePathname();
+export default function MyPageSide(props) {
+  var pathname = usePathname();
+  if(props.pathname != undefined){
+    pathname = props.pathname;
+  }
   const searchParams = useSearchParams();
 
   const BC_URL = "/admin/board/getAllBc";
@@ -37,6 +42,24 @@ export default function MyPageSide() {
       }
     });
   }, [pathname, searchParams]);
+
+  //FAQ
+  const [faqOpen, setFaqOpen] = useState(false);
+  const handleFaqOpen = (e) => {
+    e.preventDefault(); // 링크의 기본 동작 방지
+    setFaqOpen(true);
+  };
+  const handleFaqClose = () => { setFaqOpen(false); };
+
+  //QnA
+  const [qnaOpen, setQnaOpen] = useState(false);
+  const handleQnaOpen = (e) => {
+    if (e && e.preventDefault) {
+      e.preventDefault(); // 이벤트가 있을 때만 링크 원래 기능 막기
+    }
+    setQnaOpen(true);
+  };
+  const handleQnaClose = () => { setQnaOpen(false); };
 
   return (
     <div
@@ -80,11 +103,6 @@ export default function MyPageSide() {
                 구매내역
               </Link>
             </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                중고거래 가계부
-              </Link>
-            </li>
           </ul>
         </div>
         <div data-v-7bcac446="" className="snb_list1">
@@ -115,10 +133,10 @@ export default function MyPageSide() {
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/myPage/userManage?category=likeUser" className="menu_link"
                     data-href="/myPage/userManage?category=likeUser">
-                모아보기 사용자 관리
+                사용자 관리
               </Link>
             </li>
-            <li data-v-7a824f04="" className="menu_item">
+            {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/myPage/userManage?category=blockedUser" className="menu_link"
                     data-href="/myPage/userManage?category=blockedUser">
                 차단 사용자 관리
@@ -129,7 +147,7 @@ export default function MyPageSide() {
                     data-href="/myPage/userManage?category=noseeUser">
                 게시글 미노출 사용자 관리
               </Link>
-            </li>
+            </li> */}
             {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 관심 카테고리 설정
@@ -138,6 +156,15 @@ export default function MyPageSide() {
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 알림 설정
+              </Link>
+            </li>
+            <li data-v-7a824f04="" className="menu_item">
+              <Link
+                data-href="/myPage/qna"
+                data-v-7a824f04=""
+                href="/myPage/qna"
+                className="menu_link">
+                문의사항
               </Link>
             </li>
             {/* <li data-v-7a824f04="" className="menu_item">
@@ -168,24 +195,12 @@ export default function MyPageSide() {
           </strong>
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
             {bc_list.map((ar, index) => (
-              <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" className="menu_link" key={index} href={`/Board/list/${ar.key}`}target="_self">
-                <font>{ar.value}</font>
-              </Link>
+              <li data-v-7a824f04=""  key={index} className="menu_item">
+                <Link data-v-7a824f04="" className="menu_link" href={`/Board/list/${ar.key}`}target="_self">
+                  <font>{ar.value}</font>
+                </Link>
               </li>
             ))}
-          </ul>
-        </div>
-        <div data-v-7bcac446="" className="snb_list1">
-          <strong data-v-7bcac446="" className="snb_title">
-            나의 동네생활
-          </strong>
-          <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                동네생활 활동
-              </Link>
-            </li>
           </ul>
         </div>
         <div data-v-7bcac446="" className="snb_list1">
@@ -193,34 +208,24 @@ export default function MyPageSide() {
             기타
           </strong>
           <ul data-v-7a824f04="" data-v-7bcac446="" className="snb_menu">
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                내 동네 설정
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                동네 인증하기
-              </Link>
-            </li>
-            <li data-v-7a824f04="" className="menu_item">
+            {/* <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="#" className="menu_link">
                 키워드 알림 설정
               </Link>
-            </li>
-          </ul>
-        </div>
-        <div data-v-7bcac446="" className="snb_list1">
-          <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
-                자주 묻는 질문
+            </li> */}
+            <li data-v-7a824f04="" className="menu_item">
+              <Link data-v-7a824f04="" href="#" className="menu_link" onClick={handleFaqOpen}>
+                    자주 묻는 질문
               </Link>
+              <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} />
+              <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
             </li>
             <li data-v-7a824f04="" className="menu_item">
-              <Link data-v-7a824f04="" href="#" className="menu_link">
+              <Link data-v-7a824f04="" href="/Board/terms" className="menu_link">
                 약관 및 정책
               </Link>
             </li>
+          </ul>
         </div>
       </nav>
     </div>

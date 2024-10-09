@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.sist.back.service.UserService;
 import com.sist.back.util.FileRenameUtil;
@@ -30,6 +29,7 @@ import com.sist.back.vo.userVO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.sist.back.service.BadgeService;
 
 @Controller
 @RequestMapping("/user")
@@ -44,14 +44,12 @@ public class UserController {
     @Autowired
     UserService service;
 
+    @Autowired
+    BadgeService b_service;
+
     @Value("${server.upload.user.image}")
     private String userImgPath;
 
-    @RequestMapping("/login/kakao")
-    public ModelAndView login(String code) {
-        ModelAndView mv = new ModelAndView();
-        return mv;
-    }
 
     // 관리자 유저 카운트 확인
     @RequestMapping("/api/usercount")
@@ -108,12 +106,23 @@ public class UserController {
         return map;
     }
 
-    // userAdmin 회원 정보 가져오기
+     // userAdmin 회원 정보 가져오기
     @RequestMapping("/api/admin/userEdit")
     @ResponseBody
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        int userReportCount = service.getReportCountByUserKey(userkey);
+        map.put("userReportCount", userReportCount);
+        map.put("ar", uvo);
+
+        return map;
+    }
+    @RequestMapping("/api/mypage/userEdit")
+    @ResponseBody
+    public Map<String, Object> getUserForMyPage(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserForMyPage(userkey);
         map.put("ar", uvo);
 
         return map;
@@ -168,6 +177,16 @@ public class UserController {
     public Map<String, Object> getUser(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        map.put("uvo", uvo);
+        return map;
+    }
+
+    //유저 프로필
+    @RequestMapping("/api/getUserProfile")
+    @ResponseBody
+    public Map<String, Object> getUserProfile(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserProfile(userkey);
         map.put("uvo", uvo);
         return map;
     }
@@ -239,10 +258,9 @@ public class UserController {
         int cnt = 0; // 아무 작업도 못했어 0 한번했어 1
         String msg = "로그인에 실패하였습니다.";
         userVO uvo = null;
+        
         if (vo.getId() != null) {
-
             uvo = service.authAndMakeToken(vo.getId(), vo.getPw());
-
             if (uvo != null) {
                 ResponseCookie cookie = ResponseCookie
                         .from("accessToken", uvo.getAccess_token())
@@ -266,6 +284,8 @@ public class UserController {
                         .secure(true)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
+
+                service.upt_login_dtm(uvo);
                 cnt = 1;
                 msg = "success";
             }
@@ -347,12 +367,10 @@ public class UserController {
             fvo.setEmail(email);
             fvo.setImgurl(imgurl);
             fvo.setIsauthorized("0");
-
-            // 아이디를 랜덤하게 생성 (현재 시간을 기반으로)
             String randomId = "user" + System.currentTimeMillis();
             fvo.setId(randomId);
 
-            // 비밀번호는 카카오 로그인 사용자는 필요 없음
+            
             fvo.setPw(null);
 
             // 회원가입 처리
@@ -392,6 +410,8 @@ public class UserController {
                         .build();
                 res.addHeader("Set-Cookie", userkeyCookie.toString());
 
+                service.kakao_login_dtm(email);
+
                 map.put("msg", "로그인 성공");
                 map.put("uvo", uvo);
                 map.put("cnt", 1);
@@ -410,15 +430,26 @@ public class UserController {
     public Map<String, Object> getLikeList(String userkey, String likewhat, String cPage) {
         Map<String, Object> l_map = new HashMap<>();
         // Paging
-        Paging page = new Paging(3, 3);
+        Paging page = null;
+        switch (likewhat) {
+            case "post":
+                page = new Paging(5, 3);
+                break;
+            case "category":
+                page = new Paging(3, 1);
+                break;
+            case "keyword":
+                page = new Paging(5, 2);
+                break;
+        }
+
         int totalRecord = service.getLikeCount(userkey, likewhat);
         l_map.put("totalCount", totalRecord);
         page.setTotalRecord(totalRecord);
         int nowPage = 1;
         if (cPage != null) {
             nowPage = Integer.parseInt(cPage);
-        } else {
-        }
+        } 
         page.setNowPage(nowPage);
 
         int begin = page.getBegin();
@@ -434,6 +465,29 @@ public class UserController {
         List<WishlistVO> likeList = service.getLikeLists(get_map, likewhat);
         l_map.put("likeList", likeList);
         return l_map;
+    }
+
+    @RequestMapping("/api/like/category")
+    @ResponseBody
+    public Map<String, Object> addLikeCategory(String userkey, String categorykey) {
+        Map<String, Object> lc_map = new HashMap<>();
+        lc_map.put("result_insert", service.addLikeCategory(userkey, categorykey));
+        return lc_map;
+    }
+    
+    @RequestMapping("/api/like/keyword")
+    @ResponseBody
+    public Map<String, Object> addLikeKeyword(String userkey, String content) {
+        Map<String, Object> lk_map = new HashMap<>();
+
+        giveBadgeFirstKeyword(userkey);
+
+        lk_map.put("result_insert", service.addLikeKeyword(userkey, content));
+        return lk_map;
+    }
+
+    public int giveBadgeFirstKeyword(String userkey) {
+        return b_service.giveBadgeFirstKeyword(userkey);
     }
 
     // 사용자 구매목록
@@ -763,11 +817,12 @@ public class UserController {
         int cell2count = service.getCell2TotalCount(userkey);
         int cellCount = cell1count+cell2count;
         List<PostVO> cellList = service.getCellListForUserPage(userkey);
-        String limitpostkey = cellList.get(0).getPostkey();
-        String lastpostkey = "9999";
+        String limitpostkey = "0";
+        String lastpostkey = "0";
         boolean isnextexist = cellCount>5;
         if(!cellList.isEmpty()){
             lastpostkey = cellList.get(cellList.size()-1).getRnum();
+            limitpostkey = cellList.get(0).getPostkey();
         }
         
         u_map.put("uvo", uvo);

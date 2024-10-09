@@ -15,7 +15,9 @@ public interface UserMapper {
 
     userVO login(userVO vo);
 
-    int upt_login_dtm(userVO vo);
+    int login_dtm(userVO vo);
+
+    int kakao_login_dtm(String email);
 
     UserCountVO countForAdmin();
 
@@ -35,12 +37,16 @@ public interface UserMapper {
     int blockI(String me, String you);
 
     userVO getUserForAdmin(String userkey);
-
+    userVO getUserForMyPage(String userkey);
+    userVO getUserProfile(String userkey);
+    
     int userDelForAdmin(String userkey);
 
     int userEditForAdmin(userVO vo);
 
     userVO findByid(String id);
+    
+    userVO getUserInfo(String userkey);
 
     int saveUser(userVO vo);
 
@@ -54,6 +60,9 @@ public interface UserMapper {
     int getInterestCategoryCount(String userkey);
 
     int getKeywordCount(String userkey);
+
+    int addLikeCategory(String userkey, String categorykey);
+    int addLikeKeyword(String userkey, String content);
 
     List<WishlistVO> getWishlistByMap(Map<String, Object> get_map);
 
@@ -115,5 +124,12 @@ public interface UserMapper {
     List<PostVO> getCellListForUserPage(String userkey);
     List<PostVO> getMorePost(String userkey,String limitpostkey,String lastpostkey);
     int getRestList(String userkey,String limitpostkey,String lastpostkey);
+
+    List<PostVO> getPostsByUserKey(Map<String, Object> pmap);
+    int getPostCountByUserKey(String userkey);
+
+    String searchNickname(String userkey);
+
+    int getReportCountByUserKey(String userkey);
 
 }

@@ -35,4 +35,25 @@ public class TownController {
         res.put("getNearTown", townService.getNearTown(region1, region2));
         return res;
     }
+
+    @GetMapping("/getAllRegion1")
+    public Map<String, Object> getAllRegion1() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("getAllRegion1", townService.getAllRegion1());
+        return res;
+    }
+
+    @GetMapping("/getAllRegion2")
+    public Map<String, Object> getAllRegion2(String region1) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("getAllRegion2", townService.getAllRegion2(region1));
+        return res;
+    }
+
+    @GetMapping("/getAllRegion3")
+    public Map<String, Object> getAllRegion3(String region2) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("getAllRegion3", townService.getAllRegion3(region2));
+        return res;
+    }
 }

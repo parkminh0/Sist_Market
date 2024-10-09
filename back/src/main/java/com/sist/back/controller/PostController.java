@@ -16,17 +16,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.back.service.BadgeService;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
+import com.sist.back.service.SearchlogService;
 import com.sist.back.service.TownService;
 import com.sist.back.service.OfferService;
 import com.sist.back.service.WishlistService;
 import com.sist.back.util.FileRenameUtil;
+import com.sist.back.util.Paging;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
@@ -35,6 +39,7 @@ import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/adpost")
@@ -58,6 +63,12 @@ public class PostController {
     @Autowired
     WishlistService w_service;
 
+    @Autowired
+    SearchlogService searchlogService;
+
+    @Autowired
+    BadgeService b_service;
+
     @Value("${server.upload.post.image}")
     private String postImgPath;
 
@@ -68,30 +79,32 @@ public class PostController {
         return res;
     }
 
+    @RequestMapping("/postdetail")
+    public Map<String, Object> getPostDetailByPostKey(int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("pvo", p_service.getPostDetailByPostKey(postkey));
+        return e_map;
+    }
+
     @PostMapping("/searchpost")
     public Map<String, Object> searchpost(@RequestBody Map<String, Object> searchParams) {
-        // 요청 파라미터 확인 (디버깅용)
-        System.out.println("Received search parameters: " + searchParams);
+        // 페이징 처리
+        Paging p = new Paging(8, 10);
+        // 전체 페이지
+        p.setTotalRecord(p_service.searchpostTotal(searchParams));
+        if (searchParams.get("nowPage") != null && !searchParams.get("nowPage").equals("undefined")) {
+            p.setNowPage(Integer.parseInt((String) searchParams.get("nowPage")));
+        } else {
+            p.setNowPage(1);
+        }
 
-        // searchParams에서 poststatus를 추출
-        String poststatus = searchParams.get("poststatus") != null ? searchParams.get("poststatus").toString() : "";
+        searchParams.put("begin", p.getBegin());
+        searchParams.put("end", p.getEnd());
 
         // 결과를 담을 Map 객체 생성
         Map<String, Object> res = new HashMap<>();
-        List<PostVO> postList = new ArrayList<>();
-
-        // "전체"인 경우 1, 2, 3, 4 상태의 게시글 조회
-        if ("all".equals(poststatus)) {
-            res.put("post_list", p_service.findAllByPoststatusIn(Arrays.asList(1, 2, 3, 4)));
-        } else if (!poststatus.isEmpty()) {
-            // 선택한 특정 상태만 조회
-            res.put("post_list", p_service.findByPoststatus(Integer.parseInt(poststatus)));
-        } else {
-            // poststatus 값이 없거나 잘못된 경우 처리
-            res.put("post_list", new ArrayList<>()); // 빈 리스트 반환 또는 기본 처리
-        }
-
-        // 결과를 JSON 형태로 반환
+        res.put("post_list", p_service.searchpost(searchParams));
+        res.put("page", p);
         return res;
     }
 
@@ -113,9 +126,9 @@ public class PostController {
     }
 
     @RequestMapping("/pop_cate")
-    public Map<String, Object> popCate(int categorykey) {
+    public Map<String, Object> popCate(int categorykey, String userkey) {
         Map<String, Object> e_map = new HashMap<>();
-        e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey));
+        e_map.put("popCateList", p_service.getPostByCategoryKey(categorykey, userkey));
         return e_map;
     }
 
@@ -223,7 +236,6 @@ public class PostController {
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
             String region2, String region3) {
-        System.out.println("거래희망!!" + vo.getHope_place() + "까지");
         if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
                 && !region3.equals("")) {
             Map<String, String> searchTown = new HashMap<>();
@@ -242,8 +254,6 @@ public class PostController {
             }
         }
 
-        // lastprice 변동 후 가격 = 가격
-        vo.setLastprice(vo.getPrice());
         // range
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
@@ -286,10 +296,21 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         res.put("savePostKey", newPostKey);
         return res;
     }
+
+     //배지 부여 함수
+     public int giveBadgeForPosts(String userkey) {
+        return b_service.giveBadgeForPosts(userkey);
+    }
+
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
@@ -358,6 +379,11 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         p_service.editPost(vo);
         res.put("savePostKey", vo.getPostkey());
@@ -366,14 +392,23 @@ public class PostController {
 
     // 사용자 - 중고거래 글 목록
     @GetMapping("/search")
-    public Map<String, Object> search(String userkey, String lastPostKey, String loc1, String[] loc2, String sort,
+    public Map<String, Object> search(String userkey, String onsale, String search, String lastPostKey, String loc1,
+            String[] loc2,
+            String sort,
             String category,
             String minPrice,
             String maxPrice) {
         int howManyPost = 15;
         Map<String, Object> res = new HashMap<>();
-        PostVO[] ar = p_service.search(userkey, lastPostKey, howManyPost, loc1, loc2, sort, category, minPrice,
+        PostVO[] ar = p_service.search(userkey, onsale, search, lastPostKey, howManyPost, loc1, loc2, sort, category,
+                minPrice,
                 maxPrice);
+
+        // 검색어 저장
+        if (search != null && !search.equals("") && !search.trim().equals("")) {
+            searchlogService.addSearchlog(search);
+        }
+
         String lastKey = null;
         try {
             lastKey = ar[ar.length - 1].getPostkey();
@@ -385,13 +420,29 @@ public class PostController {
         return res;
     }
 
+    // 사용자 - 임시저장 게시글 불러오기
+    @GetMapping("/searchTemp")
+    public Map<String, Object> searchTemp(String userkey) {
+        Map<String, Object> res = new HashMap<>();
+        PostVO vo = p_service.searchTemp(userkey);
+
+        res.put("res_searchTemp", vo);
+
+        return res;
+    }
+
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
-    public Map<String, Object> main(String region1, String region2) {
+    public Map<String, Object> main(String region1, String region2, String userkey) {
         categoryVO[] c_list = categoryService.all();
         // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
         List<Integer> randomCategories = new ArrayList<>();
         Random random = new Random();
+
+        categoryVO[] lc_list = p_service.getLikeCate(userkey);
+        for(int i=0; i<lc_list.length; i++){
+            randomCategories.add(Integer.parseInt(lc_list[i].getCategorykey()));
+        }
 
         // 중복되지 않는 숫자 3개를 뽑는 반복문
         while (randomCategories.size() < 3) {
@@ -404,10 +455,9 @@ public class PostController {
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
         // 배열을 리스트로 변환하여 할당
-        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0)), region1, region2));
-        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1)), region1, region2));
-        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2)), region1, region2));
-
+        for (int i = 0; i < 3; i++) {
+            tmp[i] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(i)), region1, region2));
+        }
         Map<String, Object> res = new HashMap<>();
         res.put("free_list", p_service.main("free", region1, region2));
         res.put("cate_list", tmp);
@@ -430,6 +480,21 @@ public class PostController {
         Map<String, Object> map = new HashMap<>();
         int cnt = p_service.hidePost(postkey);
         map.put("cnt", cnt);
+        return map;
+    }
+
+    @RequestMapping("/updatePostStatus")
+    public void updatePostStatus(String postStatus, String postkey, String dealuserkey) {
+        p_service.updatePostStatus(postStatus, postkey, dealuserkey);
+    }
+
+    @GetMapping("/checkPostDel")
+    public Map<String, Object> checkPostDel(@RequestParam List<String> postkeys) {
+        Map<String, Object> map = new HashMap<>();
+        for (String postkey : postkeys) {
+            int cnt = p_service.checkPostDel(postkey);
+            map.put(postkey, cnt);
+        }
         return map;
     }
 }

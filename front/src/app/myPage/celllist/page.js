@@ -1,22 +1,24 @@
 'use client'
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
+import CellList from "@/component/user/myPage/cellList/CellList";
+import { Backdrop, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import axios from "axios";
+import Cookies from "js-cookie";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import "/public/css/myPage.css";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
 import "/public/css/celllist.css";
+import "/public/css/myPage.css";
 import "/public/css/paging.css";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
-import CellList from "@/component/user/myPage/cellList/CellList";
-import Cookies from "js-cookie";
 
 export default function page() {
 
   const [celllist, setCelllist] = useState([]);
   const [whatNow, setWhatNow] = useState('onSale');
   const [cellStatus, setCellStatus] = useState(1);
+  const [cellNow, setCellNow] = useState(1);
   const [cellCounts, setCellCounts] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [totalRecord, setTotalRecord] = useState(0);
@@ -33,6 +35,7 @@ export default function page() {
   const userkey = Cookies.get("userkey");
 
   function changePage(pNum) { 
+    setLoading(true);
     getCellList(pNum);
   }
 
@@ -53,7 +56,6 @@ export default function page() {
           end_date: endDate,
       }
     }).then((res) => {
-        console.log(res.data);
 
         setCelllist(res.data.celllist);
         setCellCounts([res.data.cell1Count,
@@ -72,7 +74,9 @@ export default function page() {
         } else {
           setTotalRecord(res.data.totalRecord);
         }
-        
+
+        setCellNow(cellStatus);
+        setLoading(false);
       });
   }
 
@@ -109,9 +113,11 @@ export default function page() {
         setCellStatus(1);
       }
     }
+    setLoading(true);
     getCellList(1);
   },[whatNow]);
 
+  const [loading, setLoading] = useState(false);
 
   return (
     <>
@@ -155,6 +161,26 @@ export default function page() {
               data-v-0adb81cc=""
               className="content_area my-page-content"
             >
+            {loading && (
+              <Backdrop
+                open={loading}
+                sx={(theme) => ({
+                  position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  justifyContent: "center", // 수평 중앙 정렬
+                  alignItems: "center", // 수직 중앙 정렬
+                  color: "#fff",
+                  zIndex: theme.zIndex.drawer + 1,
+                  backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+                })}
+              >
+                <CircularProgress size={100} color="inherit" />
+              </Backdrop>
+            )}
               <div data-v-0a67d0b5="" className="my_purchase">
                 <div
                   data-v-6b53f901=""
@@ -170,7 +196,7 @@ export default function page() {
                   data-v-0a67d0b5=""
                   className="purchase_list_tab sell detail_tab"
                 >
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('onSale')} className={`tab_item ${cellStatus == 1 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('onSale')} className={`tab_item ${cellNow == 1 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -182,7 +208,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Selling')} className={`tab_item ${cellStatus == 2 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Selling')} className={`tab_item ${cellNow == 2 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -194,7 +220,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Sold')} className={`tab_item ${cellStatus == 3 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Sold')} className={`tab_item ${cellNow == 3 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -206,7 +232,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Hidden')} className={`tab_item ${cellStatus == 4 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Hidden')} className={`tab_item ${cellNow == 4 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -291,7 +317,7 @@ export default function page() {
                       <button
                         data-v-14e5ae1c=""
                         className="btn_search is_active"
-                        onClick={()=>getCellList(1)}
+                        onClick={()=>{setLoading(true);getCellList(1)}}
                       >
                         조회
                       </button>
@@ -303,13 +329,13 @@ export default function page() {
                   data-v-0a67d0b5=""
                   className="search_info"
                 >
-                  {(cellStatus==1 || cellStatus==2)  ? 
+                  {(cellNow==1 || cellNow==2)  ? 
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
                       판매중(예약중) 조회 결과는 등록일 기준으로 노출됩니다.
                     </p>
                   </li>
-                  : cellStatus==3 ?
+                  : cellNow==3 ?
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
                       거래완료 조회 결과는 판매일 기준으로 노출됩니다.
@@ -323,90 +349,59 @@ export default function page() {
                   </li>
                   }
                 </ul>
-                <div
-                  data-v-eff62a72=""
-                  data-v-0a67d0b5=""
-                  className="purchase_list bidding ask"
-                >
-                  <div data-v-eff62a72="" className="purchase_head">
-                    <div data-v-eff62a72="" className="head_product">
-                      <div data-v-eff62a72="" className="btn_filter">
-                        {" "}
-                        전체
-                          <div style={{display:"inline-block", textAlign:'center', paddingLeft:10}}>
-                            {totalRecord > 999 ? '999+' : totalRecord}
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell colSpan={3}>
+                          <div data-v-eff62a72="" className="head_product">
+                            <div data-v-eff62a72="" className="btn_filter">
+                              {" "}
+                              전체
+                                <div style={{display:"inline-block", textAlign:'center', paddingLeft:10}}>
+                                  {totalRecord > 999 ? '999+' : totalRecord}
+                                </div>
+                                <div style={{display:"inline-block", position:'absolute', right:15}}>건</div>
+                            </div>
                           </div>
-                          <div style={{display:"inline-block", position:'absolute', right:15}}>건</div>
-                      </div>
-                    </div>
-                    <div data-v-eff62a72="" className="head_status">
-                      <div
-                        data-v-eff62a72=""
-                        className="status_box field_price"
-                      >
-                        <Link
-                          data-v-eff62a72=""
-                          href="#"
-                          className="status_link"
-                        >
+                        </TableCell>
+                        <TableCell colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
                             판매 가격
                           </span>
-                        </Link>
-                      </div>
-                      <div
-                        data-v-eff62a72=""
-                        className="status_box field_date_purchased"
-                      >
-                        <Link
-                          data-v-eff62a72=""
-                          href="#"
-                          className="status_link"
-                        >
+                        </TableCell>
+                        <TableCell colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
-                          { (whatNow=="onSale" || whatNow=="Selling") ? '등록일' :  whatNow == "Sold" ? '판매일' : '숨김일'} 
+                          { (cellNow==1 || cellNow==2) ? '등록일' :  cellNow == 3 ? '판매일' : '숨김일'} 
                           </span>
-                        </Link>
-                      </div>
-                      <div
-                        data-v-eff62a72=""
-                        className="status_box field_expires_at"
-                      >
-                        <Link
-                          data-v-eff62a72=""
-                          href="#"
-                          className="status_link"
-                        >
+                        </TableCell>
+                        {cellNow == 1 ?
+                        <TableCell colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
                             끌어올리기
                           </span>
-                        </Link>
-                      </div>
-                      <div
-                        data-v-eff62a72=""
-                        className="status_box field_status ascending"
-                      >
-                        <Link
-                          data-v-eff62a72=""
-                          className="status_link"
-                          href="#"
-                        >
+                        </TableCell>
+                        : ''}
+                        {cellNow == 3 ?
+                        <TableCell style={{textAlign:'center'}} colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
-                          { (whatNow=="onSale" || whatNow=="Selling") ? '수정' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
+                            후기
                           </span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                        </TableCell>
+                        : ''}
+                        <TableCell colSpan={2} align="right">
+                          <span data-v-eff62a72="" className="status_txt">
+                          { cellNow==1 ? '수정' : cellNow==2 ? '확인' :  cellNow == 3 ? '상세 내역' : '숨김 해제'}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      <CellList celllist={celllist} cellNow={cellNow}  getCellList={(cPage)=>{setLoading(true);getCellList(cPage)}} cPage={page.nowPage}/>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
                   
-                  { (whatNow=="onSale" || whatNow=="Selling") ?
-                  <CellList celllist={celllist} whatNow={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
-                  :
-                  (whatNow=="Sold") ?
-                  <CellList celllist={celllist} whatNow="Sold"  getCellList={getCellList} cPage={page.nowPage} />
-                  :
-                  <CellList celllist={celllist} whatNow="Hidden"  getCellList={getCellList} cPage={page.nowPage} />
-                }
                 {/* 페이징 시작*/}
               <div className="mPaginate">
                   {page.startPage > 1 && (
@@ -432,117 +427,12 @@ export default function page() {
                   )}
                 </div>
                 {/* 페이징 끝*/}
-                </div>
               </div>
             </div>
             {/* <!-- 여기까지 컨텐츠 --> */}
           </section>
         </div>
       </article>
-      {/* 아래 광고 이미지 */}
-      <div className="_588sy4rk _588sy4rr _588sy4ry _588sy4s5">
-        <div className="_1h4pbgy14w _1h4pbgy9ug _1h4pbgy9xc _1h4pbgya2w">
-          <div className="a1nvr40 _1h4pbgy7nk _1h4pbgy7o1 _1h4pbgy7oy _1h4pbgy7pn _1h4pbgy7pw _1h4pbgy7qd _1h4pbgy7s8 _1h4pbgy7sp _1h4pbgy7tm _1h4pbgy7ub _1h4pbgy7uk _1h4pbgy7v1 _1h4pbgy14w _1h4pbgy8jc">
-            <div className="a1nvr41">
-              <div className="a1nvr42 _1h4pbgy9ug _1h4pbgy9wo _1h4pbgy9wi _1h4pbgy9vs _1h4pbgya0o">
-                <div
-                  className="a1nvr43 _1h4pbgy78g _1h4pbgy78p _1h4pbgy796 _1h4pbgy79n _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy48 _1h4pbgya54 _1h4pbgya4i _19xafot0 _19xafot4 _19xafot5"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "500ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                >
-                  <font>
-                    <font>오늘 대단한 발견을 해보세요!</font>
-                  </font>
-                </div>
-                <div
-                  className="a1nvr44 _1h4pbgy79c _1h4pbgy7a3 _1h4pbgy7ac _1h4pbgy7ag _1h4pbgy7c8 _1h4pbgy7bk _1h4pbgy7az _1h4pbgy7b8 _1h4pbgy8g _1h4pbgy81k _19xafot0 _19xafot4 _19xafot5"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "500ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                >
-                  <font>
-                    <font>앱을 받으세요</font>
-                  </font>
-                </div>
-                <div className="a1nvr45 _1h4pbgy9vc _1h4pbgy90g _1h4pbgy90r">
-                  <Link
-                    href="#"
-                    className="_19xafot0 _19xafot4 _19xafot5"
-                    style={{
-                      _19xafot2: "0ms",
-                      _19xafot1: "500ms",
-                      _19xafot3: "translateY(1rem)",
-                    }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/49380c1c7e70e49f0f93baf0f790925eefc69082-120x40.svg"
-                      alt="앱스토어에서 다운로드"
-                    />
-                  </Link>
-                  <Link
-                    href="#"
-                    className="_19xafot0 _19xafot4 _19xafot5"
-                    style={{
-                      _19xafot2: "0ms",
-                      _19xafot1: "500ms",
-                      _19xafot3: "translateY(1rem)",
-                    }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="_1h4pbgy8rk _1h4pbgy8rv _1h4pbgy8s4"
-                      src="https://karrotmarket-com-sanity-cdn.krrt.io/production/0d8f72b8e4cdb98af115a7c1f04c4abf19f5c419-180x53.svg"
-                      alt="Google Play에서 받으세요"
-                    />
-                  </Link>
-                </div>
-              </div>
-              <div className="a1nvr46">
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/bff14eb869318da13eeb329ac060450dfe1ecadf-750x1624.png"
-                  className="a1nvr49 a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
-                  alt="홈 피드 화면의 스크린샷"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                />
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/5cfdb708e8491051b4765819e796ca373e58fc44-753x1637.png"
-                  className="a1nvr4a a1nvr48 _1h4pbgy95k _1h4pbgya0o _19xafot0 _19xafot4 _19xafot5"
-                  alt="상세 페이지의 스크린샷"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(-1rem)",
-                  }}
-                />
-                <img
-                  src="https://karrotmarket-com-sanity-cdn.krrt.io/production/1da74f52dfcb54be6b1ec40af8d8480ed6abc4c0-900x339.png"
-                  className="a1nvr4b _19xafot0 _19xafot4 _19xafot5"
-                  alt="홈 피드 항목의 스크린샷"
-                  style={{
-                    _19xafot2: "0ms",
-                    _19xafot1: "1000ms",
-                    _19xafot3: "translateY(1rem)",
-                  }}
-                />
-                <div className="a1nvr47"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

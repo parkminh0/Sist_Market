@@ -58,6 +58,7 @@ public class CategoryEditController {
     public Map<String, Object> all() {
         Map<String, Object> res = new HashMap<>();
         res.put("category_list", c_Service.all());
+        res.put("post_count", ce_Service.getPostCount());
         return res;
     }
 

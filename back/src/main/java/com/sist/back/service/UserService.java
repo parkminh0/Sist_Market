@@ -86,12 +86,21 @@ public class UserService {
     }
 
     public int upt_login_dtm(userVO vo) {
-        return mapper.upt_login_dtm(vo);
+        return mapper.login_dtm(vo);
+    }
+
+    public int kakao_login_dtm(String email) {
+        return mapper.kakao_login_dtm(email);
     }
 
     public UserCountVO userForAdmin() {
 
         return mapper.countForAdmin();
+    }
+    
+    public userVO getUserInfo(String userkey) {
+
+        return mapper.getUserInfo(userkey);
     }
 
     public int searchForAdminPaging(Map iMap) {
@@ -149,6 +158,12 @@ public class UserService {
     public userVO getUserForAdmin(String userkey) {
         return mapper.getUserForAdmin(userkey);
     }
+    public userVO getUserForMyPage(String userkey) {
+        return mapper.getUserForMyPage(userkey);
+    }
+    public userVO getUserProfile(String userkey) {
+        return mapper.getUserProfile(userkey);
+    }
 
     public int userDelForAdmin(String userkey) {
         return mapper.userDelForAdmin(userkey);
@@ -196,6 +211,14 @@ public class UserService {
                 break;
         }
         return likelist;
+    }
+
+    public int addLikeCategory(String userkey, String categorykey){
+        return mapper.addLikeCategory(userkey, categorykey);
+    }
+
+    public int addLikeKeyword(String userkey, String content){
+        return mapper.addLikeKeyword(userkey, content);
     }
 
     public int getBuyTotalCount(String userkey) {
@@ -348,5 +371,22 @@ public class UserService {
         return mapper.getRestList(userkey,limitpostkey,lastpostkey);
     }
 
+    public int getPostCountByUserKey(String userkey){
+        return mapper.getPostCountByUserKey(userkey);
+    }
 
+    public List<PostVO> getPostsByUserKey(Map<String, Object> pmap){
+      
+        List<PostVO> p_list = mapper.getPostsByUserKey(pmap);
+        
+        return p_list;
+    }
+
+    public String searchNickname(String userkey){
+        return mapper.searchNickname(userkey);
+    }
+
+    public int getReportCountByUserKey(String userkey){
+        return mapper.getReportCountByUserKey(userkey);
+    }
 }

@@ -1,20 +1,24 @@
 "use client";
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
+import EventIcon from '@mui/icons-material/Event';
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import "/public/css/myPage.css";
+import Moneybook from "@/component/user/myPage/Moneybook";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 export default function page() {
-  const API_URL = "/user/api/admin/userEdit";
+  const API_URL = "/user/api/mypage/userEdit";
   const userkey = Cookies.get("userkey");
   const [uvo, setUvo] = useState({});
   const [sell_1, setSell_1] = useState(0);
@@ -32,7 +36,6 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res.data.ar);
       setUvo(res.data.ar);
       const cell_list = res.data.ar.cell_list;
       var sell1 = 0;
@@ -59,21 +62,56 @@ export default function page() {
       setSell_2(sell2);
       setSell_3(sell3);
       setSell_4(sell4);
-      console.log([sell1, sell2, sell3, sell4]);
+      setLoading(false);
     });
   }
+
+
+  const[open,setOpen] = useState(false);
+  
+  function openMoneyBook(){
+    setOpen(true);
+  }
+  function closeMoneyBook(){
+    setOpen(false);
+  }
+
+
+
 
   useEffect(() => {
     if (Cookies.get("userkey") == undefined) {
       alert("로그인이 필요한 서비스입니다.");
       window.location.replace("/");
     }
+    setLoading(true);
     getData();
   }, []);
 
+  const [loading, setLoading] = useState(false);
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
             <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">
@@ -160,29 +198,11 @@ export default function page() {
               <div
                 data-v-247cd1ce=""
                 data-v-7b7d73d2=""
-                className="shortcut-grid"
+                className="sm shortcut-grid"
               >
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/manner"
-                  className="menu-item"
-                >
-                  <div data-v-247cd1ce="" className="icon-wrap">
-                    <ThermostatIcon sx={{ width: 28, height: 28 }} />
-                  </div>
-                  <p
-                    data-v-09bea70c=""
-                    data-v-7d3b6402=""
-                    data-v-247cd1ce=""
-                    className="text-lookup name display_paragraph"
-                    style={{ color: "rgb(34, 34, 34)" }}
-                  >
-                    매너온도
-                  </p>
-                </Link>
-                <Link
-                  data-v-247cd1ce=""
-                  href="/myPage/badge"
+                  href="/myPage/profile?tab=badge" 
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -200,7 +220,8 @@ export default function page() {
                 </Link>
                 <Link
                   data-v-247cd1ce=""
-                  href="/myPage/moneybook"
+                  href="#"
+                  onClick={openMoneyBook}
                   className="menu-item"
                 >
                   <div data-v-247cd1ce="" className="icon-wrap">
@@ -216,10 +237,10 @@ export default function page() {
                     가계부
                   </p>
                 </Link>
-                <Link data-v-247cd1ce="" href="/notice" className="menu-item">
+                <Moneybook open={open} closeMoneyBook={closeMoneyBook} userkey={userkey} />
+                <Link data-v-247cd1ce="" href="/myPage/qna" className="menu-item">
                   <div data-v-247cd1ce="" className="icon-wrap">
-                    <CampaignIcon sx={{ width: 28, height: 28 }} />
-                    <span data-v-247cd1ce="" className="badge"></span>
+                    <LiveHelpOutlinedIcon sx={{ width: 28, height: 28 }} />
                   </div>
                   <p
                     data-v-09bea70c=""
@@ -228,9 +249,10 @@ export default function page() {
                     className="text-lookup name display_paragraph"
                     style={{ color: "rgb(34, 34, 34)" }}
                   >
-                    공지사항/이벤트
+                    문의사항
                   </p>
                 </Link>
+
               </div>
               {/* 구매 내역 */}
               <div
@@ -630,7 +652,7 @@ export default function page() {
                           return;
                         }
                         return (
-                          <UserCellList2 key={index} pvo={wlvo.pvo} />
+                            <UserCellList key={index} pvo={wlvo.pvo} />
                         );
                       })
                     ) : (

@@ -46,7 +46,6 @@ export default function PriceOfferModal(props) {
           "Content-Type": "application/json",
         },
       }).then((res) => {
-        console.log(res.data);
         if (res.data.result == 1) {
           alert("해당 제안이 전송되었습니다.");
           handleClosePO();

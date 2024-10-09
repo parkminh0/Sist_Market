@@ -1,60 +1,127 @@
 'use client'
-import { Button, Pagination, Paper, Table, TableBody, TableRow } from '@mui/material'
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import { Button, Divider, Table, TableBody, TableRow } from '@mui/material'
+import TableCell from '@mui/material/TableCell';
 import React, { useEffect, useState } from 'react'
-import { styled } from '@mui/material/styles';
 import "/public/css/myPage.css";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Link from "next/link";
 import BoardSide from "@/component/user/layout/BoardSide";
+import Cookies from "js-cookie";
 
 export default function page( props ) {
 
-  // 서버로부터 받을 vo 정보를 저장할 곳 (객체로 초기화)
+  const router = useRouter();  
   const [ar, setAr] = useState({});
-  //const [categorykey, setCategorykey] = useState(0);
-  
-  // props에서 boardkey를 받아옴
   const boardkey = props?.params?.boardkey;
 
-  const router = useRouter();
-  const [bclist, setBclist] = useState([]); // bclist 상태 추가
-  const [categorykey, setCategorykey] = useState(`${props.params.categorykey}`);
+  const searchParams = useSearchParams();
+  const cPage = searchParams.get('cPage');
+  const [bclist, setBclist] = useState([]); 
+  const categorykey = searchParams.get('categorykey');
+  const [viewqty, setViewqty] = useState(0);
+
+  function updateViewqty(boardkey) {
+    axios({
+      url: "/admin/board/incHit",
+      method: "get",
+      params: {
+        boardkey: boardkey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.data.result > 0) {
+        setViewqty(res.data.viewqty);
+      }
+    });
+  }
+
+
+  // 목록버튼 클릭 시 이전 페이지로 이동
+  function handleGoBack() {
+    router.push(`/Board/list/${categorykey}?cPage=${cPage}`);
+  }
+
+  useEffect(() => {
+    getData(cPage); // 페이지 데이터 가져오기
+  }, [cPage]);
+
   const API_URL = `/admin/board/getBbs?boardkey=${boardkey}`;
-  
   function getData() {
     axios.get(API_URL).then((res) => {
-        console.log(res.data.bvo);  // 데이터 구조 확인
-        setAr(res.data.bvo);        // 객체로 설정
-        //setCategorykey(res.data.bvo.categorykey);
+        setAr(res.data.bvo); // 객체로 설정
     }).catch((error) => {
-        console.error("Error fetching data: ", error);
+        //console.error("Error fetching data: ", error);
     });
   }
 
   useEffect(() => {
+    incViewqty(boardkey);
     getData();
     getBcList();
   }, []);
-  
-   //bclist 가져와서 =boardside로 넘겨줄거임
-   const bcUrl = "/admin/board/getAllBc";
 
-   function getBcList() {  
-     axios.get(bcUrl)
-     .then((json) => { 
-         setBclist(json.data.bc_list);
-         const category = json.data.bc_list.find(bc => bc.key === categorykey);
-         if (category) {
-           setCategoryName(category.value);  // 선택한 카테고리 이름 저장
-         }
-     })
-     .catch((error) => {
-         console.error("데이터 로딩 오류:", error);  
-     });
-   }
+  // bclist 가져와서 BoardSide로 넘겨줄거임
+  const bcUrl = "/admin/board/getAllBc";
+  function getBcList() {  
+    axios.get(bcUrl)
+    .then((json) => { 
+        setBclist(json.data.bc_list);
+        const category = json.data.bc_list.find(bc => bc.key === categorykey);
+        if (category) {
+          setCategoryName(category.value);  // 선택한 카테고리 이름 저장
+        }
+    })
+    .catch((error) => {
+        //console.error("데이터 로딩 오류:", error);  
+    });
+  }
 
+  function incViewqty(boardkey) {
+    var userkey = Cookies.get("userkey");
+    if (userkey == undefined) {
+      userkey = 0;
+    }
+    var cookie = Cookies.get("viewedBoard");
+    if (cookie != undefined) {
+      if (cookie.includes(`/${userkey}`)) {
+        // 유저가 있을 때
+        var userCookieTmp = cookie.substring(cookie.indexOf(`/${userkey}`) + 1);
+        var beforeCookie = cookie.substring(0, cookie.indexOf(`/${userkey}`));
+        var userCookie = userCookieTmp;
+        var afterCookie = "";
+        if (userCookieTmp.indexOf("/") > 0) {
+          userCookie = userCookieTmp.substring(0, userCookieTmp.indexOf("/"));
+          afterCookie = userCookieTmp.substring(userCookieTmp.indexOf("/"));
+        }
+        if (!userCookie.includes(`[${boardkey}]`)) {
+          // 새로운 페이지 일 때
+          updateViewqty(boardkey);
+          Cookies.remove("viewedBoard");
+          Cookies.set("viewedBoard", `${beforeCookie}${userCookie}_[${boardkey}]${afterCookie}`, {
+            expires: 1 / (24 * 60), // 1분
+            // expires: 1, // 하루(24시간)
+          });
+        } // 이미 본 페이지 일 때는 다른 작업없음
+      } else {
+        // 새로운 유저
+        updateViewqty(boardkey);
+        Cookies.set("viewedBoard", `${cookie}/${userkey}_[${boardkey}]`, {
+          expires: 1 / (24 * 60), // 1분
+          // expires: 1, // 하루(24시간)
+        });
+      }
+    } else {
+      // 쿠키가 아예 없을 때
+      updateViewqty(boardkey);
+      Cookies.set("viewedBoard", `/${userkey}_[${boardkey}]`, {
+        expires: 1 / (24 * 60), // 1분
+        // expires: 1, // 하루(24시간)
+      });
+    }
+  }
 
   return (
     <div>
@@ -94,13 +161,13 @@ export default function page( props ) {
             <div className="my_home container my md _6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
                 <article className="_1h4pbgy7wg _1h4pbgy7wz">
                     <section className="_1h4pbgy9ug _1h4pbgy8zc _1h4pbgy92j _1h4pbgy7y8 _1h4pbgy83s _1h4pbgy843 _1h4pbgy84k">
-                        {/* 마이페이지 서브와 콘텐츠를 한 줄에 배치 */}
+                        
                         <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                            {/* BoardSide는 2 비율 */}
-                            <div style={{ flex: '1.5', marginRight: '20px',marginTop:'20px' }}>
-                                <BoardSide  bclist={bclist} categorykey={categorykey}/>
+                            
+                            <div style={{ flex: '1.5', marginRight: '20px', marginTop:'20px' }}>
+                                <BoardSide bclist={bclist} categorykey={categorykey}/>
                             </div>
-                            {/* 콘텐츠는 8 비율 */}
+                           
                             <div style={{ flex: '8.5' }}>
                                 {/* 테이블 */}
                                 <div style={{ flex: '1' }} className="tableDiv">
@@ -112,29 +179,47 @@ export default function page( props ) {
                                             >
                                                 <TableCell align="left" sx={{ 
                                                         width: '15%', 
-                                                        fontWeight: 'bold',  // 글씨 굵게 설정
-                                                        fontSize: '1.3rem',   // 글씨 크기 키움
+                                                        fontWeight: 'bold', 
+                                                        fontSize: '1.3rem',  
                                                         marginTop:'0px',
-                                        
                                                     }}>
                                                     {ar.categorykey == 1 ? '공지사항' : '이벤트'}
                                                 </TableCell>
-                                                <TableCell align="left" sx={{ width: '85%' }}>
+                                                <TableCell align="left" sx={{ width: '70%' }}>
                                                     <div>{ar.create_dtm}</div>
-                                                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{ar.title}</div>  {/* 제목 굵게 */}
+                                                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{ar.title}</div> {/* 제목 굵게 */}
+                                                </TableCell>
+                                                <TableCell align="left" sx={{ width: '15%' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <div style={{ fontWeight: 'bold' }}>조회수</div>
+                                                        <div>{ar.viewqty}</div>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
 
                                             <TableRow
-                                            key={ar.boardkey + "_content"}  
-                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                key={ar.boardkey + "_content"}  
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
-                                                <TableCell align="left" sx={{ width: '100%', fontWeight: 'bold' }}>
+                                                <TableCell align="left" colSpan={2} sx={{ width: '100%', padding: '20px 16px' }}>
                                                     <div dangerouslySetInnerHTML={{ __html: ar.content }} />
                                                 </TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
+                                </div>
+                                
+                                {/* 목록이동 버튼을 테이블 아래에 배치 */}
+                                <Divider></Divider>
+                                <div style={{ textAlign: 'right', marginTop: '20px' }}>
+                                    
+                                  <Button 
+                                    variant="contained" 
+                                    onClick={handleGoBack}
+                                    style={{ backgroundColor: '#FF6F0F' }}  
+                                  >
+                                    목록
+                                  </Button>
                                 </div>
                             </div>
                         </div>

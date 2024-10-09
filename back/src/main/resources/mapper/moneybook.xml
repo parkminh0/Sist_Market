@@ -13,32 +13,32 @@
         SELECT *
         FROM `post`
         WHERE dealuserkey = #{userkey}
-        <!-- AND SUBSTR(deal_dtm, 1, 7) = #{today}
-        AND poststatus = 3 -->
+        AND SUBSTR(deal_dtm, 1, 7) = #{today}
+        AND poststatus = 3
         AND method = 0
     </select>
     <select id="getSellList" resultType="com.sist.back.vo.PostVO" parameterType="Map">
         SELECT *
         FROM `post`
         WHERE userkey = #{userkey}
-        <!-- AND SUBSTR(deal_dtm, 1, 7) = #{today}
-        AND poststatus = 3 -->
+        AND SUBSTR(deal_dtm, 1, 7) = #{today}
+        AND poststatus = 3
         AND method = 0
     </select>
     <select id="getGiveList" resultType="com.sist.back.vo.PostVO" parameterType="Map">
         SELECT *
         FROM `post`
         WHERE userkey = #{userkey}
-        <!-- AND SUBSTR(deal_dtm, 1, 7) = #{today}
-        AND poststatus = 3 -->
+        AND SUBSTR(deal_dtm, 1, 7) = #{today}
+        AND poststatus = 3
         AND method = 1
     </select>
     <select id="getGetList" resultType="com.sist.back.vo.PostVO" parameterType="Map">
         SELECT *
         FROM `post`
         WHERE dealuserkey = #{userkey}
-        <!-- AND SUBSTR(deal_dtm, 1, 7) = #{today}
-        AND poststatus = 3 -->
+        AND SUBSTR(deal_dtm, 1, 7) = #{today}
+        AND poststatus = 3
         AND method = 1
 
     </select>
@@ -57,11 +57,11 @@
               WHERE townkey = (
             SELECT townkey
                   FROM `address`
-                  WHERE userkey = 1
+                  WHERE userkey = #{userkey}
               )
           )
       ) as userTown
-      WHERE userkey != 1 )
+      WHERE userkey != #{userkey} )
     </select>
     <select id="getNeightborsTrade" resultType="com.sist.back.vo.PostVO" parameterType="Map">
       SELECT *
@@ -76,13 +76,13 @@
               WHERE townkey = (
             SELECT townkey
                   FROM `address`
-                  WHERE userkey = 1
+                  WHERE userkey = #{userkey}
               )
           )
       ) as userTown
-      WHERE userkey != 1 )
-      <!-- AND  SUBSTR(deal_dtm, 1, 7) = #{today}
-      AND poststatus = 3 -->
+      WHERE userkey != #{userkey} )
+      AND  SUBSTR(deal_dtm, 1, 7) = #{today}
+      AND poststatus = 3
       AND method = 0
     </select>
     <select id="getNeightborsGive" resultType="com.sist.back.vo.PostVO" parameterType="Map">
@@ -98,13 +98,13 @@
               WHERE townkey = (
             SELECT townkey
                   FROM `address`
-                  WHERE userkey = 1
+                  WHERE userkey = #{userkey}
               )
           )
       ) as userTown
-      WHERE userkey != 1 )
-      <!-- AND SUBSTR(deal_dtm, 1, 7) = #{today}
-      AND poststatus = 3 -->
+      WHERE userkey != #{userkey} )
+      AND SUBSTR(deal_dtm, 1, 7) = #{today}
+      AND poststatus = 3
       AND method = 1
     </select>
 

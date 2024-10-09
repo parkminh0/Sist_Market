@@ -1,6 +1,7 @@
 package com.sist.back.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,10 @@ public class CategoryEditService {
     }
     public int deleteCategory(String categorykey){
         return mapper.deleteCategory(categorykey);
+    }
+
+    public List<Map<String, Object>> getPostCount(){
+        return mapper.getPostCount();
     }
 
 }

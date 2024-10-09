@@ -34,7 +34,6 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
         axios.get(API_URL, {
             params: { userkey: userkey }
         }).then((res) => {
-            console.log(res.data.b_ar);
             const badges = res.data.b_ar || [];
             const representBadge = badges.find((item) => item.isrepresent == "1");
             if (representBadge) {
@@ -64,7 +63,6 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
 
     const modalOpen = (badge) => {
         setSelectedBadge(badge);
-        console.log(badge);
         setBadgekey(badge.badgekey);
         setOpen(true);
     };
@@ -87,7 +85,7 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
                     <Box sx={{ marginTop: 2 }}>
                         <LockIcon sx={{ fontSize: 60, color: '#FFC107' }} />
                         <Typography variant="body2" sx={{ color: '#888' }}>
-                            아직 획득한 황금배지가 없어요.
+                            아직 대표 배지로 설정한 황금배지가 없어요.
                             <br /> '황금배지'만 대표 배지로 설정할 수 있어요.
                         </Typography>
                     </Box>
@@ -121,7 +119,7 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
             </Grid>
 
             <Modal open={open} onClose={modalClose} aria-labelledby="badge-modal-title">
-                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 300, bgcolor: 'background.paper',
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 350, bgcolor: 'background.paper',
                         borderRadius: 4, boxShadow: 24, p: 4, textAlign: 'center', cursor: 'pointer' }}>
                     {selectedBadge && (
                         <>
@@ -131,23 +129,34 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
                                 <LockIcon sx={{ fontSize: 80, color: selectedBadge.isrepresentable == "1" ? '#FFC107' : '#666', margin: '0 auto 16px' }} />
                             )}
                             <Typography variant="h6">{selectedBadge.name}</Typography>
-                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
-                                {unlockedBadgeKeys.includes(selectedBadge.badgekey) ? selectedBadge.postcontent : selectedBadge.precontent}
-                            </Typography>
+                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2, wordBreak: 'keep-all' }}>
+                    {unlockedBadgeKeys.includes(selectedBadge.badgekey)
+                        ? selectedBadge.postcontent.split('.').map((sentence, index) => (
+                            <span key={index}>
+                                {sentence.trim() && `${sentence.trim()}`}<br />
+                            </span>
+                        ))
+                        : selectedBadge.precontent.split('.').map((sentence, index) => (
+                            <span key={index}>
+                                {sentence.trim() && `${sentence.trim()}`}<br />
+                            </span>
+                        ))
+                    }
+                </Typography>
                             {/* 대표 배지 설정 O */}
                             {selectedBadge && repBadge && selectedBadge.badgekey == repBadge.badgekey ? (
-                                <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { cancelRep(); modalClose(); }}>
-                                    대표 배지 해제
-                                </Button>
+                            <Button variant="contained" sx={{ marginTop: 2, backgroundColor: '#FF9800', '&:hover': { backgroundColor: '#F57C00' } }} onClick={() => { cancelRep(); modalClose(); }}>
+                                대표 배지 해제
+                            </Button>
                             ) : (
                                 /* 대표 배지 X */
                                 selectedBadge && selectedBadge.isrepresentable == "1" && (
                                     unlockedBadgeKeys.includes(selectedBadge.badgekey) ? (
-                                        <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { setRepresentBadge(); modalClose(); }}>
+                                        <Button variant="contained" sx={{ marginTop: 2, backgroundColor: '#FF9800', '&:hover': { backgroundColor: '#F57C00' } }} onClick={() => { setRepresentBadge(); modalClose(); }}>
                                             나의 대표 배지로 사용하기
                                         </Button>
                                     ) : (
-                                        <Button variant="contained" sx={{ marginTop: 2 }} disabled>
+                                        <Button variant="contained" sx={{ marginTop: 2, backgroundColor: '#FF9800', '&:hover': { backgroundColor: '#F57C00' } }} disabled>
                                             나의 대표 배지로 사용하기
                                         </Button>
                                     )

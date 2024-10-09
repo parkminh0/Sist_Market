@@ -9,9 +9,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import React, { useEffect, useState } from "react";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
+import "/public/css/paging.css";
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 export default function (props) {
     const [ar, setAr] = useState([]);
@@ -22,7 +24,8 @@ export default function (props) {
     const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
     const [bclist, setBclist] = useState([]);
     const [categoryName, setCategoryName] = useState("");  // 카테고리 이름 저장
-
+    const searchParams = useSearchParams();
+    const cPage = searchParams.get('cPage');
     // 페이지 변경시 모든 공지사항 로드
     function getData(cPage) {  
       axios.get(listUrl, {
@@ -36,22 +39,22 @@ export default function (props) {
           setPage(json.data.page);
       })
       .catch((error) => {
-          console.error("데이터 로딩 오류:", error);  // 에러 콘솔에 출력
+          //console.error("데이터 로딩 오류:", error);  // 에러 콘솔에 출력
       });
     }
 
     function changePage(cPage) { 
       setNowPage(cPage); 
       if (title) {
-        searchNotice(cPage.toString());  // cPage를 문자열로 변환
+        searchNotice(cPage.toString());  
       } else {
-        getData(cPage.toString());  // cPage를 문자열로 변환
+        getData(cPage.toString());  
       }
     }
 
     useEffect(() => {
-        getData(nowPage);
-    }, [nowPage]);
+        getData(cPage);
+    }, [cPage]);
 
     //bclist 가져와서 =boardside로 넘겨줄거임
     const bcUrl = "/admin/board/getAllBc";
@@ -66,7 +69,7 @@ export default function (props) {
           }
       })
       .catch((error) => {
-          console.error("데이터 로딩 오류:", error);  
+          //console.error("데이터 로딩 오류:", error);  
       });
     }
 
@@ -89,7 +92,7 @@ export default function (props) {
           setPage(json.data.page);
       })
       .catch((error) => {
-          console.error("검색 데이터 로딩 오류:", error);  // 에러 콘솔에 출력
+          //console.error("검색 데이터 로딩 오류:", error);  // 에러 콘솔에 출력
       });
     }
 
@@ -187,7 +190,7 @@ export default function (props) {
                                               {categoryName}
                                             </TableCell>
                                             <TableCell align="left" sx={{ width: '80%' }}>
-                                              <Link href={`/Board/view/${ar.boardkey}`}>
+                                              <Link href={`/Board/view/${ar.boardkey}?cPage=${page.nowPage}&categorykey=${categorykey}`}>
                                                 {ar.title}
                                               </Link>
                                             </TableCell>
@@ -208,7 +211,7 @@ export default function (props) {
                                 <div className="mPaginate" style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }} >
                                   {page && page.startPage > 1 && (
                                     <a href="#" onClick={() => changePage(page.startPage - page.pagePerBlock)} className="prev">
-                                      이전 {page.pagePerBlock}페이지
+                                      &lt;
                                     </a>
                                   )}
                                   <ol style={{ display: 'flex', listStyle: 'none', padding: 0 }}>
@@ -222,11 +225,11 @@ export default function (props) {
                                       </li>
                                     ))}
                                   </ol>
-                                  {page && page.endPage < page.totalPage && (
-                                    <a href="#" onClick={() => changePage(page.endPage + 1)} className="next">
-                                      다음 {page.pagePerBlock}페이지
-                                    </a>
-                                  )}
+                                  {page.endPage < page.totalPage && (
+                    <Link href="#" onClick={() => {changePage(page.endPage + 1)}} className="next">
+                      다음 {page.pagePerBlock}페이지
+                    </Link>
+                  )}
                                 </div>
                             </div>
                         </section>

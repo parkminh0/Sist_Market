@@ -49,7 +49,6 @@ export default function ReportModal(props) {
     function getData(ispostValue, sequence) {
         axios.get(API_URL, { params: { ispost: ispostValue, sequence } })
             .then((res) => {
-                console.log(res.data);
                 setList(res.data.r_ar || []);
                 setIspost(ispostValue);
             });

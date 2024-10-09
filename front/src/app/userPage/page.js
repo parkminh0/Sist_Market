@@ -12,12 +12,12 @@ import "/public/css/popcatelist.css";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import UserCellList2 from "@/component/user/post/detail/UserCellList2";
+import UserCellList from "@/component/user/post/detail/UserCellList";
 import DisapproveModal from "@/component/user/userPage/DisapproveModal";
 import FHRBMenu from "@/component/user/userPage/FHRBMenu";
 import PraiseModal from "@/component/user/userPage/PraiseModal";
 import UserReport from "@/component/user/userPage/UserReport";
-import { Box, Button, LinearProgress, Typography } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, LinearProgress, Typography } from '@mui/material';
 import Cookies from "js-cookie";
 
 
@@ -78,7 +78,6 @@ export default function page() {
          }
       }
     ).then((res) => {
-      // console.log(res.data.result);
       if(res.data.result>0){
         setCanPoN(true);
       }
@@ -95,7 +94,6 @@ export default function page() {
          }
       }
     ).then((res) => {
-      console.log(res.data.cellList);
       setLastpostkey(res.data.lastpostkey);
       setCellList([...cellList,...res.data.cellList]);
       setIsnextexist(res.data.isnextexist);
@@ -103,23 +101,23 @@ export default function page() {
   }
 
   function openPraise(){
-    if(!canPoN){
-      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
-      return;
-    }
     if(Cookies.get("userkey")==undefined){
       alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+    if(!canPoN){
+      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
       return;
     }
     setPraiseOpen(true);
   }
   function openDisapprove(){
-    if(!canPoN){
-      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
-      return;
-    }
     if(Cookies.get("userkey")==undefined){
       alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+    if(!canPoN){
+      alert("최근 1개월 내에 중고거래 채팅을 한 사용자에게만 평가하실 수 있습니다.");
       return;
     }
     setDisapproveOpen(true);
@@ -165,13 +163,14 @@ export default function page() {
         params: { userkey: userkey }
       }
     ).then((res) => {
-      // console.log(res.data.uvo);
       setVo(res.data.uvo);
+      setMannerTemp(res.data.uvo.mannertemp);
       setCellList(res.data.cellList);
       handleCellCount(res.data.cellCount);
       setLimitpostkey(res.data.limitpostkey);
       setLastpostkey(res.data.lastpostkey);
       setIsnextexist(res.data.isnextexist);
+      setLoading(false);
     });
   }
 
@@ -205,19 +204,12 @@ export default function page() {
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
-      const goodTemps = (res.data.m_ar || []).filter(item => item.preference == 1 || item.preference == 2)
-      .reduce((sum, item) => sum + item.count, 0);
-      const badTemps = (res.data.m_ar || []).filter(item => item.preference == 0)
-      .reduce((sum, item) => sum + item.count, 0);
-      const updatedTemp = 36.5 + goodTemps * 0.5 - badTemps * 0.5;
-      setMannerTemp(updatedTemp);
     });
-    Promise.all([
-      axios.get("/user/buyingReview", { params: { userkey: userkey} }),
-      axios.get("/user/sellingReview", { params: { userkey: userkey} })
-    ]).then(([res1, res2]) => {
-        setReviewCount([...(res1.data.buying_ar || []), ...(res2.data.selling_ar || [])].length);
+    axios.get("/user/allReview", { params: { userkey: userkey} 
+    }).then((res) => {
+      setReviewCount(res.data.count);
     });
+    setLoading(true);
     getData();
   }, []);
 
@@ -241,15 +233,15 @@ export default function page() {
     if (temp <= 15) {
       return '#555555';
     } else if (temp <= 30) {
-      return '#2E64FE';
+      return '#58D3F7';
     } else if (temp <= 45) {
-      return 'skyblue';
-    } else if (temp <= 60) {
-      return '#01DF3A';
-    } else if (temp <= 80) {
       return '#F2F5A9';
-    } else {
+    } else if (temp <= 60) {
+      return '#FFFF00';
+    } else if (temp <= 80) {
       return 'orange';
+    } else {
+      return '#FF4000';
     }
   }
 
@@ -271,9 +263,31 @@ export default function page() {
     );
   }
   
+  const [loading, setLoading] = useState(false);
+
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
             <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">
@@ -337,7 +351,7 @@ export default function page() {
                                     <button type="button" className="PraiseBtn" onClick={()=>{openPraise()}}>매너 평가</button>
                                     <button type="button" className="DisapproveBtn" onClick={()=>{openDisapprove()}}>비매너 평가</button>
                                 </div>
-                                <FHRBMenu you={userkey} setIfReport={setIfReport} isLiked={isLiked}  setIsLiked={setIsLiked} isNosee={isNosee} setIsNosee={setIsNosee}  isBlocked={isBlocked} setIsBlocked={setIsBlocked} />
+                                <FHRBMenu yourName={vo.nickname} you={userkey} setIfReport={setIfReport} isLiked={isLiked}  setIsLiked={setIsLiked} isNosee={isNosee} setIsNosee={setIsNosee}  isBlocked={isBlocked} setIsBlocked={setIsBlocked} />
                                 <UserReport ifReport={ifReport}  setIfReport={setIfReport} userkey={userkey} />
                                 <PraiseModal praiseOpen={praiseOpen} setPraiseOpen={setPraiseOpen} userkey={userkey}/>
                                 <DisapproveModal disapproveOpen={disapproveOpen} setDisapproveOpen={setDisapproveOpen} userkey={userkey}/>
@@ -401,12 +415,21 @@ export default function page() {
                     <div data-v-24868902="" data-v-eff62a72="" className={`empty_area ${selectedTab == '1' ? 'userPage' : ''}`} style={{paddingTop: '50px'}}>
                         {selectedTab == '1' && (
                             <p data-v-24868902="" className="desc">
-                                <div className="UserPageGrid" >
                                 {cellList.length > 0
-                                ? cellList.map((clvo, index) => {
-                                    return <UserCellList2 key={index} pvo={clvo} />;
-                                }) : ""}
+                                ? 
+                                <div className="UserPageGrid" >
+                                  {cellList.map((clvo, index) => {
+                                    return <UserCellList key={index} pvo={clvo} />;
+                                })}
+                                </div> : 
+                                <div style={{
+                                  width: 'fit-content',
+                                  margin: '0 auto',
+                                  fontSize: '27px'
+                                }}>
+                                    판매 내역이 존재하지 않습니다
                                 </div>
+                                }
                                 {isnextexist ?
                                 <Button
                                   variant="contained"

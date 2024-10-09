@@ -9,8 +9,7 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import IconButton from "@mui/joy/IconButton";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 import {
   Backdrop,
   Box,
@@ -45,6 +44,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "/public/css/myPage.css";
 import "/public/css/profile.css";
 import Cookies from "js-cookie";
+import EditPostModal from "@/component/user/post/detail/EditPostModal";
 
 export default function page() {
   const [region2_list, setRegion2_list] = useState([]);
@@ -60,6 +60,10 @@ export default function page() {
   // 위치 파라미터 값
   const [loc1Param, setLoc1Param] = useState("");
   const [loc2Param, setLoc2Param] = useState([]);
+  // 판매중인 상품만 보기
+  const [onsaleParam, setOnsaleParam] = useState("false");
+  // 게시글 검색 값
+  const [searchParam, setSearchParam] = useState("");
   // 카테고리 파라미터 값
   const [categoryParam, setCategoryParam] = useState(null);
   // 정렬 파라미터 값
@@ -111,7 +115,6 @@ export default function page() {
 
   // #region useEffect-카테고리, 파라미터 초기화
   useEffect(() => {
-    setLoading(true);
     setCookie_region1(decodeURIComponent(Cookies.get("region1")));
     setCookie_region2(decodeURIComponent(Cookies.get("region2")));
     setCookie_region3(decodeURIComponent(Cookies.get("region3")));
@@ -123,6 +126,8 @@ export default function page() {
     let params = new URLSearchParams(currentUrlObj.search);
     let loc1Param = params.get("loc1");
     let loc2Param = params.getAll("loc2");
+    let onsaleParam = params.get("onsale");
+    let searchParam = params.get("search");
     let cateParam = params.get("category");
     let srtParam = params.get("sort");
     let minParam = params.get("minPrice");
@@ -134,6 +139,11 @@ export default function page() {
 
     setLoc1Param(loc1Param);
     setLoc2Param(loc2Param);
+    if (onsaleParam == null || onsaleParam == "") {
+      onsaleParam = "false";
+    }
+    setOnsaleParam(onsaleParam);
+    setSearchParam(searchParam);
     setCategoryParam(cateParam);
     setSortParam(srtParam);
     setMinPriceParam(minParam);
@@ -144,6 +154,8 @@ export default function page() {
       method: "get",
       params: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
+        onsale: onsaleParam,
+        search: searchParam,
         loc1: loc1Param,
         loc2: loc2Param,
         category: cateParam,
@@ -163,19 +175,21 @@ export default function page() {
         setLastPostKey(res.data.lastPostKey);
       }
     });
-    setLoading(false);
+    
   }, [router.query]);
   // #endregion
 
   // #region 상품 더보기
-  function showMorePost() {
-    if (!loading) {
-      setLoading(true);
+  useEffect(() => {
+    if (loading){
       axios({
         url: "/adpost/search",
         method: "get",
         params: {
+          userkey: decodeURIComponent(Cookies.get("userkey")),
+          onsale: onsaleParam,
           lastPostKey: lastPostKey,
+          search: searchParam,
           loc1: loc1Param,
           loc2: loc2Param,
           category: categoryParam,
@@ -187,16 +201,24 @@ export default function page() {
           "Content-Type": "application/json",
         },
       }).then((res) => {
-        setPost_list((post) => [...post, ...res.data.res_search]);
-        if (!res.data.res_search || res.data.res_search.length < 15) {
+        if (!res.data.res_search || res.data.res_search.length == 0) {
           setViewMore(false);
+        } else {
+          setPost_list((post) => [...post, ...res.data.res_search]);
+          if (res.data.res_search.length < 15) {
+            setViewMore(false);
+          }
+          if (res.data.lastPostKey != null) {
+            setLastPostKey(res.data.lastPostKey);
+          }
         }
-        if (res.data.lastPostKey != null) {
-          setLastPostKey(res.data.lastPostKey);
-        }
-        setLoading(false);
       });
+      setLoading(false);
     }
+  }, [loading]);
+  // 
+  function showMorePost() {
+    setLoading(true);
   }
   // #endregion
 
@@ -308,7 +330,18 @@ export default function page() {
   }, []);
   // #endregion
 
-  // 내 물건 팔기
+  // #region 민호-물건팔기 모달 open & 임시저장 불러오기
+  const [tempPost, setTempPost] = useState({});
+  const [tempPostConfirmOpen, setTempPostConfirmOpen] = useState(false);
+  const [isTemp, setIsTemp] = useState(false);
+
+  function tempPostClose(chkTemp) {
+    setTempPostConfirmOpen(false);
+    if (chkTemp == null) return;
+    if (chkTemp == 1) setIsTemp(true);
+    else setOpen(true);
+  }
+
   function chkTown() {
     // 로그인 확인
     if (Cookies.get("userkey") == null || Cookies.get("userkey") == "") {
@@ -326,8 +359,44 @@ export default function page() {
       alert("위치 기반 서비스를 허용해주세요.");
       return;
     }
-    setOpen(true);
+
+    // 임시저장 확인
+    axios({
+      url: "/adpost/searchTemp",
+      method: "get",
+      params: {
+        userkey: decodeURIComponent(Cookies.get("userkey")),
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setTempPost(res.data.res_searchTemp);
+      if (res.data.res_searchTemp != null) {
+        setTempPostConfirmOpen(true);
+      } else {
+        setOpen(true);
+      }
+    });
   }
+  // #endregion
+
+  // #region 판매중인 상품만 보기 선택
+  function goOnsale(e) {
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
+
+    params.delete("onsale");
+    let newUrl = url.pathname + "?" + params.toString() + url.hash;
+    if (e.dataset.checked == "false") {
+      newUrl += "&onsale=true";
+    }
+
+    // 페이지 이동
+    router.push(newUrl);
+    window.location.href = newUrl;
+  }
+  // #endregion
 
   // #region 동네 선택
   function goLocPage(e) {
@@ -467,6 +536,7 @@ export default function page() {
 
     // 페이지 이동
     router.push(newUrl);
+    f;
     window.location.href = newUrl;
   }
   // #endregion
@@ -477,6 +547,9 @@ export default function page() {
     let params = new URLSearchParams(url.search);
     let tmp = e.dataset.deltype;
     switch (tmp) {
+      case "onsale":
+        params.delete("onsale");
+        break;
       case "loc2":
         let loc2Params = params.getAll("loc2");
         // 모두 삭제 후 일치하지 않는 "loc2" 값들 다시 추가
@@ -500,6 +573,8 @@ export default function page() {
         params.delete("maxPrice");
         break;
       case "all":
+        params.delete("onsale");
+        params.delete("search");
         params.delete("sort");
         params.delete("loc2");
         params.delete("category");
@@ -550,6 +625,8 @@ export default function page() {
     setRegion3("");
     setIsFree(false);
     setOpen(false);
+    setIsTemp(false);
+    setTempPost({});
     setPreviewImages([]);
   };
 
@@ -618,8 +695,6 @@ export default function page() {
       alert("위치 기반 서비스를 허용해주세요.");
       return;
     }
-    if (!loading) {
-      setLoading(true);
 
       const formData = new FormData(event.currentTarget);
       formData.append("userkey", tmpUserKey);
@@ -686,8 +761,6 @@ export default function page() {
         .catch((error) => {
           console.error("게시글 작성 오류", error);
         });
-      setLoading(false);
-    }
   };
   // #endregion
 
@@ -818,7 +891,7 @@ export default function page() {
 
   function getLocation() {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 
@@ -869,7 +942,7 @@ export default function page() {
           let mapContainer = document.getElementById("map"); // 지도를 표시할 div
           let mapOption = {
             center: locPosition, // 지도의 중심좌표
-            level: 3, // 지도의 확대 레벨
+            level: 6, // 지도의 확대 레벨
           };
           let map = new kakao.maps.Map(mapContainer, mapOption);
 
@@ -995,7 +1068,11 @@ export default function page() {
               </Typography>
             </Breadcrumbs>
             <div className="_1h4pbgy7dk _1h4pbgy7j7 _1h4pbgy7j0 _1h4pbgy7il _1h4pbgy7w0">
-              <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8"></h1>
+              {searchParam != null && searchParam != "" && (
+                <h1 className="_1h4pbgy78o _1h4pbgy796 _1h4pbgy79g _1h4pbgy7ag _1h4pbgy7c8">
+                  "{searchParam}" 검색결과
+                </h1>
+              )}
             </div>
           </section>
         </div>
@@ -1020,6 +1097,52 @@ export default function page() {
                 </button>
               </header>
               <section>
+                <div className="_588sy41z _588sy421 _588sy4qq _588sy4h2">
+                  <Link
+                    href="#"
+                    className="rx8bta0 rx8bta1"
+                    label="Show active listings only"
+                    role="checkbox"
+                    aria-label="Show active listings only"
+                    data-checked={`${onsaleParam}`}
+                    onClick={(e) => goOnsale(e.currentTarget)}
+                  >
+                    <div
+                      {...(onsaleParam == "true" ? { "data-checked": "" } : {})}
+                      aria-hidden="true"
+                      className="rx8bta7 rx8bta9"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-seed-icon="true"
+                        data-seed-icon-version="0.4.0-beta.2"
+                        width="24"
+                        height="24"
+                        className="rx8bta8 rx8btaf"
+                        {...(onsaleParam == "true"
+                          ? { "data-checked": "" }
+                          : {})}
+                      >
+                        <g>
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M21.0843 4.18854C21.5325 4.51124 21.6342 5.13618 21.3115 5.58438L11.3115 19.0844C11.1361 19.3281 10.8604 19.48 10.5607 19.4982C10.2609 19.5164 9.96888 19.399 9.7652 19.1784L2.7652 11.6784C2.3906 11.2725 2.4159 10.6399 2.82172 10.2653C3.22755 9.89067 3.8602 9.91597 4.23481 10.3218L10.4041 16.9219L19.6885 4.41577C20.0112 3.96757 20.6361 3.86584 21.0843 4.18854Z"
+                            fill="currentColor"
+                          ></path>
+                        </g>
+                      </svg>
+                    </div>
+                    <span
+                      id="checkbox::Rpqop::label"
+                      className="rx8btal rx8btam"
+                    >
+                      판매중인 상품만 보기
+                    </span>
+                  </Link>
+                </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
                   <h3 className="_588sy4198 _588sy41y _588sy41a2">동네</h3>
                   <div className="_1d991sp2 _1h4pbgya08">
@@ -1137,16 +1260,6 @@ export default function page() {
                           })}
                       </div>
                     </div>
-                  </div>
-                  <div className="_1h4pbgy7w8">
-                    <label
-                      data-gtm="search_show_more_options"
-                      className="_1h4pbgy76o _1h4pbgy7ao _1h4pbgy7c8 _1h4pbgy48 _1h4pbgy9yw"
-                    >
-                      <font style={{ verticalAlign: "inherit" }}>
-                        자세히보기
-                      </font>
-                    </label>
                   </div>
                 </div>
                 <div className="_1h4pbgy7eo _1h4pbgy7jc _1h4pbgy9ug _1h4pbgy9vs _1h4pbgy3rc">
@@ -1422,6 +1535,45 @@ export default function page() {
                     <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
                       {sortParam == "recent" ? "최신순" : "인기순"}
                     </li>
+                    {onsaleParam == "true" && (
+                      <li className="_1h4pbgy7nc _1h4pbgy7s0 _1h4pbgy7dk _1h4pbgy7i8 _1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy79s _1h4pbgy7ao _1h4pbgy7c0 _1h4pbgy900 _1h4pbgy980 _1h4pbgy194 _1h4pbgy1q7 _1h4pbgy68">
+                        판매중인 상품
+                        <span
+                          data-deltype="onsale"
+                          onClick={(e) => deleteSearch(e.currentTarget)}
+                          className="_1h4pbgy9uw _1h4pbgy9xc _1h4pbgy9wo _1h4pbgy9yw"
+                        >
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              width: "14px",
+                              height: "14px",
+                            }}
+                            data-seed-icon="icon_close_regular"
+                            data-seed-icon-version="0.2.1"
+                          >
+                            <svg
+                              id="icon_close_regular"
+                              width="100%"
+                              height="100%"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              data-karrot-ui-icon="true"
+                            >
+                              <g>
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M3.72633 3.72633C4.0281 3.42456 4.51736 3.42456 4.81913 3.72633L12 10.9072L19.1809 3.72633C19.4826 3.42456 19.9719 3.42456 20.2737 3.72633C20.5754 4.0281 20.5754 4.51736 20.2737 4.81913L13.0928 12L20.2737 19.1809C20.5754 19.4826 20.5754 19.9719 20.2737 20.2737C19.9719 20.5754 19.4826 20.5754 19.1809 20.2737L12 13.0928L4.81913 20.2737C4.51736 20.5754 4.0281 20.5754 3.72633 20.2737C3.42456 19.9719 3.42456 19.4826 3.72633 19.1809L10.9072 12L3.72633 4.81913C3.42456 4.51736 3.42456 4.0281 3.72633 3.72633Z"
+                                  fill="currentColor"
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                        </span>
+                      </li>
+                    )}
                     {loc2Param &&
                       loc2Param.length > 0 &&
                       loc2Param.sort().map((loc, i) => (
@@ -1677,14 +1829,30 @@ export default function page() {
                                 <img
                                   className="_1b153uwe _1h4pbgya3k"
                                   src={post.pimg_list[0].imgurl}
+                                  onError={(e) => {
+                                    // 부모 span 태그를 DOM에서 제거
+                                    const parentSpan = e.target.parentNode;
+
+                                    // 새로운 div를 생성하고 아이콘을 삽입
+                                    const fallbackIcon =
+                                      document.createElement("div");
+                                    fallbackIcon.innerHTML = `
+          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="LocalMallIcon" data-first-child="" style="width: 100%; height: 100%; z-index: 1; color: rgb(255, 111, 97); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; background-color: rgb(249, 249, 249);"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3m0 10c-2.76 0-5-2.24-5-5h2c0 1.66 1.34 3 3 3s3-1.34 3-3h2c0 2.76-2.24 5-5 5"></path></svg>`;
+                                    parentSpan.parentNode.appendChild(
+                                      fallbackIcon
+                                    );
+                                    parentSpan.remove();
+                                  }}
                                 />
                               </span>
                             ) : (
-                              <ImageNotSupportedRoundedIcon
+                              <LocalMallIcon
                                 style={{
                                   width: "100%", // 아이콘의 너비를 100%로 설정
                                   height: "100%", // 아이콘의 높이를 100%로 설정
                                   zIndex: 1, // 필요하면 z-index로 가시성을 확보
+                                  color: "#ff6f61", // 이쁜 코랄 계열 색상
+                                  backgroundColor: "#f9f9f9", // 아이콘 뒤 배경 색상
                                 }}
                               />
                             )}
@@ -1755,7 +1923,7 @@ export default function page() {
                               <span
                                 style={{ fontSize: "12px", marginLeft: "0" }}
                               >
-                                5
+                                {post.chatroomqty}
                               </span>
                               <IconButton
                                 variant="plain"
@@ -1836,385 +2004,444 @@ export default function page() {
         </div>
       </article>
       {/* 내 물건 팔기 모달 */}
-      <React.Fragment>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: handleSubmit,
-          }}
-          scroll="paper"
-        >
-          <DialogTitle
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+      {open && (
+        <React.Fragment>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              component: "form",
+              onSubmit: handleSubmit,
             }}
+            scroll="paper"
           >
-            내 물건 팔기
-            <Button
-              variant="outlined"
-              type="submit"
-              onClick={(e) =>
-                (e.currentTarget.closest("form").dataset.mode = "save")
-              }
+            <DialogTitle
               style={{
-                marginLeft: "auto",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              임시저장
-            </Button>
-          </DialogTitle>
-          <DialogContent dividers="paper">
-            <FormControl fullWidth margin="dense">
-              <ImageList
-                cols={11}
-                gap={8}
-                id="dragImageList"
-                ref={containerRef}
-              >
-                <ImageListItem
+              내 물건 팔기
+              {tempPost ? (
+                <Button
+                  variant="outlined"
+                  type="button"
                   style={{
-                    width: 100,
-                    height: 100,
-                    position: "relative",
+                    marginLeft: "auto",
+                    backgroundColor: "#efefef",
+                    color: "#a0a0a0",
+                    border: 0,
+                    cursor: "default",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    alert("임시저장 중인 문서가 이미 존재합니다.");
                   }}
                 >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    name="file"
-                    onChange={handleChange}
-                    accept="image/*" // 이미지 파일만 허용
-                    style={{ display: "none" }}
-                    multiple
-                  />
-                  <AddPhotoAlternateIcon
-                    color="primary"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      cursor: "pointer",
-                    }}
-                    onClick={uploadImg}
-                  />
-                  <Typography
-                    variant="caption"
-                    style={{
-                      position: "absolute",
-                      bottom: 5, // 아이콘 아래에 배치
-                      left: 0,
-                      right: 0,
-                      textAlign: "center",
-                      color: "black",
-                      backgroundColor: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {`${previewImages.length}/10`}
-                  </Typography>
-                </ImageListItem>
-                {previewImages.map((img, i) => (
+                  임시저장
+                </Button>
+              ) : (
+                <Button
+                  variant="outlined"
+                  type="submit"
+                  onClick={(e) =>
+                    (e.currentTarget.closest("form").dataset.mode = "save")
+                  }
+                  style={{
+                    marginLeft: "auto",
+                  }}
+                >
+                  임시저장
+                </Button>
+              )}
+            </DialogTitle>
+            <DialogContent dividers="paper">
+              <FormControl fullWidth margin="dense">
+                <ImageList
+                  cols={11}
+                  gap={8}
+                  id="dragImageList"
+                  ref={containerRef}
+                >
                   <ImageListItem
-                    key={i}
                     style={{
                       width: 100,
                       height: 100,
-                      border: "2px solid #ccc", // 이미지에 보더 추가
                       position: "relative",
                     }}
-                    draggable="true"
-                    className="draggable"
                   >
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => handleDelete(i)}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                        padding: 2,
-                        zIndex: 10,
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                    <img
-                      src={img.src}
-                      alt={`Uploaded Preview ${i}`}
-                      loading="lazy"
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      name="file"
+                      onChange={handleChange}
+                      accept="image/*" // 이미지 파일만 허용
+                      style={{ display: "none" }}
+                      multiple
+                    />
+                    <AddPhotoAlternateIcon
+                      color="primary"
                       style={{
                         width: "100%",
                         height: "100%",
                         objectFit: "contain",
+                        cursor: "pointer",
                       }}
+                      onClick={uploadImg}
                     />
-                    {i === 0 && (
-                      <Typography
-                        variant="caption"
+                    <Typography
+                      variant="caption"
+                      style={{
+                        position: "absolute",
+                        bottom: 5, // 아이콘 아래에 배치
+                        left: 0,
+                        right: 0,
+                        textAlign: "center",
+                        color: "black",
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        fontSize: "16px",
+                      }}
+                    >
+                      {`${previewImages.length}/10`}
+                    </Typography>
+                  </ImageListItem>
+                  {previewImages.map((img, i) => (
+                    <ImageListItem
+                      key={i}
+                      style={{
+                        width: 100,
+                        height: 100,
+                        border: "2px solid #ccc", // 이미지에 보더 추가
+                        position: "relative",
+                      }}
+                      draggable="true"
+                      className="draggable"
+                    >
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => handleDelete(i)}
                         style={{
                           position: "absolute",
-                          bottom: 0,
-                          left: 0,
+                          top: 0,
                           right: 0,
-                          textAlign: "center",
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          color: "white",
-                          padding: "2px 0",
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          padding: 2,
+                          zIndex: 10,
                         }}
                       >
-                        대표 사진
-                      </Typography>
-                    )}
-                  </ImageListItem>
-                ))}
-              </ImageList>
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-              <TextField
-                required
-                margin="dense"
-                id="title"
-                name="title"
-                label="제목"
-                type="text"
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                      <img
+                        src={img.src}
+                        alt={`Uploaded Preview ${i}`}
+                        loading="lazy"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
+                      />
+                      {i === 0 && (
+                        <Typography
+                          variant="caption"
+                          style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            textAlign: "center",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            color: "white",
+                            padding: "2px 0",
+                          }}
+                        >
+                          대표 사진
+                        </Typography>
+                      )}
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <TextField
+                  required
+                  margin="dense"
+                  id="title"
+                  name="title"
+                  label="제목"
+                  type="text"
+                  fullWidth
+                  size="small"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <TextField
+                  required
+                  margin="dense"
+                  id="categorykey"
+                  name="categorykey"
+                  label="카테고리"
+                  select
+                  fullWidth
+                  size="small"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  {category_list.map((item, i) => (
+                    <MenuItem key={i} value={item.categorykey}>
+                      {item.categoryname}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <FormLabel
+                  required
+                  id="demo-simple-row-radio-buttons-group-label"
+                >
+                  거래 방식
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="method"
+                  value={method}
+                  onChange={(e) => {
+                    setMethod(e.target.value);
+                    setIsFree(e.target.value == 0 ? false : true);
+                    setPrice(e.target.value == 0 ? "" : 0);
+                  }}
+                >
+                  <FormControlLabel
+                    value="0"
+                    control={<Radio />}
+                    label="판매하기"
+                  />
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio />}
+                    label="나눔하기"
+                  />
+                </RadioGroup>
+                <OutlinedInput
+                  size="small"
+                  id="price"
+                  name="price"
+                  placeholder="가격을 입력해주세요."
+                  disabled={isFree}
+                  value={isFree ? 0 : price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">원</InputAdornment>
+                  }
+                  aria-describedby="outlined-weight-helper-text"
+                  inputProps={{
+                    "aria-label": "weight",
+                  }}
+                />
+                <FormControlLabel
+                  id="canbargain"
+                  name="canbargain"
+                  style={{ display: isFree ? "none" : "block" }}
+                  control={
+                    <Checkbox
+                      checked={canBargain === 1}
+                      onChange={(e) => setCanBargain(e.target.checked ? 1 : 0)}
+                    />
+                  }
+                  label="가격 제안 받기"
+                />
+              </FormControl>
+              <FormControl fullWidth margin="dense">
+                <TextField
+                  required
+                  id="content"
+                  name="content"
+                  label="자세한 설명"
+                  multiline
+                  rows={7}
+                  placeholder={`OO동에 올릴 게시글 내용을 작성해 주세요. (판매 금지 물품은 게시가 제한될 수 있어요.)\n\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.`}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+              </FormControl>
+              <FormControl
                 fullWidth
-                size="small"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-              <TextField
-                required
                 margin="dense"
-                id="categorykey"
-                name="categorykey"
-                label="카테고리"
-                select
-                fullWidth
-                size="small"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                sx={{ display: "flex", alignItems: "center" }}
               >
-                {category_list.map((item, i) => (
-                  <MenuItem key={i} value={item.categorykey}>
-                    {item.categoryname}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </FormControl>
-            <FormControl fullWidth margin="dense">
+                <Link
+                  href="#"
+                  component="button"
+                  variant="body2"
+                  onClick={() => {
+                    setHope_place("");
+                    setHope_lati("");
+                    setHope_long("");
+                  }}
+                  style={{
+                    marginLeft: "auto",
+                  }}
+                >
+                  삭제
+                </Link>
+                <TextField
+                  margin="dense"
+                  id="hope_place"
+                  name="hope_place"
+                  label="거래 희망 장소"
+                  type="text"
+                  fullWidth
+                  size="small"
+                  value={hope_place}
+                  onClick={() => {
+                    getLocation();
+                    setLocationOpen(true);
+                  }}
+                  InputProps={{
+                    readOnly: true, // readonly 설정
+                  }}
+                />
+              </FormControl>
+            </DialogContent>
+            <DialogActions
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
+                *거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이
+                작성됩니다.
+              </span>
+              <div>
+                <Button
+                  type="submit"
+                  onClick={(e) =>
+                    (e.currentTarget.closest("form").dataset.mode = "write")
+                  }
+                  style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
+                >
+                  작성완료
+                </Button>
+                <Button onClick={handleClose}>취소</Button>
+              </div>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
+      )}
+      {/* 거래 희망 장소 모달 */}
+      {locationOpen && (
+        <React.Fragment>
+          <Dialog
+            open={locationOpen}
+            onClose={locationClose}
+            id="hopeDialog"
+            PaperProps={{
+              component: "form",
+              onSubmit: locationHandleSubmit,
+            }}
+          >
+            <DialogTitle
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              위치 추가
+            </DialogTitle>
+            <IconButton
+              aria-label="close"
+              onClick={locationClose}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <DialogContent dividers>
+              <Typography gutterBottom>
+                이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
+              </Typography>
+              <DialogContentText
+                style={{ marginBottom: "20px" }}
+                sx={{ fontSize: "0.875rem" }}
+              >
+                만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
+              </DialogContentText>
               <FormLabel
                 required
                 id="demo-simple-row-radio-buttons-group-label"
               >
-                거래 방식
+                거래 희망 장소명
               </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="method"
-                value={method}
-                onChange={(e) => {
-                  setMethod(e.target.value);
-                  setIsFree(e.target.value == 0 ? false : true);
-                  setPrice(e.target.value == 0 ? "" : 0);
-                }}
-              >
-                <FormControlLabel
-                  value="0"
-                  control={<Radio />}
-                  label="판매하기"
-                />
-                <FormControlLabel
-                  value="1"
-                  control={<Radio />}
-                  label="나눔하기"
-                />
-              </RadioGroup>
-              <OutlinedInput
-                size="small"
-                id="price"
-                name="price"
-                placeholder="가격을 입력해주세요."
-                disabled={isFree}
-                value={isFree ? 0 : price}
-                onChange={(e) => setPrice(e.target.value)}
-                endAdornment={
-                  <InputAdornment position="end">원</InputAdornment>
-                }
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                  "aria-label": "weight",
-                }}
-              />
-              <FormControlLabel
-                id="canbargain"
-                name="canbargain"
-                style={{ display: isFree ? "none" : "block" }}
-                control={
-                  <Checkbox
-                    checked={canBargain === 1}
-                    onChange={(e) => setCanBargain(e.target.checked ? 1 : 0)}
-                  />
-                }
-                label="가격 제안 받기"
-              />
-            </FormControl>
-            <FormControl fullWidth margin="dense">
               <TextField
                 required
-                id="content"
-                name="content"
-                label="자세한 설명"
-                multiline
-                rows={7}
-                placeholder={`OO동에 올릴 게시글 내용을 작성해 주세요. (판매 금지 물품은 게시가 제한될 수 있어요.)\n\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.`}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-            </FormControl>
-            <FormControl
-              fullWidth
-              margin="dense"
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              <Link
-                href="#"
-                component="button"
-                variant="body2"
-                onClick={() => {
-                  setHope_place("");
-                  setHope_lati("");
-                  setHope_long("");
-                }}
-                style={{
-                  marginLeft: "auto",
-                }}
-              >
-                삭제
-              </Link>
-              <TextField
                 margin="dense"
-                id="hope_place"
-                name="hope_place"
-                label="거래 희망 장소"
+                id="tmpHope_place"
+                name="tmpHope_place"
+                placeholder="예) 강남역 1번 출구, 교보타워 앞"
                 type="text"
                 fullWidth
                 size="small"
-                value={hope_place}
-                onClick={() => {
-                  getLocation();
-                  setLocationOpen(true);
-                }}
-                InputProps={{
-                  readOnly: true, // readonly 설정
-                }}
+                value={tmpHope_place}
+                onChange={(e) => setTmpHope_place(e.target.value)}
               />
-            </FormControl>
-          </DialogContent>
-          <DialogActions
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ fontSize: "0.8rem", textAlign: "left" }}>
-              *거래 희망 장소 미등록 시 현재 위치 기준으로 게시글이 작성됩니다.
-            </span>
-            <div>
-              <Button
-                type="submit"
-                onClick={(e) =>
-                  (e.currentTarget.closest("form").dataset.mode = "write")
-                }
-                style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
-              >
-                작성완료
-              </Button>
-              <Button onClick={handleClose}>취소</Button>
-            </div>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-      {/* 거래 희망 장소 모달 */}
-      <React.Fragment>
+              <div
+                id="map"
+                style={{
+                  border: "0.5px solid black",
+                  marginTop: "10px",
+                  width: "100%",
+                  height: "350px",
+                }}
+              ></div>
+            </DialogContent>
+            <DialogActions>
+              <Button type="submit">선택 완료</Button>
+              <Button onClick={locationClose}>취소</Button>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
+      )}
+      {/* 임시저장 확인 모달 */}
+      {tempPostConfirmOpen && (
         <Dialog
-          open={locationOpen}
-          onClose={locationClose}
-          id="hopeDialog"
-          PaperProps={{
-            component: "form",
-            onSubmit: locationHandleSubmit,
-          }}
+          open={tempPostConfirmOpen}
+          onClose={() => tempPostClose(null)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
         >
-          <DialogTitle
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            위치 추가
+          <DialogTitle id="alert-dialog-title">
+            {"작성중인 게시글이 있습니다."}
           </DialogTitle>
-          <IconButton
-            aria-label="close"
-            onClick={locationClose}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <DialogContent dividers>
-            <Typography gutterBottom>
-              이웃과 만나서 거래하고 싶은 장소를 선택해주세요.
-            </Typography>
-            <DialogContentText
-              style={{ marginBottom: "20px" }}
-              sx={{ fontSize: "0.875rem" }}
-            >
-              만나서 거래할 때는 누구나 찾기 쉬운 공공장소가 좋아요.
+          <DialogContent>
+            <DialogContentText>
+              {`'${tempPost ? tempPost.title : ""}' 글을 이어서 작성하시겠습니까?`}
             </DialogContentText>
-            <FormLabel required id="demo-simple-row-radio-buttons-group-label">
-              거래 희망 장소명
-            </FormLabel>
-            <TextField
-              required
-              margin="dense"
-              id="tmpHope_place"
-              name="tmpHope_place"
-              placeholder="예) 강남역 1번 출구, 교보타워 앞"
-              type="text"
-              fullWidth
-              size="small"
-              value={tmpHope_place}
-              onChange={(e) => setTmpHope_place(e.target.value)}
-            />
-            <div
-              id="map"
-              style={{
-                border: "0.5px solid black",
-                marginTop: "10px",
-                width: "100%",
-                height: "350px",
-              }}
-            ></div>
           </DialogContent>
           <DialogActions>
-            <Button type="submit">선택 완료</Button>
-            <Button onClick={locationClose}>취소</Button>
+            <Button onClick={() => tempPostClose(1)}>이어서 쓰기</Button>
+            <Button onClick={() => tempPostClose(0)}>새로 쓰기</Button>
           </DialogActions>
         </Dialog>
-      </React.Fragment>
+      )}
+      {/* 임시저장 게시글 작성 모달 */}
+      {isTemp && (
+        <EditPostModal
+          open={isTemp}
+          isTemp={true}
+          handleClose={handleClose}
+          pvo={tempPost}
+        />
+      )}
     </>
   );
 }
