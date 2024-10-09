@@ -3,11 +3,16 @@ package com.sist.back.controller;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.ssl.SslProperties.Bundles.Watch.File;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.back.service.ChattingService;
 import com.sist.back.util.Paging;
@@ -16,7 +21,9 @@ import com.sist.back.vo.ChattingVO;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 
 
 @RequiredArgsConstructor
@@ -28,6 +35,10 @@ public class ChatController {
 
     @Autowired
     private ChattingService c_serivce;
+
+    
+    @Value("${server.upload.emoticon.image}")
+    private String upload;
 
     @MessageMapping("/chat/message")
     public void sendMessage(ChattingVO message) {
@@ -79,5 +90,48 @@ public class ChatController {
 
         return map;
     }
+
+    @GetMapping("/chat/getEmoticon")
+    public List<ChattingEmojiVO> getAllEmoticon() {
+        return c_serivce.getAllEmoticon();
+    }
+    
+    @GetMapping("/chat/deleteEmoticon")
+    public int deleteEmoticon(String chattingemojikey) {
+        return c_serivce.deleteEmoticon(chattingemojikey);
+    }
+
+    @RequestMapping("/chat/admin/emoticon/add")
+    @ResponseBody
+    public Map<String, Object> addCategory(ChattingEmojiVO cvo) {
+        Map<String, Object> map = new HashMap<>();
+        int cnt = 0;
+        try {
+            // 파일이 첨부된 상태인지 확인
+            MultipartFile f = cvo.getFile();
+            if (f != null && !f.isEmpty()) {
+                String fname = f.getOriginalFilename();
+                Path path = Paths.get(upload);
+                if (path.toString().contains("back")) {
+                    String pathString = path.toString();
+                    String changedPath = pathString.replace("back\\", "");
+                    path = Paths.get(changedPath);
+                }
+                String realPath = "/img/chattingemozi/";
+                String filePath = path.resolve(fname).toString();
+                // fname = FileRenameUtil.checkSameFileName(fname, filePath);
+                cvo.setImg_url(realPath + fname);
+                // 파일 업로드
+                f.transferTo(new java.io.File(filePath));
+                cnt = c_serivce.addEmoticon(cvo);
+            }
+            map.put("cnt", cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return map;
+    }
+    
 
 }
