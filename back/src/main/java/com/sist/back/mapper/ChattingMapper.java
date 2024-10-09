@@ -19,4 +19,10 @@ public interface ChattingMapper {
     List<ChattingEmojiVO> getEmoticon(Map<String, Object> map);
 
     String getCountEmoticon();
+
+    List<ChattingEmojiVO> getAllEmoticon();
+
+    int addEmoticon(ChattingEmojiVO cvo);
+
+    int deleteEmoticon(String chattingemojikey);
 }

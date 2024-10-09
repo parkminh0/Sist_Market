@@ -55,7 +55,7 @@ const ChatApp = () => {
 
   // 이모티콘 관련 선언
   const emoticonPerPage = 4;
-  const emoticonTotal = 16;
+  const [emoticonTotal, setEmoticonTotal] = useState(20);
   const indexOfLastEmoticon = currentEmoticonPage * emoticonPerPage;
   const indexOfFirstEmoticon = indexOfLastEmoticon - emoticonPerPage;
   const emoticonTotalPage = Math.ceil(emoticonTotal / emoticonPerPage);
@@ -108,7 +108,6 @@ const ChatApp = () => {
   const [prove, setProve] = useState(false);
 
   useEffect(() => {
-    console.log(alarmUrl);
   }, [alarmUrl]);
 
   useEffect(() => {
@@ -786,6 +785,7 @@ const ChatApp = () => {
       }
     }).then(response => {
       const res = response.data.emoticons;
+      setEmoticonTotal(response.data.totalRecord);
       setEmoticons(res.map(item => ({
         chattingemojikey: item.chattingemojikey,
         img_url: item.img_url

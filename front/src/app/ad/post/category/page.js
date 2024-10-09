@@ -83,7 +83,6 @@ export default function Page() {
         },
       })
         .then((res) => {
-          console.log(res);
           if (res.data.cnt === 1) {
             alert("저장완료");
             window.location.reload();
@@ -173,7 +172,6 @@ export default function Page() {
 
   function callData() {
     axios.get(API_URL).then((response) => {
-      console.log(response);
       setCategoryList(response.data.category_list);
       setCategoryPostCountList(response.data.post_count);
       setShowingData(true);
@@ -275,6 +273,13 @@ export default function Page() {
       alert("삭제할 항목이 선택되지 않았습니다.");
       return;
     }
+
+    const userConfirmed = window.confirm("선택한 항목을 삭제하시겠습니까?");
+
+    if (!userConfirmed) {
+      return; // 사용자가 취소를 클릭하면 함수를 종료
+    }
+
     axios
       .post(DEL_URL, checkedItems, {
         headers: {
@@ -458,10 +463,6 @@ export default function Page() {
         <Dialog
           open={isModalOpen}
           onClose={closeModal}
-          PaperProps={{
-            component: "form",
-            onSubmit: sendData,
-          }}
           scroll="paper"
         >
           <DialogTitle
@@ -547,112 +548,95 @@ export default function Page() {
           </DialogActions>
         </Dialog>
       </React.Fragment>
-      {/* {isModalOpen && (
-        <>
-          <div className="modal_bg" onClick={closeModal}></div>
-          <div className="modal_wrap">
-            <TextField
-              id="categoryname"
-              name="categoryname"
-              onChange={handleCategoryNameChange}
-              label="카테고리 이름을 입력해주세요."
-              type="search"
-              variant="standard"
-              style={{ position: "relative", width: "450px" }}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="file"
-              onChange={handleChange}
-              style={{ display: "none" }}
-            />
-            <Button
-              variant="contained"
-              className="modal_close"
-              onClick={sendData}
-              style={{ position: "absolute", top: "20px", right: "30px" }}
-            >
-              추가
-            </Button>
-            <Button
-              variant="outlined"
-              className="modal_close"
-              onClick={closeModal}
-              style={{ position: "absolute", top: "55px", right: "30px" }}
-            >
-              닫기
-            </Button>
-            <img
-              src={previewImage}
-              onClick={handleButtonClick}
-              alt="Uploaded Preview"
-              style={{
-                position: "absolute",
-                width: "400px",
-                height: "400px",
-                left: "50%",
-                top: "55%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></img>
-          </div>
-        </>
-      )} */}
-
-      {/* {isEditModalOpen && (
-        <>
-          <div className="modal_bg" onClick={closeEditModal}></div>
-          <div className="modal_wrap">
-            <TextField
-              id="categoryname"
-              name="categoryname"
-              onChange={handleCategoryNameChange}
-              value={categoryname}
-              label="카테고리 이름을 입력해주세요."
-              type="search"
-              variant="standard"
-              style={{ position: "relative", width: "450px" }}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="file"
-              onChange={handleChange}
-              style={{ display: "none" }}
-            />
-            <Button
-              variant="contained"
-              className="modal_close"
-              onClick={sendEditData}
-              style={{ position: "absolute", top: "20px", right: "30px" }}
-            >
-              수정
-            </Button>
-            <Button
-              variant="outlined"
-              className="modal_close"
-              onClick={closeEditModal}
-              style={{ position: "absolute", top: "55px", right: "30px" }}
-            >
-              닫기
-            </Button>
-            <img
-              src={previewImage}
-              onClick={handleButtonClick}
-              alt="Uploaded Preview"
-              style={{
-                position: "absolute",
-                width: "400px",
-                height: "400px",
-                left: "50%",
-                top: "55%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></img>
-          </div>
-        </>
-      )} */}
+      <React.Fragment>
+        <Dialog
+          open={isEditModalOpen}
+          onClose={closeEditModal}
+          scroll="paper"
+        >
+          <DialogTitle
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            카테고리 수정
+          </DialogTitle>
+          <DialogContent dividers="paper">
+            <FormControl fullWidth margin="dense">
+              <TextField
+                required
+                margin="dense"
+                id="categoryname"
+                name="categoryname"
+                value={categoryname}
+                type="text"
+                fullWidth
+                size="small"
+                onChange={handleCategoryNameChange}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <ImageList cols={2} gap={8} id="dragImageList" ref={fileInputRef}>
+                <ImageListItem
+                  style={{
+                    width: 400,
+                    height: 450,
+                    position: "relative",
+                    marginLeft: 80,
+                  }}
+                  draggable="true"
+                  className="draggable"
+                >
+                  <img
+                    src={previewImage}
+                    onClick={handleButtonClick}
+                    alt="Uploaded Preview"
+                    ref={fileInputRef} // ref 설정
+                    style={{
+                      position: "absolute",
+                      width: "400px",
+                      height: "400px",
+                      left: "50%",
+                      top: "55%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  />
+                </ImageListItem>
+              </ImageList>
+              <TextField
+                margin="dense"
+                name="file"
+                ref={fileInputRef}
+                type="file"
+                fullWidth
+                size="small"
+                onChange={handleChange}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <Button
+                type="submit"
+                className="modal_close"
+                onClick={sendEditData}
+                style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
+              >
+                수정
+              </Button>
+              <Button onClick={closeModal}>닫기</Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
     </>
   );
 }

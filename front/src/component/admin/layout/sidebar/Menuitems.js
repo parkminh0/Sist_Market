@@ -9,6 +9,7 @@ import {
   IconAward,
   IconReportAnalytics,
   IconChartBar,
+  IconMoodHappyFilled,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -49,6 +50,11 @@ const Menuitems = [
     title: "배지 관리",
     icon: IconAward,
     href: "/ad/user/badge",
+  },
+  {
+    title: "채팅 이모티콘 관리",
+    icon: IconMoodHappyFilled,
+    href: "/ad/user/emoticon",
   },
   {
     navlabel: true,
