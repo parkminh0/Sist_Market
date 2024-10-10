@@ -49,5 +49,8 @@
 	<insert id="addEmoticon" parameterType="com.sist.back.vo.ChattingEmojiVO">
 		INSERT INTO chattingemoji(img_url) VALUES (#{img_url})
 	</insert>
+	<update id="isRead" parameterType="String">
+		UPDATE chatting SET issellerread = 0 WHERE userkey2 = #{userkey} AND chatroomkey = #{chatroomkey}
+	</update>
 
 </mapper>

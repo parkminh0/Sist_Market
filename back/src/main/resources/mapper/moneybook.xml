@@ -44,7 +44,7 @@
     </select>
     
 
-    <select id="getNeightbors" resultType="int" parameterType="Map">
+    <select id="getNeightbors" resultType="com.sist.back.vo.userVO" parameterType="Map">
       SELECT *
       FROM `user`
       WHERE userkey IN (SELECT userkey
@@ -55,9 +55,10 @@
           SELECT userkey
               FROM `address`
               WHERE townkey = (
-            SELECT townkey
+                  SELECT townkey
                   FROM `address`
                   WHERE userkey = #{userkey}
+                  AND isselected = 1
               )
           )
       ) as userTown
@@ -77,6 +78,7 @@
             SELECT townkey
                   FROM `address`
                   WHERE userkey = #{userkey}
+                  AND isselected = 1
               )
           )
       ) as userTown
@@ -96,9 +98,10 @@
           SELECT userkey
               FROM `address`
               WHERE townkey = (
-            SELECT townkey
-                  FROM `address`
-                  WHERE userkey = #{userkey}
+                SELECT townkey
+                FROM `address`
+                WHERE userkey = #{userkey}
+                AND isselected = 1
               )
           )
       ) as userTown
