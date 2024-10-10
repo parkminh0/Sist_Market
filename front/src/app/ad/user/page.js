@@ -202,6 +202,23 @@ export default function Page() {
   const [k_list, setK_list] = useState([]);
   const [tvo, setTvo] = useState([]);
 
+  
+  const [postcount, setPostCount] = useState([]);
+  const [pagecount, setPageCount] = useState([]);
+  function getP_list(cPage){
+    axios.get("/user/api/admin/getPost",{
+    params:{
+        userkey: userkey,
+        cPage: cPage,
+        postCount: postcount,
+    }
+    }).then((res)=>{
+        setP_list(res.data.p_list);
+    })
+  }
+
+
+
   function editUser(userkey){
     setLoading(true);
     setUserkey(userkey);
@@ -229,9 +246,20 @@ export default function Page() {
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
         setUserReportCount(res.data.userReportCount);
-        setLoading(false);
-        setOpen(true); 
-        //console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
+
+        setPostCount(res.data.postcount || []);
+        setPageCount(res.data.pagecount || []);
+        axios.get("/user/api/admin/getPost",{
+          params:{
+              userkey: userkey,
+              cPage: 1,
+              postCount: res.data.postcount,
+          }
+          }).then((result)=>{
+              setP_list(result.data.p_list);
+              setLoading(false);
+              setOpen(true); 
+          })
       });
     }
   }
@@ -1020,6 +1048,11 @@ export default function Page() {
                       </td>
                     </tr>
                   )}
+                  <tr style={{border:'none'}}>
+                      <td style={{border:'none', textAlign: '-webkit-center'}} colSpan={2}>
+                          <Pagination sx={{width: 'fit-content'}} count={pagecount} onChange={(event, newPage) =>{getP_list(newPage);}}/>
+                      </td>
+                  </tr>
                 </tbody>
               </table>
             </div>

@@ -119,6 +119,10 @@ public class UserService {
         return ar;
     }
 
+    public List<PostVO> getPostsForAdmin(Map<String, Object> p_map){
+        return mapper.getPostsForAdmin(p_map);
+    }
+
     public int F_Check(String me, String you){
         return mapper.F_Check(me, you);
     }
