@@ -4,6 +4,7 @@ import { Settings, MoreVertical, Check, ChevronDown, ChevronUp } from 'lucide-re
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Cookies from "js-cookie";
+import dayjs from 'dayjs'
 
 function NotificationUI({ notifications }) {
   const [activeTab, setActiveTab] = useState('알림');
@@ -30,7 +31,6 @@ function NotificationUI({ notifications }) {
     // 쿼리 파라미터를 URL에 추가하기
     const fullPath = `${redirectPath}?${query}`;
     try {
-      console.log(notification);
       await axios.get("/deleteNotification", {
         params: {
           alarmkey: notification.alarmkey,
@@ -76,9 +76,10 @@ function NotificationUI({ notifications }) {
   };
 
   return (
-    <div style={{ padding: '1rem 0.625rem', maxWidth: '440px', margin: '0 auto' }}>
+    <div style={{ padding: '1rem 0.625rem', maxWidth: '440px' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem' }}>
-        <button onClick={removeAllAlarm}
+        <button
+          onClick={removeAllAlarm}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{
@@ -102,60 +103,86 @@ function NotificationUI({ notifications }) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.75rem',
           maxHeight: displayCount > 5 ? '620px' : '400px',
           overflowY: 'auto',
           paddingRight: '0.5rem',
         }}
       >
         {displayNotifications.slice(0, displayCount).map((notification, index) => (
-          <div
-            key={notification.alarmkey}
-            onClick={() => handleNotificationClick(notification)}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '0.75rem',
-              padding: '0.3125rem 0.5rem',
-              borderRadius: '0.25rem',
-              backgroundColor: hoveredIndex === index ? '#FFF7ED' : 'transparent',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s ease',
-            }}
-          >
-            <div style={{ flex: '1', minWidth: 0 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#C2410C' }}>{notification.category}</span>
-                <span style={{ fontSize: '0.75rem', color: '#F97316', whiteSpace: 'nowrap' }}>{notification.create_dtm}</span>
-              </div>
-              <p style={{ fontSize: '0.875rem', color: '#EA580C', margin: '0.25rem 0', wordBreak: 'break-word' }}>{notification.message}</p>
-            </div>
-            <button style={{
-              color: '#FB923C',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0.25rem',
-              borderRadius: '0.25rem',
-              transition: 'background-color 0.3s ease',
-              flexShrink: 0,
-            }}
-              onMouseEnter={(e) => {
-                e.stopPropagation();
-                e.currentTarget.style.backgroundColor = '#FFF7ED';
-              }}
-              onMouseLeave={(e) => {
-                e.stopPropagation();
-                e.currentTarget.style.backgroundColor = 'transparent';
+          <React.Fragment key={notification.alarmkey}>
+            {index > 0 && (
+              <div
+                style={{
+                  height: '1px',
+                  backgroundColor: '#FED7AA',
+                  margin: '0.5rem 0',
+                }}
+              />
+            )}
+            <div
+              onClick={() => handleNotificationClick(notification)}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.75rem',
+                padding: '0.3125rem 0.5rem',
+                borderRadius: '0.25rem',
+                backgroundColor: hoveredIndex === index ? '#FFF7ED' : 'transparent',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease',
               }}
             >
-            </button>
-          </div>
+              <div style={{ flex: '1', minWidth: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <span style={{ fontWeight: '600', color: '#C2410C' }}>{notification.category}</span>
+                  <span style={{ fontSize: '0.75rem', color: '#F97316', whiteSpace: 'nowrap' }}>{dayjs(notification.create_dtm).format('MM-DD hh:mm A')}</span>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: '#EA580C', margin: '0.25rem 0', wordBreak: 'break-word' }}>{notification.message}</p>
+              </div>
+              {notification.count > 1 && (
+                <div style={{
+                  backgroundColor: '#FB923C',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                }}>
+                  {notification.count}
+                </div>
+              )}
+              <button
+                style={{
+                  color: '#FB923C',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  borderRadius: '0.25rem',
+                  transition: 'background-color 0.3s ease',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.stopPropagation()
+                  e.currentTarget.style.backgroundColor = '#FFF7ED'
+                }}
+                onMouseLeave={(e) => {
+                  e.stopPropagation()
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }}
+              >
+              </button>
+            </div>
+          </React.Fragment>
         ))}
       </div>
-      {displayCount === 5 && notifications.length > 5 && (
+      {displayCount === 5 && displayNotifications.length > 5 && (
         <button
           onClick={moreAlarms}
           style={{

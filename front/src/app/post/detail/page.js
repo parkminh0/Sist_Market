@@ -126,7 +126,7 @@ export default function Page() {
           userkey2: res.buyer_userkey,
           content: "7KCI64yA7LmY7KeA66eI7ZmY7JiB7ZWp64uI64uk7ZmY7JiB7ZW07JqU7ZmY7JiB7ZW07ZmY7JiB7KCI64yA7LmY7KeA66eI",
         }
-      })
+      }).then(window.location.href = "/chat")
     })
   };
 

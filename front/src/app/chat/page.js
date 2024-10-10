@@ -38,6 +38,7 @@ const ChatApp = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
+  const [subscribers, setSubscribers] = useState(null);
   const oneTime = useRef(false);
   const socket = useRef(null);
   const ws = useRef(null);
@@ -110,7 +111,13 @@ const ChatApp = () => {
   useEffect(() => {
   }, [alarmUrl]);
 
+
   useEffect(() => {
+    if (Cookies.get("userkey") == undefined) {
+      alert("로그인이 필요한 서비스입니다.");
+      window.location.replace("/");
+      return;
+    }
     if (oneTime.current) {
       return;
     }
@@ -184,6 +191,9 @@ const ChatApp = () => {
             getLocationForChat(item, index);
             result = (
               <div className="message-container sent">
+                {item.issellerread > 0 && (
+                  <div className="read-count">{item.issellerread}</div>
+                )}
                 <div className="message">
                   <ul className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy8zs _1h4pbgy902 _1h4pbgy90j">
                     <li className="vqbuc9i _1h4pbgy9ug _1h4pbgy90g _1h4pbgy780 _1h4pbgy78i _1h4pbgy783 _1h4pbgy78l _1h4pbgy7ao _1h4pbgy7c8">
@@ -204,6 +214,9 @@ const ChatApp = () => {
           } else {
             result = (
               <div className="message-container sent">
+                {item.issellerread > 0 && (
+                  <div className="read-count">{item.issellerread}</div>
+                )}
                 <div className="message">
                   {item.chattingimg_url ? (
                     <img src={item.chattingimg_url} style={{ width: '196px', height: '196px' }} />
@@ -280,6 +293,12 @@ const ChatApp = () => {
           }
         }
       }
+      axios.get('/chat/isread', {
+        params: {
+          chatroomkey: currentchatroomkey,
+          userkey: userkey,
+        }
+      });
       setChatLog((prevChatLog) => [...prevChatLog, result]);
     });
   };
@@ -312,12 +331,19 @@ const ChatApp = () => {
         }
       );
     };
+
+
     // 채팅 기록 가져옴
     const savedChats = async () => {
       if (currentchatroomkey == "" || currentchatroomkey == null) {
         return;
       }
-      await axios.get(`/chat/room/${currentchatroomkey}`).then(response => {
+      await axios.get('/chat/room', {
+        params: {
+          chatroomkey: currentchatroomkey,
+          userkey: userkey,
+        }
+      }).then(response => {
         const res = response.data;
         postTitle.current = res.pvo.title;
         postImg_Url.current = res.pvo.imgurl;
@@ -334,6 +360,7 @@ const ChatApp = () => {
           hope_long: item.hope_long,
           hope_place: item.hope_place,
           hope_time: item.hope_time,
+          issellerread: item.issellerread,
         })))
 
         if (res.chattingList.length > 0) {
@@ -610,9 +637,9 @@ const ChatApp = () => {
     } else if (postStatus === "3") {
       // postStatus가 3이 될 때 모달을 띄움
       handleSellerReportOpen();
-      if(prove){
-      setIsDisabled(true); // 셀렉트 박스 비활성화
-      }else {
+      if (prove) {
+        setIsDisabled(true); // 셀렉트 박스 비활성화
+      } else {
         setIsDisabled(false);
         axios.get("/adpost/updatePostStatus", {
           params: {
@@ -620,8 +647,8 @@ const ChatApp = () => {
             postkey: postkey.current,
             dealuserkey: another,
           }
-      })
-    }
+        })
+      }
     } else {
       setIsDisabled(false); // postStatus가 3이 아닐 경우 활성화
     }
@@ -697,6 +724,7 @@ const ChatApp = () => {
         hope_lati: hope_lati,
         hope_place: hope_place,
         hope_time: appointTime,
+        issellerread: "1",
         create_dtm: currentTime,
         chattingimg_url: imageUrl,
         ...(chattingEmojikey !== 0 && { chattingemojikey: chattingEmojikey }),
@@ -857,7 +885,7 @@ const ChatApp = () => {
     }
   };
   const handleReviewSubmit = (selectedKeys) => {
-    if(selectedKeys !== '' && selectedKeys !== null){
+    if (selectedKeys !== '' && selectedKeys !== null) {
       setProve(true);
     }
   };
