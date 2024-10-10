@@ -8,11 +8,14 @@ import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.boot.autoconfigure.ssl.SslProperties.Bundles.Watch.File;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import com.sist.back.service.ChattingService;
 import com.sist.back.util.Paging;
@@ -24,8 +27,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
-
 @RequiredArgsConstructor
 @RestController
 public class ChatController {
@@ -36,7 +37,6 @@ public class ChatController {
     @Autowired
     private ChattingService c_serivce;
 
-    
     @Value("${server.upload.emoticon.image}")
     private String upload;
 
@@ -55,7 +55,7 @@ public class ChatController {
     public void adminSend(ChattingVO message) {
         c_serivce.addChat(message);
     }
-    
+
     @GetMapping("/chat/emoticon")
     @ResponseBody
     public Map<String, Object> getEmoticon(String cPage) {
@@ -95,7 +95,6 @@ public class ChatController {
     public List<ChattingEmojiVO> getAllEmoticon() {
         return c_serivce.getAllEmoticon();
     }
-    
     @GetMapping("/chat/deleteEmoticon")
     public int deleteEmoticon(String chattingemojikey) {
         return c_serivce.deleteEmoticon(chattingemojikey);
@@ -132,6 +131,5 @@ public class ChatController {
 
         return map;
     }
-    
 
 }

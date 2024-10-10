@@ -47,7 +47,7 @@ function NotificationIcon({ notificationCount, notifications }) {
         </button>
       </div>
       {isOpen && ReactDOM.createPortal(
-        <div ref={notificationRef} onClick={handleNotificationClick} style={{ position: 'fixed', top: '60px', right: '20px',width: '28rem',zIndex: 9999,boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',background: 'white',borderRadius: '8px',}}>
+        <div ref={notificationRef} onClick={handleNotificationClick} style={{ position: 'fixed', top: '60px', right: '20px',width: '28rem',zIndex: 9999,boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',background: 'white',borderRadius: '8px'}}>
           <NotificationUI notifications={notifications} />
         </div>,
         document.body

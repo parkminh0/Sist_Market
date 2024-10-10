@@ -10,5 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlarmVO {
-    private String redirection, alarmkey, message, category, userkey;
+    private String redirection, alarmkey, message, category, userkey, create_dtm;
 }
