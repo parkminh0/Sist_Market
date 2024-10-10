@@ -28,8 +28,6 @@
         <!-- AddressVO 매핑 -->
          <collection property="a_list" ofType="com.sist.back.vo.AddressVO" select="getAddressByUserKey" column="userkey">
         </collection>
-        <!-- SetAlarmVO 매핑 -->
-        <collection property="s_list" ofType="com.sist.back.vo.SetAlarmVO" select="getSetAlarmsByUserKey" column="userkey"/>
         <!-- PostVO 매핑 -->
         <collection property="p_list" ofType="com.sist.back.vo.PostVO" select="getPostsByUserKey" column="userkey"/>
         <!-- KeywordVO 매핑 -->
@@ -265,10 +263,6 @@
     <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
     <select id="getKeywordByUserKey" resultType="com.sist.back.vo.KeywordVO" parameterType="String">
         SELECT * FROM keyword WHERE userkey = #{userkey}
-    </select>
-    <!-- SetAlarm 테이블에서 데이터를 가져오는 select 쿼리 -->
-    <select id="getSetAlarmsByUserKey" resultType="com.sist.back.vo.SetAlarmVO" parameterType="String">
-        SELECT * FROM setalarm WHERE userkey = #{userkey}
     </select>
     <!-- LikeUser 테이블에서 데이터를 가져오는 select 쿼리 -->
     <select id="getLikeUsersByUserKey" resultMap="likeuserMap" parameterType="String">

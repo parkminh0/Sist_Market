@@ -197,7 +197,6 @@ export default function Page() {
   const [b_list, setB_list] = useState([]);
   const [n_list, setN_list] = useState([]);
   const [a_list, setA_list] = useState([]);
-  const [s_list, setS_list] = useState([]);
   const [w_list, setW_list] = useState([]);
   const [k_list, setK_list] = useState([]);
   const [tvo, setTvo] = useState([]);
@@ -241,7 +240,6 @@ export default function Page() {
         setB_list(res.data.ar.b_list || []);
         setN_list(res.data.ar.n_list || []);
         setA_list(res.data.ar.a_list || []);
-        setS_list(res.data.ar.s_list || []);
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
@@ -1388,54 +1386,6 @@ export default function Page() {
                     <tr>
                       <td colSpan="3" style={{ textAlign: "center" }}>
                         주소 정보가 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* 알람 설정 정보 테이블 */}
-        <div className="section" id="QA_register2">
-        
-          <div className="toggleArea" style={{ display: "block" }}>
-            <div className="mBoard typeProduct">
-              <table summary="알람 설정 정보">
-                <caption>알람 설정 정보</caption>
-                <colgroup>
-                  <col className="product" />
-                  <col style={{ width: "auto" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th scope="col">알람 종류</th>
-                    <th scope="col">알람 여부</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {s_list.length > 0 ? (
-                    s_list.map((setAlarm, index) => (
-                      <tr key={index}>
-                        <td
-                          className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
-                        >
-                          {setAlarm.setalarmkey || ""}
-                        </td>
-                        <td
-                          className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
-                        >
-                          {setAlarm.isalarm ? "예" : "아니오"}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
-                        알람 설정 정보가 없습니다.
                       </td>
                     </tr>
                   )}
