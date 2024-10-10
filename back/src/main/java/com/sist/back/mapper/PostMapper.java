@@ -10,17 +10,24 @@ import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.TownVO;
+import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostImgVO;
 
 @Mapper
 public interface PostMapper {
     PostVO[] all();
 
+    categoryVO[] getLikeCate(String userkey);
+    
     int getViewqty(int postkey);
 
     int incViewqty(int postkey);
 
+    PostVO[] getAdPost_simple(Map<String, Object> map);
+
     PostVO getPostByPostKey(int postkey);
+
+    PostVO getPostDetailByPostKey(int postkey);
 
     List<PostVO> getPostByCategoryKey(int categorykey, String userkey);
 
@@ -73,4 +80,8 @@ public interface PostMapper {
     void updatePostStatus(String postStatus, String postkey, String dealuserkey);
 
     List<PostVO> getTop4();
+
+    List<PostVO> postTop10Statistic(String type, String dateType);
+
+    List<String> townAll();
 }

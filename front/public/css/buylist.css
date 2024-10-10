@@ -1165,9 +1165,9 @@
     display: none
 }
 
-.purchase_list_tab.detail_tab .tab_on .tab_link[data-v-2cbb289b] {
+/* .purchase_list_tab.detail_tab .tab_on .tab_link[data-v-2cbb289b] {
     border-bottom: 2px solid #222
-}
+} */
 
 .purchase_list_tab.detail_tab .tab_on .title[data-v-2cbb289b] {
     color: #222;
@@ -1179,7 +1179,7 @@
 }
 
 .purchase_list_tab.detail_tab.sell .tab_on .count[data-v-2cbb289b] {
-    color: #31b46e
+    color: #FF9800
 }
 
 .purchase_list_tab.detail_tab .tab_link[data-v-2cbb289b] {
@@ -2516,9 +2516,9 @@
     display: none
 }
 
-.purchase_list_tab.detail_tab .tab_on .tab_link[data-v-2cbb289b] {
+/* .purchase_list_tab.detail_tab .tab_on .tab_link[data-v-2cbb289b] {
     border-bottom: 2px solid #222
-}
+} */
 
 .purchase_list_tab.detail_tab .tab_on .title[data-v-2cbb289b] {
     color: #222;
@@ -2530,7 +2530,7 @@
 }
 
 .purchase_list_tab.detail_tab.sell .tab_on .count[data-v-2cbb289b] {
-    color: #31b46e
+    color: #FF9800
 }
 
 .purchase_list_tab.detail_tab .tab_link[data-v-2cbb289b] {

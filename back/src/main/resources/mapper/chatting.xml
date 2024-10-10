@@ -33,7 +33,21 @@
 		) x
 		WHERE x.rnum BETWEEN #{begin} AND #{end}
 	</select>
+
 	<select id="getCountEmoticon" resultType="String">
 		SELECT COUNT(*) FROM chattingemoji
 	</select>
+
+	<select id="getAllEmoticon">
+		SELECT * FROM chattingemoji
+	</select>
+
+	<delete id="deleteEmoticon" parameterType="String">
+		DELETE FROM chattingemoji WHERE chattingemojikey = #{chattingemojikey}
+	</delete>
+
+	<insert id="addEmoticon" parameterType="com.sist.back.vo.ChattingEmojiVO">
+		INSERT INTO chattingemoji(img_url) VALUES (#{img_url})
+	</insert>
+
 </mapper>

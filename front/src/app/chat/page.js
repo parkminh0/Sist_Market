@@ -18,6 +18,7 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import { useRouter } from "next/navigation";
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -54,7 +55,7 @@ const ChatApp = () => {
 
   // 이모티콘 관련 선언
   const emoticonPerPage = 4;
-  const emoticonTotal = 16;
+  const [emoticonTotal, setEmoticonTotal] = useState(20);
   const indexOfLastEmoticon = currentEmoticonPage * emoticonPerPage;
   const indexOfFirstEmoticon = indexOfLastEmoticon - emoticonPerPage;
   const emoticonTotalPage = Math.ceil(emoticonTotal / emoticonPerPage);
@@ -102,6 +103,12 @@ const ChatApp = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const isFirstRender = useRef(true);
   const [buyerUserkey, setBuyerUserkey] = useState(null);
+  const [alarmUrl, setAlarmUrl] = useState(new URL(window.location.href));
+  const [isDisabled2, setIsDisabled2] = useState(false);
+  const [prove, setProve] = useState(false);
+
+  useEffect(() => {
+  }, [alarmUrl]);
 
   useEffect(() => {
     if (oneTime.current) {
@@ -120,7 +127,7 @@ const ChatApp = () => {
 
     });
     const octokit = new Octokit({
-      auth: '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'
+      auth: process.env.GITHUB_TOKEN
     });
 
     octokit.request('GET /emojis', {
@@ -185,7 +192,7 @@ const ChatApp = () => {
                       </span>
                     </li>
                     <div id={`mapDetail-${index}`}
-                      style={{ border: "0.5px solid black", marginTop: "10px", width: "400px", height: "250px",}}
+                      style={{ border: "0.5px solid black", marginTop: "10px", width: "400px", height: "250px", }}
                     ></div>
                     날짜 및 시간 : {dayjs(item.hope_time).format('YYYY-MM-DD HH:mm')}<br />
                     장소 : {item.hope_place}
@@ -330,11 +337,7 @@ const ChatApp = () => {
         })))
 
         if (res.chattingList.length > 0) {
-          if (res.chattingList[0].userkey1 !== userkey) {
-            setBuyerUserkey(res.chattingList[0].userkey1);
-          } else if (res.chattingList[0].userkey2 !== userkey) {
-            setBuyerUserkey(res.chattingList[0].userkey2);
-          }
+          setBuyerUserkey(res.chattingList[0].userkey2);
         }
 
       });
@@ -365,7 +368,7 @@ const ChatApp = () => {
 
   function getLocationForChat(item, index) {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 
@@ -441,7 +444,7 @@ const ChatApp = () => {
 
   function getLocation() {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 
@@ -589,6 +592,15 @@ const ChatApp = () => {
     }
   }, [chatLog]);
 
+  useEffect(() => {
+    // buyerUserkey가 userkey와 같을 때의 처리
+    if (buyerUserkey === userkey) {
+      setIsDisabled(true);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [buyerUserkey, userkey]);
+
   // 후기 띄우기
   useEffect(() => {
     if (isFirstRender.current && postStatus === "3") {
@@ -598,7 +610,18 @@ const ChatApp = () => {
     } else if (postStatus === "3") {
       // postStatus가 3이 될 때 모달을 띄움
       handleSellerReportOpen();
+      if(prove){
       setIsDisabled(true); // 셀렉트 박스 비활성화
+      }else {
+        setIsDisabled(false);
+        axios.get("/adpost/updatePostStatus", {
+          params: {
+            postStatus: "2",
+            postkey: postkey.current,
+            dealuserkey: another,
+          }
+      })
+    }
     } else {
       setIsDisabled(false); // postStatus가 3이 아닐 경우 활성화
     }
@@ -762,6 +785,7 @@ const ChatApp = () => {
       }
     }).then(response => {
       const res = response.data.emoticons;
+      setEmoticonTotal(response.data.totalRecord);
       setEmoticons(res.map(item => ({
         chattingemojikey: item.chattingemojikey,
         img_url: item.img_url
@@ -832,12 +856,16 @@ const ChatApp = () => {
       });
     }
   };
-
+  const handleReviewSubmit = (selectedKeys) => {
+    if(selectedKeys !== '' && selectedKeys !== null){
+      setProve(true);
+    }
+  };
   return (
     <>
       <article className="article">
         <div>
-          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} buyerUserkey={buyerUserkey}/>
+          <SellerReviewModal reportOpen={sellerReportOpen} handleReportClose={handleSellerReportClose} postkey={postkey.current} buyerUserkey={buyerUserkey} onReviewSubmit={handleReviewSubmit} />
         </div>
         <nav className="sidebar">
           <Link className="anchor" href="chat">
@@ -871,16 +899,17 @@ const ChatApp = () => {
               <img className="chat-header-image" src={postImg_Url.current} alt="당근" />
               <div className="main-title">
                 <span>{postTitle.current}</span>
-                &nbsp;&nbsp;&nbsp;<div style={{ position: 'relative', display: 'inline-block', width: '7rem' }}>
-                  <select value={postStatus} onChange={handleChange} disabled={isDisabled} style={{ appearance: 'none', width: '100%', backgroundColor: '#FFF7ED', border: '1px solid #FECACA', color: '#9A3412', padding: '0.5rem 0.75rem', paddingRight: '2rem', borderRadius: '0.375rem', lineHeight: '1.25', outline: 'none' }}>
-                    <option value="1">판매중</option>
-                    <option value="2">예약중</option>
-                    <option value="3">거래완료</option>
-                  </select>
-                  <div style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#C2410C' }}>
-                    <ChevronDown size={18} />
-                  </div>
-                </div>
+                &nbsp;&nbsp;&nbsp; {buyerUserkey !== userkey && (
+                  <div style={{ position: 'relative', display: 'inline-block', width: '7rem' }}>
+                    <select value={postStatus} onChange={handleChange} disabled={isDisabled} style={{ appearance: 'none', width: '100%', backgroundColor: '#FFF7ED', border: '1px solid #FECACA', color: '#9A3412', padding: '0.5rem 0.75rem', paddingRight: '2rem', borderRadius: '0.375rem', lineHeight: '1.25', outline: 'none' }}>
+                      <option value="1">판매중</option>
+                      <option value="2">예약중</option>
+                      <option value="3">거래완료</option>
+                    </select>
+                    <div style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#C2410C' }}>
+                      <ChevronDown size={18} />
+                    </div>
+                  </div>)}
               </div>
             </div>}
 

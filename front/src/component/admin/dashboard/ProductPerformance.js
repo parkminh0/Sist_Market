@@ -72,12 +72,17 @@ const ProductPerformance = () => {
 
   return (
     <DashboardCard title="명예의 전당">
-      <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
+      <Box
+        sx={{
+          overflow: "auto",
+          height: 380,
+          width: { xs: "280px", sm: "auto" },
+        }}
+      >
         <Table
           aria-label="simple table"
           sx={{
             whiteSpace: "nowrap",
-            mt: 2,
           }}
         >
           <TableHead>

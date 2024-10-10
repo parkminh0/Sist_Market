@@ -50,7 +50,6 @@ public class ChatRoomController {
     @ResponseBody
     public ChatRoomWithImgUrlDTO getRooms(String userkey) {
         List<ChatRoomVO> list = chatRoomRepository.findAll(userkey);
-
         List<String> anotherkeys = list.stream()
                 .map(chatRoom -> {
                     if (!userkey.equals(chatRoom.getBuyer_userkey())) {

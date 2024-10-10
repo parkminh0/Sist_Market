@@ -13,6 +13,7 @@ import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
+import com.sist.back.vo.categoryVO;
 import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.PostImgVO;
 
@@ -25,6 +26,14 @@ public class PostService {
         return p_mapper.all();
     }
 
+    public categoryVO[] getLikeCate(String userkey){
+        return p_mapper.getLikeCate(userkey);
+    }
+
+    public PostVO[] getAdPost_simple(Map<String, Object> map) {
+        return p_mapper.getAdPost_simple(map);
+    }
+
     public int getViewqty(int postkey) {
         return p_mapper.getViewqty(postkey);
     }
@@ -35,6 +44,10 @@ public class PostService {
 
     public PostVO getPostByPostKey(int postkey) {
         return p_mapper.getPostByPostKey(postkey);
+    }
+
+    public PostVO getPostDetailByPostKey(int postkey) {
+        return p_mapper.getPostDetailByPostKey(postkey);
     }
 
     public List<PostVO> getPostByCategoryKey(int categorykey, String userkey) {
@@ -180,5 +193,19 @@ public class PostService {
             list.toArray(ar);
         }
         return ar;
+    }
+
+    public PostVO[] postTop10Statistic(String type, String dateType) {
+        PostVO[] ar = null;
+        List<PostVO> list = p_mapper.postTop10Statistic(type, dateType);
+        if (list != null && list.size() > 0) {
+            ar = new PostVO[list.size()];
+            list.toArray(ar);
+        }
+        return ar;
+    }
+
+    public List<String> townAll() {
+        return p_mapper.townAll();
     }
 }

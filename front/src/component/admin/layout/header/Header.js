@@ -9,7 +9,6 @@ import {
   Badge,
   Button,
 } from "@mui/material";
-import Link from "next/link";
 // components
 import Profile from "./Profile";
 import { IconBellRinging, IconMenu } from "@tabler/icons-react";

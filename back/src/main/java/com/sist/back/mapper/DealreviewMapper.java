@@ -10,9 +10,13 @@ import java.util.Map;
 
 @Mapper
 public interface DealreviewMapper {
+    int allCount(String userkey);
+
     int buyingCount(String userkey);
 
     int sellingCount(String userkey);
+
+    List<PostVO> allReview(Map<String, Object> d_map);
 
     List<PostVO> buyingReview(Map<String, Object> d_map);
 
@@ -25,5 +29,7 @@ public interface DealreviewMapper {
     int buyerReview(String reviewlistkey, String postkey);
 
     int addManner(String userkey, String reviewlistkey, String estimateuserkey);
+
+    int hideReview(String postkey, String userkey);
 
 }

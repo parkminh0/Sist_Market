@@ -119,6 +119,10 @@ public class UserService {
         return ar;
     }
 
+    public List<PostVO> getPostsForAdmin(Map<String, Object> p_map){
+        return mapper.getPostsForAdmin(p_map);
+    }
+
     public int F_Check(String me, String you){
         return mapper.F_Check(me, you);
     }
@@ -157,6 +161,12 @@ public class UserService {
 
     public userVO getUserForAdmin(String userkey) {
         return mapper.getUserForAdmin(userkey);
+    }
+    public userVO getUserForMyPage(String userkey) {
+        return mapper.getUserForMyPage(userkey);
+    }
+    public userVO getUserProfile(String userkey) {
+        return mapper.getUserProfile(userkey);
     }
 
     public int userDelForAdmin(String userkey) {
@@ -205,6 +215,14 @@ public class UserService {
                 break;
         }
         return likelist;
+    }
+
+    public int addLikeCategory(String userkey, String categorykey){
+        return mapper.addLikeCategory(userkey, categorykey);
+    }
+
+    public int addLikeKeyword(String userkey, String content){
+        return mapper.addLikeKeyword(userkey, content);
     }
 
     public int getBuyTotalCount(String userkey) {
@@ -357,5 +375,22 @@ public class UserService {
         return mapper.getRestList(userkey,limitpostkey,lastpostkey);
     }
 
+    public int getPostCountByUserKey(String userkey){
+        return mapper.getPostCountByUserKey(userkey);
+    }
 
+    public List<PostVO> getPostsByUserKey(Map<String, Object> pmap){
+      
+        List<PostVO> p_list = mapper.getPostsByUserKey(pmap);
+        
+        return p_list;
+    }
+
+    public String searchNickname(String userkey){
+        return mapper.searchNickname(userkey);
+    }
+
+    public int getReportCountByUserKey(String userkey){
+        return mapper.getReportCountByUserKey(userkey);
+    }
 }

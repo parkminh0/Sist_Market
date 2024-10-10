@@ -57,11 +57,11 @@
               WHERE townkey = (
             SELECT townkey
                   FROM `address`
-                  WHERE userkey = 1
+                  WHERE userkey = #{userkey}
               )
           )
       ) as userTown
-      WHERE userkey != 1 )
+      WHERE userkey != #{userkey} )
     </select>
     <select id="getNeightborsTrade" resultType="com.sist.back.vo.PostVO" parameterType="Map">
       SELECT *
@@ -76,11 +76,11 @@
               WHERE townkey = (
             SELECT townkey
                   FROM `address`
-                  WHERE userkey = 1
+                  WHERE userkey = #{userkey}
               )
           )
       ) as userTown
-      WHERE userkey != 1 )
+      WHERE userkey != #{userkey} )
       AND  SUBSTR(deal_dtm, 1, 7) = #{today}
       AND poststatus = 3
       AND method = 0
@@ -98,11 +98,11 @@
               WHERE townkey = (
             SELECT townkey
                   FROM `address`
-                  WHERE userkey = 1
+                  WHERE userkey = #{userkey}
               )
           )
       ) as userTown
-      WHERE userkey != 1 )
+      WHERE userkey != #{userkey} )
       AND SUBSTR(deal_dtm, 1, 7) = #{today}
       AND poststatus = 3
       AND method = 1

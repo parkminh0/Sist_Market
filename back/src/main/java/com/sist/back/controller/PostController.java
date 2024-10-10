@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.back.service.BadgeService;
 import com.sist.back.service.CategoryService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
@@ -65,6 +66,9 @@ public class PostController {
     @Autowired
     SearchlogService searchlogService;
 
+    @Autowired
+    BadgeService b_service;
+
     @Value("${server.upload.post.image}")
     private String postImgPath;
 
@@ -73,6 +77,13 @@ public class PostController {
         Map<String, Object> res = new HashMap<>();
         res.put("post_list", p_service.all());
         return res;
+    }
+
+    @RequestMapping("/postdetail")
+    public Map<String, Object> getPostDetailByPostKey(int postkey) {
+        Map<String, Object> e_map = new HashMap<>();
+        e_map.put("pvo", p_service.getPostDetailByPostKey(postkey));
+        return e_map;
     }
 
     @PostMapping("/searchpost")
@@ -225,7 +236,6 @@ public class PostController {
     @PostMapping("/write")
     public Map<String, Object> write(@ModelAttribute PostVO vo, List<MultipartFile> post_img, String region1,
             String region2, String region3) {
-        System.out.println("거래희망!!" + vo.getHope_place() + "까지");
         if (region1 != null && !region1.equals("") && region2 != null && !region2.equals("") && region3 != null
                 && !region3.equals("")) {
             Map<String, String> searchTown = new HashMap<>();
@@ -244,8 +254,6 @@ public class PostController {
             }
         }
 
-        // lastprice 변동 후 가격 = 가격
-        vo.setLastprice(vo.getPrice());
         // range
         // canbargain 체크박스가 on/off로만 나와서 직접 0, 1로 넣어줌
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
@@ -288,10 +296,21 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         res.put("savePostKey", newPostKey);
         return res;
     }
+
+     //배지 부여 함수
+     public int giveBadgeForPosts(String userkey) {
+        return b_service.giveBadgeForPosts(userkey);
+    }
+
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
@@ -360,6 +379,11 @@ public class PostController {
             }
         }
 
+        //배지 부여
+        if (vo.getPoststatus().equals("1")) {
+            giveBadgeForPosts(vo.getUserkey());
+        }
+
         Map<String, Object> res = new HashMap<>();
         p_service.editPost(vo);
         res.put("savePostKey", vo.getPostkey());
@@ -409,11 +433,16 @@ public class PostController {
 
     // 사용자 - 메인 상품 뿌리기
     @GetMapping("/main")
-    public Map<String, Object> main(String region1, String region2) {
+    public Map<String, Object> main(String region1, String region2, String userkey) {
         categoryVO[] c_list = categoryService.all();
         // 중복되지 않는 랜덤 숫자 3개를 저장할 리스트
         List<Integer> randomCategories = new ArrayList<>();
         Random random = new Random();
+
+        categoryVO[] lc_list = p_service.getLikeCate(userkey);
+        for(int i=0; i<lc_list.length; i++){
+            randomCategories.add(Integer.parseInt(lc_list[i].getCategorykey()));
+        }
 
         // 중복되지 않는 숫자 3개를 뽑는 반복문
         while (randomCategories.size() < 3) {
@@ -426,10 +455,9 @@ public class PostController {
 
         List<PostVO>[] tmp = new List[3]; // 배열 초기화
         // 배열을 리스트로 변환하여 할당
-        tmp[0] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(0)), region1, region2));
-        tmp[1] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(1)), region1, region2));
-        tmp[2] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(2)), region1, region2));
-
+        for (int i = 0; i < 3; i++) {
+            tmp[i] = Arrays.asList(p_service.main(String.valueOf(randomCategories.get(i)), region1, region2));
+        }
         Map<String, Object> res = new HashMap<>();
         res.put("free_list", p_service.main("free", region1, region2));
         res.put("cate_list", tmp);

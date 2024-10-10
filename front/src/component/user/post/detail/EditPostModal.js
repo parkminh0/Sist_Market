@@ -47,7 +47,7 @@ export default function EditPostModal(props) {
 
   function getLocation() {
     const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ada5c793e355a40dc119180ae6a93f9&libraries=services&autoload=false`;
+    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
     kakaoMapScript.async = false;
     document.head.appendChild(kakaoMapScript);
 
@@ -375,17 +375,17 @@ export default function EditPostModal(props) {
             setSavePostKey(response.data.savePostKey);
             switch(mode){
               case "write":
-                alert("게시글이 저장되었습니다.");
+                alert("게시글이 작성되었습니다.");
+                window.location.reload();
                 break;
               case "save":
                 alert("게시글이 임시저장되었습니다.");
                 break;
               case "edit":
                 alert("게시글이 수정되었습니다.");
+                window.location.reload();
                 break;
-                
             }
-            window.location.reload();
         })
         .catch((error) => {
             console.error("게시글 작성 오류", error);

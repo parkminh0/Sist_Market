@@ -32,6 +32,7 @@ export default function Home() {
       params: {
         region1: decodeURIComponent(Cookies.get("region1")),
         region2: decodeURIComponent(Cookies.get("region2")),
+        userkey: decodeURIComponent(Cookies.get("userkey")),
       },
       headers: {
         "Content-Type": "application/json",
@@ -179,7 +180,6 @@ export default function Home() {
     const scroll_div = e.currentTarget.parentNode.querySelector(
       'div[data-scroll_div="scroll_div"]'
     );
-    console.log(scroll_div);
     let chk = parseInt(scroll_div.getAttribute("data-scroll_idx"));
     const chkRange = parseInt(scroll_div.getAttribute("data-scroll_range"));
 

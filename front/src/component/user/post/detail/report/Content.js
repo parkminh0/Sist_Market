@@ -24,13 +24,6 @@ export default function Content(props) {
   useEffect(() => {
     setPostkey(props.pvo.postkey);
     setUserkey(props.uvo.userkey);
-
-    // console.log("reportlistkey: " + reportlistkey);
-    // console.log("reportuserkey: " + reportuserkey);
-    // console.log("ispost: " + ispost);
-    // console.log("postkey: " + props.pvo.postkey);
-    // console.log("userkey: " + props.uvo.userkey);
-
   }, []);
 
   const handleMaxText = (e) => {
@@ -70,6 +63,10 @@ export default function Content(props) {
   }
 
   function handleReport() {
+    if (reportlistkey === '' || reportlistkey === undefined) {
+      alert('신고 항목을 선택해 주세요.');
+      return;
+    }
     if (checked) {
       axios({
         url: CHK_URL,
@@ -79,7 +76,6 @@ export default function Content(props) {
           noseeuserkey: userkey,
         },
       }).then((res) => {
-        console.log(res.data)
         if (res.data.msg == 'exist') {
           alert('이미 차단된 사용자입니다.');
         } else if (res.data.msg == 'new') {

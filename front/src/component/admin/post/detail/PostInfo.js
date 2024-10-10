@@ -34,8 +34,10 @@ export default function PostInfo(props) {
   var isbuyvisible = "X";
 
   const price = pvo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
-  const lastprice = pvo.lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
-
+  var lastprice = " - "
+  if(pvo.lastprice != null){
+    lastprice = pvo.lastprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat('원');
+  } 
   if(pvo.method == 1){
     method = "나눔";
   }
@@ -114,48 +116,42 @@ export default function PostInfo(props) {
                   <TableCell className="th" colSpan={2}>거래완료일자</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="td" colSpan={2}>{pvo.duvo.nickname}</TableCell>
-                  <TableCell className="td" colSpan={2}>{pvo.deal_dtm}</TableCell>
+                  <TableCell className="td" colSpan={2}>{pvo.duvo ? pvo.duvo.nickname : '-'}</TableCell>
+                  <TableCell className="td" colSpan={2}>{pvo.deal_dtm ? pvo.deal_dtm : '-'}</TableCell>
                 </TableRow>
               </>
              : ''}
         </TableBody>
       </Table>
-      <Table className="detailInfoTable">
-        <TableBody>
-          <TableRow>
-            <TableCell className="th">게시글 이미지</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <TableContainer className="postimgRow">
+      {pvo.pimg_list.length>0 ? 
+      <>
         <Table className="detailInfoTable">
           <TableBody>
-            <PostImg postimg={pvo.pimg_list} handleOpen={handleOpen} />
+            <TableRow>
+              <TableCell className="th">게시글 이미지</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-      </TableContainer>
+        <TableContainer className="postimgRow">
+          <Table className="detailInfoTable">
+            <TableBody>
+              <PostImg postimg={pvo.pimg_list} handleOpen={handleOpen} />
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
+      : '' }
       <Table className="detailInfoTable">
         <TableBody>
           <TableRow>
             <TableCell className="th">가격</TableCell>
-            <TableCell className="th">변동 후 가격</TableCell>
-            <TableCell className="th">거래범위</TableCell>
+            <TableCell className="th">거래가격</TableCell>
+            <TableCell className="th">희망거래장소명</TableCell>
           </TableRow>
             <TableRow>
               <TableCell className="td">{price}</TableCell>
               <TableCell className="td">{lastprice}</TableCell>
-              <TableCell className="td">{range}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="th">거래장소명</TableCell>
-              <TableCell className="th">위도</TableCell>
-              <TableCell className="th">경도</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="td">{pvo.hope_place}</TableCell>
-              <TableCell className="td">{pvo.hope_lati}</TableCell>
-              <TableCell className="td">{pvo.hope_long}</TableCell>
+              <TableCell className="td">{pvo.hope_place ? pvo.hope_place : '-'}</TableCell>
             </TableRow>
         </TableBody>
       </Table>
@@ -182,8 +178,8 @@ export default function PostInfo(props) {
               : ''}
             </TableRow>
             <TableRow>
-              <TableCell className="td">{pvo.create_dtm}</TableCell>
-              <TableCell className="td">{pvo.update_dtm}</TableCell>
+              <TableCell className="td">{pvo.poststatus!=0 ? pvo.create_dtm : "임시저장"}</TableCell>
+              <TableCell className="td">{pvo.poststatus!=0 ? pvo.update_dtm : "임시저장"}</TableCell>
               <TableCell className="td" onClick={()=>handleOpen_pi(pvo.pinfo_list.length)} style={{cursor:"pointer"}}>{pvo.pinfo_list.length>0?pvo.remind_dtm:'-'}</TableCell>
               <TableCell className="td">{isdeleted}</TableCell>
             {pvo.isdeleted==1 ?

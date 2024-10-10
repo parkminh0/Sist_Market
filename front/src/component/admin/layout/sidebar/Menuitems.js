@@ -5,6 +5,11 @@ import {
   IconUser,
   IconClipboardText,
   IconMessageChatbot,
+  IconMedal2,
+  IconAward,
+  IconReportAnalytics,
+  IconChartBar,
+  IconMoodHappyFilled,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -42,6 +47,16 @@ const Menuitems = [
     href: "/ad/user",
   },
   {
+    title: "배지 관리",
+    icon: IconAward,
+    href: "/ad/user/badge",
+  },
+  {
+    title: "채팅 이모티콘 관리",
+    icon: IconMoodHappyFilled,
+    href: "/ad/user/emoticon",
+  },
+  {
     navlabel: true,
     subheader: "게시판",
   },
@@ -49,6 +64,20 @@ const Menuitems = [
     title: "게시판 관리",
     icon: IconClipboardText,
     href: "/ad/bbs",
+  },
+  {
+    navlabel: true,
+    subheader: "통계",
+  },
+  {
+    title: "대시보드",
+    icon: IconMedal2,
+    href: "/ad/statistic",
+  },
+  {
+    title: "통계 분석",
+    icon: IconChartBar,
+    href: "/ad/statistic/analyze",
   },
   {
     navlabel: true,

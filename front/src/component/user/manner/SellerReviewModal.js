@@ -20,6 +20,7 @@ export default function SellerReviewModal(props) {
   const [selectedRating, setSelectedRating] = useState("최고예요!");
   const [selectedKeys, setSelectedKeys] = useState([]);
   const dealuserkey = props.buyerUserkey;
+  const userkey = Cookies.get("userkey");
   
   function getData() {
     axios.get(REVIEW_URL, { params: { preference } })
@@ -64,6 +65,14 @@ export default function SellerReviewModal(props) {
   };
   
   function send() {
+    if (selectedKeys.length === 0) {
+      alert("항목을 선택해 주세요.");
+      return;
+    }
+    const confirmation = confirm("작성한 후기는 수정할 수 없습니다. 계속 진행하시겠습니까?");
+    if (!confirmation) {
+      return;
+    }
     axios({
       url: SELLER_REVIEW_URL,
       method: "post",
@@ -71,12 +80,17 @@ export default function SellerReviewModal(props) {
         reviewlistkey: selectedKeys,
         postkey: props.postkey,
         userkey: dealuserkey,
-        estimateuserkey: Cookies.get("userkey"),
+        estimateuserkey: userkey,
       },
     }).then((res) => {
       setMannerTemp();
       alert("후기 작성 완료")
+      if (props.onReviewSubmit) {
+        props.onReviewSubmit(selectedKeys); // 선택된 키를 부모에게 전달
+      }
       onClose();
+    }).catch((error) => {
+      console.error("후기 작성 중 오류가 발생했습니다.", error);
     });
   }
 

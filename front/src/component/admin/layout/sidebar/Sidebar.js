@@ -72,16 +72,11 @@ const MSidebar = ({ isMobileSidebarOpen, onSidebarClose, isSidebarOpen }) => {
                   style={{ marginTop: "20px" }} // 상단에 20px의 마진 추가
                 >
                   <img
-                    src="/img/orange_logo3.png"
+                    src="/img/Orange_logo_final.png"
                     alt="당근마켓 로고"
-                    style={{ width: "30px", height: "auto" }}
+                    style={{ width: "100px", height: "auto" }}
                   />
                   <br />
-                  <img
-                    src="/img/orange_text_logo3.png"
-                    alt="당근마켓 로고"
-                    style={{ width: "70px", height: "auto" }}
-                  />
                 </Link>
               </div>
 

@@ -110,23 +110,25 @@ export default function () {
                                         <TableBody>
                                             <TableRow>
                                                 <TableCell rowSpan={2} colSpan={1}>제목</TableCell>
-                                                <TableCell rowSpan={2} colSpan={2}>{qvo.title}</TableCell>
-                                                <TableCell colSpan={1}>작성일자</TableCell>
-                                                <TableCell colSpan={2}>{qvo.create_dtm}</TableCell>
+                                                <TableCell rowSpan={2} style={{borderLeft: '1px solid #efefef'}} colSpan={2}>{qvo ? qvo.title : ''}</TableCell>
+                                                <TableCell colSpan={1} style={{borderLeft: '1px solid #efefef'}}>작성일자</TableCell>
+                                                <TableCell colSpan={2} style={{borderLeft: '1px solid #efefef'}}>{qvo ? qvo.create_dtm : ''}</TableCell>
                                             </TableRow>
                                             <TableRow>
-                                                <TableCell colSpan={1}>답변일자</TableCell>
-                                                <TableCell colSpan={2}>{qvo.isanswered==1 ? qvo.answer_dtm : "-"}</TableCell>
+                                                <TableCell colSpan={1} style={{borderLeft: '1px solid #efefef'}}>답변일자</TableCell>
+                                                <TableCell colSpan={2} style={{borderLeft: '1px solid #efefef'}}>{qvo ? qvo.isanswered==1 ? qvo.answer_dtm : "-" : ''}</TableCell>
                                             </TableRow>
                                             <TableRow>
-                                                <TableCell colSpan={6} style={{height:'200px'}} dangerouslySetInnerHTML={{__html:qvo.content}}></TableCell>
+                                                <TableCell colSpan={1}>문의 내용</TableCell>
+                                                <TableCell colSpan={5} style={{height:'200px', borderLeft: '1px solid #efefef'}} dangerouslySetInnerHTML={{__html:qvo ? qvo.content : ''}}></TableCell>
                                             </TableRow>
-                                            {qvo.isanswered==1 ?
+                                            {qvo ? qvo.isanswered==1 ?
                                                 <TableRow>
-                                                    <TableCell colSpan={6} style={{height:'200px'}} dangerouslySetInnerHTML={{__html:qvo.answer}}></TableCell>
+                                                    <TableCell colSpan={1}>답변 내용</TableCell>
+                                                    <TableCell colSpan={5} style={{height:'200px', borderLeft: '1px solid #efefef'}} dangerouslySetInnerHTML={{__html:qvo ? qvo.answer : ''}}></TableCell>
                                                 </TableRow>
                                                 :
-                                                ""
+                                                "" : ''
                                                     }
                                         </TableBody>
                                     </Table>

@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCountVO {
-	String cntNotDel, cntDel, cntAll;
+	String cntNotDel, cntDel, cntAll,cntTNotDel,cntTDel,cntTAll;
 }
 

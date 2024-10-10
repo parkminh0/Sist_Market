@@ -8,9 +8,12 @@ import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
+import PostDetail from "@/component/admin/post/detail/PostDetail";
 import {
   Avatar,
   Box,
+  Backdrop,
+  CircularProgress,
   Button,
   Checkbox,
   FormControl,
@@ -42,6 +45,9 @@ export default function Page() {
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
+  //const [tCount, setTCount] = useState({});
+  const [tDel, setTDel] = useState(0);
+  const [tAct, setTAct] = useState(0);
 
   const [search_type, setSearch_type] = useState("name");
   const [type, setType] = useState("");
@@ -51,6 +57,7 @@ export default function Page() {
   const [isauthorized, setIsauthorized] = useState("");
   const [recent_login_start_date, setRecent_login_start_date] = useState("");
   const [recent_login_end_date, setRecent_login_end_date] = useState("");
+  const [userReportCount,setUserReportCount] = useState(0);
 
   //유저 검색
   const API_URL_2 = "/user/api/search_user_admin";
@@ -108,6 +115,8 @@ export default function Page() {
       setCount(response.data.ucvo);
       setDel(response.data.ucvo.cntDel);
       setAct(response.data.ucvo.cntNotDel);
+      setTAct(response.data.ucvo.cntTNotDel);
+      setTDel(response.data.ucvo.cntTDel);
     });
   }
   // 페이징 처리 함수
@@ -117,7 +126,7 @@ export default function Page() {
 
   function doSrchFrm(cPage) {
     let now = cPage;
-
+    setLoading(true);
     axios({
       url: `${API_URL_2}?cPage=${cPage}`,
       method: "post",
@@ -133,13 +142,14 @@ export default function Page() {
       },
     })
       .then((response) => {
+        setLoading(false);
         setUserlist(response.data.ar);
         setTotalPage(response.data.totalPage);
         setTotalRecords(response.data.totalRecord);
         setPage(response.data.page);
       })
       .catch((error) => {
-        console.error("Error during search:", error);
+        //console.error("Error during search:", error);
       });
   }
 
@@ -148,8 +158,8 @@ export default function Page() {
     if (!confirmed) {
       return; 
     }
-    console.log("delete_choice 함수 호출됨");
-    console.log("DEL_URL:", DEL_URL);
+    //console.log("delete_choice 함수 호출됨");
+    //console.log("DEL_URL:", DEL_URL);
     axios
       .post(DEL_URL, checkedItems)
       .then((response) => {
@@ -161,29 +171,10 @@ export default function Page() {
         getCount();
       })
       .catch((error) => {
-        console.error("Error deleting users:", error);
+        //console.error("Error deleting users:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
-
-  //모달창
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 1200,
-    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
-    overflowY: 'auto',  // 세로 스크롤 추가
-    bgcolor: 'background.paper',
-    border: '2px solid #blue',
-    boxShadow: 24,
-    p: 4,
-  };
-  
-  
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); 
 
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
@@ -206,14 +197,31 @@ export default function Page() {
   const [b_list, setB_list] = useState([]);
   const [n_list, setN_list] = useState([]);
   const [a_list, setA_list] = useState([]);
-  const [s_list, setS_list] = useState([]);
   const [w_list, setW_list] = useState([]);
   const [k_list, setK_list] = useState([]);
   const [tvo, setTvo] = useState([]);
 
+  
+  const [postcount, setPostCount] = useState([]);
+  const [pagecount, setPageCount] = useState([]);
+  function getP_list(cPage){
+    axios.get("/user/api/admin/getPost",{
+    params:{
+        userkey: userkey,
+        cPage: cPage,
+        postCount: postcount,
+    }
+    }).then((res)=>{
+        setP_list(res.data.p_list);
+    })
+  }
+
+
+
   function editUser(userkey){
+    setLoading(true);
     setUserkey(userkey);
-    setOpen(true); 
+    
 
     if (userkey) {
       
@@ -232,11 +240,24 @@ export default function Page() {
         setB_list(res.data.ar.b_list || []);
         setN_list(res.data.ar.n_list || []);
         setA_list(res.data.ar.a_list || []);
-        setS_list(res.data.ar.s_list || []);
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
-        console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
+        setUserReportCount(res.data.userReportCount);
+
+        setPostCount(res.data.postcount || []);
+        setPageCount(res.data.pagecount || []);
+        axios.get("/user/api/admin/getPost",{
+          params:{
+              userkey: userkey,
+              cPage: 1,
+              postCount: res.data.postcount,
+          }
+          }).then((result)=>{
+              setP_list(result.data.p_list);
+              setLoading(false);
+              setOpen(true); 
+          })
       });
     }
   }
@@ -292,10 +313,81 @@ export default function Page() {
     });
   }
 
+  //포스트 모달
+  //모달창
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 1200,
+    maxHeight: '80vh', // 최대 높이 설정 (뷰포트 높이의 80%)
+    overflowY: 'auto',  // 세로 스크롤 추가
+    bgcolor: 'background.paper',
+    border: '2px solid #blue',
+    boxShadow: 24,
+    p: 4,
+  };
+
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); 
+
+  const [openPD, setOpenPD] = useState(false); // openPD 상태 정의
+  const [pdkey, setPdkey] = useState("0"); // pdkey 상태 정의
+
+
+  function openPostDetail(postkey) {
+    // 해당 게시글의 상세 정보를 API로 불러옵니다.
+    axios({
+      url: `/user/api/postDetail`, // 게시글 상세 정보 API URL
+      method: "get",
+      params: { postkey: postkey },
+    })
+      .then((response) => {
+        setSelectedPost(response.data); // 게시글 정보 상태에 저장
+        setPdkey(postkey); // 선택된 게시글 키 상태에 저장
+        setOpenPD(true); // 모달 열기
+      });
+  }
+
+  // 게시글 상세 모달 닫기 함수
+  function openPostDetail(postkey) {
+    setPdkey(postkey);  // 클릭한 게시글의 postkey 설정
+    setOpenPD(true);    // 모달 열기
+  }
+
+  const closePostDetail = () => {
+    setOpenPD(false); // 모달을 닫음
+  };
+  
+  // 프로그레스 띄우기용
+  const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useState([]);
+
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
+        {loading && (
+            <Backdrop
+              open={loading}
+              sx={(theme) => ({
+                position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                justifyContent: "center", // 수평 중앙 정렬
+                alignItems: "center", // 수직 중앙 정렬
+                color: "#fff",
+                zIndex: theme.zIndex.drawer + 1,
+                backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+              })}
+            >
+              <CircularProgress size={100} color="inherit" />
+            </Backdrop>
+          )}
         <Grid
           container
           spacing={3}
@@ -310,26 +402,23 @@ export default function Page() {
             <Top_Analytic
               title="전체 회원"
               count={count.cntAll}
-              percentage={59.3}
-              extra="35,000"
+              extra={count.cntTAll}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="회원"
               count={act}
-              percentage={70.5}
-              extra="8,900"
+              extra={tAct}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="탈퇴회원"
               count={del}
-              percentage={27.4}
               isLoss
               color="warning"
-              extra="1,943"
+              extra={tDel}
             />
           </Grid>
         </Grid>
@@ -381,6 +470,15 @@ export default function Page() {
                       style={{ width: "auto" }}
                       onChange={(e) => {
                         setType(e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (!type.trim()) {
+                            alert("검색할 단어를 입력하세요.");
+                            return;
+                          }
+                          doSrchFrm(0);
+                        }
                       }}
                       sx={{ marginLeft: 2 }}
                       size="small"
@@ -629,68 +727,61 @@ export default function Page() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(userlist || []).map((item, i) => (
-                      <TableRow key={i} hover tabIndex={-1} role="checkbox"
-                      onClick={() => handleRowCheck({ target: { checked: !checkedItems.includes(item.userkey) } }, item.userkey)}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            disableRipple
-                            name="use_check[]"
-                            className="rowChk"
-                            checked={checkedItems.includes(item.userkey)} // 개별 체크박스 상태 관리
-                            onChange={(e) => handleRowCheck(e, item.userkey)} // 개별 체크박스 핸들러 연결
-                          />
-                        </TableCell>
-                        <TableCell component="th" scope="row">
-                            <Box gap={2} display="flex" alignItems="center">
-                              <Avatar alt={item.name} src={item.imgurl} />
-                              {item.name}
-                            </Box>
-                        </TableCell>
-                        <TableCell align="right">
-                          {
-                            new Date(item.create_dtm)
-                              .toISOString()
-                              .split("T")[0]
-                          }
-                        </TableCell>
-                        <TableCell>
-                            {item.id}
-                        </TableCell>
-                        <TableCell align="center">{item.nickname}</TableCell>
-                        <TableCell align="center">{item.phone}</TableCell>
-                        <TableCell>{item.email}</TableCell>
-                        <TableCell align="center">
-                          {item.isdeleted == 0 ? "X" : "O"}
-                        </TableCell>
-                        <TableCell align="center">
-                        
-                          {item.isauthorized == 0 ? "X" : "O"}
-                        </TableCell>
-                        <TableCell align="right">
-                          {new Date(item.login_dtm).toISOString().split("T")[0]}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+  {userlist && userlist.length > 0 ? (
+    // userlist에 데이터가 있을 때 렌더링
+    userlist.map((item, i) => (
+      <TableRow
+        key={i}
+        hover
+        tabIndex={-1}
+        role="checkbox"
+        onClick={() => handleRowCheck({ target: { checked: !checkedItems.includes(item.userkey) } }, item.userkey)}
+      >
+        <TableCell padding="checkbox">
+          <Checkbox
+            disableRipple
+            name="use_check[]"
+            className="rowChk"
+            checked={checkedItems.includes(item.userkey)}
+            onChange={(e) => handleRowCheck(e, item.userkey)}
+          />
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Box gap={2} display="flex" alignItems="center">
+            <Avatar alt={item.name} src={item.imgurl} />
+            {item.name}
+          </Box>
+        </TableCell>
+        <TableCell align="right">
+          {new Date(item.create_dtm).toISOString().split("T")[0]}
+        </TableCell>
+        <TableCell>{item.id}</TableCell>
+        <TableCell align="center">{item.nickname}</TableCell>
+        <TableCell align="center">{item.phone}</TableCell>
+        <TableCell>{item.email}</TableCell>
+        <TableCell align="center">{item.isdeleted === 0 ? "X" : "O"}</TableCell>
+        <TableCell align="center">{item.isauthorized === 0 ? "X" : "O"}</TableCell>
+        <TableCell align="right">
+          {new Date(item.login_dtm).toISOString().split("T")[0]}
+        </TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell align="center" colSpan={10}>
+        <Box sx={{ py: 15, textAlign: "center" }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            검색된 사용자 목록이 없습니다.
+          </Typography>
+          <Typography variant="body2">
+            검색 조건을 확인해주세요.
+          </Typography>
+        </Box>
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
 
-                    {userlist == null ||
-                      (userlist.length == 0 && (
-                        <TableRow>
-                          <TableCell align="center" colSpan={10}>
-                            <Box sx={{ py: 15, textAlign: "center" }}>
-                              <Typography variant="h6" sx={{ mb: 1 }}>
-                                검색된 사용자 목록이 없습니다.
-                              </Typography>
-
-                              <Typography variant="body2">
-                                검색 조건을 확인해주세요.
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
                 </Table>
               </TableContainer>
               {/* Pagination을 가운데에 배치 */}
@@ -814,6 +905,18 @@ export default function Page() {
                    
                     </tr>
                     <tr>
+                    <th scope="row">신고수</th>
+                    <td>
+                      <span
+                        className="fText eMarketChecker"
+                        style={{ width: "400px", display: "inline-block" }}
+                      >
+                        {userReportCount || "0"} 
+                      </span>
+                    </td>
+                   
+                    </tr>
+                    <tr>
                       <th scope="row">이메일</th>
                       <td>
                         <input
@@ -913,7 +1016,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">게시글 키</th>
+                    <th scope="col">게시글 번호</th>
                     <th scope="col">제목</th>
                   </tr>
                 </thead>
@@ -929,7 +1032,8 @@ export default function Page() {
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
+                          style={{ cursor: "pointer", textAlign: "center" }}
+                          onClick={() => openPostDetail(post.postkey)}
                         >
                           {post.title || ""}
                         </td>
@@ -942,6 +1046,11 @@ export default function Page() {
                       </td>
                     </tr>
                   )}
+                  <tr style={{border:'none'}}>
+                      <td style={{border:'none', textAlign: '-webkit-center'}} colSpan={2}>
+                          <Pagination sx={{width: 'fit-content'}} count={pagecount} onChange={(event, newPage) =>{getP_list(newPage);}}/>
+                      </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -963,7 +1072,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">평가자 키</th>
+                    <th scope="col">평가자</th>
                     <th scope="col">매너</th>
                     <th scope="col">간편후기</th>
                   </tr>
@@ -1000,7 +1109,7 @@ export default function Page() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
                         매너 평가가 없습니다.
                       </td>
                     </tr>
@@ -1036,7 +1145,14 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {likeUser.likeuserkey || ""}
+                          
+                          <Box gap={2} display="flex" alignItems="center">
+                          <Avatar 
+                              alt={likeUser?.uvo?.nickname || "Unknown"} 
+                              src={likeUser?.uvo?.imgurl || "/default-avatar.png"} 
+                            />
+                            {likeUser?.uvo?.nickname || "Unknown"}
+                            </Box>
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
@@ -1103,7 +1219,7 @@ export default function Page() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
                         사용자 뱃지가 없습니다.
                       </td>
                     </tr>
@@ -1127,7 +1243,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">차단 사용자 번호</th>
+                    <th scope="col">차단 사용자</th>
                     <th scope="col">차단 날짜</th>
                   </tr>
                 </thead>
@@ -1139,7 +1255,14 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {blockedUser.blockeduserkey || ""}
+                          <Box display="flex" alignItems="center" gap={2}>
+                              <Avatar
+                                alt={blockedUser.uvo?.nickname || "Unknown"}  // 사용자 닉네임
+                                src={blockedUser.uvo?.imgurl || "/default-avatar.png"}  // 사용자 아바타 이미지
+                              />
+                              {blockedUser.uvo?.nickname || "Unknown"}
+                          </Box>
+                          
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
@@ -1175,7 +1298,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">미노출 사용자 번호</th>
+                    <th scope="col">미노출 사용자</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1187,13 +1310,20 @@ export default function Page() {
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {noseeUser.noseeuserkey || ""}
+                          
+                          <Box display="flex" alignItems="center" gap={2}>
+                              <Avatar
+                                alt={noseeUser.uvo?.nickname || "Unknown"}  // 사용자 닉네임
+                                src={noseeUser.uvo?.imgurl || "/default-avatar.png"}  // 사용자 아바타 이미지
+                              />
+                              {noseeUser.uvo?.nickname || "Unknown"}
+                            </Box>
                         </td>
                         <td
                           className="fText eMarketChecker eHasModifyProductAuth"
                           style={{ textAlign: "center" }}
                         >
-                          {noseeUser.create_dtm || ""}
+                           {noseeUser.create_dtm || ""}
                         </td>
                       </tr>
                     ))
@@ -1265,54 +1395,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* 알람 설정 정보 테이블 */}
-        <div className="section" id="QA_register2">
-        
-          <div className="toggleArea" style={{ display: "block" }}>
-            <div className="mBoard typeProduct">
-              <table summary="알람 설정 정보">
-                <caption>알람 설정 정보</caption>
-                <colgroup>
-                  <col className="product" />
-                  <col style={{ width: "auto" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th scope="col">알람 종류</th>
-                    <th scope="col">알람 여부</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {s_list.length > 0 ? (
-                    s_list.map((setAlarm, index) => (
-                      <tr key={index}>
-                        <td
-                          className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
-                        >
-                          {setAlarm.setalarmkey || ""}
-                        </td>
-                        <td
-                          className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
-                        >
-                          {setAlarm.isalarm ? "예" : "아니오"}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
-                        알람 설정 정보가 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
         {/* 관심 목록 테이블 */}
         <div className="section" id="QA_register2">
           
@@ -1374,7 +1456,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">키워드</th>
+                    <th scope="col">키워드 번호</th>
                     <th scope="col">키워드 내용</th>
                   </tr>
                 </thead>
@@ -1412,6 +1494,15 @@ export default function Page() {
         
       </div>
     </div>
+
+    {/**모달창 */}
+    {openPD && (
+          <PostDetail
+            openPD={openPD}
+            closePostDetail={closePostDetail}
+            postkey={pdkey}
+          />
+        )}
         </Box>
       </Modal>
 

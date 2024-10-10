@@ -6,8 +6,35 @@ import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
+import CheckAlert from './CheckAlert';
 
 export default function FHRBMenu(props) {
+  const [openCA, setOpenCA] = useState(false);
+  const [tarFunc, setTarFunc] = useState('');
+
+  function openCheckAlert(funct){
+    setTarFunc(funct);
+    setOpenCA(true);
+  }
+
+  const closeCA = (e) => {
+    if(e){
+      switch(tarFunc){
+        case "like":
+          likeItOrNot();
+          break;
+        case "nosee":
+          noseeItOrNot();
+          break;
+        case "block":
+          blockItOrNot();
+          break;
+
+      }
+    }
+    setOpenCA(false);
+  };
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -32,6 +59,7 @@ export default function FHRBMenu(props) {
 
   const me = Cookies.get("userkey");
   const you = props.you;
+  const yourName = props.yourName;
   const setIfReport = props.setIfReport;
 
   useEffect(()=>{
@@ -96,10 +124,11 @@ export default function FHRBMenu(props) {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem onClick={()=>{likeItOrNot()}}>모아보기 {isLiked ? "해제" : "등록"}</MenuItem>
-        <MenuItem onClick={()=>{noseeItOrNot()}}>게시글 미노출 {isNosee ? "해제" : "등록"}</MenuItem>
+        <MenuItem onClick={()=>{openCheckAlert('like')}}>모아보기 {isLiked ? "해제" : "등록"}</MenuItem>
+        <MenuItem onClick={()=>{openCheckAlert('nosee')}}>게시글 미노출 {isNosee ? "해제" : "등록"}</MenuItem>
         <MenuItem onClick={()=>{setIfReport(true);}}>사용자 신고</MenuItem>
-        <MenuItem onClick={()=>{blockItOrNot()}}>사용자 차단 {isBlocked ? "해제" : ""}</MenuItem>
+        <MenuItem onClick={()=>{openCheckAlert('block')}}>사용자 차단 {isBlocked ? "해제" : ""}</MenuItem>
+        <CheckAlert open={openCA} handleClose={closeCA} yourName={yourName} isLiked={isLiked} isNosee={isNosee} isBlocked={isBlocked} tarFunc={tarFunc}/>
       </Menu>
     </div>
   );

@@ -10,4 +10,12 @@
     <select id="getAlarmForUser" parameterType="String" resultType="com.sist.back.vo.AlarmVO">
       SELECT * FROM alarm WHERE userkey = #{userkey}
     </select>
+
+    <delete id="deleteNotifications" parameterType="String">
+      DELETE FROM alarm WHERE message = #{message} and redirection = #{redirection}
+    </delete>
+
+    <delete id="deleteAllAlarms" parameterType="String">
+      DELETE FROM alarm WHERE userkey = #{userkey}
+    </delete>
 </mapper>

@@ -8,6 +8,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.sist.back.service.SseEmitterService;
 
+
 @RestController
 public class NotificationController {
 
@@ -30,7 +31,9 @@ public class NotificationController {
     // 알림을 수동으로 테스트하기 위한 엔드포인트 (DB 변경 시 호출될 로직)
     @RequestMapping("/notify")
     public ResponseEntity<String> sendNotification(String message) {
+        System.out.println(message);
         sseEmitterService.sendNotificationToClients(message);
         return ResponseEntity.ok("Notification sent!");
     }
+    
 }

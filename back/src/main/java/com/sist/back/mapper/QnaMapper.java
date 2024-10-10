@@ -21,6 +21,10 @@ public interface QnaMapper {
 
     List<QnaVO> all(Map<String, Object> q_map);
 
+    List<QnaVO> search(Map<String, Object> q_map);
+
+    int searchCount(Map<String, Object> q_map);
+
     List<QnaVO> select(Map<String, Object> q_map);
 
     List<QnaVO> userAll(Map<String, Object> q_map);
@@ -32,6 +36,10 @@ public interface QnaMapper {
     int selectCount(String isanswered);
 
     QnaVO getQuestion(String qnakey);
+
+    int todayCount();
+
+    int selectTodayCount(String isanswered);
 
 }
 

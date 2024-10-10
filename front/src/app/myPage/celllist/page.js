@@ -2,7 +2,7 @@
 
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import CellList from "@/component/user/myPage/cellList/CellList";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Backdrop, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -18,6 +18,7 @@ export default function page() {
   const [celllist, setCelllist] = useState([]);
   const [whatNow, setWhatNow] = useState('onSale');
   const [cellStatus, setCellStatus] = useState(1);
+  const [cellNow, setCellNow] = useState(1);
   const [cellCounts, setCellCounts] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [totalRecord, setTotalRecord] = useState(0);
@@ -34,6 +35,7 @@ export default function page() {
   const userkey = Cookies.get("userkey");
 
   function changePage(pNum) { 
+    setLoading(true);
     getCellList(pNum);
   }
 
@@ -72,7 +74,9 @@ export default function page() {
         } else {
           setTotalRecord(res.data.totalRecord);
         }
-        
+
+        setCellNow(cellStatus);
+        setLoading(false);
       });
   }
 
@@ -109,9 +113,11 @@ export default function page() {
         setCellStatus(1);
       }
     }
+    setLoading(true);
     getCellList(1);
   },[whatNow]);
 
+  const [loading, setLoading] = useState(false);
 
   return (
     <>
@@ -155,6 +161,26 @@ export default function page() {
               data-v-0adb81cc=""
               className="content_area my-page-content"
             >
+            {loading && (
+              <Backdrop
+                open={loading}
+                sx={(theme) => ({
+                  position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  justifyContent: "center", // 수평 중앙 정렬
+                  alignItems: "center", // 수직 중앙 정렬
+                  color: "#fff",
+                  zIndex: theme.zIndex.drawer + 1,
+                  backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+                })}
+              >
+                <CircularProgress size={100} color="inherit" />
+              </Backdrop>
+            )}
               <div data-v-0a67d0b5="" className="my_purchase">
                 <div
                   data-v-6b53f901=""
@@ -170,7 +196,7 @@ export default function page() {
                   data-v-0a67d0b5=""
                   className="purchase_list_tab sell detail_tab"
                 >
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('onSale')} className={`tab_item ${cellStatus == 1 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('onSale')} className={`tab_item ${cellNow == 1 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -182,7 +208,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Selling')} className={`tab_item ${cellStatus == 2 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Selling')} className={`tab_item ${cellNow == 2 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -194,7 +220,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Sold')} className={`tab_item ${cellStatus == 3 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Sold')} className={`tab_item ${cellNow == 3 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -206,7 +232,7 @@ export default function page() {
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Hidden')} className={`tab_item ${cellStatus == 4 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={()=>updateCellList('Hidden')} className={`tab_item ${cellNow == 4 ? 'tab_on' : ''}`}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
                         <dt data-v-2cbb289b="" className="title">
@@ -291,7 +317,7 @@ export default function page() {
                       <button
                         data-v-14e5ae1c=""
                         className="btn_search is_active"
-                        onClick={()=>getCellList(1)}
+                        onClick={()=>{setLoading(true);getCellList(1)}}
                       >
                         조회
                       </button>
@@ -303,13 +329,13 @@ export default function page() {
                   data-v-0a67d0b5=""
                   className="search_info"
                 >
-                  {(cellStatus==1 || cellStatus==2)  ? 
+                  {(cellNow==1 || cellNow==2)  ? 
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
                       판매중(예약중) 조회 결과는 등록일 기준으로 노출됩니다.
                     </p>
                   </li>
-                  : cellStatus==3 ?
+                  : cellNow==3 ?
                   <li data-v-a54c4c26="" className="info_item">
                     <p data-v-a54c4c26="">
                       거래완료 조회 결과는 판매일 기준으로 노출됩니다.
@@ -346,17 +372,17 @@ export default function page() {
                         </TableCell>
                         <TableCell colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
-                          { (whatNow=="onSale" || whatNow=="Selling") ? '등록일' :  whatNow == "Sold" ? '판매일' : '숨김일'} 
+                          { (cellNow==1 || cellNow==2) ? '등록일' :  cellNow == 3 ? '판매일' : '숨김일'} 
                           </span>
                         </TableCell>
-                        {cellStatus == 1 ?
+                        {cellNow == 1 ?
                         <TableCell colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
                             끌어올리기
                           </span>
                         </TableCell>
                         : ''}
-                        {cellStatus == 3 ?
+                        {cellNow == 3 ?
                         <TableCell style={{textAlign:'center'}} colSpan={2}>
                           <span data-v-eff62a72="" className="status_txt">
                             후기
@@ -365,13 +391,13 @@ export default function page() {
                         : ''}
                         <TableCell colSpan={2} align="right">
                           <span data-v-eff62a72="" className="status_txt">
-                          { whatNow=="onSale" ? '수정' : whatNow=="Selling" ? '확인' :  whatNow == "Sold" ? '상세 내역' : '숨김 해제'}
+                          { cellNow==1 ? '수정' : cellNow==2 ? '확인' :  cellNow == 3 ? '상세 내역' : '숨김 해제'}
                           </span>
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <CellList celllist={celllist} whatNow={whatNow}  getCellList={getCellList} cPage={page.nowPage}/>
+                      <CellList celllist={celllist} cellNow={cellNow}  getCellList={(cPage)=>{setLoading(true);getCellList(cPage)}} cPage={page.nowPage}/>
                     </TableBody>
                   </Table>
                 </TableContainer>

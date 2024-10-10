@@ -60,6 +60,7 @@ export default function Page() {
   const [allChecked, setAllChecked] = useState(false);
   const [checkedItems, setCheckedItems] = useState([]);
   const [showingData, setShowingData] = useState(true);
+  const [categoryPostCountList, setCategoryPostCountList] = useState(null);
 
   // 파일 입력 요소에 대한 참조
   const fileInputRef = useRef(null);
@@ -71,7 +72,6 @@ export default function Page() {
     if (categoryname == null) {
       alert("카테고리 명을 입력해주세요.");
     }
-    console.log(uploadedImage);
     if (uploadedImage instanceof FileList && uploadedImage.length > 0) {
       formData.append("file", uploadedImage[0]); // 선택된 파일 추가
       axios({
@@ -110,6 +110,7 @@ export default function Page() {
         });
     }
   }
+
   // 카테고리 수정 함수
   function sendEditData() {
     const formData = new FormData();
@@ -162,10 +163,17 @@ export default function Page() {
     callData();
   }, []);
 
+  const postCountMap = categoryPostCountList
+    ? Object.entries(categoryPostCountList).reduce((acc, [key, value]) => {
+      acc[key] = value.post_count; // key는 categorykey, value는 각 category 객체
+      return acc;
+    }, {})
+    : {};
+
   function callData() {
-    console.log("hi");
     axios.get(API_URL).then((response) => {
       setCategoryList(response.data.category_list);
+      setCategoryPostCountList(response.data.post_count);
       setShowingData(true);
     });
   }
@@ -265,6 +273,13 @@ export default function Page() {
       alert("삭제할 항목이 선택되지 않았습니다.");
       return;
     }
+
+    const userConfirmed = window.confirm("선택한 항목을 삭제하시겠습니까?");
+
+    if (!userConfirmed) {
+      return; // 사용자가 취소를 클릭하면 함수를 종료
+    }
+
     axios
       .post(DEL_URL, checkedItems, {
         headers: {
@@ -356,89 +371,68 @@ export default function Page() {
                         <TableCell align="center">생성일자</TableCell>
                         <TableCell align="center">수정일자</TableCell>
                         <TableCell align="center">삭제일자</TableCell>
+                        <TableCell align="center">게시글 수</TableCell>
                         <TableCell align="center">삭제여부</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {categoryList &&
-                        categoryList.map((category, index) => (
-                          <TableRow
-                            key={category.categorykey}
-                            hover
-                            tabIndex={-1}
-                            role="checkbox"
-                          >
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                disableRipple
-                                name="use_check[]"
-                                className="rowChk"
-                                checked={checkedItems.includes(
-                                  category.categorykey
-                                )} // 개별 체크박스 상태 관리
-                                onChange={(e) =>
-                                  handleRowCheck(e, category.categorykey)
-                                } // 개별 체크박스 핸들러 연결
-                              />
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              onClick={() => openEditModal(category)}
+                        categoryList.map((category, index) => {
+                          // postCountMap에서 categorykey로 post_count를 바로 가져옴
+                          const postCount = postCountMap[category.categorykey] || 0; // 없으면 0으로 처리
+
+                          return (
+                            <TableRow
+                              key={category.categorykey}
+                              hover
+                              tabIndex={-1}
+                              role="checkbox"
                             >
-                              {index + 1}
-                            </TableCell>
-                            <TableCell onClick={() => openEditModal(category)}>
-                              {category.categoryname}
-                            </TableCell>
-                            <TableCell onClick={() => openEditModal(category)}>
-                              {category.img_url ? (
-                                <img
-                                  src={category.img_url}
-                                  alt="카테고리 이미지"
-                                  style={{ width: "100px", height: "auto" }}
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  disableRipple
+                                  name="use_check[]"
+                                  className="rowChk"
+                                  checked={checkedItems.includes(category.categorykey)} // 개별 체크박스 상태 관리
+                                  onChange={(e) => handleRowCheck(e, category.categorykey)} // 개별 체크박스 핸들러 연결
                                 />
-                              ) : (
-                                "이미지 없음"
-                              )}
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              onClick={() => openEditModal(category)}
-                            >
-                              {
-                                new Date(category.create_dtm)
-                                  .toISOString()
-                                  .split("T")[0]
-                              }
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              onClick={() => openEditModal(category)}
-                            >
-                              {
-                                new Date(category.update_dtm)
-                                  .toISOString()
-                                  .split("T")[0]
-                              }
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              onClick={() => openEditModal(category)}
-                            >
-                              {category.delete_dtm
-                                ? new Date(category.delete_dtm)
-                                    .toISOString()
-                                    .split("T")[0]
-                                : "-"}
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              onClick={() => openEditModal(category)}
-                            >
-                              {category.isdeleted === "0" ? "게시중" : "삭제됨"}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                              <TableCell align="center" onClick={() => openEditModal(category)}>
+                                {index + 1}
+                              </TableCell>
+                              <TableCell onClick={() => openEditModal(category)}>
+                                {category.categoryname}
+                              </TableCell>
+                              <TableCell onClick={() => openEditModal(category)}>
+                                {category.img_url ? (
+                                  <img
+                                    src={category.img_url}
+                                    alt="카테고리 이미지"
+                                    style={{ width: "100px", height: "auto" }}
+                                  />
+                                ) : (
+                                  "이미지 없음"
+                                )}
+                              </TableCell>
+                              <TableCell align="center" onClick={() => openEditModal(category)}>
+                                {new Date(category.create_dtm).toISOString().split("T")[0]}
+                              </TableCell>
+                              <TableCell align="center" onClick={() => openEditModal(category)}>
+                                {new Date(category.update_dtm).toISOString().split("T")[0]}
+                              </TableCell>
+                              <TableCell align="center" onClick={() => openEditModal(category)}>
+                                {category.delete_dtm
+                                  ? new Date(category.delete_dtm).toISOString().split("T")[0]
+                                  : "-"}
+                              </TableCell>
+                              {/* postCountMap에서 가져온 post_count 출력 */}
+                              <TableCell align="center">{postCount}</TableCell>
+                              <TableCell align="center" onClick={() => openEditModal(category)}>
+                                {category.isdeleted === "0" ? "게시중" : "삭제됨"}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
 
                       {categoryList == null ||
                         (categoryList.length == 0 && (
@@ -459,22 +453,6 @@ export default function Page() {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {/* <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  mt: 3,
-                }}
-              >
-                <Typography sx={{ mr: 2 }}>Page: {page.nowPage}</Typography>
-                <Pagination
-                  count={page.totalPage}
-                  showFirstButton
-                  showLastButton
-                  onChange={(e, newPage) => changePage(newPage)}
-                />
-              </Box> */}
               </DashboardCard>
             </Grid>
           </Grid>
@@ -485,10 +463,6 @@ export default function Page() {
         <Dialog
           open={isModalOpen}
           onClose={closeModal}
-          PaperProps={{
-            component: "form",
-            onSubmit: sendData,
-          }}
           scroll="paper"
         >
           <DialogTitle
@@ -518,35 +492,10 @@ export default function Page() {
               <ImageList cols={2} gap={8} id="dragImageList" ref={fileInputRef}>
                 <ImageListItem
                   style={{
+                    width: 400,
+                    height: 450,
                     position: "relative",
-                  }}
-                >
-                  {/* <input
-                    type="file"
-                    ref={fileInputRef}
-                    name="file"
-                    onChange={handleChange}
-                    accept="image/*" // 이미지 파일만 허용
-                    style={{ display: "none" }}
-                    multiple
-                  /> */}
-                  <AddPhotoAlternateIcon
-                    color="primary"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      cursor: "pointer",
-                    }}
-                    onClick={handleButtonClick}
-                  />
-                </ImageListItem>
-                <ImageListItem
-                  style={{
-                    width: 100,
-                    height: 100,
-                    border: "2px solid #ccc", // 이미지에 보더 추가
-                    position: "relative",
+                    marginLeft: 80,
                   }}
                   draggable="true"
                   className="draggable"
@@ -555,6 +504,7 @@ export default function Page() {
                     src={previewImage}
                     onClick={handleButtonClick}
                     alt="Uploaded Preview"
+                    ref={fileInputRef} // ref 설정
                     style={{
                       position: "absolute",
                       width: "400px",
@@ -574,7 +524,6 @@ export default function Page() {
                 fullWidth
                 size="small"
                 onChange={handleChange}
-                style={{ display: "none" }}
               />
             </FormControl>
           </DialogContent>
@@ -599,112 +548,95 @@ export default function Page() {
           </DialogActions>
         </Dialog>
       </React.Fragment>
-      {/* {isModalOpen && (
-        <>
-          <div className="modal_bg" onClick={closeModal}></div>
-          <div className="modal_wrap">
-            <TextField
-              id="categoryname"
-              name="categoryname"
-              onChange={handleCategoryNameChange}
-              label="카테고리 이름을 입력해주세요."
-              type="search"
-              variant="standard"
-              style={{ position: "relative", width: "450px" }}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="file"
-              onChange={handleChange}
-              style={{ display: "none" }}
-            />
-            <Button
-              variant="contained"
-              className="modal_close"
-              onClick={sendData}
-              style={{ position: "absolute", top: "20px", right: "30px" }}
-            >
-              추가
-            </Button>
-            <Button
-              variant="outlined"
-              className="modal_close"
-              onClick={closeModal}
-              style={{ position: "absolute", top: "55px", right: "30px" }}
-            >
-              닫기
-            </Button>
-            <img
-              src={previewImage}
-              onClick={handleButtonClick}
-              alt="Uploaded Preview"
-              style={{
-                position: "absolute",
-                width: "400px",
-                height: "400px",
-                left: "50%",
-                top: "55%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></img>
-          </div>
-        </>
-      )} */}
-
-      {/* {isEditModalOpen && (
-        <>
-          <div className="modal_bg" onClick={closeEditModal}></div>
-          <div className="modal_wrap">
-            <TextField
-              id="categoryname"
-              name="categoryname"
-              onChange={handleCategoryNameChange}
-              value={categoryname}
-              label="카테고리 이름을 입력해주세요."
-              type="search"
-              variant="standard"
-              style={{ position: "relative", width: "450px" }}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="file"
-              onChange={handleChange}
-              style={{ display: "none" }}
-            />
-            <Button
-              variant="contained"
-              className="modal_close"
-              onClick={sendEditData}
-              style={{ position: "absolute", top: "20px", right: "30px" }}
-            >
-              수정
-            </Button>
-            <Button
-              variant="outlined"
-              className="modal_close"
-              onClick={closeEditModal}
-              style={{ position: "absolute", top: "55px", right: "30px" }}
-            >
-              닫기
-            </Button>
-            <img
-              src={previewImage}
-              onClick={handleButtonClick}
-              alt="Uploaded Preview"
-              style={{
-                position: "absolute",
-                width: "400px",
-                height: "400px",
-                left: "50%",
-                top: "55%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></img>
-          </div>
-        </>
-      )} */}
+      <React.Fragment>
+        <Dialog
+          open={isEditModalOpen}
+          onClose={closeEditModal}
+          scroll="paper"
+        >
+          <DialogTitle
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            카테고리 수정
+          </DialogTitle>
+          <DialogContent dividers="paper">
+            <FormControl fullWidth margin="dense">
+              <TextField
+                required
+                margin="dense"
+                id="categoryname"
+                name="categoryname"
+                value={categoryname}
+                type="text"
+                fullWidth
+                size="small"
+                onChange={handleCategoryNameChange}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <ImageList cols={2} gap={8} id="dragImageList" ref={fileInputRef}>
+                <ImageListItem
+                  style={{
+                    width: 400,
+                    height: 450,
+                    position: "relative",
+                    marginLeft: 80,
+                  }}
+                  draggable="true"
+                  className="draggable"
+                >
+                  <img
+                    src={previewImage}
+                    onClick={handleButtonClick}
+                    alt="Uploaded Preview"
+                    ref={fileInputRef} // ref 설정
+                    style={{
+                      position: "absolute",
+                      width: "400px",
+                      height: "400px",
+                      left: "50%",
+                      top: "55%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  />
+                </ImageListItem>
+              </ImageList>
+              <TextField
+                margin="dense"
+                name="file"
+                ref={fileInputRef}
+                type="file"
+                fullWidth
+                size="small"
+                onChange={handleChange}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <Button
+                type="submit"
+                className="modal_close"
+                onClick={sendEditData}
+                style={{ marginRight: "8px" }} // 오른쪽에 간격 추가
+              >
+                수정
+              </Button>
+              <Button onClick={closeModal}>닫기</Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
     </>
   );
 }

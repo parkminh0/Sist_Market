@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.DealreviewMapper;
 import com.sist.back.vo.PostVO;
-import com.sist.back.vo.QnaVO;
 import com.sist.back.vo.ReviewListVO;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +14,26 @@ public class DealreviewService {
     @Autowired
     private DealreviewMapper d_mapper;
 
+    public int allCount(String userkey) {
+        return d_mapper.allCount(userkey);
+    }
+
     public int buyingCount(String userkey) {
         return d_mapper.buyingCount(userkey);
     }
 
     public int sellingCount(String userkey) {
         return d_mapper.sellingCount(userkey);
+    }
+
+    public PostVO[] allReview(Map d_map) {
+        List<PostVO> d_list = d_mapper.allReview(d_map);
+        PostVO[] d_ar = null;
+        if (d_list != null && d_list.size() > 0) {
+            d_ar = new PostVO[d_list.size()];
+            d_list.toArray(d_ar);
+        }
+        return d_ar;
     }
 
     public PostVO[] buyingReview(Map d_map) {
@@ -65,4 +78,7 @@ public class DealreviewService {
         return d_mapper.addManner(userkey, reviewlistkey, estimateuserkey);
     }
 
+    public int hideReview(String postkey, String userkey) {
+        return d_mapper.hideReview(postkey, userkey);
+    }
 }
