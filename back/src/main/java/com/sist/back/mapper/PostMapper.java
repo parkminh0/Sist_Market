@@ -7,11 +7,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.OfferVO;
-import com.sist.back.vo.PostVO;
 import com.sist.back.vo.PostCountVO;
+import com.sist.back.vo.PostImgVO;
+import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
 import com.sist.back.vo.categoryVO;
-import com.sist.back.vo.PostImgVO;
 
 @Mapper
 public interface PostMapper {

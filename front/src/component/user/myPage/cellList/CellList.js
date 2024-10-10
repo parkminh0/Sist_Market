@@ -1,14 +1,14 @@
 'use client'
-import axios from "axios";
-import Link from "next/link";
-import React, { useState } from "react";
-import "/public/css/celllist.css";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import { Button, TableCell, TableRow } from "@mui/material";
+import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import CellDetail from "./CellDetail";
+import { useState } from "react";
 import SellerReviewModal from "../../manner/SellerReviewModal";
 import ReviewDetail from "../buylist/ReviewDetail";
+import CellDetail from "./CellDetail";
+import "/public/css/celllist.css";
 
 export default function CellList(props) {
   // const param = useSearchParams();
@@ -275,7 +275,7 @@ export default function CellList(props) {
                   ''
               }
                 <TableCell colSpan={2} style={{textAlign:'right'}}>
-                  {cellNow == "Hidden" ? (
+                  {cellNow == 4 ? (
                     <Link
                       href="#"
                       onClick={() => {
