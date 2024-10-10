@@ -20,7 +20,6 @@ public class userVO {
 	private List<BlockedVO> b_list;
 	private List<NoseeVO> n_list;
 	private List<AddressVO> a_list;
-	private List<SetAlarmVO> s_list;
 
 	private List<WishlistVO> w_list;
 	private List<InterestCategoryVO> ic_list;

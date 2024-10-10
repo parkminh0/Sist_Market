@@ -145,23 +145,13 @@ export default function PostInfo(props) {
         <TableBody>
           <TableRow>
             <TableCell className="th">가격</TableCell>
-            <TableCell className="th">변동 후 가격</TableCell>
-            <TableCell className="th">거래범위</TableCell>
+            <TableCell className="th">거래가격</TableCell>
+            <TableCell className="th">희망거래장소명</TableCell>
           </TableRow>
             <TableRow>
               <TableCell className="td">{price}</TableCell>
               <TableCell className="td">{lastprice}</TableCell>
-              <TableCell className="td">{range}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="th">거래장소명</TableCell>
-              <TableCell className="th">위도</TableCell>
-              <TableCell className="th">경도</TableCell>
-            </TableRow>
-            <TableRow>
               <TableCell className="td">{pvo.hope_place ? pvo.hope_place : '-'}</TableCell>
-              <TableCell className="td">{pvo.hope_lati ? pvo.hope_lati : '-'}</TableCell>
-              <TableCell className="td">{pvo.hope_long ? pvo.hope_long : '-'}</TableCell>
             </TableRow>
         </TableBody>
       </Table>

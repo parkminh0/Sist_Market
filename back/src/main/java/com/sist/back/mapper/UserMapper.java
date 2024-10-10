@@ -39,6 +39,8 @@ public interface UserMapper {
     userVO getUserForAdmin(String userkey);
     userVO getUserForMyPage(String userkey);
     userVO getUserProfile(String userkey);
+
+    List<PostVO> getPostsForAdmin(Map<String, Object> p_map);
     
     int userDelForAdmin(String userkey);
 

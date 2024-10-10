@@ -756,6 +756,8 @@ export default function Page() {
               <button onClick={() => {
                 if (!userkey) {
                   alert("로그인이 필요한 서비스입니다.");
+                } else if (userkey == postVO.userkey) {
+                  alert("본인이 작성한 글은 신고할 수 없습니다.");
                 } else {
                   handleChkOpen();
                 }

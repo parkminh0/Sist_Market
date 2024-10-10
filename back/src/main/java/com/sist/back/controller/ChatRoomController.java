@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sist.back.config.WebSocketEventListener;
 import com.sist.back.dto.ChatRoomWithImgUrlDTO;
 import com.sist.back.dto.ChatRoomWithPostDTO;
 import com.sist.back.repository.ChatRoomRepository;
@@ -22,7 +21,6 @@ import com.sist.back.service.ChatRoomService;
 import com.sist.back.service.ChattingService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.UserService;
-import com.sist.back.service.WebSocketSessionService;
 import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.ChattingVO;
 import com.sist.back.vo.PostImgVO;
