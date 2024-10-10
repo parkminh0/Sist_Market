@@ -797,7 +797,7 @@
     <insert id="saveUser" parameterType="com.sist.back.vo.userVO">
       INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm, isdeleted)
       VALUES (
-        #{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, IFNULL(#{imgurl}, '/img/user/default_img.png'),now(), #{isauthorized}, now(), 0
+        #{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, IFNULL(#{imgurl}, '/img/user/default_img.png'),now(), 0, now(), 0
       )
     </insert>
 
