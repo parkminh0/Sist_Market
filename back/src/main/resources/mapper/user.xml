@@ -539,6 +539,18 @@
     </select>
 
 
+    <select id="getPostsForAdmin" resultMap="com.sist.back.mapper.PostMapper.post_simple" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT p.* 
+                FROM `post` p
+                WHERE p.userkey = #{userkey}
+                ORDER BY p.postkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
 
 
    <!-- 관심목록 수, 내용 -->

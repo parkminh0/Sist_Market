@@ -116,8 +116,33 @@ public class UserController {
         map.put("userReportCount", userReportCount);
         map.put("ar", uvo);
 
+        Paging p = new Paging(5, 3);
+        p.setTotalRecord(uvo.getP_list().size());
+        map.put("postcount", p.getTotalRecord());
+        map.put("pagecount", p.getTotalPage());
         return map;
     }
+
+     // userAdmin 회원 정보 가져오기
+    @RequestMapping("/api/admin/getPost")
+    @ResponseBody
+    public Map<String, Object> getPostForAdmin(String userkey, String cPage, int postCount) {
+        Map<String, Object> map = new HashMap<>();
+        Paging p = new Paging(5, 3);
+        p.setTotalRecord(postCount);
+        p.setNowPage(Integer.parseInt(cPage));
+
+        Map<String, Object> p_map = new HashMap<>();
+        p_map.put("userkey", userkey);
+        p_map.put("begin", String.valueOf(p.getBegin()));
+        p_map.put("end", String.valueOf(p.getEnd()));
+
+        map.put("p_list", service.getPostsForAdmin(p_map));
+        return map;
+    }
+
+
+
     @RequestMapping("/api/mypage/userEdit")
     @ResponseBody
     public Map<String, Object> getUserForMyPage(String userkey) {
