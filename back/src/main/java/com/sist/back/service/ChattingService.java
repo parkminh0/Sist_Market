@@ -49,4 +49,16 @@ public class ChattingService {
     public String getCountEmoticon(){
         return mapper.getCountEmoticon();
     }
+
+    public List<ChattingEmojiVO> getAllEmoticon(){
+        return mapper.getAllEmoticon();
+    }
+
+    public int addEmoticon(ChattingEmojiVO cvo){
+        return mapper.addEmoticon(cvo);
+    }
+
+    public int deleteEmoticon(String chattingemojikey){
+        return mapper.deleteEmoticon(chattingemojikey);
+    }
 }
