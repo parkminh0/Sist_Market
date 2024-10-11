@@ -3,6 +3,7 @@ package com.sist.back.redis.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -10,6 +11,7 @@ import redis.embedded.RedisServer;
 
 
 @Configuration
+@Profile("embedded-redis")
 public class EmbeddedRedisConfig {
     @Value("${spring.data.redis.port}")
     private int redisPort;
@@ -27,3 +29,4 @@ public class EmbeddedRedisConfig {
         if (redisServer != null) redisServer.stop();
     }
 }
+
