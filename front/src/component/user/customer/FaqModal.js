@@ -1,7 +1,11 @@
 "use client"
 
+import dynamic from "next/dynamic";
+
 import React, { useState } from 'react';
 import { Box, Button, Dialog, DialogContent, DialogTitle, Divider, } from '@mui/material';
+
+const QuillNoSSRWrapper = dynamic(() => import('react-quill'), { ssr: false });
 
 export default function FaqModal(props) {
   // const open = props.faqOpen;

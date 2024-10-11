@@ -5,20 +5,27 @@ import 'react-quill/dist/quill.snow.css';
 import Cookies from 'js-cookie';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, TextField } from '@mui/material';
 
-// `ReactQuill`을 SSR에서 제외하고 클라이언트에서만 로드하도록 설정
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import dynamic from "next/dynamic";
 
-// formats로 사용자가 넣을 수 있는 데이터를 제한함
-const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
-const AddImage_URL = "/qna/addImage";
-const Question_URL = "/qna/question";
-const EmptyAdd_URL = "/qna/empty";
-const deleteLatest_URL="/qna/deleteLatest";
-const userkey = Cookies.get("userkey");
+import React, { useState } from 'react';
+import { Box, Button, Dialog, DialogContent, DialogTitle, Divider, } from '@mui/material';
 
-// 이미지 사이즈 조절을 위한 모듈
-Quill.register('modules/imageActions', ImageActions);
-Quill.register('modules/imageFormats', ImageFormats);
+const QuillNoSSRWrapper = dynamic(() => import('react-quill'), { ssr: false });
+
+// // `ReactQuill`을 SSR에서 제외하고 클라이언트에서만 로드하도록 설정
+// const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
+// // formats로 사용자가 넣을 수 있는 데이터를 제한함
+// const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
+// const AddImage_URL = "/qna/addImage";
+// const Question_URL = "/qna/question";
+// const EmptyAdd_URL = "/qna/empty";
+// const deleteLatest_URL="/qna/deleteLatest";
+// const userkey = Cookies.get("userkey");
+
+// // 이미지 사이즈 조절을 위한 모듈
+// Quill.register('modules/imageActions', ImageActions);
+// Quill.register('modules/imageFormats', ImageFormats);
 
 
 export default function QnaModal(props) {
