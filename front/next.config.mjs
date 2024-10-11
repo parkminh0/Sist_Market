@@ -6,67 +6,67 @@ const nextConfig = {
     return [
       {
         source: "/category/:path*",
-        destination: "http://13.125.170.142/category/:path*",
+        destination: "http://43.201.24.144/category/:path*",
       },
       // {
       //     source: "/api/:path*",
-      //     destination: "http://13.125.170.142/api/:path*"
+      //     destination: "http://43.201.24.144/api/:path*"
       // },
       {
         source: "/adpost/:path*",
-        destination: "http://13.125.170.142/adpost/:path*",
+        destination: "http://43.201.24.144/adpost/:path*",
       },
       {
         source: "/user/:path*",
-        destination: "http://13.125.170.142/user/:path*",
+        destination: "http://43.201.24.144/user/:path*",
       },
       {
         source: "/admin/category/:path*",
-        destination: "http://13.125.170.142/admin/category/:path*",
+        destination: "http://43.201.24.144/admin/category/:path*",
       },
       {
         source: "/admin/board/:path*",
-        destination: "http://13.125.170.142/admin/board/:path*",
+        destination: "http://43.201.24.144/admin/board/:path*",
       },
       {
         source: "/chat/:path*",
-        destination: "http://13.125.170.142/chat/:path*",
+        destination: "http://43.201.24.144/chat/:path*",
       },
       {
         source: "/town/:path*",
-        destination: "http://13.125.170.142/town/:path*",
+        destination: "http://43.201.24.144/town/:path*",
       },
       {
         source: "/address/:path*",
-        destination: "http://13.125.170.142/address/:path*",
+        destination: "http://43.201.24.144/address/:path*",
       },
       {
         source: "/searchlog/:path*",
-        destination: "http://13.125.170.142/searchlog/:path*",
+        destination: "http://43.201.24.144/searchlog/:path*",
       },
       {
         source: "/sub/:path*",
-        destination: "http://13.125.170.142/sub/:path*",
+        destination: "http://43.201.24.144/sub/:path*",
       },
       {
         source: "/ws-stomp/:path*",
-        destination: "http://13.125.170.142/ws-stomp/:path*",
+        destination: "http://43.201.24.144/ws-stomp/:path*",
       },
       {
         source: "/pub/:path*",
-        destination: "http://13.125.170.142/pub/:path*",
+        destination: "http://43.201.24.144/pub/:path*",
       },
       {
         source: "/qna/:path*",
-        destination: "http://13.125.170.142/qna/:path*",
+        destination: "http://43.201.24.144/qna/:path*",
       },
       {
         source: "/ad/:path*",
-        destination: "http://13.125.170.142/ad/:path*",
+        destination: "http://43.201.24.144/ad/:path*",
       },
       {
         source: "/alarm/:path*",
-        destination: "http://13.125.170.142/alarm/:path*"
+        destination: "http://43.201.24.144/alarm/:path*"
       },
       {
         source: "/deleteNotification/:path*",

@@ -14,9 +14,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
     // test
+    // 서버용
     @Value("${spring.redis.host}")
     private String redisHost;
-
+    // 서버용
     @Value("${spring.redis.port}")
     private int redisPort;
 

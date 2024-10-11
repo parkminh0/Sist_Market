@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import FaqModal from "../customer/FaqModal";
-import QnaModal from "../customer/QnaModal";
 export default function Footer() {
 
   //문의하기
@@ -110,11 +108,6 @@ export default function Footer() {
                       <font>자주 묻는 질문</font>
                     </font>
                   </Link>
-                  <FaqModal
-                    faqOpen={faqOpen}
-                    handleFaqClose={handleFaqClose}
-                    handleQnaOpen={handleQnaOpen}
-                  />
 
                   <Link
                     data-gtm="footer_navigation"
@@ -127,7 +120,7 @@ export default function Footer() {
                       <font>문의하기</font>
                     </font>
                   </Link>
-                  <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
+                  {/* <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} /> */}
                 </div>
               </div>
               <div className="dmu53n2">

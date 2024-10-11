@@ -281,52 +281,54 @@ export default function page() {
 
   // #region 내 물건 팔기 버튼
   useEffect(() => {
-    const container = document.getElementById("search_article");
-    const button = document.querySelector(".write-button");
+    if (typeof window !== "undefined" && typeof document !== "undefined") {
+      const container = document.getElementById("search_article");
+      const button = document.querySelector(".write-button");
 
-    const handleScroll = () => {
-      const containerRect = container.getBoundingClientRect();
-      const buttonHeight = button.offsetHeight;
+      const handleScroll = () => {
+        const containerRect = container.getBoundingClientRect();
+        const buttonHeight = button.offsetHeight;
 
-      // 1. 컨테이너가 화면에 전혀 보이지 않을 때 버튼을 숨김
-      if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
-        button.style.display = "none"; // 버튼 숨김
-      }
-      // 2. 컨테이너가 화면에 있을 때 버튼을 보이게 함
-      else {
-        button.style.display = "block"; // 버튼 표시
-
-        // 컨테이너의 bottom이 화면의 하단보다 위로 올라갔을 때
-        if (containerRect.bottom <= buttonHeight + 20) {
-          // 컨테이너 하단에 고정
-          button.style.position = "absolute";
-          button.style.bottom = "20px";
-          button.style.right = "20px";
+        // 1. 컨테이너가 화면에 전혀 보이지 않을 때 버튼을 숨김
+        if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
+          button.style.display = "none"; // 버튼 숨김
         }
-        // 컨테이너가 화면에 보일 때
-        else if (containerRect.top <= window.innerHeight) {
-          // 버튼이 화면의 오른쪽 하단에 고정
-          button.style.position = "fixed";
-          button.style.bottom = "20px";
-          button.style.right = `${
-            window.innerWidth - containerRect.right + 20
-          }px`;
-        } else {
-          // 기본 absolute 위치
-          button.style.position = "absolute";
-          button.style.bottom = "20px";
-          button.style.right = "20px";
+        // 2. 컨테이너가 화면에 있을 때 버튼을 보이게 함
+        else {
+          button.style.display = "block"; // 버튼 표시
+
+          // 컨테이너의 bottom이 화면의 하단보다 위로 올라갔을 때
+          if (containerRect.bottom <= buttonHeight + 20) {
+            // 컨테이너 하단에 고정
+            button.style.position = "absolute";
+            button.style.bottom = "20px";
+            button.style.right = "20px";
+          }
+          // 컨테이너가 화면에 보일 때
+          else if (containerRect.top <= window.innerHeight) {
+            // 버튼이 화면의 오른쪽 하단에 고정
+            button.style.position = "fixed";
+            button.style.bottom = "20px";
+            button.style.right = `${
+              window.innerWidth - containerRect.right + 20
+            }px`;
+          } else {
+            // 기본 absolute 위치
+            button.style.position = "absolute";
+            button.style.bottom = "20px";
+            button.style.right = "20px";
+          }
         }
-      }
-    };
+      };
 
-    handleScroll();
+      handleScroll();
 
-    document.addEventListener("scroll", handleScroll);
+      document.addEventListener("scroll", handleScroll);
 
-    return () => {
-      document.removeEventListener("scroll", handleScroll);
-    };
+      return () => {
+        document.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
   // #endregion
 
