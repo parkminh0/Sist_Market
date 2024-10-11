@@ -11,7 +11,7 @@ import redis.embedded.RedisServer;
 
 
 @Configuration
-@Profile("embedded-redis")
+@Profile("embedded-redis") // 서버용
 public class EmbeddedRedisConfig {
     @Value("${spring.data.redis.port}")
     private int redisPort;
