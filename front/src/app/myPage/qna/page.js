@@ -13,7 +13,7 @@ import Cookies from "js-cookie";
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import { Box, Button, TableHead } from "@mui/material";
 import { useRouter } from "next/navigation";
-import QnaModal from "@/app/customer/qna/page";
+import QnaModal from "@/component/user/customer/QnaModal";
 
 export default function () {
     const [qnaOpen, setQnaOpen] = useState(false);

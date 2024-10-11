@@ -4,8 +4,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import axios from "axios";
-import FaqModal from "@/app/customer/faq/page";
-import QnaModal from "@/app/customer/qna/page";
+import FaqModal from "../customer/FaqModal";
+import QnaModal from "../customer/QnaModal";
 
 export default function MyPageSide(props) {
   var pathname = usePathname();
