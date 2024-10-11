@@ -139,6 +139,7 @@ export default function QnaModal(props) {
       ],
       handlers: {
         image: async () => {
+          if (typeof document !== 'undefined') {
           const input = document.createElement('input');
           input.setAttribute('type', 'file');
           input.setAttribute('accept', 'image/*');
@@ -162,6 +163,7 @@ export default function QnaModal(props) {
             }
           });
           input.click();
+        }
         },
       },
     },
