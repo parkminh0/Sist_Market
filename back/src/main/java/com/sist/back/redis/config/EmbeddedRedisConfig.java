@@ -11,20 +11,20 @@ import redis.embedded.RedisServer;
 
 @Configuration
 public class EmbeddedRedisConfig {
-    // @Value("${spring.data.redis.port}")
-    // private int redisPort;
+    @Value("${spring.data.redis.port}")
+    private int redisPort;
 
-    // private RedisServer redisServer;
+    private RedisServer redisServer;
 
     @PostConstruct
     public void startRedisServer() {
-        // redisServer = new RedisServer(redisPort);
-        // redisServer.start();
+        redisServer = new RedisServer(redisPort);
+        redisServer.start();
     }
 
     @PreDestroy
     public void stopRedis() {
-        // if (redisServer != null) redisServer.stop();
+        if (redisServer != null) redisServer.stop();
     }
 }
 
