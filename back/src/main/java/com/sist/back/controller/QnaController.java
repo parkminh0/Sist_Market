@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sist.back.service.DBChangeService;
 import com.sist.back.service.QnaImgService;
 import com.sist.back.service.QnaService;
 import com.sist.back.util.FileRenameUtil;
@@ -41,6 +42,9 @@ public class QnaController {
 
     @Autowired
     private QnaImgService qi_service;
+
+    @Autowired
+    private DBChangeService db_service;
 
     @RequestMapping("/empty")
     @ResponseBody
@@ -78,7 +82,8 @@ public class QnaController {
             MultipartFile f = file;
 
             String fname = FileRenameUtil.checkSameFileName(f.getOriginalFilename(), upload);
-            String webPath = "http://localhost:3000/img/qna/";
+            // String webPath = "http://localhost:3000/img/qna/";
+            String webPath = "/img/qna/";
             String sendFname = URLEncoder.encode(fname, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 
             StringBuffer sb = new StringBuffer();
@@ -140,6 +145,8 @@ public class QnaController {
     public Map<String, Object> answer(@RequestBody QnaVO qvo) {
         Map<String, Object> map = new HashMap<>();
         int cnt = q_service.answer(qvo);
+        qvo = q_service.getQuestion(qvo.getQnakey());
+        db_service.onDatabaseChange("/myPage/qna/view/"+qvo.getQnakey(), "문의 답변이 도착했어요!", "문의", qvo.getUserkey());
         map.put("cnt", cnt);
         return map;
     }
@@ -266,6 +273,22 @@ public class QnaController {
         map.put("q_list", q_list);
         map.put("page", page);
         map.put("nowPage", nowPage);
+        return map;
+    }
+
+    @RequestMapping("/todayCount")
+    @ResponseBody
+    public Map<String, Object> todayCount() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", q_service.todayCount());
+        return map;
+    }
+
+    @RequestMapping("/selectTodayCount")
+    @ResponseBody
+    public Map<String, Object> selectTodayCount(String isanswered) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cnt", q_service.selectTodayCount(isanswered));
         return map;
     }
 }

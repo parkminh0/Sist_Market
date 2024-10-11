@@ -29,6 +29,7 @@ import com.sist.back.vo.userVO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.sist.back.service.BadgeService;
 
 @Controller
 @RequestMapping("/user")
@@ -42,6 +43,9 @@ public class UserController {
 
     @Autowired
     UserService service;
+
+    @Autowired
+    BadgeService b_service;
 
     @Value("${server.upload.user.image}")
     private String userImgPath;
@@ -108,10 +112,37 @@ public class UserController {
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        int userReportCount = service.getReportCountByUserKey(userkey);
+        map.put("userReportCount", userReportCount);
         map.put("ar", uvo);
 
+        Paging p = new Paging(5, 3);
+        p.setTotalRecord(uvo.getP_list().size());
+        map.put("postcount", p.getTotalRecord());
+        map.put("pagecount", p.getTotalPage());
         return map;
     }
+
+     // userAdmin 회원 정보 가져오기
+    @RequestMapping("/api/admin/getPost")
+    @ResponseBody
+    public Map<String, Object> getPostForAdmin(String userkey, String cPage, int postCount) {
+        Map<String, Object> map = new HashMap<>();
+        Paging p = new Paging(5, 3);
+        p.setTotalRecord(postCount);
+        p.setNowPage(Integer.parseInt(cPage));
+
+        Map<String, Object> p_map = new HashMap<>();
+        p_map.put("userkey", userkey);
+        p_map.put("begin", String.valueOf(p.getBegin()));
+        p_map.put("end", String.valueOf(p.getEnd()));
+
+        map.put("p_list", service.getPostsForAdmin(p_map));
+        return map;
+    }
+
+
+
     @RequestMapping("/api/mypage/userEdit")
     @ResponseBody
     public Map<String, Object> getUserForMyPage(String userkey) {
@@ -171,6 +202,16 @@ public class UserController {
     public Map<String, Object> getUser(String userkey) {
         Map<String, Object> map = new HashMap<>();
         userVO uvo = service.getUserForAdmin(userkey);
+        map.put("uvo", uvo);
+        return map;
+    }
+
+    //유저 프로필
+    @RequestMapping("/api/getUserProfile")
+    @ResponseBody
+    public Map<String, Object> getUserProfile(String userkey) {
+        Map<String, Object> map = new HashMap<>();
+        userVO uvo = service.getUserProfile(userkey);
         map.put("uvo", uvo);
         return map;
     }
@@ -414,7 +455,19 @@ public class UserController {
     public Map<String, Object> getLikeList(String userkey, String likewhat, String cPage) {
         Map<String, Object> l_map = new HashMap<>();
         // Paging
-        Paging page = new Paging(3, 3);
+        Paging page = null;
+        switch (likewhat) {
+            case "post":
+                page = new Paging(5, 3);
+                break;
+            case "category":
+                page = new Paging(3, 1);
+                break;
+            case "keyword":
+                page = new Paging(5, 2);
+                break;
+        }
+
         int totalRecord = service.getLikeCount(userkey, likewhat);
         l_map.put("totalCount", totalRecord);
         page.setTotalRecord(totalRecord);
@@ -437,6 +490,29 @@ public class UserController {
         List<WishlistVO> likeList = service.getLikeLists(get_map, likewhat);
         l_map.put("likeList", likeList);
         return l_map;
+    }
+
+    @RequestMapping("/api/like/category")
+    @ResponseBody
+    public Map<String, Object> addLikeCategory(String userkey, String categorykey) {
+        Map<String, Object> lc_map = new HashMap<>();
+        lc_map.put("result_insert", service.addLikeCategory(userkey, categorykey));
+        return lc_map;
+    }
+    
+    @RequestMapping("/api/like/keyword")
+    @ResponseBody
+    public Map<String, Object> addLikeKeyword(String userkey, String content) {
+        Map<String, Object> lk_map = new HashMap<>();
+
+        giveBadgeFirstKeyword(userkey);
+
+        lk_map.put("result_insert", service.addLikeKeyword(userkey, content));
+        return lk_map;
+    }
+
+    public int giveBadgeFirstKeyword(String userkey) {
+        return b_service.giveBadgeFirstKeyword(userkey);
     }
 
     // 사용자 구매목록

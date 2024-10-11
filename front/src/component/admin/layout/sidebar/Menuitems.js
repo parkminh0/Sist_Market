@@ -7,6 +7,9 @@ import {
   IconMessageChatbot,
   IconMedal2,
   IconAward,
+  IconReportAnalytics,
+  IconChartBar,
+  IconMoodHappyFilled,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -49,6 +52,11 @@ const Menuitems = [
     href: "/ad/user/badge",
   },
   {
+    title: "채팅 이모티콘 관리",
+    icon: IconMoodHappyFilled,
+    href: "/ad/user/emoticon",
+  },
+  {
     navlabel: true,
     subheader: "게시판",
   },
@@ -66,11 +74,11 @@ const Menuitems = [
     icon: IconMedal2,
     href: "/ad/statistic",
   },
-  // {
-  //   title: "대시보드",
-  //   icon: IconMessageChatbot,
-  //   href: "/ad/qna",
-  // },
+  {
+    title: "통계 분석",
+    icon: IconChartBar,
+    href: "/ad/statistic/analyze",
+  },
   {
     navlabel: true,
     subheader: "고객센터",

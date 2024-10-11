@@ -45,6 +45,9 @@ export default function Page() {
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
+  //const [tCount, setTCount] = useState({});
+  const [tDel, setTDel] = useState(0);
+  const [tAct, setTAct] = useState(0);
 
   const [search_type, setSearch_type] = useState("name");
   const [type, setType] = useState("");
@@ -54,6 +57,7 @@ export default function Page() {
   const [isauthorized, setIsauthorized] = useState("");
   const [recent_login_start_date, setRecent_login_start_date] = useState("");
   const [recent_login_end_date, setRecent_login_end_date] = useState("");
+  const [userReportCount,setUserReportCount] = useState(0);
 
   //유저 검색
   const API_URL_2 = "/user/api/search_user_admin";
@@ -111,6 +115,8 @@ export default function Page() {
       setCount(response.data.ucvo);
       setDel(response.data.ucvo.cntDel);
       setAct(response.data.ucvo.cntNotDel);
+      setTAct(response.data.ucvo.cntTNotDel);
+      setTDel(response.data.ucvo.cntTDel);
     });
   }
   // 페이징 처리 함수
@@ -143,7 +149,7 @@ export default function Page() {
         setPage(response.data.page);
       })
       .catch((error) => {
-        console.error("Error during search:", error);
+        //console.error("Error during search:", error);
       });
   }
 
@@ -152,8 +158,8 @@ export default function Page() {
     if (!confirmed) {
       return; 
     }
-    console.log("delete_choice 함수 호출됨");
-    console.log("DEL_URL:", DEL_URL);
+    //console.log("delete_choice 함수 호출됨");
+    //console.log("DEL_URL:", DEL_URL);
     axios
       .post(DEL_URL, checkedItems)
       .then((response) => {
@@ -165,13 +171,10 @@ export default function Page() {
         getCount();
       })
       .catch((error) => {
-        console.error("Error deleting users:", error);
+        //console.error("Error deleting users:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
   }
-
-  
-  
 
   // 모달 열기/닫기 핸들러
   const handleOpen = (userkey) => {
@@ -194,10 +197,26 @@ export default function Page() {
   const [b_list, setB_list] = useState([]);
   const [n_list, setN_list] = useState([]);
   const [a_list, setA_list] = useState([]);
-  const [s_list, setS_list] = useState([]);
   const [w_list, setW_list] = useState([]);
   const [k_list, setK_list] = useState([]);
   const [tvo, setTvo] = useState([]);
+
+  
+  const [postcount, setPostCount] = useState([]);
+  const [pagecount, setPageCount] = useState([]);
+  function getP_list(cPage){
+    axios.get("/user/api/admin/getPost",{
+    params:{
+        userkey: userkey,
+        cPage: cPage,
+        postCount: postcount,
+    }
+    }).then((res)=>{
+        setP_list(res.data.p_list);
+    })
+  }
+
+
 
   function editUser(userkey){
     setLoading(true);
@@ -221,13 +240,24 @@ export default function Page() {
         setB_list(res.data.ar.b_list || []);
         setN_list(res.data.ar.n_list || []);
         setA_list(res.data.ar.a_list || []);
-        setS_list(res.data.ar.s_list || []);
         setW_list(res.data.ar.w_list || []);
         setK_list(res.data.ar.k_list || []);
         setTvo(res.data.ar.a_list.tvo || []);
-        setLoading(false);
-        setOpen(true); 
-        //console.log("tvo@@@@@@@@@@@@@@@@@@"+tvo);
+        setUserReportCount(res.data.userReportCount);
+
+        setPostCount(res.data.postcount || []);
+        setPageCount(res.data.pagecount || []);
+        axios.get("/user/api/admin/getPost",{
+          params:{
+              userkey: userkey,
+              cPage: 1,
+              postCount: res.data.postcount,
+          }
+          }).then((result)=>{
+              setP_list(result.data.p_list);
+              setLoading(false);
+              setOpen(true); 
+          })
       });
     }
   }
@@ -372,26 +402,23 @@ export default function Page() {
             <Top_Analytic
               title="전체 회원"
               count={count.cntAll}
-              percentage={59.3}
-              extra="35,000"
+              extra={count.cntTAll}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="회원"
               count={act}
-              percentage={70.5}
-              extra="8,900"
+              extra={tAct}
             />
           </Grid>
           <Grid item xs={12} sm={4} md={4} lg={4}>
             <Top_Analytic
               title="탈퇴회원"
               count={del}
-              percentage={27.4}
               isLoss
               color="warning"
-              extra="1,943"
+              extra={tDel}
             />
           </Grid>
         </Grid>
@@ -443,6 +470,15 @@ export default function Page() {
                       style={{ width: "auto" }}
                       onChange={(e) => {
                         setType(e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (!type.trim()) {
+                            alert("검색할 단어를 입력하세요.");
+                            return;
+                          }
+                          doSrchFrm(0);
+                        }
                       }}
                       sx={{ marginLeft: 2 }}
                       size="small"
@@ -869,6 +905,18 @@ export default function Page() {
                    
                     </tr>
                     <tr>
+                    <th scope="row">신고수</th>
+                    <td>
+                      <span
+                        className="fText eMarketChecker"
+                        style={{ width: "400px", display: "inline-block" }}
+                      >
+                        {userReportCount || "0"} 
+                      </span>
+                    </td>
+                   
+                    </tr>
+                    <tr>
                       <th scope="row">이메일</th>
                       <td>
                         <input
@@ -968,7 +1016,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">게시글 키</th>
+                    <th scope="col">게시글 번호</th>
                     <th scope="col">제목</th>
                   </tr>
                 </thead>
@@ -998,6 +1046,11 @@ export default function Page() {
                       </td>
                     </tr>
                   )}
+                  <tr style={{border:'none'}}>
+                      <td style={{border:'none', textAlign: '-webkit-center'}} colSpan={2}>
+                          <Pagination sx={{width: 'fit-content'}} count={pagecount} onChange={(event, newPage) =>{getP_list(newPage);}}/>
+                      </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1019,7 +1072,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">평가자 키</th>
+                    <th scope="col">평가자</th>
                     <th scope="col">매너</th>
                     <th scope="col">간편후기</th>
                   </tr>
@@ -1190,7 +1243,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">차단 사용자 번호</th>
+                    <th scope="col">차단 사용자</th>
                     <th scope="col">차단 날짜</th>
                   </tr>
                 </thead>
@@ -1245,7 +1298,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">미노출 사용자 번호</th>
+                    <th scope="col">미노출 사용자</th>
                     <th scope="col">생성 날짜</th>
                   </tr>
                 </thead>
@@ -1342,54 +1395,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* 알람 설정 정보 테이블 */}
-        <div className="section" id="QA_register2">
-        
-          <div className="toggleArea" style={{ display: "block" }}>
-            <div className="mBoard typeProduct">
-              <table summary="알람 설정 정보">
-                <caption>알람 설정 정보</caption>
-                <colgroup>
-                  <col className="product" />
-                  <col style={{ width: "auto" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th scope="col">알람 종류</th>
-                    <th scope="col">알람 여부</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {s_list.length > 0 ? (
-                    s_list.map((setAlarm, index) => (
-                      <tr key={index}>
-                        <td
-                          className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
-                        >
-                          {setAlarm.setalarmkey || ""}
-                        </td>
-                        <td
-                          className="fText eMarketChecker eHasModifyProductAuth"
-                          style={{ textAlign: "center" }}
-                        >
-                          {setAlarm.isalarm ? "예" : "아니오"}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="2" style={{ textAlign: "center" }}>
-                        알람 설정 정보가 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
         {/* 관심 목록 테이블 */}
         <div className="section" id="QA_register2">
           
@@ -1451,7 +1456,7 @@ export default function Page() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">키워드</th>
+                    <th scope="col">키워드 번호</th>
                     <th scope="col">키워드 내용</th>
                   </tr>
                 </thead>

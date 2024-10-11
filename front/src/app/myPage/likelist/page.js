@@ -11,6 +11,10 @@ import LikePost from "@/component/user/myPage/likelist/LikePost";
 import LikeCategory from "@/component/user/myPage/likelist/LikeCategory";
 import LikeKeyword from "@/component/user/myPage/likelist/LikeKeyword";
 import Cookies from "js-cookie";
+import { Backdrop, Button, CircularProgress } from "@mui/material";
+import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
+import AddLikeCateModal from "@/component/user/myPage/likelist/AddLikeCateModal";
+import AddLikeKeyModal from "@/component/user/myPage/likelist/AddLikeKeyModal";
 // import { useSearchParams } from "next/navigation";
 
 export default function Page() {
@@ -30,11 +34,32 @@ export default function Page() {
 
   const userkey = Cookies.get("userkey");
 
+
+  const [loading, setLoading] = useState(false);
+
+  const [openLC, setOpenLC] = useState(false);
+  const [openLK, setOpenLK] = useState(false);
+
+  const handleCloseLC = (e) => {
+    setOpenLC(false);
+    if(e){
+      getLikeList(likeWhat,1);
+    }
+  }
+  const handleCloseLK = (e) => {
+    setOpenLK(false);
+    if(e){
+      getLikeList(likeWhat,1);
+    }
+  }
+
   function changePage(pNum) { 
+    setLoading(true);
     getLikeList(likeWhat,pNum);
   }
 
   function getLikeList(likeWhat,cPage){
+    setLikeList([]);
       axios({
         url: API_URL,
         method: "post",
@@ -52,11 +77,20 @@ export default function Page() {
         setWhatNow(likeWhat);
         setPage(res.data.page);
         setTotalCount(res.data.totalCount);
+        setLoading(false);
       });
   }
 
+  function likeCate(){
+    setOpenLC(true);
+
+  }
+  
+  function likeKey(){
+    setOpenLK(true);
+  }
+
   function getDelLike(likeWhat,likeKey){
-    alert(`likeWhat: ${likeWhat} || likeKey: ${likeKey}`);
       axios({
         url: DEL_URL,
         method: "post",
@@ -70,7 +104,8 @@ export default function Page() {
         },
       }).then((res) => {
         if(res.data.result_delete > 0){
-          alert("삭제 성공!");
+          alert("관심목록에서 삭제했습니다.");
+          setLoading(true);
           getLikeList(likeWhat,page.nowPage);
         } else{
           alert("오류가 발생했습니다");
@@ -79,6 +114,7 @@ export default function Page() {
   }
 
   useEffect(()=>{
+    setLoading(true);
     getLikeList(likeWhat);
     switch(likeWhat){
       case "post":
@@ -132,6 +168,36 @@ export default function Page() {
             {/* <jsp:include page="/WEB-INF/views/user/myPageSub/myPageSide.jsp"/> */}
             <MyPageSide />
             {/* <!-- 여기서부터 콘텐츠 --> */}
+            <AddLikeCateModal
+              openPO={openLC}
+              handleClosePO={handleCloseLC}
+              likeList = {likeList}
+            />
+            <AddLikeKeyModal
+              openPO={openLK}
+              handleClosePO={handleCloseLK}
+              likeList = {likeList}
+            />
+          {loading && (
+            <Backdrop
+              open={loading}
+              sx={(theme) => ({
+                position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                justifyContent: "center", // 수평 중앙 정렬
+                alignItems: "center", // 수직 중앙 정렬
+                color: "#fff",
+                zIndex: theme.zIndex.drawer + 1,
+                backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+              })}
+            >
+              <CircularProgress size={100} color="inherit" />
+            </Backdrop>
+          )}
             <div
               data-v-81750584=""
               data-v-0adb81cc=""
@@ -174,6 +240,7 @@ export default function Page() {
                       <p data-v-24868902="" className="desc">
                         관심 {display}{display=="게시글"?'이':'가'} 없습니다.
                       </p>
+                      {display=="게시글"?
                       <a
                         data-v-420a5cda=""
                         data-v-24868902=""
@@ -183,28 +250,145 @@ export default function Page() {
                         {" "}
                         SHOP 바로가기{" "}
                       </a>
+                      :
+                      display=="카테고리"?
+                      <div
+                        data-v-420a5cda=""
+                        data-v-24868902=""
+                        variant="contained"
+                        className="btn outlinegrey small"
+                        onClick={likeCate}
+                      >
+                        {" "}
+                        등록하기
+                        {" "}
+                      </div>
+                      :
+                      <div
+                        data-v-420a5cda=""
+                        data-v-24868902=""
+                        variant="contained"
+                        className="btn outlinegrey small"
+                        onClick={likeKey}
+                      >
+                        {" "}
+                        등록하기
+                        {" "}
+                      </div>
+                      }
                     </div>
                   </div>
                   : /* 있을 경우 */
                   <div data-v-3d362ce8="" className="my_interest">
                     <div data-v-3d362ce8="" className="content-header">
-                      <div data-v-3d362ce8="" className="total-rows">
+                      <div data-v-3d362ce8="" className="total-rows" style={{fontSize:17}}>
                         전체 {totalCount}
                       </div>
+                      {whatNow=="post" ? '':
+                      whatNow=="category" ?
+                      totalCount < 3 ?
                       <div
                         data-v-69f3b122=""
                         data-v-3d362ce8=""
                         className="filter_sorting"
                       >
-                        <button
-                          data-v-69f3b122=""
-                          type="button"
-                          className="sorting_title"
+                        <Button
+                          variant="contained"
+                          sx={{
+                            fontSize:'18px',
+                            backgroundColor:'#ee3e00',
+                            ":hover" : {
+                              backgroundColor: '#ff4f00'
+                            }
+                          }}
+                          onClick={likeCate}
                         >
                           {" "}
-                          관심 등록순{" "}
-                        </button>
+                          등록하기
+                          {" "}
+                        </Button>
                       </div>
+                      :
+                      <div
+                        data-v-69f3b122=""
+                        data-v-3d362ce8=""
+                        className="filter_sorting"
+                      >
+                        <Button
+                          variant="contained"
+                          disableRipple
+                          onMouseOver={(e)=>{e.preventDefault()}}
+                          sx={{
+                            fontSize:'18px',
+                            backgroundColor: '#efefef',
+                            boxShadow: 'none',
+                            ":hover" : {
+                              display: 'block',
+                              boxShadow: 'none',
+                              background: '#efefef',
+                              cursor: 'default',
+                            }
+                          }}
+                          onClick={(e)=>{e.preventDefault; alert("관심 카테고리는 최대 3개까지 등록하실 수 있습니다.")}}
+                        >
+                          {" "}
+                          등록하기
+                          {" "}
+                        </Button>
+                      </div>
+                      :
+                      totalCount<10
+                      ?
+                      <div
+                        data-v-69f3b122=""
+                        data-v-3d362ce8=""
+                        className="filter_sorting"
+                      >
+                        <Button
+                          variant="contained"
+                          sx={{
+                            fontSize:'18px',
+                            backgroundColor:'#ee3e00',
+                            ":hover" : {
+                              backgroundColor: '#ff4f00'
+                            }
+                          }}
+                          onClick={likeKey}
+                        >
+                          {" "}
+                          등록하기
+                          {" "}
+                        </Button>
+                      </div>
+                      :
+                      <div
+                        data-v-69f3b122=""
+                        data-v-3d362ce8=""
+                        className="filter_sorting"
+                      >
+                        <Button
+                          variant="contained"
+                          disableRipple
+                          onMouseOver={(e)=>{e.preventDefault()}}
+                          sx={{
+                            fontSize:'18px',
+                            backgroundColor: '#efefef',
+                            boxShadow: 'none',
+                            ":hover" : {
+                              display: 'block',
+                              boxShadow: 'none',
+                              background: '#efefef',
+                              cursor: 'default',
+                            }
+                          }}
+                          onClick={(e)=>{e.preventDefault; alert("관심 키워드는 최대 10개까지 등록하실 수 있습니다.")}}
+                        >
+                          {" "}
+                          등록하기
+                          {" "}
+                        </Button>
+                      </div>
+                      }
                     </div>
                     <ul
                       data-v-6aa963fd=""

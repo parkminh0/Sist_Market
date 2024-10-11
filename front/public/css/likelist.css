@@ -216,7 +216,9 @@
 .my_interest .division_btn_box[data-v-0b6ddb6a] {
     margin-top: 0;
     text-align: left;
-    width: 164px
+    height: 60px;
+    width: 164px;
+    display: flex;
 }
 
 .my_interest .division_btn_box .desc[data-v-0b6ddb6a] {

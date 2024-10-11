@@ -11,15 +11,14 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-export default function PostStatisticComp({ categoryType }) {
+export default function PostStatisticComp({ categoryType, dateType }) {
   const [postList, setPostList] = useState([]);
 
   useEffect(() => {
-    console.log(categoryType);
     axios({
       url: "/ad/postTop10Statistic",
       method: "get",
-      params: { type: categoryType },
+      params: { type: categoryType, dateType: dateType },
       headers: {
         "Content-Type": "application/json",
       },
@@ -119,8 +118,11 @@ export default function PostStatisticComp({ categoryType }) {
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <Box gap={2} display="flex" alignItems="center">
-                    <Avatar alt={post.uvo.nickname} src={post.uvo.imgurl} />
-                    {post.uvo.nickname}
+                    <Avatar
+                      alt={post.uvo && post.uvo.nickname && post.uvo.nickname}
+                      src={post.uvo && post.uvo.imgurl && post.uvo.imgurl}
+                    />
+                    {post.uvo && post.uvo.nickname && post.uvo.nickname}
                   </Box>
                 </TableCell>
                 <TableCell align="center">

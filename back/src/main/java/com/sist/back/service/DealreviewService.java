@@ -78,7 +78,7 @@ public class DealreviewService {
         return d_mapper.addManner(userkey, reviewlistkey, estimateuserkey);
     }
 
-    public int hideReview(String postkey) {
-        return d_mapper.hideReview(postkey);
+    public int hideReview(String postkey, String userkey) {
+        return d_mapper.hideReview(postkey, userkey);
     }
 }

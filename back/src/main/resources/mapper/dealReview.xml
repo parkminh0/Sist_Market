@@ -6,20 +6,20 @@
   <!-- 전체 후기의 개수를 반환 -->
   <select id="allCount" resultType="int" parameterType="String">
     SELECT 
-        (SELECT COUNT(dealuserreview) FROM post WHERE userkey = #{userkey} AND reviewvisible = 1) +
-        (SELECT COUNT(userreview) FROM post WHERE dealuserkey = #{userkey} AND reviewvisible = 1) 
+        (SELECT COUNT(dealuserreview) FROM post WHERE userkey = #{userkey} AND onbuyerreview = 1) +
+        (SELECT COUNT(userreview) FROM post WHERE dealuserkey = #{userkey} AND onsellerreview = 1) 
   </select>
 
   <!-- 구매자 후기의 개수를 반환 -->
   <select id="buyingCount" resultType="int" parameterType="String">
       SELECT COUNT(dealuserreview) FROM post
-      WHERE userkey = #{userkey} AND reviewvisible = 1
+      WHERE userkey = #{userkey} AND onbuyerreview = 1
   </select>
 
   <!-- 판매자 후기의 개수를 반환 -->
   <select id="sellingCount" resultType="int" parameterType="String">
       SELECT COUNT(userreview) FROM post
-      WHERE dealuserkey = #{userkey} AND reviewvisible = 1
+      WHERE dealuserkey = #{userkey} AND onsellerreview = 1
   </select>
 
   <!-- 받은 거래 후기 -->
@@ -33,7 +33,7 @@
             JOIN user u ON p.dealuserkey = u.userkey
             JOIN address a ON u.userkey = a.userkey
             JOIN town t ON a.townkey = t.townkey
-            WHERE p.userkey = #{userkey} AND p.reviewvisible = 1
+            WHERE p.userkey = #{userkey} AND p.onbuyerreview = 1
             ORDER BY p.postkey DESC
         ) result, (SELECT @RN:=0) r
         UNION ALL
@@ -44,11 +44,11 @@
             JOIN user u ON p.userkey = u.userkey
             JOIN address a ON u.userkey = a.userkey
             JOIN town t ON a.townkey = t.townkey
-            WHERE p.dealuserkey = #{userkey} AND p.reviewvisible = 1
+            WHERE p.dealuserkey = #{userkey} AND p.onsellerreview = 1
             ORDER BY p.userreview DESC
         ) a, (SELECT @RN:=0) r
     ) c
-    WHERE c.rnum BETWEEN #{begin} AND #{end};
+    WHERE c.rnum BETWEEN #{begin} AND #{end}
   </select>
 
   <!-- 받은 구매자 거래 후기 -->
@@ -62,7 +62,7 @@
             JOIN user u ON p.dealuserkey = u.userkey
             JOIN address a ON u.userkey = a.userkey
             JOIN town t ON a.townkey = t.townkey
-            WHERE p.userkey = #{userkey} AND p.reviewvisible = 1
+            WHERE p.userkey = #{userkey} AND p.onbuyerreview = 1
             ORDER BY p.postkey DESC
         ) result, (SELECT @RN:=0) r
     ) c
@@ -80,7 +80,7 @@
             JOIN user u ON p.userkey = u.userkey
             JOIN address a ON u.userkey = a.userkey
             JOIN town t ON a.townkey = t.townkey
-            WHERE p.dealuserkey = #{userkey} AND p.reviewvisible = 1
+            WHERE p.dealuserkey = #{userkey} AND p.onsellerreview = 1
             ORDER BY p.userreview DESC
         ) a, (SELECT @RN:=0) r
     ) c
@@ -100,7 +100,7 @@
       WHERE reviewlistkey = #{reviewlistkey}
     ),
     userreview_dtm = NOW(),
-    reviewvisible = 1
+    onsellerreview = 1
     WHERE postkey = #{postkey}
   </update>
 
@@ -112,7 +112,7 @@
       WHERE reviewlistkey = #{reviewlistkey}
     ),
     dealuserreview_dtm = NOW(),
-    reviewvisible = 1
+    onbuyerreview = 1
     WHERE postkey = #{postkey}
   </update>
 
@@ -132,10 +132,13 @@
     )
   </insert>
 
+  <!-- 거래 후기 숨기기 -->
   <update id="hideReview" parameterType="map">
     UPDATE post
-    SET reviewvisible = 0
+    <set>
+      onsellerreview = CASE WHEN dealuserkey = #{userkey} THEN 0 ELSE onsellerreview END,
+      onbuyerreview = CASE WHEN dealuserkey != #{userkey} THEN 0 ELSE onbuyerreview END
+    </set>
     WHERE postkey = #{postkey}
   </update>
-
 </mapper>

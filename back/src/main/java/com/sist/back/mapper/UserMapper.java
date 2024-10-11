@@ -38,6 +38,9 @@ public interface UserMapper {
 
     userVO getUserForAdmin(String userkey);
     userVO getUserForMyPage(String userkey);
+    userVO getUserProfile(String userkey);
+
+    List<PostVO> getPostsForAdmin(Map<String, Object> p_map);
     
     int userDelForAdmin(String userkey);
 
@@ -59,6 +62,9 @@ public interface UserMapper {
     int getInterestCategoryCount(String userkey);
 
     int getKeywordCount(String userkey);
+
+    int addLikeCategory(String userkey, String categorykey);
+    int addLikeKeyword(String userkey, String content);
 
     List<WishlistVO> getWishlistByMap(Map<String, Object> get_map);
 
@@ -124,6 +130,8 @@ public interface UserMapper {
     List<PostVO> getPostsByUserKey(Map<String, Object> pmap);
     int getPostCountByUserKey(String userkey);
 
-    
+    String searchNickname(String userkey);
+
+    int getReportCountByUserKey(String userkey);
 
 }

@@ -30,8 +30,6 @@ public interface BoardMapper {
 
     int del(String boardkey);
 
-    int hit(String boardkey);
-
     // 게시판 카테고리
     List<KeyTableVO> getAllBcList();
 
@@ -53,5 +51,13 @@ public interface BoardMapper {
     List<BoardVO> searchForNotice(Map<String,Object> map);
 
     int searchForNoticeCount(Map<String,Object> map);
+
+    int todayCount();
+
+    int selectTodayCount(String categorykey);
+
+    int getHit(int boardkey);
+
+    int incHit(int boardkey);
 
 }

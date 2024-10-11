@@ -15,6 +15,9 @@ export default function LikeKeyword(props) {
                     <div
                     data-v-0b6ddb6a=""
                     data-v-9ff60cb2=""
+                    style={{
+                        width: 'auto',
+                    }}
                     className="division_btn_box lg"
                     >
                         <p style={{fontSize:30, marginTop:20}}>{lvo.content}</p>

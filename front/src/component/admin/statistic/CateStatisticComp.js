@@ -68,46 +68,47 @@ export default function CateStatisticComp({ categoryType }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {cateList.map((cate, i) => (
-            <TableRow key={i}>
-              <TableCell align="center">
-                <Typography
-                  sx={{
-                    fontSize: "15px",
-                    fontWeight: "500",
-                  }}
-                >
-                  {i + 1}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Box
-                  gap={2}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  {cate.img_url && (
-                    <Avatar alt={cate.categoryname} src={cate.img_url} />
-                  )}
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight={600}>
-                      {cate.categoryname}
-                    </Typography>
+          {cateList &&
+            cateList.map((cate, i) => (
+              <TableRow key={i}>
+                <TableCell align="center">
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {i + 1}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Box
+                    gap={2}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {cate.img_url && (
+                      <Avatar alt={cate.categoryname} src={cate.img_url} />
+                    )}
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight={600}>
+                        {cate.categoryname}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </TableCell>
-              <TableCell align="right">
-                <Typography variant="h6">{cate.dealcnt}건</Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography variant="h6">
-                  {new Intl.NumberFormat("ko-KR").format(cate.dealprice)}원
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">{cate.dealcnt}건</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">
+                    {new Intl.NumberFormat("ko-KR").format(cate.dealprice)}원
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </Box>

@@ -17,7 +17,7 @@ export default function DetailModal(props) {
 
   const goEdit = () => {
     onClose(); 
-    props.handleEditModalOpen();
+    props.handleEditModalOpen(boardkey);
   };
   
   function getData() {

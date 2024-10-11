@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "JwtMemApplication",
+            "request": "launch",
+            "mainClass": "com.sist.back.jwt.JwtMemApplication",
+            "projectName": "back"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-BackApplication<back>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

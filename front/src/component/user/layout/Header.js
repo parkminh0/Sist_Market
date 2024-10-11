@@ -597,10 +597,15 @@ export default function Header() {
     }
   };
   // #endregion
-
-  // 알림 창
-  const notificationCount = useRef(30);
+  const[notificationCount, setNotificationCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(()=>{
+    axios.get(`/alarm`, {
+      params: {
+        userkey : userkey}}).then((res)=>{
+          setNotificationCount(res.data.length);
+        })
+  },[]);
 
   const toggleNotifications = () => {
     setIsOpen(!isOpen);
@@ -654,7 +659,7 @@ export default function Header() {
                       }}
                     >
                       <NotificationIcon
-                        notificationCount={notificationCount.current}
+                        notificationCount={notificationCount}
                         notifications={notifications}
                       />
                     </div>
@@ -1074,6 +1079,11 @@ export default function Header() {
                   fontSize: "14px",
                   outline: "none",
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    jwtLogin();
+                  }
+                }}
                 onChange={handleChange}
                 onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}
                 onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
@@ -1095,6 +1105,11 @@ export default function Header() {
                   boxSizing: "border-box",
                   fontSize: "14px",
                   outline: "none",
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    jwtLogin();
+                  }
                 }}
                 onChange={handleChange}
                 onFocus={(e) => (e.target.style.border = "1px solid #FF6F0F")}

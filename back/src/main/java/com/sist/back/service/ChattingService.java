@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.ChattingMapper;
+import com.sist.back.mapper.UserMapper;
 import com.sist.back.vo.ChattingEmojiVO;
 import com.sist.back.vo.ChattingVO;
 
@@ -15,9 +16,12 @@ public class ChattingService {
     @Autowired
     private ChattingMapper mapper;
 
-    private final DBChangeService databaseChangeService;
+    @Autowired
+    private UserMapper u_mapper;
 
     @Autowired
+    private final DBChangeService databaseChangeService;
+
     public ChattingService(DBChangeService databaseChangeService) {
         this.databaseChangeService = databaseChangeService;
     }
@@ -26,7 +30,7 @@ public class ChattingService {
         String chatroomkey = message.getChatroomkey();
         String redirection = "/chat/room/"+chatroomkey;
         String userkey = message.getUserkey2();
-        databaseChangeService.onDatabaseChange(redirection,"대화 상대:"+message.getUserkey2()+",대화 내용:"+message.getContent(),"채팅", userkey);
+        databaseChangeService.onDatabaseChange(redirection,u_mapper.searchNickname(userkey)+"님에게 메세지가 왔어요!","채팅", userkey);
         return mapper.addChat(message);
     }
 
@@ -44,5 +48,21 @@ public class ChattingService {
 
     public String getCountEmoticon(){
         return mapper.getCountEmoticon();
+    }
+
+    public List<ChattingEmojiVO> getAllEmoticon(){
+        return mapper.getAllEmoticon();
+    }
+
+    public int addEmoticon(ChattingEmojiVO cvo){
+        return mapper.addEmoticon(cvo);
+    }
+
+    public int deleteEmoticon(String chattingemojikey){
+        return mapper.deleteEmoticon(chattingemojikey);
+    }
+
+    public int isRead(String userkey, String chatroomkey){
+        return mapper.isRead(userkey,chatroomkey);
     }
 }

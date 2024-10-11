@@ -88,9 +88,17 @@ export default function Page() {
                     <li className={styles.teamDescriptionItem}>
                       DB설계 및 기획
                     </li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
+                    <li className={styles.teamDescriptionItem}>
+                      카카오맵 API 활용
+                    </li>
+                    <li className={styles.teamDescriptionItem}>--사용자--</li>
+                    <li className={styles.teamDescriptionItem}>
+                      메인/중고거래/글작성/카테고리
+                    </li>
+                    <li className={styles.teamDescriptionItem}>--관리자--</li>
+                    <li className={styles.teamDescriptionItem}>
+                      메인/게시글/통계
+                    </li>
                   </ul>
                 </div>
                 <div className={`${styles.teamMember} ${styles.teamMember2}`}>
@@ -102,10 +110,14 @@ export default function Page() {
                   <h3 className={styles.teamName}>서혁인</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
+                    <li className={styles.teamDescriptionItem}>
+                      사용자/마이페이지(프로필,배지,후기)
+                    </li>
+                    <li className={styles.teamDescriptionItem}>QnA</li>
+                    <li className={styles.teamDescriptionItem}>
+                      관리자 게시판
+                    </li>
+                    <li className={styles.teamDescriptionItem}>관리자 배지</li>
                   </ul>
                 </div>
                 <div className={`${styles.teamMember} ${styles.teamMember3}`}>
@@ -117,10 +129,18 @@ export default function Page() {
                   <h3 className={styles.teamName}>안지은</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
+                    <li className={styles.teamDescriptionItem}>
+                      jwtProviderToken
+                    </li>
+                    <li className={styles.teamDescriptionItem}>
+                      카카오 Api소셜로그인
+                    </li>
+                    <li className={styles.teamDescriptionItem}>
+                      관리자 회원페이지
+                    </li>
+                    <li className={styles.teamDescriptionItem}>
+                      공지사항 crud
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -134,10 +154,14 @@ export default function Page() {
                   <h3 className={styles.teamName}>이춘화</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
+                    <li className={styles.teamDescriptionItem}>채팅</li>
+                    <li className={styles.teamDescriptionItem}>알림</li>
+                    <li className={styles.teamDescriptionItem}>
+                      관리자/카테고리 페이지
+                    </li>
+                    <li className={styles.teamDescriptionItem}>
+                      텍스트 에디터
+                    </li>
                   </ul>
                 </div>
                 <div className={`${styles.teamMember} ${styles.teamMember5}`}>
@@ -149,10 +173,14 @@ export default function Page() {
                   <h3 className={styles.teamName}>전민건</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
+                    <li className={styles.teamDescriptionItem}>
+                      사용자/마이페이지
+                    </li>
+                    <li className={styles.teamDescriptionItem}>
+                      (관리자/사용자)게시글 상세
+                    </li>
+                    <li className={styles.teamDescriptionItem}>가계부</li>
+                    <li className={styles.teamDescriptionItem}>게시글 수정</li>
                   </ul>
                 </div>
                 <div className={`${styles.teamMember} ${styles.teamMember6}`}>
@@ -164,10 +192,10 @@ export default function Page() {
                   <h3 className={styles.teamName}>허준우</h3>
                   <p className={styles.teamRole}>팀원</p>
                   <ul className={styles.teamDescription}>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
-                    <li className={styles.teamDescriptionItem}>업무 설명</li>
+                    <li className={styles.teamDescriptionItem}>CICD</li>
+                    <li className={styles.teamDescriptionItem}>문서작업</li>
+                    <li className={styles.teamDescriptionItem}>Docker</li>
+                    <li className={styles.teamDescriptionItem}>AWS 배포</li>
                   </ul>
                 </div>
               </div>

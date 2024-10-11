@@ -20,6 +20,7 @@ export default function BuyerReviewModal(props) {
   const [selectedRating, setSelectedRating] = useState("최고예요!");
   const [selectedKeys, setSelectedKeys] = useState([]);
   const selluserkey = props.sellerUserkey; //postkey에 해당하는 userkey
+  const userkey = Cookies.get("userkey");
 
   function getData() {
     axios.get(REVIEW_URL, { params: { preference } })
@@ -80,7 +81,7 @@ export default function BuyerReviewModal(props) {
         reviewlistkey: selectedKeys,
         postkey: props.postkey,
         userkey: selluserkey,
-        estimateuserkey: Cookies.get("userkey"),
+        estimateuserkey: userkey,
       },
     }).then((res) => {
       setMannerTemp();

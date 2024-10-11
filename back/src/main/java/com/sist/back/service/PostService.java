@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.sist.back.mapper.PostMapper;
 import com.sist.back.vo.ChatRoomVO;
 import com.sist.back.vo.OfferVO;
-import com.sist.back.vo.PostVO;
-import com.sist.back.vo.TownVO;
 import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.PostImgVO;
+import com.sist.back.vo.PostVO;
+import com.sist.back.vo.TownVO;
+import com.sist.back.vo.categoryVO;
 
 @Service
 public class PostService {
@@ -23,6 +23,14 @@ public class PostService {
 
     public PostVO[] all() {
         return p_mapper.all();
+    }
+
+    public categoryVO[] getLikeCate(String userkey){
+        return p_mapper.getLikeCate(userkey);
+    }
+
+    public PostVO[] getAdPost_simple(Map<String, Object> map) {
+        return p_mapper.getAdPost_simple(map);
     }
 
     public int getViewqty(int postkey) {
@@ -186,10 +194,9 @@ public class PostService {
         return ar;
     }
 
-    public PostVO[] postTop10Statistic(String type) {
+    public PostVO[] postTop10Statistic(String type, String dateType) {
         PostVO[] ar = null;
-        List<PostVO> list = p_mapper.postTop10Statistic(type);
-        System.out.println(list.size());
+        List<PostVO> list = p_mapper.postTop10Statistic(type, dateType);
         if (list != null && list.size() > 0) {
             ar = new PostVO[list.size()];
             list.toArray(ar);

@@ -1,8 +1,6 @@
 package com.sist.back.controller;
 
 import java.io.File;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -58,6 +56,7 @@ public class CategoryEditController {
     public Map<String, Object> all() {
         Map<String, Object> res = new HashMap<>();
         res.put("category_list", c_Service.all());
+        res.put("post_count", ce_Service.getPostCount());
         return res;
     }
 

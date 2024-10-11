@@ -10,7 +10,6 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
     const API_URL = "/user/badge/getBadge";
     const REP_URL = "/user/badge/representBadge";
     const CAN_URL = "/user/badge/cancelRep";
-    const GIVE_BADGE_URL = "/user/badge/giveBadge";
 
     const [list, setList] = useState([]);
     const [unlockedBadgeKeys, setUnlockedBadgeKeys] = useState([]);
@@ -21,18 +20,9 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
     const userkey = userKey;
 
     useEffect(() => {
-        giveBadgeToUser();
         getAllData();
         getData();
     }, []);
-
-    function giveBadgeToUser() {
-        axios.get(GIVE_BADGE_URL, {
-            params: { userkey: userkey }
-        }).then((res) => {
-            getData();
-        });
-    }
 
     function getAllData() {
         axios.get(ALL_URL).then((res) => {
@@ -139,37 +129,34 @@ export default function BadgeList({ userKey, onBadgeCountChange }) {
                                 <LockIcon sx={{ fontSize: 80, color: selectedBadge.isrepresentable == "1" ? '#FFC107' : '#666', margin: '0 auto 16px' }} />
                             )}
                             <Typography variant="h6">{selectedBadge.name}</Typography>
-                            {/* <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
-                                {unlockedBadgeKeys.includes(selectedBadge.badgekey) ? selectedBadge.postcontent : selectedBadge.precontent}
-                            </Typography> */}
-                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2 }}>
+                            <Typography variant="body2" sx={{ color: '#888', marginTop: 2, wordBreak: 'keep-all' }}>
                     {unlockedBadgeKeys.includes(selectedBadge.badgekey)
                         ? selectedBadge.postcontent.split('.').map((sentence, index) => (
                             <span key={index}>
-                                {sentence.trim() && `${sentence.trim()}.`}<br />
+                                {sentence.trim() && `${sentence.trim()}`}<br />
                             </span>
                         ))
                         : selectedBadge.precontent.split('.').map((sentence, index) => (
                             <span key={index}>
-                                {sentence.trim() && `${sentence.trim()}.`}<br />
+                                {sentence.trim() && `${sentence.trim()}`}<br />
                             </span>
                         ))
                     }
                 </Typography>
                             {/* 대표 배지 설정 O */}
                             {selectedBadge && repBadge && selectedBadge.badgekey == repBadge.badgekey ? (
-                                <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { cancelRep(); modalClose(); }}>
-                                    대표 배지 해제
-                                </Button>
+                            <Button variant="contained" sx={{ marginTop: 2, backgroundColor: '#FF9800', '&:hover': { backgroundColor: '#F57C00' } }} onClick={() => { cancelRep(); modalClose(); }}>
+                                대표 배지 해제
+                            </Button>
                             ) : (
                                 /* 대표 배지 X */
                                 selectedBadge && selectedBadge.isrepresentable == "1" && (
                                     unlockedBadgeKeys.includes(selectedBadge.badgekey) ? (
-                                        <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => { setRepresentBadge(); modalClose(); }}>
+                                        <Button variant="contained" sx={{ marginTop: 2, backgroundColor: '#FF9800', '&:hover': { backgroundColor: '#F57C00' } }} onClick={() => { setRepresentBadge(); modalClose(); }}>
                                             나의 대표 배지로 사용하기
                                         </Button>
                                     ) : (
-                                        <Button variant="contained" sx={{ marginTop: 2 }} disabled>
+                                        <Button variant="contained" sx={{ marginTop: 2, backgroundColor: '#FF9800', '&:hover': { backgroundColor: '#F57C00' } }} disabled>
                                             나의 대표 배지로 사용하기
                                         </Button>
                                     )

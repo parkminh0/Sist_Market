@@ -4,7 +4,7 @@ import MyPageSide from "@/component/user/layout/MyPageSide";
 import BadgeList from "@/component/user/myPage/BadgeList";
 import Manner from "@/component/user/myPage/Manner";
 import Review from "@/component/user/myPage/Review";
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Backdrop, Box, CircularProgress, LinearProgress, Typography } from '@mui/material';
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -15,7 +15,7 @@ import "/public/css/paging.css";
 import { useSearchParams } from "next/navigation";
 
 export default function page() {
-  const API_URL = "/user/api/getUser";
+  const API_URL = "/user/api/getUserProfile";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('manner');
@@ -63,10 +63,12 @@ export default function page() {
     ).then((res) => {
       setVo(res.data.uvo);
       setMannerTemp(res.data.uvo.mannertemp);
+      setLoading(false);
     });
   }
 
   useEffect(() => {
+    setLoading(true);
     const tab = searchParams.get('tab') || 'manner'; // 기본 탭은 'manner'
     updateList(tab);
 
@@ -109,15 +111,15 @@ export default function page() {
     if (temp <= 15) {
       return '#555555';
     } else if (temp <= 30) {
-      return '#2E64FE';
+      return '#58D3F7';
     } else if (temp <= 45) {
-      return 'skyblue';
-    } else if (temp <= 60) {
-      return '#01DF3A';
-    } else if (temp <= 80) {
       return '#F2F5A9';
-    } else {
+    } else if (temp <= 60) {
+      return '#FFFF00';
+    } else if (temp <= 80) {
       return 'orange';
+    } else {
+      return '#FF4000';
     }
   }
 
@@ -138,10 +140,30 @@ export default function page() {
       </Box>
     );
   }
-  
+  const [loading, setLoading] = useState(false);
   return (
     <>
       <article className="_1h4pbgy7wg _1h4pbgy7wz">
+        {loading && (
+          <Backdrop
+            open={loading}
+            sx={(theme) => ({
+              position: "fixed", // fixed로 설정하여 화면의 중앙에 배치
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center", // 수평 중앙 정렬
+              alignItems: "center", // 수직 중앙 정렬
+              color: "#fff",
+              zIndex: theme.zIndex.drawer + 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 투명도
+            })}
+          >
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
+        )}
         <div className="_6vo5t01 _6vo5t00 _588sy4n8 _588sy4nl _588sy4o4 _588sy4on _588sy4ou _588sy4p7 _588sy4k2 _588sy4kf _588sy4ky _588sy4lh _588sy4lo _588sy4m1 _588sy4n _588sy462">
           <section style={{ borderBottom: "1px solid #ebebeb" }} className="">
             <div className="_588sy41z _588sy421 _588sy42q _588sy415q _588sy417e">
@@ -211,38 +233,38 @@ export default function page() {
                 <div style={{ marginTop: '60px' }}>
                   <LinearProgressWithLabel temp={ mannerTemp } />
                 </div>
-                <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >
-                  <div data-v-2cbb289b="" onClick={()=>updateList('manner')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`}>
+                <div data-v-2cbb289b="" data-v-0a67d0b5="" className="purchase_list_tab sell detail_tab" >     
+                  <div data-v-2cbb289b="" onClick={() => updateList('manner')} className={`tab_item ${status == 1 ? 'tab_on' : ''}`} style={{ borderBottom: status == 1 ? '2px solid #FF9800' : '2px solid transparent' }}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
-                        <dt data-v-2cbb289b="" className="title">
-                            {mannerCount}
+                        <dt data-v-2cbb289b="" className="title" style={{ color: status == 1 ? '#FF9800' : '#000' }}>
+                          {mannerCount}
                         </dt>
-                        <dd data-v-2cbb289b="" className="count">
-                            받은 매너 평가
+                        <dd data-v-2cbb289b="" className="count" style={{ color: status == 1 ? '#FF9800' : '#000' }}>
+                          받은 매너 평가
                         </dd>
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateList('review')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={() => updateList('review')} className={`tab_item ${status == 2 ? 'tab_on' : ''}`} style={{ borderBottom: status == 2 ? '2px solid #FF9800' : '2px solid transparent' }}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
-                        <dt data-v-2cbb289b="" className="title">
-                            {reviewCount}
+                        <dt data-v-2cbb289b="" className="title" style={{ color: status == 2 ? '#FF9800' : '#000' }}>
+                          {reviewCount}
                         </dt>
-                        <dd data-v-2cbb289b="" className="count">
-                            받은 거래 후기
+                        <dd data-v-2cbb289b="" className="count" style={{ color: status == 2 ? '#FF9800' : '#000' }}>
+                          받은 거래 후기
                         </dd>
                       </dl>
                     </Link>
                   </div>
-                  <div data-v-2cbb289b="" onClick={()=>updateList('badge')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`}>
+                  <div data-v-2cbb289b="" onClick={() => updateList('badge')} className={`tab_item ${status == 3 ? 'tab_on' : ''}`} style={{ borderBottom: status == 3 ? '2px solid #FF9800' : '2px solid transparent' }}>
                     <Link data-v-2cbb289b="" href="#" className="tab_link">
                       <dl data-v-2cbb289b="" className="tab_box">
-                        <dt data-v-2cbb289b="" className="title">
+                        <dt data-v-2cbb289b="" className="title" style={{ color: status == 3 ? '#FF9800' : '#000' }}>
                           {badgeCount}
                         </dt>
-                        <dd data-v-2cbb289b="" className="count">
+                        <dd data-v-2cbb289b="" className="count" style={{ color: status == 3 ? '#FF9800' : '#000' }}>
                           활동 배지
                         </dd>
                       </dl>
