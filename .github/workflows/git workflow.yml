@@ -36,7 +36,18 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          scp -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+          scp -r -o StrictHostKeyChecking=no ./src ./pom.xml ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+      # scp -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+      # 추가
+      - name: Copy files to EC2 with limited bandwidth
+        run: |
+          scp -l 4000 -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+      # 추가
+      - name: Compress and copy files to EC2
+        run: |
+          tar -czf market.tar.gz ./*
+          scp -o StrictHostKeyChecking=no market.tar.gz ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+          ssh ubuntu@${{ secrets.HOST }} "cd /home/ubuntu/market && tar -xzf market.tar.gz && rm market.tar.gz"
 
       #    - name: Change Directory
       #      run: cd back
