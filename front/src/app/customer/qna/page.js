@@ -140,30 +140,30 @@ export default function QnaModal(props) {
       handlers: {
         image: async () => {
           if (typeof document !== 'undefined') {
-          const input = document.createElement('input');
-          input.setAttribute('type', 'file');
-          input.setAttribute('accept', 'image/*');
-          input.setAttribute('multiple', '');
-          input.addEventListener('change', async () => {
-            const editor = quillRef.current.getEditor(); // quill 에디터 인스턴스
-            const range = editor.getSelection(true);
-            const file2 = input.files && input.files[0];
-            const files = input.files;
-            if (file2) {
-              for (const file of files) {
-                try {
-                  const filePath = `/img/qna/`;
-                  const url = await uploadImage(file, filePath);
-                  editor.insertEmbed(range.index, "image", url);
-                  editor.setSelection(range.index + 1);
-                } catch (error) {
-                  console.error("이미지 삽입 오류", error);
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.setAttribute('multiple', '');
+            input.addEventListener('change', async () => {
+              const editor = quillRef.current.getEditor(); // quill 에디터 인스턴스
+              const range = editor.getSelection(true);
+              const file2 = input.files && input.files[0];
+              const files = input.files;
+              if (file2) {
+                for (const file of files) {
+                  try {
+                    const filePath = `/img/qna/`;
+                    const url = await uploadImage(file, filePath);
+                    editor.insertEmbed(range.index, "image", url);
+                    editor.setSelection(range.index + 1);
+                  } catch (error) {
+                    console.error("이미지 삽입 오류", error);
+                  }
                 }
               }
-            }
-          });
-          input.click();
-        }
+            });
+            input.click();
+          }
         },
       },
     },
