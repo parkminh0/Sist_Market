@@ -10,7 +10,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: ["heo"]
+    branches: ["park"]
   #pull_request:
     #branches: ["develop"]
 
