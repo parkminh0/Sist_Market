@@ -33,10 +33,14 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - name: Copy files to EC2
+            
+      - name: Copy back files to EC2
         run: |
-          scp -r -o StrictHostKeyChecking=no ./src ./pom.xml ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+          scp -r -o StrictHostKeyChecking=no ./back/src ./back/pom.xml ubuntu@${{ secrets.HOST }}:/home/ubuntu/market/back
+  
+      - name: Copy front files to EC2
+        run: |
+          scp -r -o StrictHostKeyChecking=no ./front/* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market/front
       # scp -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
       # 추가
       - name: Copy files to EC2 with limited bandwidth
@@ -48,7 +52,9 @@ jobs:
           tar -czf market.tar.gz ./*
           scp -o StrictHostKeyChecking=no market.tar.gz ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
           ssh ubuntu@${{ secrets.HOST }} "cd /home/ubuntu/market && tar -xzf market.tar.gz && rm market.tar.gz"
-
+      # 추가
+      - name: List files after checkout
+        run: ls -la
       #    - name: Change Directory
       #      run: cd back
 
