@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import FaqModal from "@/app/customer/faq/page";
-import QnaModal from "@/app/customer/qna/page";
+import FaqModal from "../customer/FaqModal";
+import QnaModal from "../customer/QnaModal";
 export default function Footer() {
 
   //문의하기
