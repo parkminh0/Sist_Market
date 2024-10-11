@@ -34,12 +34,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.PRIVATE_KEY }}
             
-      # 추가
-      - name: Compress and copy files to EC2
+      # 기존의 압축 후 전송 대신 변경된 파일만 복사
+      - name: Copy changed files to EC2 using rsync
         run: |
-          tar -czf market.tar.gz ./*
-          scp -o StrictHostKeyChecking=no market.tar.gz ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
-          ssh ubuntu@${{ secrets.HOST }} "cd /home/ubuntu/market && tar -xzf market.tar.gz && rm market.tar.gz"
+          rsync -avz --delete --exclude="node_modules" --exclude="target" -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+        shell: bash
       # 추가
       - name: List files after checkout
         run: ls -la
