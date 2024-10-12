@@ -26,7 +26,6 @@ export default function page() {
   const [mannerTemp, setMannerTemp] = useState(36.5);
   const [vo, setVo] = useState({});
   const userkey = Cookies.get("userkey");
-  const searchParams = useSearchParams();
 
   const categoryList = ['manner','review', 'badge'];
   
@@ -69,9 +68,10 @@ export default function page() {
 
   useEffect(() => {
     setLoading(true);
-    const tab = searchParams.get('tab') || 'manner'; // 기본 탭은 'manner'
-    updateList(tab);
-
+    if (typeof window !== "undefined") {
+      const tab = useSearchParams().get('tab') || 'manner'; // 기본 탭은 'manner'
+      updateList(tab);
+    }
     axios.get("/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {

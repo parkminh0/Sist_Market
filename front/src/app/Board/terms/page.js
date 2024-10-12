@@ -10,7 +10,8 @@ import Terms from "@/component/user/userPage/Terms";
 import { useSearchParams } from "next/navigation";
 
 export default function () {
-  const [selectedTerms, setSelectedTerms] = useState(term || "서비스 이용약관");
+  const [selectedTerms, setSelectedTerms] = useState(
+    "서비스 이용약관");
   
   useEffect(() => {
     if (typeof window !== "undefined") {
