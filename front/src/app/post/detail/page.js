@@ -126,7 +126,7 @@ export default function Page() {
           userkey2: res.buyer_userkey,
           content: "7KCI64yA7LmY7KeA66eI7ZmY7JiB7ZWp64uI64uk7ZmY7JiB7ZW07JqU7ZmY7JiB7ZW07ZmY7JiB7KCI64yA7LmY7KeA66eI",
         }
-      })
+      }).then(window.location.href = "/chat")
     })
   };
 
@@ -756,6 +756,8 @@ export default function Page() {
               <button onClick={() => {
                 if (!userkey) {
                   alert("로그인이 필요한 서비스입니다.");
+                } else if (userkey == postVO.userkey) {
+                  alert("본인이 작성한 글은 신고할 수 없습니다.");
                 } else {
                   handleChkOpen();
                 }

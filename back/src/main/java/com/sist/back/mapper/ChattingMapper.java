@@ -25,4 +25,6 @@ public interface ChattingMapper {
     int addEmoticon(ChattingEmojiVO cvo);
 
     int deleteEmoticon(String chattingemojikey);
+
+    int isRead(String userkey, String chatroomkey);
 }

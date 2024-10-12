@@ -61,4 +61,8 @@ public class ChattingService {
     public int deleteEmoticon(String chattingemojikey){
         return mapper.deleteEmoticon(chattingemojikey);
     }
+
+    public int isRead(String userkey, String chatroomkey){
+        return mapper.isRead(userkey,chatroomkey);
+    }
 }
