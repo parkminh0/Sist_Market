@@ -10,15 +10,17 @@ import Terms from "@/component/user/userPage/Terms";
 import { useSearchParams } from "next/navigation";
 
 export default function () {
-  const searchParams = useSearchParams();
-  const term = searchParams.get('term');
   const [selectedTerms, setSelectedTerms] = useState(term || "서비스 이용약관");
-
+  
   useEffect(() => {
-    if (term) {
-      setSelectedTerms(term);
+    if (typeof window !== "undefined") {
+      const searchParams = useSearchParams();
+      const term = searchParams.get('term');
+      if (term) {
+        setSelectedTerms(term);
+      }
     }
-  }, [term]);
+  }, []);
 
   return (
     <div>

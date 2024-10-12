@@ -38,9 +38,15 @@ export default function page() {
   const [vo, setVo] = useState({});
   const [cellList, setCellList] = useState([]);
 
-  const params = useSearchParams();
-  const userkey = params.get("userkey");
-
+  const [userkey, setUserkey] = useState(null);
+  useEffect(() => {
+    // 클라이언트에서만 실행되는 코드
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const userkeyFromParams = searchParams.get("userkey");
+      setUserkey(userkeyFromParams);
+    }
+  }, []);
 
   const date_today = new Date();
   const date_end = yyyymmdd(date_today,0);

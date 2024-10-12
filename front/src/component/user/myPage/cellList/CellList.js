@@ -11,8 +11,6 @@ import CellDetail from "./CellDetail";
 import "/public/css/celllist.css";
 
 export default function CellList(props) {
-  // const param = useSearchParams();
-  // alert(param.get("edit"));
   const celllist = props.celllist;
   const cellNow = props.cellNow;
   const getCellList = props.getCellList;

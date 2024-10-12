@@ -2,7 +2,6 @@
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,14 +14,9 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  Grid,
-  IconButton,
   MobileStepper,
-  Paper,
   Typography,
 } from "@mui/material";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import "/public/css/post_detail.css";
 import "/public/css/popcatelist.css";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -189,7 +183,7 @@ export default function Page() {
 
   const userkey = Cookies.get("userkey");
   const loggedIn = userkey != undefined;
-  const param = useSearchParams();
+  
 
   function getUserTown(address_list) {
     var length = address_list.length > 0 ? address_list.length : 0;
@@ -203,8 +197,10 @@ export default function Page() {
     return userTown;
   }
 
-
+  const param = useSearchParams();
+ 
   useEffect(() => {
+    if (typeof window !== "undefined") {
     setCellList([]);
     setPopCate([]);
     setPostVO({});
@@ -243,9 +239,12 @@ export default function Page() {
       if (res.data.pvo.hope_place != null && res.data.pvo.hope_place != "")
         getLocation(res.data.pvo);
 
-      if (param.get("edit") != null) {
-        editPost(res.data.pvo.userkey, res.data.pvo.poststatus);
+      if (typeof window !== "undefined") {
+        if (param.get("edit") != null) {
+          editPost(res.data.pvo.userkey, res.data.pvo.poststatus);
+        }
       }
+      
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
       setManner(res.data.pvo.uvo.mannertemp);
@@ -279,7 +278,7 @@ export default function Page() {
       });
       });
 
-      
+    }
   }, [param.get("postkey")]);
 
   const theme = useTheme();

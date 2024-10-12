@@ -8,7 +8,6 @@ import "/public/css/buylist.css";
 import "/public/css/celllist.css";
 import "/public/css/paging.css";
 
-import { useSearchParams } from "next/navigation";
 import UserList from "@/component/user/myPage/userList/UserList";
 import Cookies from "js-cookie";
 

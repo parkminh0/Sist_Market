@@ -15,12 +15,8 @@ import { Backdrop, Button, CircularProgress } from "@mui/material";
 import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
 import AddLikeCateModal from "@/component/user/myPage/likelist/AddLikeCateModal";
 import AddLikeKeyModal from "@/component/user/myPage/likelist/AddLikeKeyModal";
-// import { useSearchParams } from "next/navigation";
 
 export default function Page() {
-
-  // const params = useSearchParams();
-  // const userkey = params.get('userkey');
 
   const [likeWhat, setLikeWhat] = useState('post');
   const [likeList, setLikeList] = useState([]);
