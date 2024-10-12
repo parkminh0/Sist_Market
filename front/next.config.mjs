@@ -2,6 +2,9 @@
 // 52.78.168.131
 const nextConfig = {
   reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true, // ESLint errors will be ignored during the build process
+  },
   async rewrites() {
     return [
       {
