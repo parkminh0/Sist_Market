@@ -15,7 +15,7 @@ import "/public/css/paging.css";
 import { useSearchParams } from "next/navigation";
 
 export default function page() {
-  const API_URL = "/user/api/getUserProfile";
+  const API_URL = "/api/user/api/getUserProfile";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('manner');
@@ -72,19 +72,19 @@ export default function page() {
       const tab = useSearchParams().get('tab') || 'manner'; // 기본 탭은 'manner'
       updateList(tab);
     }
-    axios.get("/user/manner/getManner", {
+    axios.get("/api/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
     });
-      axios.get("/user/allReview", { params: { userkey: userkey} })
+      axios.get("/api/user/allReview", { params: { userkey: userkey} })
     .then((res) => {
       if (reviewCount === 0) {
         setReviewCount(res.data.count);
       }
     });
-      axios.get("/user/badge/getBadgeCount", { params: { userkey: userkey } })
+      axios.get("/api/user/badge/getBadgeCount", { params: { userkey: userkey } })
     .then((res) => {
       setBadgeCount(res.data.count);
     });

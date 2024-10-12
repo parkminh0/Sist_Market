@@ -28,7 +28,7 @@ export default function BuyDetail(props) {
     const [userreview_dtm, setUserreview_dtm] = useState('');
     const [method, setMethod] = useState('일반 판매');
   
-    const API_URL = "/adpost/detail";
+    const API_URL = "/api/adpost/detail";
 
     const [loading, setLoading] = useState(false);
 

@@ -13,8 +13,8 @@ import com.sist.back.vo.AlarmVO;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Controller
+@RequestMapping("/api")
 public class AlarmController {
     @Autowired
     private AlarmService a_service;
@@ -36,5 +36,5 @@ public class AlarmController {
     public int deleteAllAlarms(String userkey) {
         return a_service.deleteAllAlarms(userkey);
     }
-    
+
 }

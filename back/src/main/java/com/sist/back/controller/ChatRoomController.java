@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api")
 public class ChatRoomController {
 
     @Autowired

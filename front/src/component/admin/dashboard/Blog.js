@@ -59,7 +59,7 @@ const Blog = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/getTop4",
+      url: "/api/ad/getTop4",
       method: "get",
       headers: {
         "Content-Type": "application/json",

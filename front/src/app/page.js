@@ -13,7 +13,7 @@ export default function Home() {
 
   function getCategory() {
     axios({
-      url: "/category/all",
+      url: "/api/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export default function Home() {
 
   function getMain() {
     axios({
-      url: "/adpost/main",
+      url: "/api/adpost/main",
       method: "get",
       params: {
         region1: decodeURIComponent(Cookies.get("region1")),

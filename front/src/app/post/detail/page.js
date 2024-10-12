@@ -43,7 +43,7 @@ export default function Page() {
 
   function isLike(postkey) {
     axios({
-      url: "/adpost/isLike",
+      url: "/api/adpost/isLike",
       method: "get",
       params: {
         postkey: postkey,
@@ -61,7 +61,7 @@ export default function Page() {
 
   function toggleLike() {
     axios({
-      url: "/adpost/toggleLike",
+      url: "/api/adpost/toggleLike",
       method: "get",
       params: {
         isLike: like, // isLike: true면 이미 등록된걸 삭제하는 것임
@@ -89,7 +89,7 @@ export default function Page() {
 
   function updateViewqty(postkey) {
     axios({
-      url: "/adpost/incViewqty",
+      url: "/api/adpost/incViewqty",
       method: "get",
       params: {
         postkey: postkey,
@@ -105,7 +105,7 @@ export default function Page() {
   }
 
   const chatconnect = () => {
-    axios.get('/chat/createroom', {
+    axios.get('/api/chat/createroom', {
       params: {
         postkey: postKey,
         buyer_userkey: userkey,
@@ -113,7 +113,7 @@ export default function Page() {
       }
     }).then(response => {
       const res = response.data;
-      axios.get('/chat/adminsend', {
+      axios.get('/api/chat/adminsend', {
         params: {
           chatroomkey: res.chatroomkey,
           userkey1: res.seller_userkey,
@@ -215,7 +215,7 @@ export default function Page() {
     
     setLoading(true);
     axios({
-      url: "/adpost/postdetail",
+      url: "/api/adpost/postdetail",
       method: "get",
       params: {
         postkey: postkey,
@@ -249,7 +249,7 @@ export default function Page() {
       setManner(res.data.pvo.uvo.mannertemp);
 
       axios({
-        url: "/adpost/cellList",
+        url: "/api/adpost/cellList",
         method: "get",
         params: {
           userkey: res.data.pvo.uvo.userkey,
@@ -261,7 +261,7 @@ export default function Page() {
       }).then((res2) => {
         setCellList(res2.data.cellList);
         axios({
-          url: "/adpost/pop_cate",
+          url: "/api/adpost/pop_cate",
           method: "get",
           params: {
             categorykey: res.data.pvo.categorykey,

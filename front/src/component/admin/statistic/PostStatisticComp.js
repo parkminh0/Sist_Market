@@ -16,7 +16,7 @@ export default function PostStatisticComp({ categoryType, dateType }) {
 
   useEffect(() => {
     axios({
-      url: "/ad/postTop10Statistic",
+      url: "/api/ad/postTop10Statistic",
       method: "get",
       params: { type: categoryType, dateType: dateType },
       headers: {

@@ -16,7 +16,7 @@ import com.sist.back.vo.PostVO;
 import com.sist.back.vo.ReviewListVO;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 
 public class DealreviewController {
     @Autowired
@@ -32,7 +32,7 @@ public class DealreviewController {
     @ResponseBody
     public Map<String, Object> allReview(String userkey, String cPage) {
         Map<String, Object> d_map = new HashMap<>();
-        
+
         int totalRecord = d_service.allCount(userkey);
         Paging page = new Paging(5, 3);
         page.setTotalRecord(totalRecord);
@@ -62,7 +62,7 @@ public class DealreviewController {
     @ResponseBody
     public Map<String, Object> buyingReview(String userkey, String cPage) {
         Map<String, Object> d_map = new HashMap<>();
-        
+
         int totalRecord = d_service.buyingCount(userkey);
         Paging page = new Paging(5, 3);
         page.setTotalRecord(totalRecord);
@@ -127,7 +127,8 @@ public class DealreviewController {
 
     @RequestMapping("/sellerReview")
     @ResponseBody
-    public Map<String, Object> sellerReview(String reviewlistkey, String postkey, String userkey, String estimateuserkey) {
+    public Map<String, Object> sellerReview(String reviewlistkey, String postkey, String userkey,
+            String estimateuserkey) {
         Map<String, Object> map = new HashMap<>();
         int toPost = d_service.sellerReview(reviewlistkey, postkey);
         int toManner = d_service.addManner(userkey, reviewlistkey, estimateuserkey);
@@ -143,7 +144,8 @@ public class DealreviewController {
 
     @RequestMapping("/buyerReview")
     @ResponseBody
-    public Map<String, Object> buyerReview(String reviewlistkey, String postkey, String userkey, String estimateuserkey) {
+    public Map<String, Object> buyerReview(String reviewlistkey, String postkey, String userkey,
+            String estimateuserkey) {
         Map<String, Object> map = new HashMap<>();
         int toPost = d_service.sellerReview(reviewlistkey, postkey);
         int toManner = d_service.addManner(userkey, reviewlistkey, estimateuserkey);
@@ -165,13 +167,13 @@ public class DealreviewController {
         map.put("cnt", cnt);
         return map;
     }
-    
-    //배지 부여(후기 작성)
+
+    // 배지 부여(후기 작성)
     public int giveBadgeForReviews(String userkey) {
         return b_service.giveBadgeForReviews(userkey);
     }
 
-    //배지 부여(긍정적 후기 받기)
+    // 배지 부여(긍정적 후기 받기)
     public int giveBadgeForGoodReviews(String userkey) {
         return b_service.giveBadgeForGoodReviews(userkey);
     }

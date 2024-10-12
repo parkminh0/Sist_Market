@@ -14,12 +14,12 @@ export default function Page() {
   //1. xml~controller에서는 그냥 db가서 중복확인하고 오는 거
   //2. getData로 가져온 값이랑 같으면 버튼 비활성화
 
-  const API_URL = "/user/api/getUser";
-  const EDIT_IMG = "/user/editImage";
-  const DEL_IMG = "/user/delImage";
-  const EDIT_URL = "/user/editUser";
-  const DEL_USER = "/user/delUser";
-  const CHK_PW = "/user/chkPw";
+  const API_URL = "/api/user/api/getUser";
+  const EDIT_IMG = "/api/user/editImage";
+  const DEL_IMG = "/api/user/delImage";
+  const EDIT_URL = "/api/user/editUser";
+  const DEL_USER = "/api/user/delUser";
+  const CHK_PW = "/api/user/chkPw";
   const userkey = Cookies.get("userkey");
 
   const router = useRouter();

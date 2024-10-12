@@ -8,7 +8,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import axios from 'axios';
 
 export default function Manner({ userKey, onMannerCountChange }) {
-  const API_URL = "/user/manner/getManner";
+  const API_URL = "/api/user/manner/getManner";
 
   const [list, setList] = useState([]);
   const [goods, setGoods] = useState([]);

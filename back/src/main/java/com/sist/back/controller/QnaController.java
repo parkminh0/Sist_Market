@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/qna")
+@RequestMapping("/api/qna")
 public class QnaController {
-    
+
     @Value("${server.upload.qna.image}")
     private String upload;
 
@@ -55,7 +55,7 @@ public class QnaController {
         map.put("chk", 1);
         return map;
     }
-    
+
     @RequestMapping("/question")
     @ResponseBody
     public Map<String, Object> question(QnaVO qvo) {
@@ -116,7 +116,7 @@ public class QnaController {
         map.put("chk", chk);
         return map;
     }
-    
+
     @RequestMapping("/delete")
     @ResponseBody
     public Map<String, Object> delete(String qnakey) {
@@ -139,14 +139,14 @@ public class QnaController {
         map.put("cnt", cnt);
         return map;
     }
-    
+
     @RequestMapping("/answer")
     @ResponseBody
     public Map<String, Object> answer(@RequestBody QnaVO qvo) {
         Map<String, Object> map = new HashMap<>();
         int cnt = q_service.answer(qvo);
         qvo = q_service.getQuestion(qvo.getQnakey());
-        db_service.onDatabaseChange("/myPage/qna/view/"+qvo.getQnakey(), "문의 답변이 도착했어요!", "문의", qvo.getUserkey());
+        db_service.onDatabaseChange("/myPage/qna/view/" + qvo.getQnakey(), "문의 답변이 도착했어요!", "문의", qvo.getUserkey());
         map.put("cnt", cnt);
         return map;
     }
@@ -155,7 +155,7 @@ public class QnaController {
     @ResponseBody
     public Map<String, Object> all(String cPage) {
         Map<String, Object> q_map = new HashMap<>();
-        
+
         int totalRecord = q_service.count();
         Paging page = new Paging(5, 3);
         page.setTotalRecord(totalRecord);
@@ -182,11 +182,11 @@ public class QnaController {
         return map;
     }
 
-
     @RequestMapping("/search")
     @ResponseBody
-    public Map<String, Object> search(String cPage, String title, String create_start_dtm, String create_end_dtm, String answer_start_dtm,
-                                    String answer_end_dtm, String isanswered, String searchType, String searchValue) {
+    public Map<String, Object> search(String cPage, String title, String create_start_dtm, String create_end_dtm,
+            String answer_start_dtm,
+            String answer_end_dtm, String isanswered, String searchType, String searchValue) {
         Map<String, Object> q_map = new HashMap<>();
         q_map.put("isanswered", "1");
         int answeredRecord = q_service.searchCount(q_map);
@@ -249,7 +249,7 @@ public class QnaController {
     public Map<String, Object> userAll(String cPage, String userkey) {
         Map<String, Object> q_map = new HashMap<>();
         q_map.put("userkey", userkey);
-        
+
         int totalRecord = q_service.userCount(userkey);
         Paging page = new Paging(5, 3);
         page.setTotalRecord(totalRecord);
@@ -292,4 +292,3 @@ public class QnaController {
         return map;
     }
 }
-

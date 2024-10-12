@@ -16,7 +16,7 @@ export default function CateStatisticComp({ categoryType }) {
 
   useEffect(() => {
     axios({
-      url: "/ad/catedealstatistic",
+      url: "/api/ad/catedealstatistic",
       method: "get",
       params: { type: categoryType },
       headers: {

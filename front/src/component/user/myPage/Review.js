@@ -8,10 +8,10 @@ import React, { useEffect, useState } from 'react';
 import "/public/css/paging.css";
 
 export default function Review({ userKey, onReviewCountChange }) {
-  const ALL_URL = "/user/allReview";
-  const BUY_URL = "/user/buyingReview";
-  const SELL_URL = "/user/sellingReview";
-  const HIDE_URL = "/user/hideReview"
+  const ALL_URL = "/api/user/allReview";
+  const BUY_URL = "/api/user/buyingReview";
+  const SELL_URL = "/api/user/sellingReview";
+  const HIDE_URL = "/api/user/hideReview"
   
   const userkey = userKey;
   const [selectedTab, setSelectedTab] = useState(0);

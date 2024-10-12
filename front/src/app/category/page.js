@@ -8,7 +8,7 @@ export default function page() {
 
   function getCategory() {
     axios({
-      url: "/category/all",
+      url: "/api/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",

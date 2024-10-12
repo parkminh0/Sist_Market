@@ -1,24 +1,7 @@
 "use client"
-import Link from "next/link";
 import React from "react";
-import { useRef } from "react";
-
 
 export default function Page() {
-  const scrollRef = useRef(null);
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-  
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
-  };
-
   return (
     <>
       <article className="_1h4pbgy9ug _1h4pbgy9vs _1h4pbgy9wo _1h4pbgy92o _1h4pbgy936 _1h4pbgy7kw">

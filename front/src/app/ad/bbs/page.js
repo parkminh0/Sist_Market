@@ -33,12 +33,12 @@ import AddModal from "@/component/admin/bbs/AddModal";
 import DetailModal from "@/component/admin/bbs/DetailModal";
 
 export default function Page() {
-  const API_URL = "/admin/board/list";
-  const BC_URL = "/admin/board/getAllBc";
-  const ADD_URL = "/admin/board/addBc";
-  const EDIT_URL = "/admin/board/editBc";
-  const DEL_CATE_URL = "/admin/board/chkDelBc";
-  const DEL_BBS_URL = "/admin/board/chkDel";
+  const API_URL = "/api/admin/board/list";
+  const BC_URL = "/api/admin/board/getAllBc";
+  const ADD_URL = "/api/admin/board/addBc";
+  const EDIT_URL = "/api/admin/board/editBc";
+  const DEL_CATE_URL = "/api/admin/board/chkDelBc";
+  const DEL_BBS_URL = "/api/admin/board/chkDel";
 
   // #region 카테고리 CRUD
   const [allCateChecked, setAllCateChecked] = useState(false);
@@ -204,13 +204,13 @@ export default function Page() {
   }
 
   function getCount() {
-    axios.get("/admin/board/todayCount").then((res) => {
+    axios.get("/api/admin/board/todayCount").then((res) => {
       setTodayCount(res.data.cnt);
     });
   }
 
   function getSelectCount1(categorykey) {
-    axios.get("/admin/board/selectTodayCount", {
+    axios.get("/api/admin/board/selectTodayCount", {
       params: {
         categorykey: categorykey,
       }

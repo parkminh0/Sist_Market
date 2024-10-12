@@ -12,7 +12,7 @@ import com.sist.back.service.MannerService;
 import com.sist.back.vo.ReviewListVO;
 
 @Controller
-@RequestMapping("/user/manner")
+@RequestMapping("/api/user/manner")
 public class MannerController {
     @Autowired
     private MannerService m_service;
@@ -41,9 +41,9 @@ public class MannerController {
 
     @RequestMapping("/praiseUser")
     @ResponseBody
-    public Map<String, Object> praiseUser(String userkey, String estimateUser,String listKey) {
+    public Map<String, Object> praiseUser(String userkey, String estimateUser, String listKey) {
         Map<String, Object> map = new HashMap<>();
-        int result = m_service.praiseUser(userkey,estimateUser,listKey);
+        int result = m_service.praiseUser(userkey, estimateUser, listKey);
         map.put("result", result);
 
         return map;
@@ -62,9 +62,9 @@ public class MannerController {
 
     @RequestMapping("/disapproveUser")
     @ResponseBody
-    public Map<String, Object> disapproveUser(String userkey, String estimateUser,String listKey) {
+    public Map<String, Object> disapproveUser(String userkey, String estimateUser, String listKey) {
         Map<String, Object> map = new HashMap<>();
-        int result = m_service.disapproveUser(userkey,estimateUser,listKey);
+        int result = m_service.disapproveUser(userkey, estimateUser, listKey);
         map.put("result", result);
 
         return map;
@@ -79,4 +79,3 @@ public class MannerController {
         return map;
     }
 }
-

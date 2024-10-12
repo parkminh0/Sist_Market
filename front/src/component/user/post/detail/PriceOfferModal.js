@@ -35,7 +35,7 @@ export default function PriceOfferModal(props) {
   function priceoffer() {
     if (confirm("해당 가격으로 제안하시겠습니까?")) {
       axios({
-        url: "/adpost/priceOffer",
+        url: "/api/adpost/priceOffer",
         method: "get",
         params: {
           postkey: pvo.postkey,

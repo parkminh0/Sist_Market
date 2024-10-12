@@ -14,7 +14,7 @@ const Statistic = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/todayReport",
+      url: "/api/ad/todayReport",
       method: "get",
       headers: {
         "Content-Type": "application/json",

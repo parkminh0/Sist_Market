@@ -107,7 +107,7 @@ export default function Header() {
   // 로그인한 사용자의 알림을 가져옴
   useEffect(() => {
     axios
-      .get(`/alarm`, { params: { userkey } })
+      .get(`/api/alarm`, { params: { userkey } })
       .then((response) => {
         setNotifications(response.data); // 알림 데이터 설정
         const unread = response.data.filter((notif) => !notif.read).length; // 읽지 않은 알림 수 계산
@@ -122,7 +122,7 @@ export default function Header() {
   const [searchlog, setSearchlog] = useState([]);
   function getSearchlog() {
     axios({
-      url: "/searchlog/getSearchlog",
+      url: "/api/searchlog/getSearchlog",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -186,7 +186,7 @@ export default function Header() {
       return;
     }
     axios({
-      url: "/town/getNearTown",
+      url: "/api/town/getNearTown",
       method: "get",
       params: {
         region1: "",
@@ -215,7 +215,7 @@ export default function Header() {
 
     if (userkey != null && userkey != "" && userkey != "undefined") {
       axios({
-        url: "/address/getAddress",
+        url: "/api/address/getAddress",
         method: "post",
         params: {
           userkey: userkey,
@@ -332,7 +332,7 @@ export default function Header() {
     if (addrKey == "") {
       if (confirm("'" + reg3 + "'을 내 동네에 추가하시겠습니까?")) {
         axios({
-          url: "/address/addAddress",
+          url: "/api/address/addAddress",
           method: "get",
           params: {
             userkey: decodeURIComponent(Cookies.get("userkey")),
@@ -363,7 +363,7 @@ export default function Header() {
         if (prev == next) return;
         if (confirm("'" + prev + "'을 '" + next + "'으로 변경하시겠습니까?")) {
           axios({
-            url: "/address/modifyAddress",
+            url: "/api/address/modifyAddress",
             method: "get",
             params: {
               addresskey: prevAddrKey,
@@ -388,7 +388,7 @@ export default function Header() {
         // 대표 동네 변경
         if (confirm("대표 동네를 '" + reg3 + "'으로 변경하시겠습니까?")) {
           axios({
-            url: "/address/changeSelected",
+            url: "/api/address/changeSelected",
             method: "get",
             params: {
               userkey: decodeURIComponent(Cookies.get("userkey")),
@@ -427,7 +427,7 @@ export default function Header() {
 
     if (confirm("'" + reg3 + "'을 삭제하시겠습니까?")) {
       axios({
-        url: "/address/deleteAddress",
+        url: "/api/address/deleteAddress",
         method: "get",
         params: {
           addresskey: addrKey,
@@ -490,7 +490,7 @@ export default function Header() {
   };
 
   //jwt 로그아웃 처리
-  const logout_url = "/user/api/logout";
+  const logout_url = "/api/user/api/logout";
 
   function logout() {
     axios({
@@ -511,7 +511,7 @@ export default function Header() {
   }
 
   //jwt 로그인 처리
-  const login_url = "/user/api/login";
+  const login_url = "/api/user/api/login";
   const [user, setUser] = useState({});
 
   //token 저장
@@ -556,7 +556,7 @@ export default function Header() {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
     signIn("kakao", {
-      callbackUrl: "http://localhost:8080/user/api/kakao/login",
+      callbackUrl: "http://localhost:8080/api/user/api/kakao/login",
     });
   };
   const [chk, setChk] = useState(true);
@@ -568,7 +568,7 @@ export default function Header() {
     }
   }, [session]);
 
-  const kakao_url = "/user/api/kakao/login";
+  const kakao_url = "/api/user/api/kakao/login";
   // kakao controller에 데이터 전달
   const goController = async () => {
     if (session && session.user) {
@@ -600,7 +600,7 @@ export default function Header() {
   const[notificationCount, setNotificationCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   useEffect(()=>{
-    axios.get(`/alarm`, {
+    axios.get(`/api/alarm`, {
       params: {
         userkey : userkey}}).then((res)=>{
           setNotificationCount(res.data.length);

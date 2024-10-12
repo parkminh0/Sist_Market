@@ -22,7 +22,7 @@ import Cookies from "js-cookie";
 
 
 export default function page() {
-  const API_URL = "/user/api/getUser";
+  const API_URL = "/api/user/api/getUser";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('cell');
@@ -75,7 +75,7 @@ export default function page() {
 
   function getCanPoN(){
     axios.get(
-      "/user/userPage/canPoN", {
+      "/api/user/userPage/canPoN", {
         params: { 
           userkey_me: Cookies.get("userkey"),
           userkey_you: userkey,
@@ -92,7 +92,7 @@ export default function page() {
 
   function showMorePost(){
     axios.get(
-      "/user/userPage/getMorePost", {
+      "/api/user/userPage/getMorePost", {
         params: { 
           userkey: userkey,
           limitpostkey: limitpostkey,
@@ -165,7 +165,7 @@ export default function page() {
 
   function getData() {
     axios.get(
-      "/user/userPage/getData", {
+      "/api/user/userPage/getData", {
         params: { userkey: userkey }
       }
     ).then((res) => {
@@ -189,7 +189,7 @@ export default function page() {
         }
     }
     getCanPoN();
-    axios.get("/user/api/FHRBCheck", {
+    axios.get("/api/user/api/FHRBCheck", {
       params: {
         me: me,
         you: you,
@@ -200,18 +200,18 @@ export default function page() {
         setIsBlocked(res.data.isBlocked);
     });
     updateList('cell');
-    axios.get("/user/badge/getBadge", {
+    axios.get("/api/user/badge/getBadge", {
       params: { userkey: userkey }
   }).then((res) => {
     setBadgeCount((res.data.b_ar&&res.data.b_ar!=undefined)?res.data.b_ar.length:0);
   })
-    axios.get("/user/manner/getManner", {
+    axios.get("/api/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
     });
-    axios.get("/user/allReview", { params: { userkey: userkey} 
+    axios.get("/api/user/allReview", { params: { userkey: userkey} 
     }).then((res) => {
       setReviewCount(res.data.count);
     });

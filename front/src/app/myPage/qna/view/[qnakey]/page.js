@@ -11,7 +11,7 @@ import { Button, Divider, Paper, Table, TableBody, TableCell, TableContainer, Ta
 
 export default function () {
     const [qvo, setQvo] = useState([]);
-    const listUrl = `/qna/getQuestion`;
+    const listUrl = `/api/qna/getQuestion`;
     
     const params = useParams();
     const router = useRouter();

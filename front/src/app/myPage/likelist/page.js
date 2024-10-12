@@ -25,8 +25,8 @@ export default function Page() {
   const [display, setDisplay] = useState('게시글');
   const [page, setPage] = useState({});
 
-  const API_URL = '/user/api/likeLists';
-  const DEL_URL = '/adpost/delLike';
+  const API_URL = '/api/user/api/likeLists';
+  const DEL_URL = '/api/adpost/delLike';
 
   const userkey = Cookies.get("userkey");
 

@@ -9,9 +9,9 @@ export default function DetailModal(props) {
   const onClose = () => { props.handleDetailModalClose(); };
   const boardkey = props.boardkey;
 
-  const API_URL = `/admin/board/getBbs?boardkey=${boardkey}`;
-  const DEL_URL = `/admin/board/del?boardkey=${boardkey}`;
-  const BC_URL = "/admin/board/getBc";
+  const API_URL = `/api/admin/board/getBbs?boardkey=${boardkey}`;
+  const DEL_URL = `/api/admin/board/del?boardkey=${boardkey}`;
+  const BC_URL = "/api/admin/board/getBc";
   const [vo, setVo] = useState({});
   const [categoryname, setCategoryname] = useState('');
 

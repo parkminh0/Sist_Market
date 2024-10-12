@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.sist.back.service.PostimgService;
 
-
 @RestController
-@RequestMapping("/postimg")
+@RequestMapping("/api/postimg")
 public class PostimgController {
 
     @Autowired
