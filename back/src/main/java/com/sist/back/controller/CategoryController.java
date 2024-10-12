@@ -10,21 +10,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.CategoryService;
 
-
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
-    
+
     @Autowired
     CategoryService service;
 
     @RequestMapping("/all")
     @ResponseBody
     public Map<String, Object> all() {
-
+        System.out.println("here");
         Map<String, Object> res = new HashMap<>();
         res.put("category_list", service.all());
         return res;
     }
-    
+
 }

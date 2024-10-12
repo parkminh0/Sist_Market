@@ -29,7 +29,8 @@ public class userVO {
 	private List<PostVO> cell_list;
 	private TownVO tvo;
 
-	private String userkey,
+	private String 
+			userkey,
 			id,
 			pw,
 			name,

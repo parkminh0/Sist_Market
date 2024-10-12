@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-
+// 52.78.168.131
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {

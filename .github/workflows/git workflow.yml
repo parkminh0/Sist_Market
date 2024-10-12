@@ -9,9 +9,10 @@
 name: Java CI with Maven
 
 on:
-  ###push:
-  pull_request:
-    branches: ["develop"]
+  push:
+    branches: ["heo"]
+  #pull_request:
+    #branches: ["develop"]
 
 jobs:
   build:
@@ -32,11 +33,15 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - name: Copy files to EC2
+            
+      # 기존의 압축 후 전송 대신 변경된 파일만 복사
+      - name: Copy changed files to EC2 using rsync
         run: |
-          scp -r -o StrictHostKeyChecking=no ./* ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
-
+          rsync -avz --delete --exclude="node_modules" --exclude="target" -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.HOST }}:/home/ubuntu/market
+        shell: bash
+      # 추가
+      - name: List files after checkout
+        run: ls -la
       #    - name: Change Directory
       #      run: cd back
 
@@ -58,7 +63,7 @@ jobs:
 
       - name: SSH into EC2 and run Docker Compose
         run: |
-          ssh -t -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} << 'EOF'
             cd /home/ubuntu/market
             docker-compose down
             docker-compose up -d --build
