@@ -12,13 +12,6 @@ on:
   push:
     branches: 
       - main
-      - develop
-      - park
-      - seo
-      - heo
-      - lee
-      - ann
-      - jeon
       #["heo"]
   #pull_request:
     #branches: ["develop"]
@@ -35,6 +28,7 @@ jobs:
         with:
           java-version: "17"
           distribution: "adopt"
+          #        github-token: ${{ secrets.GIT_TOKEN }}
           cache: maven
           check-for-updates: "true"
       - name: Set up SSH
