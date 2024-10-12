@@ -12,6 +12,7 @@ on:
   push:
     branches: 
       - main
+      - park
       #["heo"]
   #pull_request:
     #branches: ["develop"]
