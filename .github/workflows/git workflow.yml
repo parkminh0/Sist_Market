@@ -13,6 +13,7 @@ on:
     branches: 
       - main
       - park
+      - develop
       #["heo"]
   #pull_request:
     #branches: ["develop"]
