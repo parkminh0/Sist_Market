@@ -253,6 +253,20 @@ export default function EditPostModal(props) {
       
     }
 
+
+    function hidePost(){
+      axios.get("/adpost/hidePost", {
+        params: {
+          postkey: pvo.postkey,
+        }
+      }).then((res) => {
+        if(res.data.result>0){
+          alert("해당 게시글의 숨김 처리가 완료되었습니다.");
+          window.location.href="/myPage/celllist";
+        }
+      });
+    }
+
     function getCategory() {
         axios({
           url: "/category/all",
@@ -549,7 +563,17 @@ export default function EditPostModal(props) {
               임시저장
             </Button>
             :
-            ''
+              <Button
+              variant="outlined"
+              type="button"
+              onClick={hidePost}
+              style={{
+                marginLeft: "auto",
+                border: 'none',
+              }}
+            >
+              게시글 숨김
+            </Button>
             }
           </DialogTitle>
           <DialogContent>

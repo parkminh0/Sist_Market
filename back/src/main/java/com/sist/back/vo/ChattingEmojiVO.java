@@ -13,5 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ChattingEmojiVO {
     private String chattingemojikey, img_url;
+
     private MultipartFile file;
 }

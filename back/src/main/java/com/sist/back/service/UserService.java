@@ -38,7 +38,7 @@ public class UserService {
     public userVO reg(userVO vo) {
 
         // 패스워드가 일치하는지 확인
-        if (vo.getPw() != null) {
+        if (vo != null && vo.getPw() != null) {
             vo.setPw(passwordEncoder.encode(vo.getPw()));
         }
         Map<String, Object> map = new HashMap();
@@ -117,6 +117,10 @@ public class UserService {
             list.toArray(ar);
         }
         return ar;
+    }
+
+    public List<PostVO> getPostsForAdmin(Map<String, Object> p_map){
+        return mapper.getPostsForAdmin(p_map);
     }
 
     public int F_Check(String me, String you){

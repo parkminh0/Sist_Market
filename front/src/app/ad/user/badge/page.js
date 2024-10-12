@@ -284,8 +284,7 @@ export default function Page() {
                         <TableCell align="center">번호</TableCell>
                         <TableCell align="center">배지명</TableCell>
                         <TableCell align="center">이미지</TableCell>
-                        <TableCell align="center">수정일자</TableCell>
-                        <TableCell align="center">대표배지</TableCell>
+                        <TableCell align="center">대표배지 설정 가능 여부</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -326,9 +325,6 @@ export default function Page() {
                               ) : (
                                 "이미지 없음"
                               )}
-                            </TableCell>
-                            <TableCell align="center">
-                              {badge.update_dtm ? new Date(badge.update_dtm).toISOString().split("T")[0] : "-"}
                             </TableCell>
                             <TableCell align="center">
                               {badge.isrepresentable === "0" ? "X" : "O"}
@@ -442,7 +438,7 @@ export default function Page() {
                 InputLabelProps={{ sx: { fontSize: '1.0rem' } }}
               />
               <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
-                <Typography>대표 배지 설정</Typography>
+                <Typography>대표 배지 설정 가능 여부</Typography>
                 <Checkbox
                   checked={isrepresentable === "1"}
                   onChange={(e) => setIsrepresentable(e.target.checked ? "1" : "0")} 

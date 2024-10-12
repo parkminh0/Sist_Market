@@ -501,7 +501,7 @@ export default function Page() {
                           >
                             {ar.title ? ar.title : "-"}
                           </TableCell>
-                          <TableCell align="center">
+                          {/* <TableCell align="center">
                             {
                               new Date(ar.create_dtm)
                                 .toISOString()
@@ -514,7 +514,28 @@ export default function Page() {
                                   .toISOString()
                                   .split("T")[0]
                               : "-"}
-                          </TableCell>
+                          </TableCell> */}
+<TableCell align="center">
+  {new Date(ar.create_dtm).toLocaleString([], {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+</TableCell>
+<TableCell align="center">
+  {ar.answer_dtm
+    ? new Date(ar.answer_dtm).toLocaleString([], {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "-"}
+</TableCell>
+
                           <TableCell align="center">
                             {ar.isanswered == 1 ? "O" : "X"}
                           </TableCell>

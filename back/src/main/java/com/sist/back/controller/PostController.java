@@ -12,34 +12,32 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.back.service.BadgeService;
 import com.sist.back.service.CategoryService;
+import com.sist.back.service.OfferService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
 import com.sist.back.service.SearchlogService;
 import com.sist.back.service.TownService;
-import com.sist.back.service.OfferService;
 import com.sist.back.service.WishlistService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
+import com.sist.back.vo.OfferVO;
+import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
-import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.categoryVO;
-import com.sist.back.vo.PostCountVO;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/adpost")
@@ -342,8 +340,11 @@ public class PostController {
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
-            vo.setCanbargain("0");
+            vo.setCanbargain(vo.getCanbargain() != null ? "0" : "0"); // null일 경우 기본값 '0'으로 설정
         }
+        // } else {
+        //     vo.setCanbargain("0");
+        // }
 
         // 파일 데이터 처리
         // 1) 기존 존재하던 이미지 삭제
@@ -478,8 +479,8 @@ public class PostController {
     @ResponseBody
     public Map<String, Object> hidePost(String postkey) {
         Map<String, Object> map = new HashMap<>();
-        int cnt = p_service.hidePost(postkey);
-        map.put("cnt", cnt);
+        int result = p_service.hidePost(postkey);
+        map.put("result", result);
         return map;
     }
 
