@@ -31,7 +31,6 @@ import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 import AddModal from "@/component/admin/bbs/AddModal";
 import DetailModal from "@/component/admin/bbs/DetailModal";
-import EditModal from "@/component/admin/bbs/EditModal";
 
 export default function Page() {
   const API_URL = "/admin/board/list";
@@ -567,7 +566,6 @@ export default function Page() {
                               {ar.title}
                             </TableCell>
                             <DetailModal detailModalOpen={detailModalOpen} handleDetailModalClose={handleDetailModalClose} boardkey={selectedBoardKey} getBbsData={getBbsData} handleEditModalOpen={handleEditModalOpen}/>
-                            <EditModal editModalOpen={editModalOpen} handleEditModalClose={handleEditModalClose} getBbsData={getBbsData} boardkey={selectedBoardKey}/>
                             <TableCell align="center">
                               {ar.create_dtm
                                 ? new Date(ar.create_dtm)

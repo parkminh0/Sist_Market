@@ -35,6 +35,7 @@ export default function DetailModal(props) {
   
 
   function del() {
+    if (typeof window !== "undefined") {
     const confirmation = confirm("선택된 게시글을 정말 삭제하시겠습니까?");
     if (!confirmation) {
       return;
@@ -44,6 +45,7 @@ export default function DetailModal(props) {
       props.getBbsData(1); 
       onClose();
     });
+  }
   }
 
   function getCategoryname(boardkey) {
