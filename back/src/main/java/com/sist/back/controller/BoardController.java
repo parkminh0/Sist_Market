@@ -30,9 +30,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Controller
-@RequestMapping("/admin/board")
+@RequestMapping("/api/admin/board")
 public class BoardController {
 
     @Value("${server.upload.admin.board.image}")
@@ -155,7 +154,7 @@ public class BoardController {
         try {
             String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
             String filePath = upload + "/" + fileName;
-            
+
             File file = new File(filePath);
             if (file.exists()) {
                 file.delete();
@@ -177,9 +176,9 @@ public class BoardController {
     public Map<String, Object> edit(BoardVO bvo, String categoryname) {
         System.out.println("content: " + bvo.getContent());
         Map<String, Object> map = new HashMap<>();
-        
+
         bvo.setCategorykey(b_service.changeCategoryname(categoryname));
-        
+
         List<String> list = new ArrayList<>();
         String regex = "<img[^>]+src=\"([^\"]+)\"";
         Pattern pattern = Pattern.compile(regex);
@@ -190,7 +189,7 @@ public class BoardController {
         bi_service.BoardImgDelete(list, bvo.getBoardkey());
 
         int cnt = b_service.edit(bvo);
-    
+
         if (bvo.getContent() != null) {
             matcher = pattern.matcher(bvo.getContent());
             List<String> newImgList = new ArrayList<>();
@@ -206,9 +205,9 @@ public class BoardController {
         } else {
             map.put("chk", 0);
         }
-            map.put("cnt", cnt);
-            return map;
-        }
+        map.put("cnt", cnt);
+        return map;
+    }
 
     @RequestMapping("/empty")
     @ResponseBody
@@ -313,11 +312,11 @@ public class BoardController {
     @ResponseBody
     public Map<String, Object> userBbsList(String categorykey, String cPage) {
         Map<String, Object> map = new HashMap<>();
-        
+
         Paging p = new Paging(5, 3); // 페이징 객체 생성
         int totalRecord = b_service.userBbsCount(categorykey);
         p.setTotalRecord(totalRecord);
-        
+
         if (cPage != null) {
             p.setNowPage(Integer.parseInt(cPage));
         } else {
@@ -326,19 +325,18 @@ public class BoardController {
         Map<String, Object> b_map = new HashMap<>();
         b_map.put("categorykey", categorykey);
         b_map.put("begin", String.valueOf(p.getBegin()));
-        b_map.put("end",String.valueOf(p.getEnd()));
-       
+        b_map.put("end", String.valueOf(p.getEnd()));
 
         BoardVO[] ar = b_service.userBbsList(b_map);
         map.put("ar", ar);
-        map.put("page",p);
+        map.put("page", p);
         map.put("totalPage", p.getTotalPage());
         map.put("totalRecord", p.getTotalRecord());
         map.put("numPerPage", p.getNumPerPage());
         return map;
     }
 
-    // 사용자 공지사항 검색 
+    // 사용자 공지사항 검색
     @RequestMapping("/searchForNotice")
     @ResponseBody
     public Map<String, Object> searchForNotice(String title, String categorykey, String cPage) {

@@ -5,9 +5,9 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 export default function Content(props) {
-  const USER_URL = "/user/report/reportUser";
-  const POST_URL = "/user/report/reportPost";
-  const CHK_URL = "/user/report/noseeUser"
+  const USER_URL = "/api/user/report/reportUser";
+  const POST_URL = "/api/user/report/reportPost";
+  const CHK_URL = "/api/user/report/noseeUser"
 
   const goBack = props.handleContentClose;
   const onClose = props.handleReportClose;

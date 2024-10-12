@@ -17,7 +17,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/getTotal", // 실제 검색 API
+      url: "/api/ad/getTotal", // 실제 검색 API
       method: "get",
       headers: {
         "Content-Type": "application/json",

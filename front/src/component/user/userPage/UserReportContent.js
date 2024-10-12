@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import "/public/css/report.css";
 
 export default function UserReportContent(props) {
-  const USER_URL = "/user/report/reportUser";
-  const CHK_URL = "/user/report/noseeUser"
+  const USER_URL = "/api/user/report/reportUser";
+  const CHK_URL = "/api/user/report/noseeUser"
 
   const goBack = props.handleContentClose;
   const onClose = props.handleReportClose;

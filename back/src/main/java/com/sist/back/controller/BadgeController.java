@@ -19,7 +19,7 @@ import com.sist.back.service.BadgeService;
 import com.sist.back.vo.BadgeVO;
 
 @Controller
-@RequestMapping("/user/badge")
+@RequestMapping("/api/user/badge")
 public class BadgeController {
     @Autowired
     private BadgeService b_service;
@@ -61,7 +61,7 @@ public class BadgeController {
         map.put("count", b_service.getBadgeCount(userkey));
         return map;
     }
-    
+
     @RequestMapping("/representBadge")
     @ResponseBody
     public Map<String, Object> representBadge(String userkey, String badgekey) {
@@ -80,7 +80,8 @@ public class BadgeController {
 
     @RequestMapping("/editBadge")
     @ResponseBody
-    public Map<String, Object> editBadge(String badgekey, String name, MultipartFile image, String precontent, String postcontent, String isrepresentable, String existingImageUrl) {
+    public Map<String, Object> editBadge(String badgekey, String name, MultipartFile image, String precontent,
+            String postcontent, String isrepresentable, String existingImageUrl) {
         Map<String, Object> map = new HashMap<>();
         try {
             String imgUrl = existingImageUrl;

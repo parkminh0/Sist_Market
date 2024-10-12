@@ -83,7 +83,7 @@ export default function page() {
   // #region 비동기-카테고리 리스트
   function getCategory() {
     axios({
-      url: "/category/all",
+      url: "/api/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export default function page() {
   // #region 비동기-Region2 리스트
   function getRegion2(loc1, loc2) {
     axios({
-      url: "/town/postside",
+      url: "/api/town/postside",
       method: "get",
       params: {
         key: "1",
@@ -150,7 +150,7 @@ export default function page() {
     setMaxPriceParam(maxParam);
 
     axios({
-      url: "/adpost/search",
+      url: "/api/adpost/search",
       method: "get",
       params: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
@@ -183,7 +183,7 @@ export default function page() {
   useEffect(() => {
     if (loading){
       axios({
-        url: "/adpost/search",
+        url: "/api/adpost/search",
         method: "get",
         params: {
           userkey: decodeURIComponent(Cookies.get("userkey")),
@@ -364,7 +364,7 @@ export default function page() {
 
     // 임시저장 확인
     axios({
-      url: "/adpost/searchTemp",
+      url: "/api/adpost/searchTemp",
       method: "get",
       params: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
@@ -741,8 +741,8 @@ export default function page() {
       axios
         .post(
           savePostKey == null || savePostKey == ""
-            ? "/adpost/write"
-            : "/adpost/edit",
+            ? "/api/adpost/write"
+            : "/api/adpost/edit",
           formData,
           {
             headers: {

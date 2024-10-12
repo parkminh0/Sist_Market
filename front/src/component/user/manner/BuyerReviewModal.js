@@ -6,9 +6,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export default function BuyerReviewModal(props) {
-  const REVIEW_URL = "/user/reviewList";
-  const BUYER_REVIEW_URL = "/user/buyerReview";
-  const MANNER_TEMP_URL = "/user/manner/setMannerTemp";
+  const REVIEW_URL = "/api/user/reviewList";
+  const BUYER_REVIEW_URL = "/api/user/buyerReview";
+  const MANNER_TEMP_URL = "/api/user/manner/setMannerTemp";
   const open = props.reportOpen;
   const onClose = () => {
     props.handleReportClose();

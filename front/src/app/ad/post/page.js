@@ -41,7 +41,7 @@ export default function Page() {
   const [filteredList, setFilteredList] = useState([]); // 필터링된 게시글 리스트
 
   // 게시판 현황 카운트
-  const API_URL = "/adpost/postcount";
+  const API_URL = "/api/adpost/postcount";
   const [all, set_all_posts] = useState(0); // 전체 게시글 수
   const [tem_save, set_tem_save_posts] = useState(0); // 임시 저장 게시글 수
   const [sale, set_sale_posts] = useState(0); // 판매중 게시글 수
@@ -69,7 +69,7 @@ export default function Page() {
   // region1
   useEffect(() => {
     axios({
-      url: "/town/getAllRegion1", // 실제 검색 API
+      url: "/api/town/getAllRegion1", // 실제 검색 API
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export default function Page() {
   // region2
   useEffect(() => {
     axios({
-      url: "/town/getAllRegion2", // 실제 검색 API
+      url: "/api/town/getAllRegion2", // 실제 검색 API
       method: "get",
       params: {
         region1: selReg1,
@@ -103,7 +103,7 @@ export default function Page() {
   // region3
   useEffect(() => {
     axios({
-      url: "/town/getAllRegion3",
+      url: "/api/town/getAllRegion3",
       method: "get",
       params: {
         region2: selReg2,
@@ -121,7 +121,7 @@ export default function Page() {
   useEffect(() => {
     if (loading) {
       axios({
-        url: "/adpost/searchpost",
+        url: "/api/adpost/searchpost",
         method: "post",
         data: JSON.stringify(searchParams),
         headers: {
@@ -178,7 +178,7 @@ export default function Page() {
   }
 
   function callData() {
-    axios.get("/category/all").then((response) => {
+    axios.get("/api/category/all").then((response) => {
       setCategoryList(response.data.category_list);
     });
   }
@@ -235,7 +235,7 @@ export default function Page() {
       alert("삭제하실 게시글을 선택해주시기 바랍니다.")
     }
     axios
-      .get("/adpost/checkPostDel", {
+      .get("/api/adpost/checkPostDel", {
         params: { postkeys: checkedItems }, // URL 쿼리 파라미터로 postkeys 전송
       })
       .then((res) => {

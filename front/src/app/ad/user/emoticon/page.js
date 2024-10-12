@@ -52,7 +52,7 @@ export default function Page() {
         if (uploadedImage instanceof FileList && uploadedImage.length > 0) {
             formData.append("file", uploadedImage[0]); // 선택된 파일 추가
             axios({
-                url: "/chat/admin/emoticon/add",
+                url: "/api/chat/admin/emoticon/add",
                 method: "post",
                 data: formData, // FormData 객체를 data로 설정
                 headers: {
@@ -71,7 +71,7 @@ export default function Page() {
                 });
         } else {
             axios({
-                url: "/chat/admin/emoticon/add",
+                url: "/api/chat/admin/emoticon/add",
                 method: "post",
                 data: formData,
             })

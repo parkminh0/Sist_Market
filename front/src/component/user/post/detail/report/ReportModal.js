@@ -9,7 +9,7 @@ import Content from './Content';
 export default function ReportModal(props) {
     const open = props.reportOpen;
     const onClose = props.handleReportClose;
-    const API_URL = "/user/report/getReportList";
+    const API_URL = "/api/user/report/getReportList";
 
     const [list, setList] = useState([]);
     const [next, setNext] = useState(false); // next가 true가 되면 추가 리스트를 보여줌

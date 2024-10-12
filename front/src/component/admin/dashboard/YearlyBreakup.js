@@ -12,7 +12,7 @@ const YearlyBreakup = () => {
   const [total, setTotal] = useState(0);
   useEffect(() => {
     axios({
-      url: "/ad/postStatusCnt",
+      url: "/api/ad/postStatusCnt",
       method: "get",
       headers: {
         "Content-Type": "application/json",

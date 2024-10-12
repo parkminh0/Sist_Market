@@ -98,7 +98,7 @@ export default function CellList(props) {
   }
 
   function remindPost(postkey) {
-    const API_URL = "/adpost/remind";
+    const API_URL = "/api/adpost/remind";
     axios({
       url: API_URL,
       method: "get",
@@ -111,7 +111,7 @@ export default function CellList(props) {
   }
 
   function unhidPost(postkey) {
-    const API_URL = "/adpost/unhid";
+    const API_URL = "/api/adpost/unhid";
     axios({
       url: API_URL,
       method: "get",

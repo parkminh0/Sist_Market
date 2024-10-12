@@ -28,7 +28,7 @@ import {
 
     function getCategory() {
         axios({
-          url: "/category/all",
+          url: "/api/category/all",
           method: "get",
           headers: {
             "Content-Type": "application/json",
@@ -42,7 +42,7 @@ import {
     function addCategory() {
       if (confirm("해당 카테고리를 관심 카테고리로 등록하시겠습니까?")) {
         axios({
-          url: "/user/api/like/category",
+          url: "/api/user/api/like/category",
           method: "get",
           params: {
             userkey: userkey,

@@ -120,7 +120,7 @@ const ChatApp = () => {
     if (oneTime.current) {
       return;
     }
-    axios.get(`/chat/rooms?userkey=${userkey}`).then(response => {
+    axios.get(`/api/chat/rooms?userkey=${userkey}`).then(response => {
       const res = response.data;
       myImageUrl.current = res.my_info.imgurl;
       myName.current = res.my_info.nickname;
@@ -292,7 +292,7 @@ const ChatApp = () => {
           }
         }
       }
-      axios.get('/chat/isread', {
+      axios.get('/api/chat/isread', {
         params: {
           chatroomkey: currentchatroomkey,
           userkey: userkey,
@@ -337,7 +337,7 @@ const ChatApp = () => {
       if (currentchatroomkey == "" || currentchatroomkey == null) {
         return;
       }
-      await axios.get('/chat/room', {
+      await axios.get('/api/chat/room', {
         params: {
           chatroomkey: currentchatroomkey,
           userkey: userkey,
@@ -640,7 +640,7 @@ const ChatApp = () => {
         setIsDisabled(true); // 셀렉트 박스 비활성화
       } else {
         setIsDisabled(false);
-        axios.get("/adpost/updatePostStatus", {
+        axios.get("/api/adpost/updatePostStatus", {
           params: {
             postStatus: "2",
             postkey: postkey.current,
@@ -806,7 +806,7 @@ const ChatApp = () => {
 
   // 이모티콘박스
   const getEmoticon = () => {
-    axios.get('/chat/emoticon', {
+    axios.get('/api/chat/emoticon', {
       params: {
         cPage: currentEmoticonPage,
       }
@@ -874,7 +874,7 @@ const ChatApp = () => {
     setPostStatus(event.target.value);
     isFirstRender.current = false;
     if (event.target.value) {
-      axios.get("/adpost/updatePostStatus", {
+      axios.get("/api/adpost/updatePostStatus", {
         params: {
           postStatus: event.target.value,
           postkey: postkey.current,

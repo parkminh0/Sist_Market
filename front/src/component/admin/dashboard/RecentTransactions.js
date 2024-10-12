@@ -26,7 +26,7 @@ const RecentTransactions = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/getQnaList",
+      url: "/api/ad/getQnaList",
       method: "get",
       headers: {
         "Content-Type": "application/json",

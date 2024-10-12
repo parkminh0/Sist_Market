@@ -117,7 +117,7 @@ export default function Moneybook(props) {
     }
 
     useEffect(()=>{
-        axios.get("/user/moneybook/getInfos",
+        axios.get("/api/user/moneybook/getInfos",
             {
                 params: {
                     userkey: userkey,

@@ -40,7 +40,7 @@ import com.sist.back.vo.TownVO;
 import com.sist.back.vo.categoryVO;
 
 @RestController
-@RequestMapping("/adpost")
+@RequestMapping("/api/adpost")
 public class PostController {
 
     @Autowired
@@ -294,7 +294,7 @@ public class PostController {
             }
         }
 
-        //배지 부여
+        // 배지 부여
         if (vo.getPoststatus().equals("1")) {
             giveBadgeForPosts(vo.getUserkey());
         }
@@ -304,11 +304,10 @@ public class PostController {
         return res;
     }
 
-     //배지 부여 함수
-     public int giveBadgeForPosts(String userkey) {
+    // 배지 부여 함수
+    public int giveBadgeForPosts(String userkey) {
         return b_service.giveBadgeForPosts(userkey);
     }
-
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
@@ -343,7 +342,7 @@ public class PostController {
             vo.setCanbargain(vo.getCanbargain() != null ? "0" : "0"); // null일 경우 기본값 '0'으로 설정
         }
         // } else {
-        //     vo.setCanbargain("0");
+        // vo.setCanbargain("0");
         // }
 
         // 파일 데이터 처리
@@ -380,7 +379,7 @@ public class PostController {
             }
         }
 
-        //배지 부여
+        // 배지 부여
         if (vo.getPoststatus().equals("1")) {
             giveBadgeForPosts(vo.getUserkey());
         }
@@ -441,7 +440,7 @@ public class PostController {
         Random random = new Random();
 
         categoryVO[] lc_list = p_service.getLikeCate(userkey);
-        for(int i=0; i<lc_list.length; i++){
+        for (int i = 0; i < lc_list.length; i++) {
             randomCategories.add(Integer.parseInt(lc_list[i].getCategorykey()));
         }
 

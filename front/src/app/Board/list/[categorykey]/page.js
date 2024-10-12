@@ -18,7 +18,7 @@ import { useSearchParams } from "next/navigation";
 export default function (props) {
     const [ar, setAr] = useState([]);
     const [categorykey, setCategorykey] = useState(`${props.params.categorykey}`);
-    const listUrl = `/admin/board/userBbsList?categorykey=${props.params.categorykey}`;
+    const listUrl = `/api/admin/board/userBbsList?categorykey=${props.params.categorykey}`;
     const [nowPage, setNowPage] = useState(1);
     const [page, setPage] = useState({});
     const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
@@ -66,7 +66,7 @@ export default function (props) {
     }, [cPage]);
 
     //bclist 가져와서 =boardside로 넘겨줄거임
-    const bcUrl = "/admin/board/getAllBc";
+    const bcUrl = "/api/admin/board/getAllBc";
 
     function getBcList() {  
       axios.get(bcUrl)
@@ -87,7 +87,7 @@ export default function (props) {
     }, [categorykey]);
 
     // 공지사항 검색
-    const sUrl = "/admin/board/searchForNotice";
+    const sUrl = "/api/admin/board/searchForNotice";
     function searchNotice(cPage = 1){  // cPage 인자 추가
       axios.get(sUrl, {
         params: {

@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpSession;
 import com.sist.back.service.BadgeService;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
@@ -49,7 +49,6 @@ public class UserController {
 
     @Value("${server.upload.user.image}")
     private String userImgPath;
-
 
     // 관리자 유저 카운트 확인
     @RequestMapping("/api/usercount")
@@ -106,7 +105,7 @@ public class UserController {
         return map;
     }
 
-     // userAdmin 회원 정보 가져오기
+    // userAdmin 회원 정보 가져오기
     @RequestMapping("/api/admin/userEdit")
     @ResponseBody
     public Map<String, Object> getUserInfoForAdmin(String userkey) {
@@ -123,7 +122,7 @@ public class UserController {
         return map;
     }
 
-     // userAdmin 회원 정보 가져오기
+    // userAdmin 회원 정보 가져오기
     @RequestMapping("/api/admin/getPost")
     @ResponseBody
     public Map<String, Object> getPostForAdmin(String userkey, String cPage, int postCount) {
@@ -140,8 +139,6 @@ public class UserController {
         map.put("p_list", service.getPostsForAdmin(p_map));
         return map;
     }
-
-
 
     @RequestMapping("/api/mypage/userEdit")
     @ResponseBody
@@ -206,7 +203,7 @@ public class UserController {
         return map;
     }
 
-    //유저 프로필
+    // 유저 프로필
     @RequestMapping("/api/getUserProfile")
     @ResponseBody
     public Map<String, Object> getUserProfile(String userkey) {
@@ -222,57 +219,57 @@ public class UserController {
     public Map<String, Object> FHRBCheck(String me, String you) {
         Map<String, Object> map = new HashMap<>();
         int f_num = service.F_Check(me, you);
-        
+
         int n_num = service.N_Check(me, you);
         int b_num = service.B_Check(me, you);
-        map.put("isLiked", f_num>0);
-        map.put("isNosee", n_num>0);
-        map.put("isBlocked", b_num>0);
+        map.put("isLiked", f_num > 0);
+        map.put("isNosee", n_num > 0);
+        map.put("isBlocked", b_num > 0);
         return map;
     }
-    
+
     // 계정관리 user정보
     @RequestMapping("/api/likeIoN")
     @ResponseBody
     public Map<String, Object> likeIoN(String me, String you, Boolean isLiked) {
         Map<String, Object> map = new HashMap<>();
         int l_num = -1;
-        if(isLiked){
+        if (isLiked) {
             l_num = service.likeN(me, you);
-        } else{
+        } else {
             l_num = service.likeI(me, you);
         }
         map.put("isBlocked", l_num);
         return map;
     }
+
     @RequestMapping("/api/noseeIoN")
     @ResponseBody
     public Map<String, Object> noseeIoN(String me, String you, Boolean isNosee) {
         Map<String, Object> map = new HashMap<>();
         int n_num = -1;
-        if(isNosee){
+        if (isNosee) {
             n_num = service.noseeN(me, you);
-        } else{
+        } else {
             n_num = service.noseeI(me, you);
         }
         map.put("isBlocked", n_num);
         return map;
     }
+
     @RequestMapping("/api/blockIoN")
     @ResponseBody
     public Map<String, Object> blockIoN(String me, String you, Boolean isBlocked) {
         Map<String, Object> map = new HashMap<>();
         int b_num = -1;
-        if(isBlocked){
+        if (isBlocked) {
             b_num = service.blockN(me, you);
-        } else{
+        } else {
             b_num = service.blockI(me, you);
         }
         map.put("isBlocked", b_num);
         return map;
     }
-
-
 
     // jwt token login
     @PostMapping("/api/login")
@@ -283,7 +280,7 @@ public class UserController {
         int cnt = 0; // 아무 작업도 못했어 0 한번했어 1
         String msg = "로그인에 실패하였습니다.";
         userVO uvo = null;
-        
+
         if (vo.getId() != null) {
             uvo = service.authAndMakeToken(vo.getId(), vo.getPw());
             if (uvo != null) {
@@ -379,7 +376,7 @@ public class UserController {
     // kakao_login & reg
     @RequestMapping("/api/kakao/login")
     @ResponseBody
-    public Map<String, Object> kakaologin(String email, String nickname,String imgurl, HttpServletResponse res) {
+    public Map<String, Object> kakaologin(String email, String nickname, String imgurl, HttpServletResponse res) {
         // System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
         // System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
@@ -395,7 +392,6 @@ public class UserController {
             String randomId = "user" + System.currentTimeMillis();
             fvo.setId(randomId);
 
-            
             fvo.setPw(null);
 
             // 회원가입 처리
@@ -474,7 +470,7 @@ public class UserController {
         int nowPage = 1;
         if (cPage != null) {
             nowPage = Integer.parseInt(cPage);
-        } 
+        }
         page.setNowPage(nowPage);
 
         int begin = page.getBegin();
@@ -499,7 +495,7 @@ public class UserController {
         lc_map.put("result_insert", service.addLikeCategory(userkey, categorykey));
         return lc_map;
     }
-    
+
     @RequestMapping("/api/like/keyword")
     @ResponseBody
     public Map<String, Object> addLikeKeyword(String userkey, String content) {
@@ -745,18 +741,18 @@ public class UserController {
     // @RequestMapping("/delImage")
     // @ResponseBody
     // public Map<String, Object> delImage(String userkey) {
-    //     String realPath = "/img/user/";
-    //     userVO uvo = new userVO();
-    //     uvo.setUserkey(userkey);
-    //     uvo.setImgurl(realPath + "default_img.png");
+    // String realPath = "/img/user/";
+    // userVO uvo = new userVO();
+    // uvo.setUserkey(userkey);
+    // uvo.setImgurl(realPath + "default_img.png");
 
-    //     Map<String, Object> map = new HashMap<>();
-    //     int cnt = service.delImage(userkey);
-    //     if (cnt > 0) {
-    //         service.editImage(uvo);
-    //     }
-    //     map.put("cnt", cnt);
-    //     return map;
+    // Map<String, Object> map = new HashMap<>();
+    // int cnt = service.delImage(userkey);
+    // if (cnt > 0) {
+    // service.editImage(uvo);
+    // }
+    // map.put("cnt", cnt);
+    // return map;
     // }
 
     @RequestMapping("/editUser")
@@ -830,72 +826,68 @@ public class UserController {
         return map;
     }
 
-
     @RequestMapping("/userPage/getData")
     @ResponseBody
     public Map<String, Object> getData(String userkey) {
-        
+
         Map<String, Object> u_map = new HashMap<>();
 
         userVO uvo = service.getUserForAdmin(userkey);
         int cell1count = service.getCell1TotalCount(userkey);
         int cell2count = service.getCell2TotalCount(userkey);
-        int cellCount = cell1count+cell2count;
+        int cellCount = cell1count + cell2count;
         List<PostVO> cellList = service.getCellListForUserPage(userkey);
         String limitpostkey = "0";
         String lastpostkey = "0";
-        boolean isnextexist = cellCount>5;
-        if(!cellList.isEmpty()){
-            lastpostkey = cellList.get(cellList.size()-1).getRnum();
+        boolean isnextexist = cellCount > 5;
+        if (!cellList.isEmpty()) {
+            lastpostkey = cellList.get(cellList.size() - 1).getRnum();
             limitpostkey = cellList.get(0).getPostkey();
         }
-        
+
         u_map.put("uvo", uvo);
         u_map.put("cellCount", cellCount);
         u_map.put("cellList", cellList);
         u_map.put("limitpostkey", limitpostkey);
         u_map.put("lastpostkey", lastpostkey);
         u_map.put("isnextexist", isnextexist);
-        
+
         return u_map;
     }
-    
+
     @RequestMapping("/userPage/canPoN")
     @ResponseBody
-    public Map<String, Object> canPoN(String userkey_me,String userkey_you,String date_start,String date_end) {
-        
+    public Map<String, Object> canPoN(String userkey_me, String userkey_you, String date_start, String date_end) {
+
         Map<String, Object> c_map = new HashMap<>();
 
-        int result_s = service.getDidsell(userkey_me,userkey_you,date_start,date_end);
-        int result_b = service.getDidbuy(userkey_me,userkey_you,date_start,date_end);
-        
-        c_map.put("result", result_s+result_b);
-        
+        int result_s = service.getDidsell(userkey_me, userkey_you, date_start, date_end);
+        int result_b = service.getDidbuy(userkey_me, userkey_you, date_start, date_end);
+
+        c_map.put("result", result_s + result_b);
+
         return c_map;
     }
-    
+
     @RequestMapping("/userPage/getMorePost")
     @ResponseBody
     public Map<String, Object> getMorePost(String userkey, String limitpostkey, String lastpostkey) {
-        
+
         Map<String, Object> c_map = new HashMap<>();
 
         List<PostVO> cellList = service.getMorePost(userkey, limitpostkey, lastpostkey);
         int cellCount = service.getRestList(userkey, limitpostkey, lastpostkey);
-        boolean isnextexist = (cellCount>5);
+        boolean isnextexist = (cellCount > 5);
         String lp_key = "9999";
-        if(!cellList.isEmpty()){
-            lp_key = cellList.get(cellList.size()-1).getRnum();
+        if (!cellList.isEmpty()) {
+            lp_key = cellList.get(cellList.size() - 1).getRnum();
         }
-        
+
         c_map.put("cellList", cellList);
         c_map.put("lastpostkey", lp_key);
         c_map.put("isnextexist", isnextexist);
-        
+
         return c_map;
     }
-
-
-
 
 }

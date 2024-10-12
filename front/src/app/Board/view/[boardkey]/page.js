@@ -34,7 +34,7 @@ export default function page( props ) {
 
   function updateViewqty(boardkey) {
     axios({
-      url: "/admin/board/incHit",
+      url: "/api/admin/board/incHit",
       method: "get",
       params: {
         boardkey: boardkey,
@@ -57,7 +57,7 @@ export default function page( props ) {
     }
   }
 
-  const API_URL = `/admin/board/getBbs?boardkey=${boardkey}`;
+  const API_URL = `/api/admin/board/getBbs?boardkey=${boardkey}`;
   function getData() {
     axios.get(API_URL).then((res) => {
         setAr(res.data.bvo); // 객체로 설정
@@ -73,7 +73,7 @@ export default function page( props ) {
   }, [boardkey]);
 
   // bclist 가져와서 BoardSide로 넘겨줄거임
-  const bcUrl = "/admin/board/getAllBc";
+  const bcUrl = "/api/admin/board/getAllBc";
   function getBcList() {  
     axios.get(bcUrl)
     .then((json) => { 

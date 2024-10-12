@@ -34,7 +34,7 @@ export default function PostDetail(props) {
     setOpen(true);
   }
   const handleClose = () => setOpen(false);
-  const API_URL = "/adpost/detail";
+  const API_URL = "/api/adpost/detail";
 
   function getPostDetail(p_key) {
     axios({

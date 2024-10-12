@@ -255,7 +255,7 @@ export default function EditPostModal(props) {
 
 
     function hidePost(){
-      axios.get("/adpost/hidePost", {
+      axios.get("/api/adpost/hidePost", {
         params: {
           postkey: pvo.postkey,
         }
@@ -269,7 +269,7 @@ export default function EditPostModal(props) {
 
     function getCategory() {
         axios({
-          url: "/category/all",
+          url: "/api/category/all",
           method: "get",
           headers: {
             "Content-Type": "application/json",
@@ -377,7 +377,7 @@ export default function EditPostModal(props) {
         
         axios
         .post(
-            "/adpost/edit",
+            "/api/adpost/edit",
             formData,
             {
                 headers: {

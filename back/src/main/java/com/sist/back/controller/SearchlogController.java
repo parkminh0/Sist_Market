@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping("/searchlog")
+@RequestMapping("/api/searchlog")
 public class SearchlogController {
 
     @Autowired

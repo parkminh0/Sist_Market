@@ -9,8 +9,8 @@ export default function Page(props) {
   const onClose = () => { props.handleQuestionModalClose(); };
   const qnakey = props.qnakey;
 
-  const API_URL = `/qna/getQuestion?qnakey=${qnakey}`;
-  const DEL_URL = `/qna/delete?qnakey=${qnakey}`;
+  const API_URL = `/api/qna/getQuestion?qnakey=${qnakey}`;
+  const DEL_URL = `/api/qna/delete?qnakey=${qnakey}`;
   const [vo, setVo] = useState({});
 
   function getData() {

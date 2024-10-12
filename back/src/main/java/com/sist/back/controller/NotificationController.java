@@ -8,8 +8,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.sist.back.service.SseEmitterService;
 
-
 @RestController
+@RequestMapping("/api")
 public class NotificationController {
 
     @Autowired
@@ -35,5 +35,5 @@ public class NotificationController {
         sseEmitterService.sendNotificationToClients(message);
         return ResponseEntity.ok("Notification sent!");
     }
-    
+
 }

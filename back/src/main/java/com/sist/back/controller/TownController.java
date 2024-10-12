@@ -12,7 +12,7 @@ import com.sist.back.service.TownService;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
-@RequestMapping("/town")
+@RequestMapping("/api/town")
 public class TownController {
 
     @Autowired

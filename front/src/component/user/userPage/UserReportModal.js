@@ -11,7 +11,7 @@ export default function UserReportModal(props) {
     const setReportOpen = props.setReportOpen;
     const userkey = props.userkey;
 
-    const API_URL = "/user/report/getUserReportList";
+    const API_URL = "/api/user/report/getUserReportList";
     
     function reportClose(){
         setReportOpen(false);

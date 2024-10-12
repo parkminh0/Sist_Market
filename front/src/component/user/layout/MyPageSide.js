@@ -22,7 +22,7 @@ export default function MyPageSide(props) {
     }
   }, [pathname]);
 
-  const BC_URL = "/admin/board/getAllBc";
+  const BC_URL = "/api/admin/board/getAllBc";
   const [bc_list, setBc_list] = useState([]);
 
   function getData() {

@@ -13,7 +13,7 @@ const SalesOverview = () => {
   // 데이터 가져오기
   function getPostOverview(year) {
     axios({
-      url: "/ad/postOverview",
+      url: "/api/ad/postOverview",
       method: "get",
       params: {
         year: year,
@@ -34,7 +34,7 @@ const SalesOverview = () => {
   // 초기 세팅
   useEffect(() => {
     axios({
-      url: "/ad/searchYear",
+      url: "/api/ad/searchYear",
       method: "get",
       headers: {
         "Content-Type": "application/json",

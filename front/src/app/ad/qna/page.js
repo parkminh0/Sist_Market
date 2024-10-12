@@ -103,13 +103,13 @@ export default function Page() {
   };
 
   function getCount() {
-    axios.get("/qna/todayCount").then((res) => {
+    axios.get("/api/qna/todayCount").then((res) => {
       setTodayCount(res.data.cnt);
     });
   }
 
   function getSelectCount1() {
-    axios.get("/qna/selectTodayCount", {
+    axios.get("/api/qna/selectTodayCount", {
       params: {
         isanswered: 0,
       }
@@ -119,7 +119,7 @@ export default function Page() {
   }
 
   function getSelectCount2() {
-    axios.get("/qna/selectTodayCount", {
+    axios.get("/api/qna/selectTodayCount", {
       params: {
         isanswered: 1,
       }

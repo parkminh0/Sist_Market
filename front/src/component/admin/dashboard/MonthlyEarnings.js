@@ -20,7 +20,7 @@ const MonthlyEarnings = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/userStatusCnt",
+      url: "/api/ad/userStatusCnt",
       method: "get",
       headers: {
         "Content-Type": "application/json",

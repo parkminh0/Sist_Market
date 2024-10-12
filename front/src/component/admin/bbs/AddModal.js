@@ -10,11 +10,11 @@ import { Box, Button, Dialog, DialogActions, DialogContent, TextField } from '@m
 
 // formats로 사용자가 넣을 수 있는 데이터를 제한함
 const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "align", "float", "blockquote", "list", "bullet", "indent", "background", "color", "link", "image", "video", "height", "width",];
-const BC_URL = "/admin/board/getAllBc";
-const AddImage_URL = "/admin/board/addImage";
-const Add_URL = "/admin/board/add";
-const EmptyAdd_URL = "/admin/board/empty";
-const deleteLatest_URL="/admin/board/deleteLatest";
+const BC_URL = "/api/admin/board/getAllBc";
+const AddImage_URL = "/api/admin/board/addImage";
+const Add_URL = "/api/admin/board/add";
+const EmptyAdd_URL = "/api/admin/board/empty";
+const deleteLatest_URL="/api/admin/board/deleteLatest";
 
 // 이미지 사이즈 조절을 위한 모듈
 Quill.register('modules/imageActions', ImageActions);

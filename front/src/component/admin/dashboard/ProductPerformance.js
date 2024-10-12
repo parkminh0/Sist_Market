@@ -60,7 +60,7 @@ const ProductPerformance = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/getUserRank",
+      url: "/api/ad/getUserRank",
       method: "get",
       headers: {
         "Content-Type": "application/json",
