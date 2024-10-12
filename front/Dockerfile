@@ -1,19 +1,19 @@
-# 기존
-# FROM node:20-alpine as builder
-# WORKDIR /usr/src/app
-# COPY package*.json ./
-# RUN npm install
-# COPY ./ ./
-
-# #nodemon 사용 
-# CMD ["npm", "run", "dev"]
-
-# gpt 추천
+#기존
 FROM node:20-alpine as builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY ./ ./
-RUN npm run build
 
-CMD ["npm", "start"]
+#nodemon 사용 
+CMD ["npm", "run", "dev"]
+
+# gpt 추천
+# FROM node:20-alpine as builder
+# WORKDIR /usr/src/app
+# COPY package*.json ./
+# RUN npm install
+# COPY ./ ./
+# RUN npm run build
+
+# CMD ["npm", "start"]
