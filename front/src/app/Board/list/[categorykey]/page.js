@@ -24,8 +24,17 @@ export default function (props) {
     const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
     const [bclist, setBclist] = useState([]);
     const [categoryName, setCategoryName] = useState("");  // 카테고리 이름 저장
-    const searchParams = useSearchParams();
-    const cPage = searchParams.get('cPage');
+    const [cPage, setCPage] = useState(1);
+
+     // 클라이언트에서만 useSearchParams()를 사용
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const searchParams = useSearchParams();
+            const currentPage = searchParams.get('cPage');
+            setCPage(currentPage ? parseInt(currentPage) : 1);
+        }
+    }, []);
+    
     // 페이지 변경시 모든 공지사항 로드
     function getData(cPage) {  
       axios.get(listUrl, {

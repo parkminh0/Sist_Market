@@ -8,40 +8,48 @@ import axios from "axios";
 ////import QnaModal from "../customer/QnaModal";
 
 export default function MyPageSide(props) {
-  var pathname = usePathname();
-  if(props.pathname != undefined){
-    pathname = props.pathname;
-  }
-  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const [currentPath, setCurrentPath] = useState("");
+
+  // 클라이언트 사이드에서만 useSearchParams 사용
+  useEffect(() => {
+    const searchParams = useSearchParams(); // 클라이언트에서만 실행
+    if (searchParams) {
+      const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+      setCurrentPath(fullPath); // fullPath 설정
+    } else {
+      setCurrentPath(pathname); // pathname만 설정
+    }
+  }, [pathname]);
 
   const BC_URL = "/admin/board/getAllBc";
   const [bc_list, setBc_list] = useState([]);
 
-  function getData() {  
-    axios.get(BC_URL)
-    .then((res) => {
+  function getData() {
+    axios.get(BC_URL).then((res) => {
       setBc_list(res.data.bc_list);
     });
   }
 
   useEffect(() => {
     getData();
-}, []);
+  }, []);
 
   useEffect(() => {
-    const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
-    // 전체 링크를 가져와서 각각 처리
-    document.querySelectorAll("a[data-href]").forEach((link) => {
-      const linkHref = link.getAttribute("data-href");
-
-      // 쿼리 파라미터가 있는 링크는 전체 경로로 비교하고, 없는 링크는 pathname으로만 비교
-      if (linkHref === currentPath || (linkHref === pathname && !linkHref.includes("?"))) {
-        link.classList.add("active");
-      } else {
-        link.classList.remove("active");
-      }
-    });
-  }, [pathname, searchParams]);
+    if (typeof document !== 'undefined') {
+      // 전체 링크를 가져와서 각각 처리
+      document.querySelectorAll("a[data-href]").forEach((link) => {
+        const linkHref = link.getAttribute("data-href");
+  
+        // 쿼리 파라미터가 있는 링크는 전체 경로로 비교하고, 없는 링크는 pathname으로만 비교
+        if (linkHref === currentPath || (linkHref === pathname && !linkHref.includes("?"))) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    }
+  }, [currentPath, pathname]);
 
   //FAQ
   const [faqOpen, setFaqOpen] = useState(false);
@@ -49,7 +57,9 @@ export default function MyPageSide(props) {
     e.preventDefault(); // 링크의 기본 동작 방지
     setFaqOpen(true);
   };
-  const handleFaqClose = () => { setFaqOpen(false); };
+  const handleFaqClose = () => {
+    setFaqOpen(false);
+  };
 
   //QnA
   const [qnaOpen, setQnaOpen] = useState(false);
@@ -59,7 +69,9 @@ export default function MyPageSide(props) {
     }
     setQnaOpen(true);
   };
-  const handleQnaClose = () => { setQnaOpen(false); };
+  const handleQnaClose = () => {
+    setQnaOpen(false);
+  };
 
   return (
     <div

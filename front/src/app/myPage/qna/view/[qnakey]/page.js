@@ -8,7 +8,6 @@ import axios from "axios";
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Divider, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
 
 export default function () {
     const [qvo, setQvo] = useState([]);
