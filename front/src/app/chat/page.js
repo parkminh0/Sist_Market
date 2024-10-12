@@ -18,7 +18,6 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import { useRouter } from "next/navigation";
 
 const ChatApp = () => {
   const [chatRooms, setChatRooms] = useState([]);
