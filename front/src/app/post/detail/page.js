@@ -197,21 +197,20 @@ export default function Page() {
     return userTown;
   }
 
-  const param = useSearchParams();
- 
   useEffect(() => {
     if (typeof window !== "undefined") {
-    setCellList([]);
-    setPopCate([]);
-    setPostVO({});
-    setUserVO({});
-    setManner();
-    let currentUrl = window.location.href;
-    let currentUrlObj = new URL(currentUrl);
-    let params = new URLSearchParams(currentUrlObj.search);
-    // 'category' 파라미터의 모든 값 가져오기
-    let postkey = params.get("postkey");
-
+      setCellList([]);
+      setPopCate([]);
+      setPostVO({});
+      setUserVO({});
+      setManner();
+      let currentUrl = window.location.href;
+      let currentUrlObj = new URL(currentUrl);
+      let params = new URLSearchParams(currentUrlObj.search);
+      // 'category' 파라미터의 모든 값 가져오기
+      let postkey = params.get("postkey");
+      const param = useSearchParams();
+      
     setPostKey(postkey);
     
     setLoading(true);
