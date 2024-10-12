@@ -4,8 +4,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import axios from "axios";
-import FaqModal from "../customer/FaqModal";
-import QnaModal from "../customer/QnaModal";
+////import FaqModal from "../customer/FaqModal";
+////import QnaModal from "../customer/QnaModal";
 
 export default function MyPageSide(props) {
   var pathname = usePathname();
@@ -217,8 +217,8 @@ export default function MyPageSide(props) {
               <Link data-v-7a824f04="" href="#" className="menu_link" onClick={handleFaqOpen}>
                     자주 묻는 질문
               </Link>
-              <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} />
-              <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
+              {/* <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} /> */}
+              {/* <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} /> */}
             </li>
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/Board/terms" className="menu_link">
