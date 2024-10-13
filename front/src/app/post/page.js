@@ -101,7 +101,7 @@ export default function page() {
       method: "post",
       data: {
         key: "1",
-        value: encodeURIComponent(loc1), 
+        value: loc1, 
         now: loc2,
       },
       headers: {
