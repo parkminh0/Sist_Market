@@ -101,8 +101,8 @@ export default function page() {
       method: "get",
       params: {
         key: "1",
-        value: encodeURIComponent(loc1), 
-        now: loc2.map(loc => encodeURIComponent(loc.replace(/\+/g, '%20'))),  // 공백 처리
+        value: loc1, 
+        now: loc2,  // 배열로 전달
       },
       headers: {
         "Content-Type": "application/json",
@@ -115,7 +115,7 @@ export default function page() {
     .catch((error) => {
       console.error("API 호출 오류", error);
     });
-}
+  }
   // #endregion
 
   // #region useEffect-카테고리, 파라미터 초기화
