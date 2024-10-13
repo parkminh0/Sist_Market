@@ -98,22 +98,18 @@ export default function page() {
   function getRegion2(loc1, loc2) {
     axios({
       url: "/api/town/postside",
-      method: "get",
-      params: {
+      method: "post",
+      data: {
         key: "1",
         value: loc1, 
-        now: loc2,  // 배열로 전달
+        now: loc2,
       },
       headers: {
         "Content-Type": "application/json",
       },
     })
     .then((res) => {
-      console.log("지역리스트", res.data.res_list);
       setRegion2_list(res.data.res_list);
-    })
-    .catch((error) => {
-      console.error("API 호출 오류", error);
     });
   }
   // #endregion
@@ -156,17 +152,17 @@ export default function page() {
 
     axios({
       url: "/api/adpost/search",
-      method: "get",
-      params: {
+      method: "post",
+      data: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
-        onsale: encodeURIComponent(onsaleParam),
-        search: encodeURIComponent(searchParam),
-        loc1: encodeURIComponent(loc1Param),
-        loc2: encodeURIComponent(loc2Param),
-        category: encodeURIComponent(cateParam),
-        sort: encodeURIComponent(srtParam),
-        minPrice: encodeURIComponent(minParam),
-        maxPrice: encodeURIComponent(maxParam),
+        onsale: onsaleParam,
+        search: searchParam,
+        loc1: loc1Param,
+        loc2: loc2Param,
+        category: cateParam,
+        sort: srtParam,
+        minPrice: minParam,
+        maxPrice: maxParam,
       },
       headers: {
         "Content-Type": "application/json",
@@ -1804,6 +1800,7 @@ export default function page() {
                                 post.hope_lati != null &&
                                 post.hope_long != null &&
                                 loc1Param != null &&
+                                cookie_latitude != null && cookie_latitude != 'undefined' &&
                                 (() => {
                                   const distance = calDistance(
                                     post.hope_lati,

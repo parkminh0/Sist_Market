@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.TownService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/town")
@@ -22,26 +24,19 @@ public class TownController {
     @Autowired
     TownService townService;
 
-    @GetMapping("/postside")
-    public Map<String, Object> getMethodName(String key, String value, String[] now) {
+    @PostMapping("/postside")
+    public Map<String, Object> getMethodName(@RequestBody Map<String, Object> request) {
+        String key = (String) request.get("key");
+        String value = (String) request.get("value");
+        List<String> now = (List<String>) request.get("now"); // 배열을 리스트로 받습니다.
+
+        System.out.println("값: " + value);
+        System.out.println("현재: " + now);
+
         Map<String, Object> pMap = new HashMap<>();
-
-        // 값이 인코딩되어 있다면, 추가로 디코딩해봅니다.
-        String decodedValue = URLDecoder.decode(URLDecoder.decode(value, StandardCharsets.UTF_8),
-                StandardCharsets.UTF_8);
-        String[] decodedNow = Arrays.stream(now)
-                .map(n -> URLDecoder.decode(URLDecoder.decode(n, StandardCharsets.UTF_8), StandardCharsets.UTF_8))
-                .toArray(String[]::new);
-
         pMap.put("key", key);
-        pMap.put("value", decodedValue);
-        pMap.put("now", decodedNow);
-
-        // 디버그 로그 출력
-        System.out.println("박민호 브랜치");
-        System.out.println("키: " + key);
-        System.out.println("값(디코딩 후): " + decodedValue);
-        System.out.println("나우(디코딩 후): " + Arrays.toString(decodedNow));
+        pMap.put("value", value);
+        pMap.put("now", now);
 
         Map<String, Object> res = new HashMap<>();
         res.put("res_list", townService.searchTownByRegion(pMap));
