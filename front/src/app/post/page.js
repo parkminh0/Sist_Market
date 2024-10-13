@@ -96,19 +96,25 @@ export default function page() {
 
   // #region 비동기-Region2 리스트
   function getRegion2(loc1, loc2) {
+    console.log("loc1 (before encoding):", loc1);
+    console.log("loc2 (before encoding):", loc2);
+  
     axios({
       url: "/api/town/postside",
       method: "get",
       params: {
         key: "1",
-        value:  encodeURIComponent(loc1),
-        now: encodeURIComponent(loc2),
+        value: loc1,
+        now: loc2,
       },
       headers: {
         "Content-Type": "application/json",
       },
     }).then((res) => {
+      console.log("지역리스트", res.data.res_list);
       setRegion2_list(res.data.res_list);
+    }).catch((error) => {
+      console.error("API 호출 오류", error);
     });
   }
   // #endregion
@@ -154,14 +160,14 @@ export default function page() {
       method: "get",
       params: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
-        onsale: onsaleParam,
-        search: searchParam,
-        loc1: loc1Param,
-        loc2: loc2Param,
-        category: cateParam,
-        sort: srtParam,
-        minPrice: minParam,
-        maxPrice: maxParam,
+        onsale: encodeURIComponent(onsaleParam),
+        search: encodeURIComponent(searchParam),
+        loc1: encodeURIComponent(loc1Param),
+        loc2: encodeURIComponent(loc2Param),
+        category: encodeURIComponent(cateParam),
+        sort: encodeURIComponent(srtParam),
+        minPrice: encodeURIComponent(minParam),
+        maxPrice: encodeURIComponent(maxParam),
       },
       headers: {
         "Content-Type": "application/json",
@@ -187,15 +193,15 @@ export default function page() {
         method: "get",
         params: {
           userkey: decodeURIComponent(Cookies.get("userkey")),
-          onsale: onsaleParam,
-          lastPostKey: lastPostKey,
-          search: searchParam,
-          loc1: loc1Param,
-          loc2: loc2Param,
-          category: categoryParam,
-          sort: sortParam,
-          minPrice: minPriceParam,
-          maxPrice: maxPriceParam,
+          onsale: encodeURIComponent(onsaleParam),
+          lastPostKey: encodeURIComponent(lastPostKey),
+          search: encodeURIComponent(searchParam),
+          loc1: encodeURIComponent(loc1Param),
+          loc2: encodeURIComponent(loc2Param),
+          category: encodeURIComponent(categoryParam),
+          sort: encodeURIComponent(sortParam),
+          minPrice: encodeURIComponent(minPriceParam),
+          maxPrice: encodeURIComponent(maxPriceParam),
         },
         headers: {
           "Content-Type": "application/json",
