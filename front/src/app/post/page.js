@@ -136,7 +136,7 @@ export default function page() {
     let maxParam = params.get("maxPrice");
 
     if (loc1Param != null && loc1Param != "") {
-      getRegion2(loc1Param, loc2Param);
+      getRegion2(encodeURIComponent(loc1Param), encodeURIComponent(loc2Param));
     }
 
     setLoc1Param(loc1Param);
