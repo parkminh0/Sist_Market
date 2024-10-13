@@ -377,8 +377,6 @@ public class UserController {
     @RequestMapping("/api/kakao/login")
     @ResponseBody
     public Map<String, Object> kakaologin(String email, String nickname, String imgurl, HttpServletResponse res) {
-        // System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
-        // System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
         userVO fvo = service.findByemail(email); // 이메일로 회원 검색
 

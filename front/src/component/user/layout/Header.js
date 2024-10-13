@@ -556,7 +556,7 @@ export default function Header() {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
     signIn("kakao", {
-      callbackUrl: "http://localhost:8080/api/user/api/kakao/login",
+      callbackUrl: "http://52.78.168.131/api/user/api/kakao/login",
     });
   };
   const [chk, setChk] = useState(true);
