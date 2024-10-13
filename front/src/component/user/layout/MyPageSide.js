@@ -12,8 +12,8 @@ export default function MyPageSide(props) {
   const [currentPath, setCurrentPath] = useState("");
 
   // 클라이언트 사이드에서만 useSearchParams 사용
+  const searchParams = useSearchParams(); // 클라이언트에서만 실행
   useEffect(() => {
-    const searchParams = useSearchParams(); // 클라이언트에서만 실행
     if (searchParams) {
       const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
       setCurrentPath(fullPath); // fullPath 설정
