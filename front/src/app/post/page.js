@@ -1800,6 +1800,7 @@ export default function page() {
                                 post.hope_lati != null &&
                                 post.hope_long != null &&
                                 loc1Param != null &&
+                                cookie_latitude != null && cookie_latitude != 'undefined' &&
                                 (() => {
                                   const distance = calDistance(
                                     post.hope_lati,
