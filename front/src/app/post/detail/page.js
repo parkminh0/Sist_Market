@@ -196,7 +196,7 @@ export default function Page() {
     }
     return userTown;
   }
-
+  const param = useSearchParams();
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCellList([]);
@@ -209,7 +209,6 @@ export default function Page() {
       let params = new URLSearchParams(currentUrlObj.search);
       // 'category' 파라미터의 모든 값 가져오기
       let postkey = params.get("postkey");
-      const param = useSearchParams();
       
     setPostKey(postkey);
     

@@ -256,60 +256,66 @@ export default function Header() {
   }, []);
 
   function getLocation(e) {
-    const kakaoMapScript = document.createElement("script");
-    kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
-    kakaoMapScript.async = false;
-    document.head.appendChild(kakaoMapScript);
+    if (typeof window !== "undefined") {
+      const kakaoMapScript = document.createElement("script");
+      kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
+      kakaoMapScript.async = false;
+      document.head.appendChild(kakaoMapScript);
+      console.log("getlocation 실행 1");
+      kakaoMapScript.onload = () => {
+        // Kakao Maps API가 완전히 초기화된 후에 실행
+        window.kakao.maps.load(() => {
+          if (!window.kakao.maps.services) {
+            return;
+          }
+          console.log("kakaomap 로드  2");
+          // Geolocation API 지원 여부 확인
+          if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+              console.log("현재위치 로드  3");
 
-    kakaoMapScript.onload = () => {
-      // Kakao Maps API가 완전히 초기화된 후에 실행
-      window.kakao.maps.load(() => {
-        if (!window.kakao.maps.services) {
-          return;
-        }
-        // Geolocation API 지원 여부 확인
-        if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+              // 주소-좌표 변환 객체를 생성합니다
+              const geocoder = new window.kakao.maps.services.Geocoder();
+              const coord = new kakao.maps.LatLng(latitude, longitude);
 
-            // 주소-좌표 변환 객체를 생성합니다
-            const geocoder = new window.kakao.maps.services.Geocoder();
-            const coord = new kakao.maps.LatLng(latitude, longitude);
+              let reg1 = "";
+              let reg2 = "";
+              let reg3 = "";
 
-            let reg1 = "";
-            let reg2 = "";
-            let reg3 = "";
+              const callback = (result, status) => {
+                if (status === window.kakao.maps.services.Status.OK) {
+                  reg1 = result[0].address.region_1depth_name;
+                  reg2 = result[0].address.region_2depth_name;
+                  reg3 = result[0].address.region_3depth_name;
+                  console.log("콜백 4");
+                  console.log(reg2);
 
-            const callback = (result, status) => {
-              if (status === window.kakao.maps.services.Status.OK) {
-                reg1 = result[0].address.region_1depth_name;
-                reg2 = result[0].address.region_2depth_name;
-                reg3 = result[0].address.region_3depth_name;
-
-                if (e != null) {
-                  setSearchHere([[reg1, reg2, reg3]]);
-                } else {
-                  setRegion1(reg1);
-                  setRegion2(reg2);
-                  setRegion3(reg3);
-                  Cookies.set("region1", encodeURIComponent(reg1));
-                  Cookies.set("region2", encodeURIComponent(reg2));
-                  Cookies.set("region3", encodeURIComponent(reg3));
-                  Cookies.set("latitude", encodeURIComponent(latitude));
-                  Cookies.set("longitude", encodeURIComponent(longitude));
+                  if (e != null) {
+                    setSearchHere([[reg1, reg2, reg3]]);
+                  } else {
+                    setRegion1(reg1);
+                    setRegion2(reg2);
+                    setRegion3(reg3);
+                    Cookies.set("region1", encodeURIComponent(reg1));
+                    Cookies.set("region2", encodeURIComponent(reg2));
+                    Cookies.set("region3", encodeURIComponent(reg3));
+                    Cookies.set("latitude", encodeURIComponent(latitude));
+                    Cookies.set("longitude", encodeURIComponent(longitude));
+                  }
                 }
-              }
-            };
+              };
 
-            geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
-          });
-        } else {
-          alert("브라우저가 위치 서비스를 지원하지 않습니다.");
-          return;
-        }
-      });
-    };
+              geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+            });
+          } else {
+            alert("브라우저가 위치 서비스를 지원하지 않습니다.");
+            return;
+          }
+        });
+      };
+    }
   }
   // #endregion
 
@@ -556,7 +562,7 @@ export default function Header() {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
     signIn("kakao", {
-      callbackUrl: "http://localhost:8080/api/user/api/kakao/login",
+      callbackUrl: "http://52.78.168.131/api/user/api/kakao/login",
     });
   };
   const [chk, setChk] = useState(true);

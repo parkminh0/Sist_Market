@@ -287,23 +287,41 @@ public class UserController {
                 ResponseCookie cookie = ResponseCookie
                         .from("accessToken", uvo.getAccess_token())
                         .path("/")
+                        // 개발용
                         .sameSite("None")
+                        // 서버용
+                        .sameSite("Lax")
                         .httpOnly(false)
-                        .secure(true)
+                        // 개발용
+                        // .secure(true)
+                        // 서버용
+                        .secure(false)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
                 cookie = ResponseCookie.from("refreshToken", uvo.getRefresh_token())
                         .path("/")
+                        // 개발용
                         .sameSite("None")
+                        // 서버용
+                        .sameSite("Lax")
                         .httpOnly(false)
-                        .secure(true)
+                        // 개발용
+                        // .secure(true)
+                        // 서버용
+                        .secure(false)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
                 cookie = ResponseCookie.from("userkey", uvo.getUserkey())
                         .path("/")
+                        // 개발용
                         .sameSite("None")
+                        // 서버용
+                        .sameSite("Lax")
                         .httpOnly(false)
-                        .secure(true)
+                        // 개발용
+                        // .secure(true)
+                        // 서버용
+                        .secure(false)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
 
@@ -377,8 +395,6 @@ public class UserController {
     @RequestMapping("/api/kakao/login")
     @ResponseBody
     public Map<String, Object> kakaologin(String email, String nickname, String imgurl, HttpServletResponse res) {
-        // System.out.println("@@@@@@@@@@@@@@컨트롤러 타는지 확인@@@@@@@@@@@@@@@");
-        // System.out.println("@@@@@@@@@@@@@@닉네임@@@@@@@@@@@@@@" + nickname);
         Map<String, Object> map = new HashMap<>(); // 반환할 맵
         userVO fvo = service.findByemail(email); // 이메일로 회원 검색
 

@@ -27,9 +27,9 @@ export default function (props) {
     const [cPage, setCPage] = useState(1);
 
      // 클라이언트에서만 useSearchParams()를 사용
+    const searchParams = useSearchParams();
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const searchParams = useSearchParams();
             const currentPage = searchParams.get('cPage');
             setCPage(currentPage ? parseInt(currentPage) : 1);
         }
