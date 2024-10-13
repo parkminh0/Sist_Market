@@ -30,7 +30,8 @@ public class TownController {
         pMap.put("key", key);
         pMap.put("value", value);
         pMap.put("now", now);
-
+        System.out.println(value);
+        System.out.println("현재" + now);
         Map<String, Object> res = new HashMap<>();
         res.put("res_list", townService.searchTownByRegion(pMap));
         return res;
