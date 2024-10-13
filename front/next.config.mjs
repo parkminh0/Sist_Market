@@ -13,7 +13,7 @@ const nextConfig = {
       // },
       {
           source: "/api/:path*",
-          destination: "http://52.78.168.131/api/:path*"
+          destination: "/api/:path*"
       },
       // {
       //   source: "/adpost/:path*",
