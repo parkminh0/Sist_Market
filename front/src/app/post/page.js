@@ -98,8 +98,8 @@ export default function page() {
   function getRegion2(loc1, loc2) {
     axios({
       url: "/api/town/postside",
-      method: "get",
-      params: {
+      method: "post",
+      data: {
         key: "1",
         value: loc1, 
         now: loc2,  // 배열로 전달

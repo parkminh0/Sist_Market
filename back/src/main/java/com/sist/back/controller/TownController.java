@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.TownService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/town")
@@ -22,7 +24,7 @@ public class TownController {
     @Autowired
     TownService townService;
 
-    @GetMapping("/postside")
+    @PostMapping("/postside")
     public Map<String, Object> getMethodName(String key, String value, String[] now) {
         Map<String, Object> pMap = new HashMap<>();
 
