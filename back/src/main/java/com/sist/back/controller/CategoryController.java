@@ -20,7 +20,6 @@ public class CategoryController {
     @RequestMapping("/all")
     @ResponseBody
     public Map<String, Object> all() {
-        System.out.println("here");
         Map<String, Object> res = new HashMap<>();
         res.put("category_list", service.all());
         return res;

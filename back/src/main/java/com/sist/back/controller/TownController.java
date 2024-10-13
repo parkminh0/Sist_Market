@@ -1,6 +1,10 @@
 package com.sist.back.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +25,24 @@ public class TownController {
     @GetMapping("/postside")
     public Map<String, Object> getMethodName(String key, String value, String[] now) {
         Map<String, Object> pMap = new HashMap<>();
+
+        // 값이 인코딩되어 있다면, 추가로 디코딩해봅니다.
+        String decodedValue = URLDecoder.decode(URLDecoder.decode(value, StandardCharsets.UTF_8),
+                StandardCharsets.UTF_8);
+        String[] decodedNow = Arrays.stream(now)
+                .map(n -> URLDecoder.decode(URLDecoder.decode(n, StandardCharsets.UTF_8), StandardCharsets.UTF_8))
+                .toArray(String[]::new);
+
         pMap.put("key", key);
-        pMap.put("value", value);
-        pMap.put("now", now);
+        pMap.put("value", decodedValue);
+        pMap.put("now", decodedNow);
+
+        // 디버그 로그 출력
+        System.out.println("박민호 브랜치");
+        System.out.println("키: " + key);
+        System.out.println("값(디코딩 후): " + decodedValue);
+        System.out.println("나우(디코딩 후): " + Arrays.toString(decodedNow));
+
         Map<String, Object> res = new HashMap<>();
         res.put("res_list", townService.searchTownByRegion(pMap));
         return res;

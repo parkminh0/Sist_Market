@@ -1,6 +1,11 @@
 #기존
 FROM node:20-alpine as builder
 WORKDIR /usr/src/app
+
+# UTF-8 설정
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 COPY package*.json ./
 RUN npm install
 COPY ./ ./
