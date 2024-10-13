@@ -102,7 +102,7 @@ export default function page() {
       params: {
         key: "1",
         value: loc1, 
-        now: [loc2]  // 배열로 전달
+        now: loc2,  // 배열로 전달
       },
       headers: {
         "Content-Type": "application/json",
