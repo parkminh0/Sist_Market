@@ -25,13 +25,19 @@ public class TownController {
     TownService townService;
 
     @PostMapping("/postside")
-    public Map<String, Object> getMethodName(String key, String value, String[] now) {
+    public Map<String, Object> getMethodName(@RequestBody Map<String, Object> request) {
+        String key = (String) request.get("key");
+        String value = (String) request.get("value");
+        List<String> now = (List<String>) request.get("now"); // 배열을 리스트로 받습니다.
+
+        System.out.println("값: " + value);
+        System.out.println("현재: " + now);
+
         Map<String, Object> pMap = new HashMap<>();
         pMap.put("key", key);
         pMap.put("value", value);
         pMap.put("now", now);
-        System.out.println(value);
-        System.out.println("현재" + now);
+
         Map<String, Object> res = new HashMap<>();
         res.put("res_list", townService.searchTownByRegion(pMap));
         return res;
