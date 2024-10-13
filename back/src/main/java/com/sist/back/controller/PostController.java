@@ -391,7 +391,7 @@ public class PostController {
     }
 
     // 사용자 - 중고거래 글 목록
-    @GetMapping("/search")
+    @PostMapping("/search")
     public Map<String, Object> search(String userkey, String onsale, String search, String lastPostKey, String loc1,
             String[] loc2,
             String sort,
