@@ -99,7 +99,7 @@ export default function page() {
     axios({
       url: "/api/town/postside",
       method: "post",
-      data: {
+      params: {
         key: "1",
         value: encodeURIComponent(loc1), 
         now: encodeURIComponent(loc2),
