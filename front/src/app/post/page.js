@@ -96,24 +96,26 @@ export default function page() {
 
   // #region 비동기-Region2 리스트
   function getRegion2(loc1, loc2) {
-    console.log("loc1 (before encoding):", loc1);
-    console.log("loc2 (before encoding):", loc2);
+    const encodedLoc1 = encodeURIComponent(loc1);
+    const encodedLoc2 = encodeURIComponent(loc2);
   
     axios({
       url: "/api/town/postside",
       method: "get",
       params: {
         key: "1",
-        value: loc1,
-        now: loc2,
+        value: encodedLoc1, 
+        now: [encodedLoc2]  // 배열로 전달
       },
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
+    })
+    .then((res) => {
       console.log("지역리스트", res.data.res_list);
       setRegion2_list(res.data.res_list);
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.error("API 호출 오류", error);
     });
   }

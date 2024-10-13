@@ -1,6 +1,7 @@
 package com.sist.back.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,8 @@ public class TownController {
     TownService townService;
 
     @GetMapping("/postside")
-    public Map<String, Object> getMethodName(String key, String value, String[] now) {
+    public Map<String, Object> getMethodName(@RequestParam String key, @RequestParam String value,
+            @RequestParam List<String> now) {
         Map<String, Object> pMap = new HashMap<>();
         pMap.put("key", key);
         pMap.put("value", value);
