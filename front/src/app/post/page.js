@@ -97,9 +97,7 @@ export default function page() {
   // #region 비동기-Region2 리스트
   function getRegion2(loc1, loc2) {
     console.log("loc1 (before encoding):", loc1);
-    console.log("loc1 (after encoding):", encodeURIComponent(loc1));
     console.log("loc2 (before encoding):", loc2);
-    console.log("loc2 (after encoding):", encodeURIComponent(loc2));
   
     axios({
       url: "/api/town/postside",
