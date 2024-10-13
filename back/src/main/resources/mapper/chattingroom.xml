@@ -15,4 +15,8 @@
       SELECT postkey FROM chatroom WHERE chatroomkey = #{chatroomkey}
     </select>
 
+    <select id="checkRoom" parameterType="com.sist.back.vo.ChatRoomVO">
+      SELECT * FROM chatroom WHERE postkey = #{postkey} AND buyer_userkey = #{buyer_userkey}
+    </select>
+
 </mapper>

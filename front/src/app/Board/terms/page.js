@@ -1,21 +1,21 @@
 "use client"
-import Link from "next/link";
-import "/public/css/myPage.css";
-import React, { useEffect, useState } from "react";
+import Terms from "@/component/user/userPage/Terms";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Terms from "@/component/user/userPage/Terms";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import "/public/css/myPage.css";
 
 export default function () {
   const [selectedTerms, setSelectedTerms] = useState(
     "서비스 이용약관");
   
+  const searchParams = useSearchParams();
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const searchParams = useSearchParams();
       const term = searchParams.get('term');
       if (term) {
         setSelectedTerms(term);
