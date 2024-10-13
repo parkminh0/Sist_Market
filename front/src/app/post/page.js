@@ -101,8 +101,8 @@ export default function page() {
       method: "get",
       params: {
         key: "1",
-        value: loc1, 
-        now: loc2,  // 배열로 전달
+        value: encodeURIComponent(loc1), 
+        now: loc2.map(loc => encodeURIComponent(loc)),  // 배열로 전달
       },
       headers: {
         "Content-Type": "application/json",
