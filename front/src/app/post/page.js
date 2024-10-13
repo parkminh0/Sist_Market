@@ -96,14 +96,13 @@ export default function page() {
 
   // #region 비동기-Region2 리스트
   function getRegion2(loc1, loc2) {
-  
     axios({
       url: "/api/town/postside",
       method: "get",
       params: {
         key: "1",
-        value: encodedLoc1, 
-        now: [encodedLoc2]  // 배열로 전달
+        value: loc1, 
+        now: [loc2]  // 배열로 전달
       },
       headers: {
         "Content-Type": "application/json",
