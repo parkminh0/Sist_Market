@@ -106,8 +106,8 @@ export default function page() {
       method: "get",
       params: {
         key: "1",
-        value: encodeURIComponent(loc1),
-        now: encodeURIComponent(loc2),
+        value: loc1,
+        now: loc2,
       },
       headers: {
         "Content-Type": "application/json",
