@@ -108,6 +108,7 @@ export default function page() {
         "Content-Type": "application/json",
       },
     }).then((res) => {
+      console.log("지역리스트" + res.data.res_list);
       setRegion2_list(res.data.res_list);
     });
   }
