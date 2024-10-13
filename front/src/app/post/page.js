@@ -102,7 +102,7 @@ export default function page() {
       data: {
         key: "1",
         value: encodeURIComponent(loc1), 
-        now: encodeURIComponent(loc2),
+        now: loc2,
       },
       headers: {
         "Content-Type": "application/json",
