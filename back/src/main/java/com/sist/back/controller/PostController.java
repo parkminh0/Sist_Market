@@ -214,7 +214,7 @@ public class PostController {
             Path path = Paths.get(postImgPath);
             if (path.toString().contains("back")) {
                 String pathString = path.toString();
-                String changedPath = pathString.replace("back\\", "");
+                String changedPath = pathString.replace("back\\", "\\");
                 path = Paths.get(changedPath);
             }
             String filePath = path.resolve(post_img).toString();
@@ -275,7 +275,7 @@ public class PostController {
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "");
+                    String changedPath = pathString.replace("back\\", "\\");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
@@ -360,7 +360,7 @@ public class PostController {
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "");
+                    String changedPath = pathString.replace("back\\", "\\");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
