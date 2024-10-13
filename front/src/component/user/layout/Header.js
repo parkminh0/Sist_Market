@@ -312,6 +312,9 @@ export default function Header() {
               };
 
               geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+            },
+            (error) => {
+              console.error("Geolocation API 오류:", error.message);
             });
           } else {
             alert("브라우저가 위치 서비스를 지원하지 않습니다.");
