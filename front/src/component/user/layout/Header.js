@@ -271,6 +271,7 @@ export default function Header() {
           console.log("kakaomap 로드  2");
           // Geolocation API 지원 여부 확인
           if ("geolocation" in navigator) {
+            console.log("지올로케이션 있음");
             navigator.geolocation.getCurrentPosition((position) => {
               const latitude = position.coords.latitude;
               const longitude = position.coords.longitude;
@@ -298,9 +299,12 @@ export default function Header() {
                     setRegion1(reg1);
                     setRegion2(reg2);
                     setRegion3(reg3);
-                    Cookies.set("region1", encodeURIComponent(reg1));
-                    Cookies.set("region2", encodeURIComponent(reg2));
-                    Cookies.set("region3", encodeURIComponent(reg3));
+                    let tmp = Cookies.get("region1");
+                    if (tmp == null || tmp == '' || tmp == 'undefined'){
+                      Cookies.set("region1", encodeURIComponent(reg1));
+                      Cookies.set("region2", encodeURIComponent(reg2));
+                      Cookies.set("region3", encodeURIComponent(reg3));
+                    }
                     Cookies.set("latitude", encodeURIComponent(latitude));
                     Cookies.set("longitude", encodeURIComponent(longitude));
                   }
