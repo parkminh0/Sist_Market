@@ -49,4 +49,8 @@ public class ChatRoomService {
         return cr_mapper.searchPostkey(chatroomkey);
     }
 
+    public ChatRoomVO checkRoom(ChatRoomVO cvo){
+        return cr_mapper.checkRoom(cvo);
+    }
+
 }
