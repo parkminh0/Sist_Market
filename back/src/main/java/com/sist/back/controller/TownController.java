@@ -26,21 +26,16 @@ public class TownController {
     public Map<String, Object> getMethodName(String key, String value,
             String[] now) {
         Map<String, Object> pMap = new HashMap<>();
-        // 수동으로 디코딩
-        String decodedValue = URLDecoder.decode(value, StandardCharsets.UTF_8);
-        String[] decodedNow = Arrays.stream(now)
-                .map(n -> URLDecoder.decode(n, StandardCharsets.UTF_8))
-                .toArray(String[]::new);
 
         pMap.put("key", key);
-        pMap.put("value", decodedValue);
-        pMap.put("now", decodedNow);
+        pMap.put("value", value);
+        pMap.put("now", now);
 
         // 디버그 로그 출력
         System.out.println("박민호 브랜치");
         System.out.println("키: " + key);
-        System.out.println("값(디코딩 후): " + decodedValue);
-        System.out.println("나우(디코딩 후): " + Arrays.toString(decodedNow));
+        System.out.println("값(디코딩 후): " + value);
+        System.out.println("나우(디코딩 후): " + Arrays.toString(now));
 
         Map<String, Object> res = new HashMap<>();
         res.put("res_list", townService.searchTownByRegion(pMap));
