@@ -261,18 +261,20 @@ export default function Header() {
       kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&libraries=services&autoload=false`;
       kakaoMapScript.async = false;
       document.head.appendChild(kakaoMapScript);
-
+      console.log("getlocation 실행 1");
       kakaoMapScript.onload = () => {
         // Kakao Maps API가 완전히 초기화된 후에 실행
         window.kakao.maps.load(() => {
           if (!window.kakao.maps.services) {
             return;
           }
+          console.log("kakaomap 로드  2");
           // Geolocation API 지원 여부 확인
           if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
               const latitude = position.coords.latitude;
               const longitude = position.coords.longitude;
+              console.log("현재위치 로드  3");
 
               // 주소-좌표 변환 객체를 생성합니다
               const geocoder = new window.kakao.maps.services.Geocoder();
@@ -287,6 +289,8 @@ export default function Header() {
                   reg1 = result[0].address.region_1depth_name;
                   reg2 = result[0].address.region_2depth_name;
                   reg3 = result[0].address.region_3depth_name;
+                  console.log("콜백 4");
+                  console.log(reg2);
 
                   if (e != null) {
                     setSearchHere([[reg1, reg2, reg3]]);
