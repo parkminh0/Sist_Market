@@ -287,23 +287,41 @@ public class UserController {
                 ResponseCookie cookie = ResponseCookie
                         .from("accessToken", uvo.getAccess_token())
                         .path("/")
+                        // 개발용
                         .sameSite("None")
+                        // 서버용
+                        .sameSite("Lax")
                         .httpOnly(false)
-                        .secure(true)
+                        // 개발용
+                        // .secure(true)
+                        // 서버용
+                        .secure(false)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
                 cookie = ResponseCookie.from("refreshToken", uvo.getRefresh_token())
                         .path("/")
+                        // 개발용
                         .sameSite("None")
+                        // 서버용
+                        .sameSite("Lax")
                         .httpOnly(false)
-                        .secure(true)
+                        // 개발용
+                        // .secure(true)
+                        // 서버용
+                        .secure(false)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
                 cookie = ResponseCookie.from("userkey", uvo.getUserkey())
                         .path("/")
+                        // 개발용
                         .sameSite("None")
+                        // 서버용
+                        .sameSite("Lax")
                         .httpOnly(false)
-                        .secure(true)
+                        // 개발용
+                        // .secure(true)
+                        // 서버용
+                        .secure(false)
                         .build();
                 res.addHeader("Set-Cookie", cookie.toString());
 
