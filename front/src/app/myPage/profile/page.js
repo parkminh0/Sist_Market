@@ -8,11 +8,11 @@ import { Backdrop, Box, CircularProgress, LinearProgress, Typography } from '@mu
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
 import "/public/css/myPage.css";
 import "/public/css/paging.css";
-import { useSearchParams } from "next/navigation";
 
 export default function page() {
   const API_URL = "/api/user/api/getUserProfile";
@@ -66,10 +66,10 @@ export default function page() {
     });
   }
 
+  const tab = useSearchParams().get('tab') || 'manner'; // 기본 탭은 'manner'
   useEffect(() => {
     setLoading(true);
     if (typeof window !== "undefined") {
-      const tab = useSearchParams().get('tab') || 'manner'; // 기본 탭은 'manner'
       updateList(tab);
     }
     axios.get("/api/user/manner/getManner", {

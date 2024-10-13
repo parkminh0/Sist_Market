@@ -1,9 +1,14 @@
 "use client";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import EditPostModal from "@/component/user/post/detail/EditPostModal";
+import PopCateList from "@/component/user/post/detail/PopCateList";
+import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
+import ReportModal from "@/component/user/post/detail/report/ReportModal";
+import UserCellList from "@/component/user/post/detail/UserCellList";
+import { useTheme } from "@emotion/react";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import {
   Backdrop,
   Box,
@@ -17,18 +22,13 @@ import {
   MobileStepper,
   Typography,
 } from "@mui/material";
-import "/public/css/post_detail.css";
-import "/public/css/popcatelist.css";
-import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { useTheme } from "@emotion/react";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import Cookies from "js-cookie";
-import EditPostModal from "@/component/user/post/detail/EditPostModal";
-import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
-import UserCellList from "@/component/user/post/detail/UserCellList";
-import PopCateList from "@/component/user/post/detail/PopCateList";
-import ReportModal from "@/component/user/post/detail/report/ReportModal";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import "/public/css/popcatelist.css";
+import "/public/css/post_detail.css";
 
 export default function Page() {
   // PO(PriceOffer: 가격제안)모달용 데이터
