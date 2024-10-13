@@ -1,5 +1,6 @@
 package com.sist.back.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ public class TownController {
         pMap.put("value", value);
         pMap.put("now", now);
         Map<String, Object> res = new HashMap<>();
+        System.out.println("키" + key);
+        System.out.println("값" + value);
+        System.out.println("나우" + Arrays.toString(now));
         res.put("res_list", townService.searchTownByRegion(pMap));
         return res;
     }
