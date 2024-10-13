@@ -28,6 +28,7 @@ public class TownController {
         pMap.put("value", value);
         pMap.put("now", now);
         Map<String, Object> res = new HashMap<>();
+        System.out.println("박민호 브랜치");
         System.out.println("키" + key);
         System.out.println("값" + value);
         System.out.println("나우" + Arrays.toString(now));
