@@ -19,7 +19,7 @@ export default function Page() {
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState({});
 
-  const API_URL = '/api/user/api/buyList';
+  const API_URL = '/user/api/buyList';
   const userkey = Cookies.get("userkey");
 
   const [loading, setLoading] = useState(false);

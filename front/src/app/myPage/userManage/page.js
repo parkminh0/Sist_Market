@@ -22,7 +22,7 @@ export default function page(props) {
     const [totalRecord, setTotalRecord] = useState(0);
     const [page, setPage] = useState({});
   
-    const API_URL = '/api/user/api/lbiUsers';
+    const API_URL = '/user/api/lbiUsers';
     const userkey = Cookies.get("userkey");
   
     function changePage(pNum) { 

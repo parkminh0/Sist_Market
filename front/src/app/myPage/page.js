@@ -18,7 +18,7 @@ import Moneybook from "@/component/user/myPage/Moneybook";
 import { Backdrop, CircularProgress } from "@mui/material";
 
 export default function page() {
-  const API_URL = "/api/user/api/mypage/userEdit";
+  const API_URL = "/user/api/mypage/userEdit";
   const userkey = Cookies.get("userkey");
   const [uvo, setUvo] = useState({});
   const [sell_1, setSell_1] = useState(0);

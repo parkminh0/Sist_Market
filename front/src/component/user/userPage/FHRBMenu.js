@@ -69,7 +69,7 @@ export default function FHRBMenu(props) {
   },[])
 
   function likeItOrNot(){
-    axios.get("/api/user/api/likeIoN", {
+    axios.get("/user/api/likeIoN", {
       params: {
         me: me,
         you: you,
@@ -81,7 +81,7 @@ export default function FHRBMenu(props) {
   }
   function noseeItOrNot(){
 
-    axios.get("/api/user/api/noseeIoN", {
+    axios.get("/user/api/noseeIoN", {
       params: {
         me: me,
         you: you,
@@ -92,7 +92,7 @@ export default function FHRBMenu(props) {
     });
   }
   function blockItOrNot(){
-    axios.get("/api/user/api/blockIoN", {
+    axios.get("/user/api/blockIoN", {
       params: {
         me: me,
         you: you,

@@ -31,10 +31,10 @@ const nextConfig = {
       //   source: "/adpost/:path*",
       //   destination: "http://52.78.168.131/adpost/:path*",
       // },
-      // {
-      //   source: "/user/:path*",
-      //   destination: "http://52.78.168.131/user/:path*",
-      // },
+      {
+        source: "/user/:path*",
+        destination: "http://localhost:8080/user/:path*",
+      },
       // {
       //   source: "/admin/category/:path*",
       //   destination: "http://52.78.168.131/admin/category/:path*",

@@ -22,7 +22,7 @@ import { useSearchParams } from "next/navigation";
 
 
 export default function page() {
-  const API_URL = "/api/user/api/getUser";
+  const API_URL = "/user/api/getUser";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('cell');
@@ -74,7 +74,7 @@ export default function page() {
 
   function getCanPoN(){
     axios.get(
-      "/api/user/userPage/canPoN", {
+      "/user/userPage/canPoN", {
         params: { 
           userkey_me: Cookies.get("userkey"),
           userkey_you: params.get("userkey"),
@@ -91,7 +91,7 @@ export default function page() {
 
   function showMorePost(){
     axios.get(
-      "/api/user/userPage/getMorePost", {
+      "/user/userPage/getMorePost", {
         params: { 
           userkey: params.get("userkey"),
           limitpostkey: limitpostkey,
@@ -164,7 +164,7 @@ export default function page() {
 
   function getData() {
     axios.get(
-      "/api/user/userPage/getData", {
+      "/user/userPage/getData", {
         params: { userkey: params.get("userkey") }
       }
     ).then((res) => {
@@ -189,7 +189,7 @@ export default function page() {
         }
     }
     getCanPoN();
-    axios.get("/api/user/api/FHRBCheck", {
+    axios.get("/user/api/FHRBCheck", {
       params: {
         me: me,
         you: you,

@@ -18,28 +18,22 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // JWT토큰을 가지고 서버에 들어오는 요청을 허용하기 위한 인가(authorization)처리를 하는
     // Filter객체다
     @Override
-    @SneakyThrows
+    @SneakyThrows // try~catch로 예외처리를 해야할 것을 명시적으로 예외처리를 생략할 수 있도록 해줌
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        String requestUri = request.getRequestURI();
-
-        // 특정 경로에 대한 필터를 적용하지 않음
-        if (requestUri.startsWith("/ws-stomp") ||
-                requestUri.startsWith("/sub") ||
-                requestUri.startsWith("/pub") ||
-                requestUri.startsWith("/api")) {
+        if (request.getRequestURI().equals("/user/api/login") ||
+                request.getRequestURI().equals("/user/api/logout")) {
             filterChain.doFilter(request, response);
             return;
-        }
+        } // 로그인과 로그아웃은 통과
 
-        // 토큰 검증 로직이 없는 상태로 통과
+        // accessToken 검증 또는 refreshToken발급
+
         String acessToken = "";
-
         if (!acessToken.isBlank()) {
-            // 나중에 JWT 검증 로직을 추가
-        }
+            // 나중에 하자
 
+        }
         filterChain.doFilter(request, response);
     }
 

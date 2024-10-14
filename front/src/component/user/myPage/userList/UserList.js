@@ -27,7 +27,7 @@ export default function UserList(props) {
 
 
     function uncheckUser(userkey){
-        const API_URL = '/api/user/api/uncheck';
+        const API_URL = '/user/api/uncheck';
         axios({
           url: API_URL,
           method: 'get',

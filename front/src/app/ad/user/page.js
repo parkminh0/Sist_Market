@@ -41,7 +41,7 @@ import { useRouter } from "next/navigation";
 
 export default function Page() {
   //유저 카운트
-  const API_URL = "/api/user/api/usercount";
+  const API_URL = "/user/api/usercount";
   const [count, setCount] = useState({});
   const [del, setDel] = useState(0);
   const [act, setAct] = useState(0);
@@ -60,7 +60,7 @@ export default function Page() {
   const [userReportCount,setUserReportCount] = useState(0);
 
   //유저 검색
-  const API_URL_2 = "/api/user/api/search_user_admin";
+  const API_URL_2 = "/user/api/search_user_admin";
   const [userlist, setUserlist] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   //페이징
@@ -68,7 +68,7 @@ export default function Page() {
   const [page, setPage] = useState({});
   const router = useRouter();
   //체크한 유저 삭제
-  const DEL_URL = "/api/user/api/admin/checkUserDel";
+  const DEL_URL = "/user/api/admin/checkUserDel";
   const [allChecked, setAllChecked] = useState(false); // 전체 선택 체크박스
   const [checkedItems, setCheckedItems] = useState([]); // 개별 체크박스
 
@@ -205,7 +205,7 @@ export default function Page() {
   const [postcount, setPostCount] = useState([]);
   const [pagecount, setPageCount] = useState([]);
   function getP_list(cPage){
-    axios.get("/api/user/api/admin/getPost",{
+    axios.get("/user/api/admin/getPost",{
     params:{
         userkey: userkey,
         cPage: cPage,
@@ -247,7 +247,7 @@ export default function Page() {
 
         setPostCount(res.data.postcount || []);
         setPageCount(res.data.pagecount || []);
-        axios.get("/api/user/api/admin/getPost",{
+        axios.get("/user/api/admin/getPost",{
           params:{
               userkey: userkey,
               cPage: 1,
@@ -263,7 +263,7 @@ export default function Page() {
   }
 
   //모달창 딜유저
-  const DEL_URL1 = `/api/user/api/admin/userDel?userkey=${userkey}`;
+  const DEL_URL1 = `/user/api/admin/userDel?userkey=${userkey}`;
   function deleteUser(userkey) {
     const confirmed = window.confirm("정말로 삭제하시겠습니까?");
     if (!confirmed) {
@@ -286,7 +286,7 @@ export default function Page() {
   function editUser1(userkey) {
     //console.log("User data being sent:", { pw, name, email, phone });
     //console.log("userkey@@@@@@@@@"+userkey);
-    const EDIT_URL = `/api/user/api/admin/userEditReal?userkey=${userkey}`;
+    const EDIT_URL = `/user/api/admin/userEditReal?userkey=${userkey}`;
     axios({
       url: EDIT_URL,
       method: "post",

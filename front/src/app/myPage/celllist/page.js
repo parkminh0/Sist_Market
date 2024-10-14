@@ -25,7 +25,7 @@ export default function page() {
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState({});
   
-  const API_URL = '/api/user/api/cellList';
+  const API_URL = '/user/api/cellList';
 
   // 서버 사이드에서 SearchParams를 사용하지 않도록 useEffect에서 처리
   useEffect(() => {
