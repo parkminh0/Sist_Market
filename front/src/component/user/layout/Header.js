@@ -1049,7 +1049,7 @@ export default function Header() {
             >
               <img
                 src="../../../public/img/kakao.png"
-                alt="카카오톡 로그인"
+                alt="카카오톡 로그인dddd"
                 style={{ marginRight: "8px", height: "24px" }}
               />
               카카오톡으로 로그인
