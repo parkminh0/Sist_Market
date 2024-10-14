@@ -101,14 +101,13 @@ export default function page() {
       method: "post",
       data: {
         key: "1",
-        value: loc1, 
+        value: loc1,
         now: loc2,
       },
       headers: {
         "Content-Type": "application/json",
       },
-    })
-    .then((res) => {
+    }).then((res) => {
       setRegion2_list(res.data.res_list);
     });
   }
@@ -176,27 +175,26 @@ export default function page() {
         setLastPostKey(res.data.lastPostKey);
       }
     });
-    
   }, [router.query]);
   // #endregion
 
   // #region 상품 더보기
   useEffect(() => {
-    if (loading){
+    if (loading) {
       axios({
         url: "/api/adpost/search",
-        method: "get",
-        params: {
+        method: "post",
+        data: {
           userkey: decodeURIComponent(Cookies.get("userkey")),
-          onsale: encodeURIComponent(onsaleParam),
-          lastPostKey: encodeURIComponent(lastPostKey),
-          search: encodeURIComponent(searchParam),
-          loc1: encodeURIComponent(loc1Param),
-          loc2: encodeURIComponent(loc2Param),
-          category: encodeURIComponent(categoryParam),
-          sort: encodeURIComponent(sortParam),
-          minPrice: encodeURIComponent(minPriceParam),
-          maxPrice: encodeURIComponent(maxPriceParam),
+          onsale: onsaleParam,
+          lastPostKey: lastPostKey,
+          search: searchParam,
+          loc1: loc1Param,
+          loc2: loc2Param,
+          category: categoryParam,
+          sort: sortParam,
+          minPrice: minPriceParam,
+          maxPrice: maxPriceParam,
         },
         headers: {
           "Content-Type": "application/json",
@@ -217,7 +215,7 @@ export default function page() {
       setLoading(false);
     }
   }, [loading]);
-  // 
+  //
   function showMorePost() {
     setLoading(true);
   }
@@ -291,7 +289,10 @@ export default function page() {
         const buttonHeight = button.offsetHeight;
 
         // 1. 컨테이너가 화면에 전혀 보이지 않을 때 버튼을 숨김
-        if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
+        if (
+          containerRect.bottom < 0 ||
+          containerRect.top > window.innerHeight
+        ) {
           button.style.display = "none"; // 버튼 숨김
         }
         // 2. 컨테이너가 화면에 있을 때 버튼을 보이게 함
@@ -699,71 +700,71 @@ export default function page() {
       return;
     }
 
-      const formData = new FormData(event.currentTarget);
-      formData.append("userkey", tmpUserKey);
+    const formData = new FormData(event.currentTarget);
+    formData.append("userkey", tmpUserKey);
 
-      // 이미지 파일 FormData에 추가
-      previewImages.forEach((image) => {
-        const fileName = image.file.name;
-        formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
+    // 이미지 파일 FormData에 추가
+    previewImages.forEach((image) => {
+      const fileName = image.file.name;
+      formData.append("post_img", image.file, `${tmpUserKey}-${fileName}`);
+    });
+
+    // 0: 임시저장  1: 판매중(작성완료)
+    const mode = event.currentTarget.dataset.mode;
+    formData.append("poststatus", mode === "save" ? 0 : 1);
+
+    // price가 공백("")이면 null 또는 0으로 변환
+    formData.set("price", price === "" ? 0 : price);
+
+    // 거래희망장소 위도, 경도
+    formData.append("hope_lati", hope_lati);
+    formData.append("hope_long", hope_long);
+
+    // town 정보
+    formData.append(
+      "region1",
+      region1 != null && region1 != "" ? region1 : cookie_region1
+    );
+    formData.append(
+      "region2",
+      region2 != null && region2 != "" ? region2 : cookie_region2
+    );
+    formData.append(
+      "region3",
+      region3 != null && region3 != "" ? region3 : cookie_region3
+    );
+
+    // 임시저장 후 작성완료 누를 경우 수정해야 함
+    if (savePostKey != null && savePostKey != "") {
+      formData.append("postkey", savePostKey);
+    }
+    formData.set("canBargain", canBargain);
+    formData.append("isPostPage", 1);
+    axios
+      .post(
+        savePostKey == null || savePostKey == ""
+          ? "/api/adpost/write"
+          : "/api/adpost/edit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        if (mode === "write") {
+          setSavePostKey("");
+          alert("게시글이 작성되었습니다.");
+          window.location.reload();
+        } else {
+          setSavePostKey(response.data.savePostKey);
+          alert("게시글이 저장되었습니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("게시글 작성 오류", error);
       });
-
-      // 0: 임시저장  1: 판매중(작성완료)
-      const mode = event.currentTarget.dataset.mode;
-      formData.append("poststatus", mode === "save" ? 0 : 1);
-
-      // price가 공백("")이면 null 또는 0으로 변환
-      formData.set("price", price === "" ? 0 : price);
-
-      // 거래희망장소 위도, 경도
-      formData.append("hope_lati", hope_lati);
-      formData.append("hope_long", hope_long);
-
-      // town 정보
-      formData.append(
-        "region1",
-        region1 != null && region1 != "" ? region1 : cookie_region1
-      );
-      formData.append(
-        "region2",
-        region2 != null && region2 != "" ? region2 : cookie_region2
-      );
-      formData.append(
-        "region3",
-        region3 != null && region3 != "" ? region3 : cookie_region3
-      );
-
-      // 임시저장 후 작성완료 누를 경우 수정해야 함
-      if (savePostKey != null && savePostKey != "") {
-        formData.append("postkey", savePostKey);
-      }
-      formData.set("canBargain", canBargain);
-      formData.append("isPostPage", 1);
-      axios
-        .post(
-          savePostKey == null || savePostKey == ""
-            ? "/api/adpost/write"
-            : "/api/adpost/edit",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((response) => {
-          if (mode === "write") {
-            setSavePostKey("");
-            alert("게시글이 작성되었습니다.");
-            window.location.reload();
-          } else {
-            setSavePostKey(response.data.savePostKey);
-            alert("게시글이 저장되었습니다.");
-          }
-        })
-        .catch((error) => {
-          console.error("게시글 작성 오류", error);
-        });
   };
   // #endregion
 
@@ -1800,7 +1801,8 @@ export default function page() {
                                 post.hope_lati != null &&
                                 post.hope_long != null &&
                                 loc1Param != null &&
-                                cookie_latitude != null && cookie_latitude != 'undefined' &&
+                                cookie_latitude != null &&
+                                cookie_latitude != "undefined" &&
                                 (() => {
                                   const distance = calDistance(
                                     post.hope_lati,
