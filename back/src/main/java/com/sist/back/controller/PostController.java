@@ -365,8 +365,9 @@ public class PostController {
                 }
                 String filePath = path.resolve(fname).toString();
                 System.out.println("BBBBBBBBBBBBBBBBBBBBBB--filePath: "+filePath);
-                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
-                        filePath.lastIndexOf("\\")));
+                // fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
+                //         filePath.lastIndexOf("\\")));
+                fname = FileRenameUtil.checkSameFileName(fname, filePath);
                 pivo.setImgurl(realPath + fname);
                 pivo.setPostkey(Integer.parseInt(vo.getPostkey()));
                 postimgService.addPostImg(pivo);

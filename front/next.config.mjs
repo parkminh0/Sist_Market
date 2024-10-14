@@ -47,18 +47,18 @@ const nextConfig = {
       //   source: "/searchlog/:path*",
       //   destination: "http://52.78.168.131/searchlog/:path*",
       // },
-      // {
-      //   source: "/sub/:path*",
-      //   destination: "http://52.78.168.131/sub/:path*",
-      // },
-      // {
-      //   source: "/ws-stomp/:path*",
-      //   destination: "http://52.78.168.131/ws-stomp/:path*",
-      // },
-      // {
-      //   source: "/pub/:path*",
-      //   destination: "http://52.78.168.131/pub/:path*",
-      // },
+      {
+        source: "/sub/:path*",
+        destination: "http://52.78.168.131/sub/:path*",
+      },
+      {
+        source: "/ws-stomp/:path*",
+        destination: "http://52.78.168.131/ws-stomp/:path*",
+      },
+      {
+        source: "/pub/:path*",
+        destination: "http://52.78.168.131/pub/:path*",
+      },
       // {
       //   source: "/qna/:path*",
       //   destination: "http://52.78.168.131/qna/:path*",
