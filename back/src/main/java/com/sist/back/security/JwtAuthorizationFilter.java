@@ -21,8 +21,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @SneakyThrows // try~catch로 예외처리를 해야할 것을 명시적으로 예외처리를 생략할 수 있도록 해줌
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (request.getRequestURI().equals("/api/user/api/login") ||
-                request.getRequestURI().equals("/api/user/api/logout")) {
+        if (request.getRequestURI().equals("/user/api/login") ||
+                request.getRequestURI().equals("/user/api/logout")) {
             filterChain.doFilter(request, response);
             return;
         } // 로그인과 로그아웃은 통과

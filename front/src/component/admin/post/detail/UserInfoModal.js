@@ -48,7 +48,7 @@ export default function UserInfoModal(props) {
   };
 
   function getP_list(cPage){
-    axios.get("/api/user/api/admin/getPost",{
+    axios.get("/user/api/admin/getPost",{
     params:{
         userkey: userkey,
         cPage: cPage,
@@ -62,12 +62,12 @@ export default function UserInfoModal(props) {
   useEffect(()=>{
     if(open){
         setLoading(true);
-        axios.get("/api/user/api/admin/userEdit", {
+        axios.get("/user/api/admin/userEdit", {
             params: {
               userkey: userkey,
             }
           }).then((res)=>{
-            axios.get("/api/user/api/admin/getPost",{
+            axios.get("/user/api/admin/getPost",{
             params:{
                 userkey: userkey,
                 cPage: 1,

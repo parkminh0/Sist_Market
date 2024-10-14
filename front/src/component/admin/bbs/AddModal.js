@@ -30,6 +30,8 @@ export default function AddModal(props) {
     }
   };
 
+
+
   const [bc_list, setBc_list] = useState([]);
   const [content, setContent] = useState(); // 에디터에 적히는 값 콘솔에 출력
   const [title, setTitle] = useState('');
@@ -37,7 +39,7 @@ export default function AddModal(props) {
   const [userkey, setUserkey] = useState("1");
   const boardkey = useRef(1);
   const quillRef = useRef(); // 레퍼런스 객체로서 DOM 요소 접근 조작 가능
-
+  
   const emptyAdd = async () => {
     const formData = new FormData();
     formData.append('userkey', userkey);
@@ -151,7 +153,7 @@ export default function AddModal(props) {
             if (file2) {
               for (const file of files) {
                 try {
-                  const filePath = `/img/admin/post/`;
+                  const filePath = `/api/img/admin/post/`;
                   const url = await uploadImage(file, filePath);
                   editor.insertEmbed(range.index, "image", url);
                   editor.setSelection(range.index + 1);

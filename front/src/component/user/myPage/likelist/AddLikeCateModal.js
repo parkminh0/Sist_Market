@@ -42,7 +42,7 @@ import {
     function addCategory() {
       if (confirm("해당 카테고리를 관심 카테고리로 등록하시겠습니까?")) {
         axios({
-          url: "/api/user/api/like/category",
+          url: "/user/api/like/category",
           method: "get",
           params: {
             userkey: userkey,

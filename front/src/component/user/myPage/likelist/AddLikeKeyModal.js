@@ -32,7 +32,7 @@ import {
         }
         if (confirm("해당 키워드를 관심 키워드로 등록하시겠습니까?")) {
             axios({
-            url: "/api/user/api/like/keyword",
+            url: "/user/api/like/keyword",
             method: "get",
             params: {
                 userkey: userkey,

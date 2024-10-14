@@ -503,7 +503,7 @@ export default function Header() {
   };
 
   //jwt 로그아웃 처리
-  const logout_url = "/api/user/api/logout";
+  const logout_url = "/user/api/logout";
 
   function logout() {
     axios({
@@ -524,7 +524,7 @@ export default function Header() {
   }
 
   //jwt 로그인 처리
-  const login_url = "/api/user/api/login";
+  const login_url = "/user/api/login";
   const [user, setUser] = useState({});
 
   //token 저장
@@ -569,7 +569,7 @@ export default function Header() {
     e.preventDefault(); //다른 기본동작을 실행하지 않도록함
     //nextAuth 콜백 함수 인자로 카카오주고 카카오 프로바이더로 이동.
     signIn("kakao", {
-      callbackUrl: "http://52.78.168.131/api/user/api/kakao/login",
+      callbackUrl: "http://localhost:8080/user/api/kakao/login",
     });
   };
   const [chk, setChk] = useState(true);
@@ -581,7 +581,7 @@ export default function Header() {
     }
   }, [session]);
 
-  const kakao_url = "/api/user/api/kakao/login";
+  const kakao_url = "/user/api/kakao/login";
   // kakao controller에 데이터 전달
   const goController = async () => {
     if (session && session.user) {

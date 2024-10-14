@@ -6,7 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation"; 
 
 export default function Page() {
-  const reg_url = "/api/user/api/reg";
+  const reg_url = "/user/api/reg";
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -62,7 +62,7 @@ export default function Page() {
     }
     
     axios({
-      url: "/api/user/api/chkPhone",
+      url: "/user/api/chkPhone",
       method: "post",
       params: { phone },
     }).then((res) => {
@@ -86,7 +86,7 @@ export default function Page() {
     }
 
     axios({
-      url: "/api/user/api/chkEmail",
+      url: "/user/api/chkEmail",
       method: "post",
       params: { email },
     }).then((res) => {

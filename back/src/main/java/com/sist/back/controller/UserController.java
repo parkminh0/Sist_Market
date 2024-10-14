@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpSession;
 import com.sist.back.service.BadgeService;
 
 @Controller
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired

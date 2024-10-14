@@ -15,7 +15,7 @@ import "/public/css/myPage.css";
 import "/public/css/paging.css";
 
 export default function page() {
-  const API_URL = "/api/user/api/getUserProfile";
+  const API_URL = "/user/api/getUserProfile";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('manner');
