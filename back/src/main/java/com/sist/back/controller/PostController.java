@@ -357,14 +357,12 @@ public class PostController {
                 String realPath = "/img/postimg/";
                 String fname = vo.getPostkey() + "-" + f.getOriginalFilename();
                 Path path = Paths.get(postImgPath);
-                System.out.println("AAAAAAAAAAAAAAAAAAAAA--path.toString(): "+path.toString());
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
                     String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
-                System.out.println("BBBBBBBBBBBBBBBBBBBBBB--filePath: "+filePath);
                 // fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
                 //         filePath.lastIndexOf("\\")));
                 fname = FileRenameUtil.checkSameFileName(fname, filePath);
@@ -374,8 +372,9 @@ public class PostController {
 
                 // 파일 업로드
                 try {
-                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("") + 1) +
-                            fname));
+                    // f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("") + 1) +
+                    //         fname));
+                    f.transferTo(new File(filePath));
                 } catch (Exception e) {
                 }
             }
