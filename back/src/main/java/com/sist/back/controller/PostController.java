@@ -214,7 +214,7 @@ public class PostController {
             Path path = Paths.get(postImgPath);
             if (path.toString().contains("back")) {
                 String pathString = path.toString();
-                String changedPath = pathString.replace("back\\", "\\");
+                String changedPath = pathString.replace("back\\", "");
                 path = Paths.get(changedPath);
             }
             String filePath = path.resolve(post_img).toString();
@@ -275,7 +275,7 @@ public class PostController {
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "\\");
+                    String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
@@ -353,17 +353,18 @@ public class PostController {
         if (post_img != null) {
             for (MultipartFile f : post_img) {
                 PostImgVO pivo = new PostImgVO();
-
+                
                 String realPath = "/img/postimg/";
                 String fname = vo.getPostkey() + "-" + f.getOriginalFilename();
-
                 Path path = Paths.get(postImgPath);
+                System.out.println("AAAAAAAAAAAAAAAAAAAAA--path.toString(): "+path.toString());
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "\\");
+                    String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
+                System.out.println("BBBBBBBBBBBBBBBBBBBBBB--filePath: "+filePath);
                 fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
                         filePath.lastIndexOf("\\")));
                 pivo.setImgurl(realPath + fname);
@@ -372,7 +373,7 @@ public class PostController {
 
                 // 파일 업로드
                 try {
-                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +
+                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("") + 1) +
                             fname));
                 } catch (Exception e) {
                 }
