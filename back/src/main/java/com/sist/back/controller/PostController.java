@@ -214,7 +214,7 @@ public class PostController {
             Path path = Paths.get(postImgPath);
             if (path.toString().contains("back")) {
                 String pathString = path.toString();
-                String changedPath = pathString.replace("back\\", "\\");
+                String changedPath = pathString.replace("back\\", "");
                 path = Paths.get(changedPath);
             }
             String filePath = path.resolve(post_img).toString();
@@ -275,7 +275,7 @@ public class PostController {
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "\\");
+                    String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
@@ -353,27 +353,28 @@ public class PostController {
         if (post_img != null) {
             for (MultipartFile f : post_img) {
                 PostImgVO pivo = new PostImgVO();
-
+                
                 String realPath = "/img/postimg/";
                 String fname = vo.getPostkey() + "-" + f.getOriginalFilename();
-
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "\\");
+                    String changedPath = pathString.replace("back\\", "");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
-                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
-                        filePath.lastIndexOf("\\")));
+                // fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
+                //         filePath.lastIndexOf("\\")));
+                fname = FileRenameUtil.checkSameFileName(fname, filePath);
                 pivo.setImgurl(realPath + fname);
                 pivo.setPostkey(Integer.parseInt(vo.getPostkey()));
                 postimgService.addPostImg(pivo);
 
                 // 파일 업로드
                 try {
-                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) +
-                            fname));
+                    // f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("") + 1) +
+                    //         fname));
+                    f.transferTo(new File(filePath));
                 } catch (Exception e) {
                 }
             }
