@@ -29,11 +29,11 @@ import {
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 
 export default function Page() {
-  const ALL_URL = "/user/badge/getAllBadge";
-  const ALL_OFF_URL = "/user/badge/getAllOffBadge";
-  const EDIT_URL = "/user/badge/editBadge";
-  const CHK_ON = "/user/badge/chkBadgeOn";
-  const CHK_OFF = "/user/badge/chkBadgeOff";
+  const ALL_URL = "/api/user/badge/getAllBadge";
+  const ALL_OFF_URL = "/api/user/badge/getAllOffBadge";
+  const EDIT_URL = "/api/user/badge/editBadge";
+  const CHK_ON = "/api/user/badge/chkBadgeOn";
+  const CHK_OFF = "/api/user/badge/chkBadgeOff";
   const [badgeList, setBadgeList] = useState([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);

@@ -31,8 +31,8 @@ import {
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 
 export default function Page() {
-    const ALL_URL = "/chat/getEmoticon";
-    const DEL_URL = "/chat/deleteEmoticon";
+    const ALL_URL = "/api/chat/getEmoticon";
+    const DEL_URL = "/api/chat/deleteEmoticon";
     const [emoticonList, setEmoticonList] = useState(null);
     const [allChecked, setAllChecked] = useState(false);
     const [checkedItems, setCheckedItems] = useState([]);
