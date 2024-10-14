@@ -43,6 +43,8 @@ const RecentTransactions = () => {
           className="theme-timeline"
           sx={{
             p: 0,
+
+            height: 420,
             mb: "-40px",
             "& .MuiTimelineConnector-root": {
               width: "1px",
