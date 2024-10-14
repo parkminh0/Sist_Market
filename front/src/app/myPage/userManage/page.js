@@ -8,7 +8,6 @@ import "/public/css/buylist.css";
 import "/public/css/celllist.css";
 import "/public/css/paging.css";
 
-import { useSearchParams } from "next/navigation";
 import UserList from "@/component/user/myPage/userList/UserList";
 import Cookies from "js-cookie";
 
@@ -23,7 +22,7 @@ export default function page(props) {
     const [totalRecord, setTotalRecord] = useState(0);
     const [page, setPage] = useState({});
   
-    const API_URL = '/user/api/lbiUsers';
+    const API_URL = '/api/user/api/lbiUsers';
     const userkey = Cookies.get("userkey");
   
     function changePage(pNum) { 

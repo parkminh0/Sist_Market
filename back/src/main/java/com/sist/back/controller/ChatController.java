@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api")
 public class ChatController {
 
     @Autowired
@@ -95,6 +96,7 @@ public class ChatController {
     public List<ChattingEmojiVO> getAllEmoticon() {
         return c_serivce.getAllEmoticon();
     }
+
     @GetMapping("/chat/deleteEmoticon")
     public int deleteEmoticon(String chattingemojikey) {
         return c_serivce.deleteEmoticon(chattingemojikey);

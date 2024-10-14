@@ -7,7 +7,7 @@ import React, { useEffect } from 'react'
 export default function page() {
     const router = useRouter();
 
-    const API_URL = "/user/api/member/logout";
+    const API_URL = "/api/user/api/member/logout";
 
     const logout = () =>{
         axios({

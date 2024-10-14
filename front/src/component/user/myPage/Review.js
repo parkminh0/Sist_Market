@@ -1,16 +1,17 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, Divider, Tabs, Tab, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Avatar, Box, Divider, IconButton, Menu, MenuItem, Tab, Tabs, Typography } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import "/public/css/paging.css";
 
 export default function Review({ userKey, onReviewCountChange }) {
-  const ALL_URL = "/user/allReview";
-  const BUY_URL = "/user/buyingReview";
-  const SELL_URL = "/user/sellingReview";
-  const HIDE_URL = "/user/hideReview"
+  const ALL_URL = "/api/user/allReview";
+  const BUY_URL = "/api/user/buyingReview";
+  const SELL_URL = "/api/user/sellingReview";
+  const HIDE_URL = "/api/user/hideReview"
   
   const userkey = userKey;
   const [selectedTab, setSelectedTab] = useState(0);

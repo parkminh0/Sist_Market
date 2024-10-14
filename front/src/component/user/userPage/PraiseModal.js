@@ -10,7 +10,7 @@ export default function PraiseModal(props) {
     function praiseIt(listKey,message){
         if(confirm(`["${message}"]\n해당 매너 평가를 남기시겠습니까?\n*주의! 취소 불가합니다.`)){
         axios.post(
-            "/user/manner/praiseUser",
+            "/api/user/manner/praiseUser",
             null,
             {
                 params: {
@@ -34,7 +34,7 @@ export default function PraiseModal(props) {
     const setPraiseOpen = props.setPraiseOpen;
 
     useEffect(()=>{
-        axios.get("/user/manner/getPraiseList")
+        axios.get("/api/user/manner/getPraiseList")
             .then((res) => {
                 setPraiseList(res.data.p_ar || []);
             });

@@ -48,7 +48,7 @@ const Page = () => {
   // region1
   useEffect(() => {
     axios({
-      url: "/town/getAllRegion1", // 실제 검색 API
+      url: "/api/town/getAllRegion1", // 실제 검색 API
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +64,7 @@ const Page = () => {
   // region2
   useEffect(() => {
     axios({
-      url: "/town/getAllRegion2", // 실제 검색 API
+      url: "/api/town/getAllRegion2", // 실제 검색 API
       method: "get",
       params: {
         region1: selReg1,
@@ -84,7 +84,7 @@ const Page = () => {
   // region3
   useEffect(() => {
     axios({
-      url: "/town/getAllRegion3",
+      url: "/api/town/getAllRegion3",
       method: "get",
       params: {
         region2: selReg2,
@@ -237,7 +237,7 @@ const Page = () => {
 
     if (analTypeValue == 1) {
       axios({
-        url: "/ad/dealchart",
+        url: "/api/ad/dealchart",
         method: "get",
         params: {
           start_dtm: tmpS,
@@ -252,7 +252,7 @@ const Page = () => {
       });
     } else if (analTypeValue == 2) {
       axios({
-        url: "/ad/analpostcatepie",
+        url: "/api/ad/analpostcatepie",
         method: "get",
         params: {
           start_dtm: tmpS,
@@ -269,7 +269,7 @@ const Page = () => {
     } else if (analTypeValue == 3) {
       if (date1 == "1") {
         axios({
-          url: "/ad/analuserbytime",
+          url: "/api/ad/analuserbytime",
           method: "get",
           params: {
             start_dtm: tmpS,
@@ -284,7 +284,7 @@ const Page = () => {
         });
       } else if (date1 == "2") {
         axios({
-          url: "/ad/analuserbyday",
+          url: "/api/ad/analuserbyday",
           method: "get",
           params: {
             start_dtm: tmpS,
@@ -300,7 +300,7 @@ const Page = () => {
       }
     } else if (analTypeValue == 4) {
       axios({
-        url: "/ad/analregion",
+        url: "/api/ad/analregion",
         method: "get",
         params: {
           region1: selReg1,

@@ -1,6 +1,10 @@
 # Maven을 사용하여 빌드하는 단계
 FROM maven:3.8.6-eclipse-temurin-17 AS build
 
+# UTF-8 환경 설정
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 #작업 디렉토리 생성
 WORKDIR /app
 
@@ -21,4 +25,4 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 #애플리케이션 실행 명령어 설정
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "/app/app.jar"]

@@ -27,11 +27,11 @@ public class PostVO {
         private userVO uvo;
         private userVO duvo;
         private categoryVO cvo;
-        TownVO townVO;
+        private TownVO townVO;
 
         private String nickname, imgurl, region1, region2, region3, reviewType;
 
-        String isPostPage;
+        private String isPostPage;
 
         // 관심받은 횟수
         private int likedqty;

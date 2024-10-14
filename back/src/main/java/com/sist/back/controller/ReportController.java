@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sist.back.service.ReportService;
 import com.sist.back.vo.ReportListVO;
 
-
 @Controller
-@RequestMapping("/user/report")
+@RequestMapping("/api/user/report")
 public class ReportController {
     @Autowired
     private ReportService r_service;

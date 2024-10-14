@@ -1,16 +1,12 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import "/public/css/admin/user.css";
-import Link from "next/link";
 import axios from "axios";
 import PageContainer from "@/component/admin/container/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 import {
-  Avatar,
   Box,
   Button,
   Checkbox,
@@ -19,31 +15,22 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   Grid,
   ImageList,
   ImageListItem,
-  InputLabel,
-  MenuItem,
-  Pagination,
-  Radio,
-  RadioGroup,
-  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
-import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 
 export default function Page() {
-  const API_URL = "/admin/category/list";
+  const API_URL = "/api/admin/category/list";
   const [categoryname, setCategoryname] = useState([]);
   const [categorykey, setCategorykey] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
@@ -75,7 +62,7 @@ export default function Page() {
     if (uploadedImage instanceof FileList && uploadedImage.length > 0) {
       formData.append("file", uploadedImage[0]); // 선택된 파일 추가
       axios({
-        url: "/admin/category/add",
+        url: "/api/admin/category/add",
         method: "post",
         data: formData, // FormData 객체를 data로 설정
         headers: {
@@ -94,7 +81,7 @@ export default function Page() {
         });
     } else {
       axios({
-        url: "/admin/category/add",
+        url: "/api/admin/category/add",
         method: "post",
         data: formData,
       })
@@ -123,7 +110,7 @@ export default function Page() {
     if (uploadedImage instanceof FileList && uploadedImage.length > 0) {
       formData.append("file", uploadedImage[0]); // 선택된 파일 추가
       axios({
-        url: "/admin/category/edit",
+        url: "/api/admin/category/edit",
         method: "post",
         data: formData, // FormData 객체를 data로 설정
         headers: {
@@ -142,7 +129,7 @@ export default function Page() {
         });
     } else {
       axios({
-        url: "/admin/category/edit",
+        url: "/api/admin/category/edit",
         method: "post",
         data: formData,
       })
@@ -179,7 +166,7 @@ export default function Page() {
   }
 
   function callDeletedData() {
-    const API_URL = "/admin/category/deleted";
+    const API_URL = "/api/admin/category/deleted";
     axios.get(API_URL).then((response) => {
       setCategoryList(response.data.category_list);
       setShowingData(false);

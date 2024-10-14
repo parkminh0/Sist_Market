@@ -29,7 +29,6 @@ import {
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 import QuestionModal from "@/component/admin/qna/QuestionModal";
-import AnswerModal from "@/component/admin/qna/AnswerModal";
 
 export default function Page() {
   const CHKDEL_URL = "/qna/chkDelete";
@@ -104,13 +103,13 @@ export default function Page() {
   };
 
   function getCount() {
-    axios.get("/qna/todayCount").then((res) => {
+    axios.get("/api/qna/todayCount").then((res) => {
       setTodayCount(res.data.cnt);
     });
   }
 
   function getSelectCount1() {
-    axios.get("/qna/selectTodayCount", {
+    axios.get("/api/qna/selectTodayCount", {
       params: {
         isanswered: 0,
       }
@@ -120,7 +119,7 @@ export default function Page() {
   }
 
   function getSelectCount2() {
-    axios.get("/qna/selectTodayCount", {
+    axios.get("/api/qna/selectTodayCount", {
       params: {
         isanswered: 1,
       }
@@ -468,7 +467,6 @@ export default function Page() {
                     </TableRow>
                   </TableHead>
                   <QuestionModal questionModalOpen={questionModalOpen} handleQuestionModalClose={handleQuestionModalClose} qnakey={selectedQnaKey}  handleAnswerModalOpen={handleAnswerModalOpen}/>
-                  <AnswerModal answerModalOpen={answerModalOpen} handleAnswerModalClose={handleAnswerModalClose} qnakey={selectedQnaKey} search={search}/>
                   <TableBody>
                     {list && list.length > 0 ? (
                       list.map((ar, i) => (

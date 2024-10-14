@@ -1,10 +1,14 @@
 "use client";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import EditPostModal from "@/component/user/post/detail/EditPostModal";
+import PopCateList from "@/component/user/post/detail/PopCateList";
+import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
+import ReportModal from "@/component/user/post/detail/report/ReportModal";
+import UserCellList from "@/component/user/post/detail/UserCellList";
+import { useTheme } from "@emotion/react";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import {
   Backdrop,
   Box,
@@ -15,26 +19,16 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  Grid,
-  IconButton,
   MobileStepper,
-  Paper,
   Typography,
 } from "@mui/material";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import "/public/css/post_detail.css";
-import "/public/css/popcatelist.css";
-import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { useTheme } from "@emotion/react";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import Cookies from "js-cookie";
-import EditPostModal from "@/component/user/post/detail/EditPostModal";
-import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
-import UserCellList from "@/component/user/post/detail/UserCellList";
-import PopCateList from "@/component/user/post/detail/PopCateList";
-import ReportModal from "@/component/user/post/detail/report/ReportModal";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import "/public/css/popcatelist.css";
+import "/public/css/post_detail.css";
 
 export default function Page() {
   // PO(PriceOffer: 가격제안)모달용 데이터
@@ -49,7 +43,7 @@ export default function Page() {
 
   function isLike(postkey) {
     axios({
-      url: "/adpost/isLike",
+      url: "/api/adpost/isLike",
       method: "get",
       params: {
         postkey: postkey,
@@ -67,7 +61,7 @@ export default function Page() {
 
   function toggleLike() {
     axios({
-      url: "/adpost/toggleLike",
+      url: "/api/adpost/toggleLike",
       method: "get",
       params: {
         isLike: like, // isLike: true면 이미 등록된걸 삭제하는 것임
@@ -95,7 +89,7 @@ export default function Page() {
 
   function updateViewqty(postkey) {
     axios({
-      url: "/adpost/incViewqty",
+      url: "/api/adpost/incViewqty",
       method: "get",
       params: {
         postkey: postkey,
@@ -111,7 +105,7 @@ export default function Page() {
   }
 
   const chatconnect = () => {
-    axios.get('/chat/createroom', {
+    axios.get('/api/chat/createroom', {
       params: {
         postkey: postKey,
         buyer_userkey: userkey,
@@ -119,7 +113,7 @@ export default function Page() {
       }
     }).then(response => {
       const res = response.data;
-      axios.get('/chat/adminsend', {
+      axios.get('/api/chat/adminsend', {
         params: {
           chatroomkey: res.chatroomkey,
           userkey1: res.seller_userkey,
@@ -189,7 +183,7 @@ export default function Page() {
 
   const userkey = Cookies.get("userkey");
   const loggedIn = userkey != undefined;
-  const param = useSearchParams();
+  
 
   function getUserTown(address_list) {
     var length = address_list.length > 0 ? address_list.length : 0;
@@ -202,25 +196,25 @@ export default function Page() {
     }
     return userTown;
   }
-
-
+  const param = useSearchParams();
   useEffect(() => {
-    setCellList([]);
-    setPopCate([]);
-    setPostVO({});
-    setUserVO({});
-    setManner();
-    let currentUrl = window.location.href;
-    let currentUrlObj = new URL(currentUrl);
-    let params = new URLSearchParams(currentUrlObj.search);
-    // 'category' 파라미터의 모든 값 가져오기
-    let postkey = params.get("postkey");
-
+    if (typeof window !== "undefined") {
+      setCellList([]);
+      setPopCate([]);
+      setPostVO({});
+      setUserVO({});
+      setManner();
+      let currentUrl = window.location.href;
+      let currentUrlObj = new URL(currentUrl);
+      let params = new URLSearchParams(currentUrlObj.search);
+      // 'category' 파라미터의 모든 값 가져오기
+      let postkey = params.get("postkey");
+      
     setPostKey(postkey);
     
     setLoading(true);
     axios({
-      url: "/adpost/postdetail",
+      url: "/api/adpost/postdetail",
       method: "get",
       params: {
         postkey: postkey,
@@ -243,15 +237,18 @@ export default function Page() {
       if (res.data.pvo.hope_place != null && res.data.pvo.hope_place != "")
         getLocation(res.data.pvo);
 
-      if (param.get("edit") != null) {
-        editPost(res.data.pvo.userkey, res.data.pvo.poststatus);
+      if (typeof window !== "undefined") {
+        if (param.get("edit") != null) {
+          editPost(res.data.pvo.userkey, res.data.pvo.poststatus);
+        }
       }
+      
 
       // setUserTown(getUserTown(res.data.pvo.uvo.a_list));
       setManner(res.data.pvo.uvo.mannertemp);
 
       axios({
-        url: "/adpost/cellList",
+        url: "/api/adpost/cellList",
         method: "get",
         params: {
           userkey: res.data.pvo.uvo.userkey,
@@ -263,7 +260,7 @@ export default function Page() {
       }).then((res2) => {
         setCellList(res2.data.cellList);
         axios({
-          url: "/adpost/pop_cate",
+          url: "/api/adpost/pop_cate",
           method: "get",
           params: {
             categorykey: res.data.pvo.categorykey,
@@ -279,7 +276,7 @@ export default function Page() {
       });
       });
 
-      
+    }
   }, [param.get("postkey")]);
 
   const theme = useTheme();

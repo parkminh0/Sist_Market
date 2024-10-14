@@ -4,44 +4,52 @@ import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import "/public/css/myPage.css";
 import axios from "axios";
-import FaqModal from "@/app/customer/faq/page";
-import QnaModal from "@/app/customer/qna/page";
+////import FaqModal from "../customer/FaqModal";
+////import QnaModal from "../customer/QnaModal";
 
 export default function MyPageSide(props) {
-  var pathname = usePathname();
-  if(props.pathname != undefined){
-    pathname = props.pathname;
-  }
-  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const [currentPath, setCurrentPath] = useState("");
 
-  const BC_URL = "/admin/board/getAllBc";
+  // 클라이언트 사이드에서만 useSearchParams 사용
+  const searchParams = useSearchParams(); // 클라이언트에서만 실행
+  useEffect(() => {
+    if (searchParams) {
+      const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+      setCurrentPath(fullPath); // fullPath 설정
+    } else {
+      setCurrentPath(pathname); // pathname만 설정
+    }
+  }, [pathname]);
+
+  const BC_URL = "/api/admin/board/getAllBc";
   const [bc_list, setBc_list] = useState([]);
 
-  function getData() {  
-    axios.get(BC_URL)
-    .then((res) => {
+  function getData() {
+    axios.get(BC_URL).then((res) => {
       setBc_list(res.data.bc_list);
     });
   }
 
   useEffect(() => {
     getData();
-}, []);
+  }, []);
 
   useEffect(() => {
-    const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
-    // 전체 링크를 가져와서 각각 처리
-    document.querySelectorAll("a[data-href]").forEach((link) => {
-      const linkHref = link.getAttribute("data-href");
-
-      // 쿼리 파라미터가 있는 링크는 전체 경로로 비교하고, 없는 링크는 pathname으로만 비교
-      if (linkHref === currentPath || (linkHref === pathname && !linkHref.includes("?"))) {
-        link.classList.add("active");
-      } else {
-        link.classList.remove("active");
-      }
-    });
-  }, [pathname, searchParams]);
+    if (typeof document !== 'undefined') {
+      // 전체 링크를 가져와서 각각 처리
+      document.querySelectorAll("a[data-href]").forEach((link) => {
+        const linkHref = link.getAttribute("data-href");
+  
+        // 쿼리 파라미터가 있는 링크는 전체 경로로 비교하고, 없는 링크는 pathname으로만 비교
+        if (linkHref === currentPath || (linkHref === pathname && !linkHref.includes("?"))) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    }
+  }, [currentPath, pathname]);
 
   //FAQ
   const [faqOpen, setFaqOpen] = useState(false);
@@ -49,7 +57,9 @@ export default function MyPageSide(props) {
     e.preventDefault(); // 링크의 기본 동작 방지
     setFaqOpen(true);
   };
-  const handleFaqClose = () => { setFaqOpen(false); };
+  const handleFaqClose = () => {
+    setFaqOpen(false);
+  };
 
   //QnA
   const [qnaOpen, setQnaOpen] = useState(false);
@@ -59,7 +69,9 @@ export default function MyPageSide(props) {
     }
     setQnaOpen(true);
   };
-  const handleQnaClose = () => { setQnaOpen(false); };
+  const handleQnaClose = () => {
+    setQnaOpen(false);
+  };
 
   return (
     <div
@@ -217,8 +229,8 @@ export default function MyPageSide(props) {
               <Link data-v-7a824f04="" href="#" className="menu_link" onClick={handleFaqOpen}>
                     자주 묻는 질문
               </Link>
-              <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} />
-              <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
+              {/* <FaqModal faqOpen={faqOpen} handleFaqClose={handleFaqClose} handleQnaOpen={handleQnaOpen} /> */}
+              {/* <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} /> */}
             </li>
             <li data-v-7a824f04="" className="menu_item">
               <Link data-v-7a824f04="" href="/Board/terms" className="menu_link">

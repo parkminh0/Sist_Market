@@ -16,7 +16,7 @@ const DealStatistic = () => {
   // 초기 세팅
   useEffect(() => {
     axios({
-      url: "/ad/dealstatistic",
+      url: "/api/ad/dealstatistic",
       method: "get",
       headers: {
         "Content-Type": "application/json",

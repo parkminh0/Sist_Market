@@ -6,7 +6,6 @@ import { Backdrop, CircularProgress, Paper, Table, TableBody, TableCell, TableCo
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
 import "/public/css/celllist.css";
@@ -26,96 +25,80 @@ export default function page() {
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState({});
   
-  const [firstTime, setFirstTime] = useState(false);
+  const API_URL = '/api/user/api/cellList';
 
-  const API_URL = '/user/api/cellList';
+  // 서버 사이드에서 SearchParams를 사용하지 않도록 useEffect에서 처리
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const cellCategory = searchParams.get("cellCategory");
 
-  var cellCategory = useSearchParams().get("cellCategory");
-  const cellCategoryList = ['onSale','Selling','Sold','Hidden'];
-  const userkey = Cookies.get("userkey");
-
-  function changePage(pNum) { 
-    setLoading(true);
-    getCellList(pNum);
-  }
-
-  function updateCellList(cellCategory){
-    setWhatNow(cellCategory);
-    setCellStatus(cellCategoryList.indexOf(cellCategory)+1);
-  }
-
-  function getCellList(cPage){
-    axios({
-      url: API_URL,
-      method: 'post',
-      params: {
-          userkey: userkey,
-          cPage: cPage,
-          poststatus: cellStatus,
-          start_date: startDate,
-          end_date: endDate,
-      }
-    }).then((res) => {
-
-        setCelllist(res.data.celllist);
-        setCellCounts([res.data.cell1Count,
-                       res.data.cell2Count,
-                       res.data.cell3Count,
-                       res.data.cell4Count])
-        setPage(res.data.page);
-
-        if(res.data.totalCount > 99){
-          setTotalCount(100);
-        } else {
-          setTotalCount(res.data.totalCount);
-        }
-        if(res.data.totalRecord > 99){
-          setTotalRecord(100);
-        } else {
-          setTotalRecord(res.data.totalRecord);
-        }
-
-        setCellNow(cellStatus);
-        setLoading(false);
-      });
-  }
-
-  function formatDate(date) {
-    var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-
-    return [year, month, day].join('-');
-  }
-
-  function dateButton(months){
-    let end_day = new Date();
-    let start_day = new Date();
-    start_day.setMonth(end_day.getMonth()-months);
-    setEndDate(formatDate(end_day));
-    setStartDate(formatDate(start_day));
-  }
-
-  useEffect(()=>{
-    if(firstTime){
-      if(cellCategoryList.includes(cellCategory)){
+      if (cellCategory && ['onSale', 'Selling', 'Sold', 'Hidden'].includes(cellCategory)) {
         setWhatNow(cellCategory);
-        alert(cellCategoryList.indexOf(cellCategory));
-        setCellStatus(cellCategoryList.indexOf(cellCategory)+1);
-      } else {
-        setWhatNow('onSale');
-        setCellStatus(1);
+        setCellStatus(['onSale', 'Selling', 'Sold', 'Hidden'].indexOf(cellCategory) + 1);
       }
     }
     setLoading(true);
     getCellList(1);
-  },[whatNow]);
+  }, [whatNow]);
+
+  function getCellList(cPage) {
+    axios({
+      url: API_URL,
+      method: 'post',
+      params: {
+        userkey: Cookies.get("userkey"),
+        cPage: cPage,
+        poststatus: cellStatus,
+        start_date: startDate,
+        end_date: endDate,
+      }
+    }).then((res) => {
+      setCelllist(res.data.celllist);
+      setCellCounts([
+        res.data.cell1Count,
+        res.data.cell2Count,
+        res.data.cell3Count,
+        res.data.cell4Count,
+      ]);
+      setPage(res.data.page);
+
+      setTotalCount(Math.min(res.data.totalCount, 100));
+      setTotalRecord(Math.min(res.data.totalRecord, 100));
+      setCellNow(cellStatus);
+      setLoading(false);
+    });
+  }
+
+  function updateCellList(cellCategory) {
+    setWhatNow(cellCategory);
+    setCellStatus(['onSale', 'Selling', 'Sold', 'Hidden'].indexOf(cellCategory) + 1);
+  }
+
+  function changePage(pNum) {
+    setLoading(true);
+    getCellList(pNum);
+  }
+
+  function dateButton(months) {
+    let end_day = new Date();
+    let start_day = new Date();
+    start_day.setMonth(end_day.getMonth() - months);
+    setEndDate(formatDate(end_day));
+    setStartDate(formatDate(start_day));
+  }
+
+  function formatDate(date) {
+    let d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
 
   const [loading, setLoading] = useState(false);
 

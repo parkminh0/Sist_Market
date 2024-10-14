@@ -1,6 +1,10 @@
 package com.sist.back.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,20 +14,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.back.service.TownService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/town")
+@RequestMapping("/api/town")
 public class TownController {
 
     @Autowired
     TownService townService;
 
-    @GetMapping("/postside")
-    public Map<String, Object> getMethodName(String key, String value, String[] now) {
+    @PostMapping("/postside")
+    public Map<String, Object> getMethodName(@RequestBody Map<String, Object> request) {
+        String key = (String) request.get("key");
+        String value = (String) request.get("value");
+        List<String> now = (List<String>) request.get("now"); // 배열을 리스트로 받습니다.
+
+        System.out.println("값: " + value);
+        System.out.println("현재: " + now);
+
         Map<String, Object> pMap = new HashMap<>();
         pMap.put("key", key);
         pMap.put("value", value);
         pMap.put("now", now);
+
         Map<String, Object> res = new HashMap<>();
         res.put("res_list", townService.searchTownByRegion(pMap));
         return res;

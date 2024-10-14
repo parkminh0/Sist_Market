@@ -1,7 +1,5 @@
 "use client";
-import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
-
 import Category from "@/component/user/index/Category";
 import axios from "axios";
 import Link from "next/link";
@@ -15,7 +13,7 @@ export default function Home() {
 
   function getCategory() {
     axios({
-      url: "/category/all",
+      url: "/api/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +25,7 @@ export default function Home() {
 
   function getMain() {
     axios({
-      url: "/adpost/main",
+      url: "/api/adpost/main",
       method: "get",
       params: {
         region1: decodeURIComponent(Cookies.get("region1")),
@@ -49,86 +47,54 @@ export default function Home() {
   }, []);
 
   // #region 메인 배너 슬라이드 이벤트
-  const banner_buttons = document.querySelectorAll("button.slick-slide-btn");
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof document !== "undefined") {
+      // 클라이언트에서만 실행될 코드를 여기에 작성
+      const banner_buttons = document.querySelectorAll("button.slick-slide-btn");
 
-  banner_buttons.forEach((button) => {
-    button.addEventListener("click", function () {
-      let idx = 0;
-      const currentSlide = document.querySelector(
-        "div.slick-active.slick-current"
-      );
-      if (button.dataset.prev === "yes") {
-        idx = currentSlide.dataset.index - 1;
-        if (idx < 0) idx = 2;
-      } else {
-        idx = parseInt(currentSlide.dataset.index) + 1;
-        if (idx > 2) idx = 0;
-      }
+      banner_buttons.forEach((button) => {
+        button.addEventListener("click", function () {
+          let idx = 0;
+          const currentSlide = document.querySelector(
+            "div.slick-active.slick-current"
+          );
+          if (button.dataset.prev === "yes") {
+            idx = currentSlide.dataset.index - 1;
+            if (idx < 0) idx = 2;
+          } else {
+            idx = parseInt(currentSlide.dataset.index) + 1;
+            if (idx > 2) idx = 0;
+          }
 
-      // Remove classes "slick-active" and "slick-current" from all slides
-      document.querySelectorAll("div.slick-slide").forEach((slide) => {
-        slide.classList.remove("slick-active");
-        slide.classList.remove("slick-current");
-      });
+          // Remove classes "slick-active" and "slick-current" from all slides
+          document.querySelectorAll("div.slick-slide").forEach((slide) => {
+            slide.classList.remove("slick-active");
+            slide.classList.remove("slick-current");
+          });
 
-      // Add classes "slick-active" and "slick-current" to the new active slide
-      const newActiveSlide = document.querySelector(
-        `div.slick-slide[data-index='${idx}']`
-      );
-      newActiveSlide.classList.add("slick-active");
-      newActiveSlide.classList.add("slick-current");
+          // Add classes "slick-active" and "slick-current" to the new active slide
+          const newActiveSlide = document.querySelector(
+            `div.slick-slide[data-index='${idx}']`
+          );
+          newActiveSlide.classList.add("slick-active");
+          newActiveSlide.classList.add("slick-current");
 
-      // Update the slide track's transform and transition styles
-      const slickTrack = document.querySelector("div.slick-track");
-      slickTrack.style.transform = `translate3d(${-1400 * idx}px, 0px, 0px)`;
-      slickTrack.style.transition = "-webkit-transform 500ms ease 0s";
+          // Update the slide track's transform and transition styles
+          const slickTrack = document.querySelector("div.slick-track");
+          slickTrack.style.transform = `translate3d(${-1400 * idx}px, 0px, 0px)`;
+          slickTrack.style.transition = "-webkit-transform 500ms ease 0s";
 
-      // Remove and add classes for the inner div elements
-      document
-        .querySelectorAll("div.slick-slide div div")
-        .forEach((innerDiv) => {
-          innerDiv.classList.remove("_12vdq0bl");
+          // Update the slick dots to reflect the active slide
+          document.querySelectorAll("ul.slick-dots li").forEach((dot) => {
+            dot.classList.remove("slick-active");
+          });
+          document
+            .querySelector(`ul.slick-dots li:nth-child(${idx + 1})`)
+            .classList.add("slick-active");
         });
-      document
-        .querySelector(`div.slick-slide[data-index='${idx}'] div div`)
-        .classList.add("_12vdq0bl");
-
-      // Update the slick dots to reflect the active slide
-      document.querySelectorAll("ul.slick-dots li").forEach((dot) => {
-        dot.classList.remove("slick-active");
       });
-      document
-        .querySelector(`ul.slick-dots li:nth-child(${idx + 1})`)
-        .classList.add("slick-active");
-
-      // Update the image classes
-      const imgDiv = document.getElementById("slick-slide-img-div");
-      imgDiv.querySelectorAll("span img").forEach((img) => {
-        img.classList.remove("_12vdq0b4");
-      });
-      imgDiv
-        .querySelectorAll(`span:nth-child(${idx + 1}) img`)
-        .forEach((img) => {
-          img.classList.add("_12vdq0b4");
-        });
-
-      // Change the background color based on the index
-      const bgColorDiv = document.querySelector(
-        "div._12vdq0b0._1h4pbgy9ug._1h4pbgy9xc"
-      );
-      switch (idx) {
-        case 0:
-          bgColorDiv.style.backgroundColor = "rgb(255, 250, 224)";
-          break;
-        case 1:
-          bgColorDiv.style.backgroundColor = "rgb(238, 252, 255)";
-          break;
-        case 2:
-          bgColorDiv.style.backgroundColor = "rgb(227, 247, 209)";
-          break;
-      }
-    });
-  });
+    }
+  }, []);
   // #endregion
 
   // #region 상품 슬라이드 왼쪽버튼

@@ -6,7 +6,6 @@ import "/public/css/buylist.css";
 import "/public/css/myPage.css";
 // import "/public/css/paging.css";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import "/public/css/popcatelist.css";
 
 import BadgeList from "@/component/user/myPage/BadgeList";
@@ -19,10 +18,11 @@ import PraiseModal from "@/component/user/userPage/PraiseModal";
 import UserReport from "@/component/user/userPage/UserReport";
 import { Backdrop, Box, Button, CircularProgress, LinearProgress, Typography } from '@mui/material';
 import Cookies from "js-cookie";
+import { useSearchParams } from "next/navigation";
 
 
 export default function page() {
-  const API_URL = "/user/api/getUser";
+  const API_URL = "/api/user/api/getUser";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('cell');
@@ -38,9 +38,14 @@ export default function page() {
   const [vo, setVo] = useState({});
   const [cellList, setCellList] = useState([]);
 
+  const [userkey, setUserkey] = useState(null);
   const params = useSearchParams();
-  const userkey = params.get("userkey");
-
+  useEffect(() => {
+    // 클라이언트에서만 실행되는 코드
+    if (typeof window !== 'undefined') {
+      setUserkey(params.get("userkey"));
+    }
+  }, []);
 
   const date_today = new Date();
   const date_end = yyyymmdd(date_today,0);
@@ -69,10 +74,10 @@ export default function page() {
 
   function getCanPoN(){
     axios.get(
-      "/user/userPage/canPoN", {
+      "/api/user/userPage/canPoN", {
         params: { 
           userkey_me: Cookies.get("userkey"),
-          userkey_you: userkey,
+          userkey_you: params.get("userkey"),
           date_start: date_start,
           date_end: date_end,
          }
@@ -86,9 +91,9 @@ export default function page() {
 
   function showMorePost(){
     axios.get(
-      "/user/userPage/getMorePost", {
+      "/api/user/userPage/getMorePost", {
         params: { 
-          userkey: userkey,
+          userkey: params.get("userkey"),
           limitpostkey: limitpostkey,
           lastpostkey: lastpostkey,
          }
@@ -159,10 +164,11 @@ export default function page() {
 
   function getData() {
     axios.get(
-      "/user/userPage/getData", {
-        params: { userkey: userkey }
+      "/api/user/userPage/getData", {
+        params: { userkey: params.get("userkey") }
       }
     ).then((res) => {
+      console.log(res.data);
       setVo(res.data.uvo);
       setMannerTemp(res.data.uvo.mannertemp);
       setCellList(res.data.cellList);
@@ -176,14 +182,14 @@ export default function page() {
 
   useEffect(() => {
     const me = Cookies.get("userkey");
-    const you = userkey;
+    const you = params.get("userkey");
     if(me!=undefined){
         if(me == you){
             window.location.replace("/myPage");
         }
     }
     getCanPoN();
-    axios.get("/user/api/FHRBCheck", {
+    axios.get("/api/user/api/FHRBCheck", {
       params: {
         me: me,
         you: you,
@@ -194,18 +200,18 @@ export default function page() {
         setIsBlocked(res.data.isBlocked);
     });
     updateList('cell');
-    axios.get("/user/badge/getBadge", {
-      params: { userkey: userkey }
+    axios.get("/api/user/badge/getBadge", {
+      params: { userkey: you }
   }).then((res) => {
     setBadgeCount((res.data.b_ar&&res.data.b_ar!=undefined)?res.data.b_ar.length:0);
   })
-    axios.get("/user/manner/getManner", {
-      params: { userkey: userkey }
+    axios.get("/api/user/manner/getManner", {
+      params: { userkey: you }
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
     });
-    axios.get("/user/allReview", { params: { userkey: userkey} 
+    axios.get("/api/user/allReview", { params: { userkey: you} 
     }).then((res) => {
       setReviewCount(res.data.count);
     });

@@ -9,22 +9,24 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://13.125.170.142:3306/market?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=admin
-      - SPRING_DATASOURCE_PASSWORD=qweasd123!
-    #      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
-    #      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_DATASOURCE_URL=jdbc:mysql://52.78.168.131:3306/market?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=1111
     restart: always
+    depends_on:
+      - redis
+
   front:
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
     build:
       context: ./front
       dockerfile: Dockerfile
-    # depends_on:
-    #   - backend
     ports:
       - "3000:3000"
     networks:
       - my-net1
+
   nginx:
     image: nginx:latest
     networks:
@@ -37,6 +39,13 @@ services:
     depends_on:
       - back
       - front
+
+  redis:  # Redis 서비스 추가
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - my-net1  # Redis도 같은 네트워크에 추가
 
 networks:
   my-net1:

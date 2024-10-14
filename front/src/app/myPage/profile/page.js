@@ -8,14 +8,14 @@ import { Backdrop, Box, CircularProgress, LinearProgress, Typography } from '@mu
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "/public/css/buylist.css";
 import "/public/css/myPage.css";
 import "/public/css/paging.css";
-import { useSearchParams } from "next/navigation";
 
 export default function page() {
-  const API_URL = "/user/api/getUserProfile";
+  const API_URL = "/api/user/api/getUserProfile";
 
   const [selectedTab, setSelectedTab] = useState('');
   const [whatNow, setWhatNow] = useState('manner');
@@ -26,7 +26,6 @@ export default function page() {
   const [mannerTemp, setMannerTemp] = useState(36.5);
   const [vo, setVo] = useState({});
   const userkey = Cookies.get("userkey");
-  const searchParams = useSearchParams();
 
   const categoryList = ['manner','review', 'badge'];
   
@@ -67,24 +66,25 @@ export default function page() {
     });
   }
 
+  const tab = useSearchParams().get('tab') || 'manner'; // 기본 탭은 'manner'
   useEffect(() => {
     setLoading(true);
-    const tab = searchParams.get('tab') || 'manner'; // 기본 탭은 'manner'
-    updateList(tab);
-
-    axios.get("/user/manner/getManner", {
+    if (typeof window !== "undefined") {
+      updateList(tab);
+    }
+    axios.get("/api/user/manner/getManner", {
       params: { userkey: userkey }
     }).then((res) => {
       const totalCount = (res.data.m_ar || []).reduce((sum, item) => sum + item.count, 0);
       setMannerCount(totalCount);
     });
-      axios.get("/user/allReview", { params: { userkey: userkey} })
+      axios.get("/api/user/allReview", { params: { userkey: userkey} })
     .then((res) => {
       if (reviewCount === 0) {
         setReviewCount(res.data.count);
       }
     });
-      axios.get("/user/badge/getBadgeCount", { params: { userkey: userkey } })
+      axios.get("/api/user/badge/getBadgeCount", { params: { userkey: userkey } })
     .then((res) => {
       setBadgeCount(res.data.count);
     });

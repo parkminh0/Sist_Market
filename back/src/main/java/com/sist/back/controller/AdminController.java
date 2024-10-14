@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
-@RequestMapping("/ad")
+@RequestMapping("/api/ad")
 public class AdminController {
 
     @Autowired

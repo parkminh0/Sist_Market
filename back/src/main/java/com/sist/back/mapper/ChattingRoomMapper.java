@@ -16,4 +16,6 @@ public interface ChattingRoomMapper {
     int createRoom(ChatRoomVO cvo); 
 
     String searchPostkey(String chatroomkey);
+
+    ChatRoomVO checkRoom(ChatRoomVO cvo);
 }

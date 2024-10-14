@@ -12,37 +12,35 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.back.service.BadgeService;
 import com.sist.back.service.CategoryService;
+import com.sist.back.service.OfferService;
 import com.sist.back.service.PostService;
 import com.sist.back.service.PostimgService;
 import com.sist.back.service.SearchlogService;
 import com.sist.back.service.TownService;
-import com.sist.back.service.OfferService;
 import com.sist.back.service.WishlistService;
 import com.sist.back.util.FileRenameUtil;
 import com.sist.back.util.Paging;
+import com.sist.back.vo.OfferVO;
+import com.sist.back.vo.PostCountVO;
 import com.sist.back.vo.PostImgVO;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.TownVO;
-import com.sist.back.vo.OfferVO;
 import com.sist.back.vo.categoryVO;
-import com.sist.back.vo.PostCountVO;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping("/adpost")
+@RequestMapping("/api/adpost")
 public class PostController {
 
     @Autowired
@@ -216,7 +214,7 @@ public class PostController {
             Path path = Paths.get(postImgPath);
             if (path.toString().contains("back")) {
                 String pathString = path.toString();
-                String changedPath = pathString.replace("back\\", "");
+                String changedPath = pathString.replace("back\\", "\\");
                 path = Paths.get(changedPath);
             }
             String filePath = path.resolve(post_img).toString();
@@ -277,7 +275,7 @@ public class PostController {
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "");
+                    String changedPath = pathString.replace("back\\", "\\");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
@@ -296,7 +294,7 @@ public class PostController {
             }
         }
 
-        //배지 부여
+        // 배지 부여
         if (vo.getPoststatus().equals("1")) {
             giveBadgeForPosts(vo.getUserkey());
         }
@@ -306,11 +304,10 @@ public class PostController {
         return res;
     }
 
-     //배지 부여 함수
-     public int giveBadgeForPosts(String userkey) {
+    // 배지 부여 함수
+    public int giveBadgeForPosts(String userkey) {
         return b_service.giveBadgeForPosts(userkey);
     }
-
 
     // 사용자 - 중고거래 글 수정하기
     @PostMapping("/edit")
@@ -342,8 +339,11 @@ public class PostController {
         if (vo.getCanbargain() != null && vo.getCanbargain().equals("on")) {
             vo.setCanbargain("1");
         } else {
-            vo.setCanbargain("0");
+            vo.setCanbargain(vo.getCanbargain() != null ? "0" : "0"); // null일 경우 기본값 '0'으로 설정
         }
+        // } else {
+        // vo.setCanbargain("0");
+        // }
 
         // 파일 데이터 처리
         // 1) 기존 존재하던 이미지 삭제
@@ -360,7 +360,7 @@ public class PostController {
                 Path path = Paths.get(postImgPath);
                 if (path.toString().contains("back")) {
                     String pathString = path.toString();
-                    String changedPath = pathString.replace("back\\", "");
+                    String changedPath = pathString.replace("back\\", "\\");
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
@@ -379,7 +379,7 @@ public class PostController {
             }
         }
 
-        //배지 부여
+        // 배지 부여
         if (vo.getPoststatus().equals("1")) {
             giveBadgeForPosts(vo.getUserkey());
         }
@@ -391,7 +391,7 @@ public class PostController {
     }
 
     // 사용자 - 중고거래 글 목록
-    @GetMapping("/search")
+    @PostMapping("/search")
     public Map<String, Object> search(String userkey, String onsale, String search, String lastPostKey, String loc1,
             String[] loc2,
             String sort,
@@ -440,7 +440,7 @@ public class PostController {
         Random random = new Random();
 
         categoryVO[] lc_list = p_service.getLikeCate(userkey);
-        for(int i=0; i<lc_list.length; i++){
+        for (int i = 0; i < lc_list.length; i++) {
             randomCategories.add(Integer.parseInt(lc_list[i].getCategorykey()));
         }
 
@@ -478,8 +478,8 @@ public class PostController {
     @ResponseBody
     public Map<String, Object> hidePost(String postkey) {
         Map<String, Object> map = new HashMap<>();
-        int cnt = p_service.hidePost(postkey);
-        map.put("cnt", cnt);
+        int result = p_service.hidePost(postkey);
+        map.put("result", result);
         return map;
     }
 

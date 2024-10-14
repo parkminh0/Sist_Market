@@ -11,7 +11,7 @@ export default function UserReportModal(props) {
     const setReportOpen = props.setReportOpen;
     const userkey = props.userkey;
 
-    const API_URL = "/user/report/getUserReportList";
+    const API_URL = "/api/user/report/getUserReportList";
     
     function reportClose(){
         setReportOpen(false);
@@ -63,7 +63,7 @@ export default function UserReportModal(props) {
                             ) : (
                                 <>
                                     <Typography id="modal-modal-title" variant="subtitle1" component="h2" sx={{ fontWeight: 'bold', mb: 0, fontSize: '16px' }}>
-                                        게시글을 신고하는 이유를 선택해주세요.
+                                        사용자를 신고하는 이유를 선택해주세요.
                                     </Typography>
                                     <List>
                                         {list.length > 0 ? (

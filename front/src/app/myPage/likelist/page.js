@@ -15,12 +15,8 @@ import { Backdrop, Button, CircularProgress } from "@mui/material";
 import PriceOfferModal from "@/component/user/post/detail/PriceOfferModal";
 import AddLikeCateModal from "@/component/user/myPage/likelist/AddLikeCateModal";
 import AddLikeKeyModal from "@/component/user/myPage/likelist/AddLikeKeyModal";
-// import { useSearchParams } from "next/navigation";
 
 export default function Page() {
-
-  // const params = useSearchParams();
-  // const userkey = params.get('userkey');
 
   const [likeWhat, setLikeWhat] = useState('post');
   const [likeList, setLikeList] = useState([]);
@@ -29,8 +25,8 @@ export default function Page() {
   const [display, setDisplay] = useState('게시글');
   const [page, setPage] = useState({});
 
-  const API_URL = '/user/api/likeLists';
-  const DEL_URL = '/adpost/delLike';
+  const API_URL = '/api/user/api/likeLists';
+  const DEL_URL = '/api/adpost/delLike';
 
   const userkey = Cookies.get("userkey");
 

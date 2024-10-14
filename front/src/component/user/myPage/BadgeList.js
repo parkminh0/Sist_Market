@@ -6,10 +6,10 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 export default function BadgeList({ userKey, onBadgeCountChange }) {
-    const ALL_URL = "/user/badge/getAllBadge";
-    const API_URL = "/user/badge/getBadge";
-    const REP_URL = "/user/badge/representBadge";
-    const CAN_URL = "/user/badge/cancelRep";
+    const ALL_URL = "/api/user/badge/getAllBadge";
+    const API_URL = "/api/user/badge/getBadge";
+    const REP_URL = "/api/user/badge/representBadge";
+    const CAN_URL = "/api/user/badge/cancelRep";
 
     const [list, setList] = useState([]);
     const [unlockedBadgeKeys, setUnlockedBadgeKeys] = useState([]);

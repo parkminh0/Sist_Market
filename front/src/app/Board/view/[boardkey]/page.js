@@ -15,15 +15,26 @@ export default function page( props ) {
   const [ar, setAr] = useState({});
   const boardkey = props?.params?.boardkey;
 
-  const searchParams = useSearchParams();
-  const cPage = searchParams.get('cPage');
+  const [cPage, setCPage] = useState(1);  // 초기값 설정
+  const [categorykey, setCategorykey] = useState(null);
   const [bclist, setBclist] = useState([]); 
-  const categorykey = searchParams.get('categorykey');
   const [viewqty, setViewqty] = useState(0);
+
+  // 페이지가 클라이언트에서 렌더링된 후에 SearchParams 사용
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const categorykeyParam = searchParams.get('categorykey');
+      const cPageParam = searchParams.get('cPage') || 1;
+
+      setCategorykey(categorykeyParam);
+      setCPage(cPageParam);
+    }
+  }, []);
 
   function updateViewqty(boardkey) {
     axios({
-      url: "/admin/board/incHit",
+      url: "/api/admin/board/incHit",
       method: "get",
       params: {
         boardkey: boardkey,
@@ -41,14 +52,12 @@ export default function page( props ) {
 
   // 목록버튼 클릭 시 이전 페이지로 이동
   function handleGoBack() {
-    router.push(`/Board/list/${categorykey}?cPage=${cPage}`);
+    if (categorykey) {
+      router.push(`/Board/list/${categorykey}?cPage=${cPage}`);
+    }
   }
 
-  useEffect(() => {
-    getData(cPage); // 페이지 데이터 가져오기
-  }, [cPage]);
-
-  const API_URL = `/admin/board/getBbs?boardkey=${boardkey}`;
+  const API_URL = `/api/admin/board/getBbs?boardkey=${boardkey}`;
   function getData() {
     axios.get(API_URL).then((res) => {
         setAr(res.data.bvo); // 객체로 설정
@@ -61,18 +70,15 @@ export default function page( props ) {
     incViewqty(boardkey);
     getData();
     getBcList();
-  }, []);
+  }, [boardkey]);
 
   // bclist 가져와서 BoardSide로 넘겨줄거임
-  const bcUrl = "/admin/board/getAllBc";
+  const bcUrl = "/api/admin/board/getAllBc";
   function getBcList() {  
     axios.get(bcUrl)
     .then((json) => { 
         setBclist(json.data.bc_list);
         const category = json.data.bc_list.find(bc => bc.key === categorykey);
-        if (category) {
-          setCategoryName(category.value);  // 선택한 카테고리 이름 저장
-        }
     })
     .catch((error) => {
         //console.error("데이터 로딩 오류:", error);  

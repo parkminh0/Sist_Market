@@ -83,7 +83,7 @@ export default function page() {
   // #region 비동기-카테고리 리스트
   function getCategory() {
     axios({
-      url: "/category/all",
+      url: "/api/category/all",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -97,17 +97,18 @@ export default function page() {
   // #region 비동기-Region2 리스트
   function getRegion2(loc1, loc2) {
     axios({
-      url: "/town/postside",
-      method: "get",
-      params: {
+      url: "/api/town/postside",
+      method: "post",
+      data: {
         key: "1",
-        value: loc1,
+        value: loc1, 
         now: loc2,
       },
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
+    })
+    .then((res) => {
       setRegion2_list(res.data.res_list);
     });
   }
@@ -150,9 +151,9 @@ export default function page() {
     setMaxPriceParam(maxParam);
 
     axios({
-      url: "/adpost/search",
-      method: "get",
-      params: {
+      url: "/api/adpost/search",
+      method: "post",
+      data: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
         onsale: onsaleParam,
         search: searchParam,
@@ -183,19 +184,19 @@ export default function page() {
   useEffect(() => {
     if (loading){
       axios({
-        url: "/adpost/search",
+        url: "/api/adpost/search",
         method: "get",
         params: {
           userkey: decodeURIComponent(Cookies.get("userkey")),
-          onsale: onsaleParam,
-          lastPostKey: lastPostKey,
-          search: searchParam,
-          loc1: loc1Param,
-          loc2: loc2Param,
-          category: categoryParam,
-          sort: sortParam,
-          minPrice: minPriceParam,
-          maxPrice: maxPriceParam,
+          onsale: encodeURIComponent(onsaleParam),
+          lastPostKey: encodeURIComponent(lastPostKey),
+          search: encodeURIComponent(searchParam),
+          loc1: encodeURIComponent(loc1Param),
+          loc2: encodeURIComponent(loc2Param),
+          category: encodeURIComponent(categoryParam),
+          sort: encodeURIComponent(sortParam),
+          minPrice: encodeURIComponent(minPriceParam),
+          maxPrice: encodeURIComponent(maxPriceParam),
         },
         headers: {
           "Content-Type": "application/json",
@@ -281,52 +282,54 @@ export default function page() {
 
   // #region 내 물건 팔기 버튼
   useEffect(() => {
-    const container = document.getElementById("search_article");
-    const button = document.querySelector(".write-button");
+    if (typeof window !== "undefined" && typeof document !== "undefined") {
+      const container = document.getElementById("search_article");
+      const button = document.querySelector(".write-button");
 
-    const handleScroll = () => {
-      const containerRect = container.getBoundingClientRect();
-      const buttonHeight = button.offsetHeight;
+      const handleScroll = () => {
+        const containerRect = container.getBoundingClientRect();
+        const buttonHeight = button.offsetHeight;
 
-      // 1. 컨테이너가 화면에 전혀 보이지 않을 때 버튼을 숨김
-      if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
-        button.style.display = "none"; // 버튼 숨김
-      }
-      // 2. 컨테이너가 화면에 있을 때 버튼을 보이게 함
-      else {
-        button.style.display = "block"; // 버튼 표시
-
-        // 컨테이너의 bottom이 화면의 하단보다 위로 올라갔을 때
-        if (containerRect.bottom <= buttonHeight + 20) {
-          // 컨테이너 하단에 고정
-          button.style.position = "absolute";
-          button.style.bottom = "20px";
-          button.style.right = "20px";
+        // 1. 컨테이너가 화면에 전혀 보이지 않을 때 버튼을 숨김
+        if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
+          button.style.display = "none"; // 버튼 숨김
         }
-        // 컨테이너가 화면에 보일 때
-        else if (containerRect.top <= window.innerHeight) {
-          // 버튼이 화면의 오른쪽 하단에 고정
-          button.style.position = "fixed";
-          button.style.bottom = "20px";
-          button.style.right = `${
-            window.innerWidth - containerRect.right + 20
-          }px`;
-        } else {
-          // 기본 absolute 위치
-          button.style.position = "absolute";
-          button.style.bottom = "20px";
-          button.style.right = "20px";
+        // 2. 컨테이너가 화면에 있을 때 버튼을 보이게 함
+        else {
+          button.style.display = "block"; // 버튼 표시
+
+          // 컨테이너의 bottom이 화면의 하단보다 위로 올라갔을 때
+          if (containerRect.bottom <= buttonHeight + 20) {
+            // 컨테이너 하단에 고정
+            button.style.position = "absolute";
+            button.style.bottom = "20px";
+            button.style.right = "20px";
+          }
+          // 컨테이너가 화면에 보일 때
+          else if (containerRect.top <= window.innerHeight) {
+            // 버튼이 화면의 오른쪽 하단에 고정
+            button.style.position = "fixed";
+            button.style.bottom = "20px";
+            button.style.right = `${
+              window.innerWidth - containerRect.right + 20
+            }px`;
+          } else {
+            // 기본 absolute 위치
+            button.style.position = "absolute";
+            button.style.bottom = "20px";
+            button.style.right = "20px";
+          }
         }
-      }
-    };
+      };
 
-    handleScroll();
+      handleScroll();
 
-    document.addEventListener("scroll", handleScroll);
+      document.addEventListener("scroll", handleScroll);
 
-    return () => {
-      document.removeEventListener("scroll", handleScroll);
-    };
+      return () => {
+        document.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
   // #endregion
 
@@ -362,7 +365,7 @@ export default function page() {
 
     // 임시저장 확인
     axios({
-      url: "/adpost/searchTemp",
+      url: "/api/adpost/searchTemp",
       method: "get",
       params: {
         userkey: decodeURIComponent(Cookies.get("userkey")),
@@ -739,8 +742,8 @@ export default function page() {
       axios
         .post(
           savePostKey == null || savePostKey == ""
-            ? "/adpost/write"
-            : "/adpost/edit",
+            ? "/api/adpost/write"
+            : "/api/adpost/edit",
           formData,
           {
             headers: {
@@ -1797,6 +1800,7 @@ export default function page() {
                                 post.hope_lati != null &&
                                 post.hope_long != null &&
                                 loc1Param != null &&
+                                cookie_latitude != null && cookie_latitude != 'undefined' &&
                                 (() => {
                                   const distance = calDistance(
                                     post.hope_lati,

@@ -472,7 +472,8 @@
     <!-- 게시글 숨기기 -->
     <update id="hidePost" parameterType="String">
         UPDATE `post`
-        SET poststatus = 4
+        SET poststatus = 4,
+        update_dtm = NOW()
         WHERE postkey = #{postkey}
     </update>
     
@@ -916,4 +917,3 @@
         민호 끝 
     -->
 </mapper>
-

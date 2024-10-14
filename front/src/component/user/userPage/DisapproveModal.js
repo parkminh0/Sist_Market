@@ -10,7 +10,7 @@ export default function DisapproveModal(props) {
     function disapproveIt(listKey,message){
         if(confirm(`["${message}"]\n해당 매너 평가를 남기시겠습니까?\n*주의! 취소 불가합니다.`)){
                 axios.post(
-                    "/user/manner/disapproveUser",
+                    "/api/user/manner/disapproveUser",
                 null,
                 {
                     params: {
@@ -35,7 +35,7 @@ export default function DisapproveModal(props) {
     const setDisapproveOpen = props.setDisapproveOpen;
 
     useEffect(()=>{
-        axios.get("/user/manner/getDisapproveList")
+        axios.get("/api/user/manner/getDisapproveList")
             .then((res) => {
                 setDisapproveList(res.data.d_ar || []);
             });

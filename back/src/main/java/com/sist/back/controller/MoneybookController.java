@@ -12,15 +12,13 @@ import com.sist.back.service.MoneybookService;
 import com.sist.back.vo.PostVO;
 import com.sist.back.vo.userVO;
 
-
 @RestController
-@RequestMapping("/user/moneybook")
+@RequestMapping("/api/user/moneybook")
 public class MoneybookController {
-    
+
     @Autowired
     MoneybookService mb_service;
- 
- 
+
     @RequestMapping("getInfos")
     public Map<String, Object> requestMethodName(String userkey, String today) {
         Map<String, Object> mb_map = new HashMap<>();
@@ -47,5 +45,5 @@ public class MoneybookController {
 
         return mb_map;
     }
-    
+
 }

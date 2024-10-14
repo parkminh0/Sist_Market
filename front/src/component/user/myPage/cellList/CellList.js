@@ -1,18 +1,16 @@
 'use client'
-import axios from "axios";
-import Link from "next/link";
-import React, { useState } from "react";
-import "/public/css/celllist.css";
 import ImageNotSupportedRoundedIcon from "@mui/icons-material/ImageNotSupportedRounded";
 import { Button, TableCell, TableRow } from "@mui/material";
+import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import CellDetail from "./CellDetail";
+import { useState } from "react";
 import SellerReviewModal from "../../manner/SellerReviewModal";
 import ReviewDetail from "../buylist/ReviewDetail";
+import CellDetail from "./CellDetail";
+import "/public/css/celllist.css";
 
 export default function CellList(props) {
-  // const param = useSearchParams();
-  // alert(param.get("edit"));
   const celllist = props.celllist;
   const cellNow = props.cellNow;
   const getCellList = props.getCellList;
@@ -100,7 +98,7 @@ export default function CellList(props) {
   }
 
   function remindPost(postkey) {
-    const API_URL = "/adpost/remind";
+    const API_URL = "/api/adpost/remind";
     axios({
       url: API_URL,
       method: "get",
@@ -113,7 +111,7 @@ export default function CellList(props) {
   }
 
   function unhidPost(postkey) {
-    const API_URL = "/adpost/unhid";
+    const API_URL = "/api/adpost/unhid";
     axios({
       url: API_URL,
       method: "get",
@@ -275,7 +273,7 @@ export default function CellList(props) {
                   ''
               }
                 <TableCell colSpan={2} style={{textAlign:'right'}}>
-                  {cellNow == "Hidden" ? (
+                  {cellNow == 4 ? (
                     <Link
                       href="#"
                       onClick={() => {

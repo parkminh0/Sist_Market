@@ -75,7 +75,11 @@ public class ChatRoomController {
 
     @RequestMapping("/chat/createroom")
     public ChatRoomVO createRoom(ChatRoomVO cvo) {
+        if(cr_service.checkRoom(cvo) != null){
+            
+        } else{
         cr_service.createRoom(cvo);
+        }
         return cvo;
     }
 

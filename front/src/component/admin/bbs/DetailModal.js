@@ -9,9 +9,9 @@ export default function DetailModal(props) {
   const onClose = () => { props.handleDetailModalClose(); };
   const boardkey = props.boardkey;
 
-  const API_URL = `/admin/board/getBbs?boardkey=${boardkey}`;
-  const DEL_URL = `/admin/board/del?boardkey=${boardkey}`;
-  const BC_URL = "/admin/board/getBc";
+  const API_URL = `/api/admin/board/getBbs?boardkey=${boardkey}`;
+  const DEL_URL = `/api/admin/board/del?boardkey=${boardkey}`;
+  const BC_URL = "/api/admin/board/getBc";
   const [vo, setVo] = useState({});
   const [categoryname, setCategoryname] = useState('');
 
@@ -35,6 +35,7 @@ export default function DetailModal(props) {
   
 
   function del() {
+    if (typeof window !== "undefined") {
     const confirmation = confirm("선택된 게시글을 정말 삭제하시겠습니까?");
     if (!confirmation) {
       return;
@@ -44,6 +45,7 @@ export default function DetailModal(props) {
       props.getBbsData(1); 
       onClose();
     });
+  }
   }
 
   function getCategoryname(boardkey) {

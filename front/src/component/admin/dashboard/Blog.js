@@ -59,7 +59,7 @@ const Blog = () => {
 
   useEffect(() => {
     axios({
-      url: "/ad/getTop4",
+      url: "/api/ad/getTop4",
       method: "get",
       headers: {
         "Content-Type": "application/json",
@@ -86,10 +86,11 @@ const Blog = () => {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5">인기 게시글</Typography>
       </Grid>
-      {top4.map((post, index) => (
+      {top4 && top4.length > 0 && top4.map((post, index) => (
         <Grid item xs={12} md={3} lg={3} key={index}>
           <BlankCard>
             <Typography component={Link} href="#" onClick={() => openPostDetail(post.postkey)}>
+              {post && post.pimg_list && post.pimg_list.length > 0 && (
               <Avatar
                 src={post.pimg_list[0].imgurl}
                 variant="square"
@@ -98,6 +99,7 @@ const Blog = () => {
                   width: "100%",
                 }}
               />
+              )}
             </Typography>
             <Tooltip title="상세보기">
               <Fab

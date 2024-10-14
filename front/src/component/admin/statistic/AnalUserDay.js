@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Select, MenuItem, Box, Tab } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import dynamic from "next/dynamic";
 import DashboardCard from "../shared/DashboardCard";
-import axios from "axios";
 import { TabContext, TabPanel, TabList } from "@mui/lab";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
