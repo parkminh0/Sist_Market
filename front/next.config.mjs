@@ -11,9 +11,21 @@ const nextConfig = {
       //   source: "/api/category/:path*",
       //   destination: "http://52.78.168.131/api/category/:path*",
       // },
+      // {
+      //   source: "/api/:path*",
+      //   destination: "http://52.78.168.131/api/:path*"
+      // },
       {
-          source: "/api/:path*",
-          destination: "http://52.78.168.131/api/:path*"
+        source: "/api/:path*",
+        destination: "http://localhost:8080/api/:path*"
+      },
+      {
+        source: "/sub/:path*",
+        destination: "http://localhost:8080/sub/:path*"
+      },
+      {
+        source: "/pub/:path*",
+        destination: "http://localhost:8080/pub/:path*"
       },
       // {
       //   source: "/adpost/:path*",
