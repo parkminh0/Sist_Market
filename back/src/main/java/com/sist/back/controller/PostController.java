@@ -363,18 +363,17 @@ public class PostController {
                     path = Paths.get(changedPath);
                 }
                 String filePath = path.resolve(fname).toString();
-                // fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
-                //         filePath.lastIndexOf("\\")));
-                fname = FileRenameUtil.checkSameFileName(fname, filePath);
+                fname = FileRenameUtil.checkSameFileName(fname, filePath.substring(0,
+                        filePath.lastIndexOf("\\")));
+                // fname = FileRenameUtil.checkSameFileName(fname, filePath);
                 pivo.setImgurl(realPath + fname);
                 pivo.setPostkey(Integer.parseInt(vo.getPostkey()));
                 postimgService.addPostImg(pivo);
 
                 // 파일 업로드
                 try {
-                    // f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("") + 1) +
-                    //         fname));
-                    f.transferTo(new File(filePath));
+                    f.transferTo(new File(filePath.substring(0, filePath.lastIndexOf("\\") + 1) + fname));
+                    // f.transferTo(new File(filePath));
                 } catch (Exception e) {
                 }
             }

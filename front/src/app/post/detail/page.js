@@ -199,6 +199,7 @@ export default function Page() {
   const param = useSearchParams();
   useEffect(() => {
     if (typeof window !== "undefined") {
+      setLike(false);
       setCellList([]);
       setPopCate([]);
       setPostVO({});
