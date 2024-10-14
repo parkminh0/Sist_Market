@@ -60,7 +60,15 @@ services:
       - "6379:6379"
     networks:
       - my-net1  # Redis도 같은 네트워크에 추가
-
+  certbot-init:
+    image: certbot/certbot
+    container_name: certbot-init
+    volumes:
+      - ./nginx/certificates:/etc/letsencrypt
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    entrypoint: "/bin/sh -c 'certbot certonly --webroot -w /usr/share/nginx/html -d orange-market.store -d www.orange-market.store; exit 0'"
+    networks:
+      - my-net1
 networks:
   my-net1:
     driver: bridge
