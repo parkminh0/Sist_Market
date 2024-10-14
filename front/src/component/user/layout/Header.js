@@ -1048,7 +1048,7 @@ export default function Header() {
               }}
             >
               <img
-                src="/home/ubuntu/market/front/public/img/kakao.png"
+                src="/img/kakao.png"
                 alt="카카오톡 로그인"
                 style={{ marginRight: "8px", height: "24px" }}
               />
