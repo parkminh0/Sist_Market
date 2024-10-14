@@ -225,7 +225,7 @@ export default function Page() {
 
     if (userkey) {
       
-      const API_URL = `/api/user/api/admin/userEdit?userkey=${userkey}`;
+      const API_URL = `/user/api/admin/userEdit?userkey=${userkey}`;
       axios.get(API_URL).then((res) => {
         setAR(res.data.ar);
         setPW(res.data.ar.pw || "");
