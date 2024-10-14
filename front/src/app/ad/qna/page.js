@@ -29,10 +29,11 @@ import {
 import Top_Analytic from "@/component/admin/dashboard/Top_Analytic";
 import DashboardCard from "@/component/admin/shared/DashboardCard";
 import QuestionModal from "@/component/admin/qna/QuestionModal";
+import AnswerModal from "@/component/admin/qna/AnswerModal";
 
 export default function Page() {
-  const CHKDEL_URL = "/qna/chkDelete";
-  const SEARCH_URL = "/qna/search";
+  const CHKDEL_URL = "/api/qna/chkDelete";
+  const SEARCH_URL = "/api/qna/search";
 
   const [list, setList] = useState([]);
   const [allChecked, setAllChecked] = useState(false);
@@ -445,18 +446,14 @@ export default function Page() {
                   삭제
                 </Button>
               </Box>
+              <QuestionModal questionModalOpen={questionModalOpen} handleQuestionModalClose={handleQuestionModalClose} qnakey={selectedQnaKey}  handleAnswerModalOpen={handleAnswerModalOpen}/>
+              <AnswerModal answerModalOpen={answerModalOpen} handleAnswerModalClose={handleAnswerModalClose} qnakey={selectedQnaKey} search={search}/>
               <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
                 <Table sx={{ tableLayout: "auto" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell padding="checkbox">
-                        <Checkbox
-                          id="allChk"
-                          type="checkbox"
-                          className="allChk"
-                          checked={allChecked}
-                          onChange={handleAllCheck} // 전체 선택 체크박스 핸들러 연결
-                        />
+                        <Checkbox id="allChk" type="checkbox" className="allChk" checked={allChecked} onChange={handleAllCheck} />
                       </TableCell>
                       <TableCell align="center">이름</TableCell>
                       <TableCell align="center">닉네임</TableCell>
@@ -466,74 +463,42 @@ export default function Page() {
                       <TableCell align="center">답변 여부</TableCell>
                     </TableRow>
                   </TableHead>
-                  <QuestionModal questionModalOpen={questionModalOpen} handleQuestionModalClose={handleQuestionModalClose} qnakey={selectedQnaKey}  handleAnswerModalOpen={handleAnswerModalOpen}/>
                   <TableBody>
                     {list && list.length > 0 ? (
                       list.map((ar, i) => (
                         <TableRow key={i} hover role="checkbox">
                           <TableCell padding="checkbox">
-                            <Checkbox
-                              disableRipple
-                              name="use_board[]"
-                              className="rowChk"
-                              value={ar.qnakey}
-                              checked={checkedItems.includes(ar.qnakey)} // 개별 체크박스 상태 관리
-                              onChange={(e) => handleRowCheck(e, ar.qnakey)}
-                            />
+                            <Checkbox disableRipple name="use_board[]" className="rowChk" value={ar.qnakey} checked={checkedItems.includes(ar.qnakey)} onChange={(e) => handleRowCheck(e, ar.qnakey)}/>
                           </TableCell>
-                          <TableCell
-                            align="center"
-                            component="th"
-                            scope="row"
-                            onClick={() => handleQuestionModalOpen(ar.qnakey)}
-                            style={{ cursor: "pointer" }}
-                          >
+                          <TableCell align="center" onClick={() => handleQuestionModalOpen(ar.qnakey)} style={{ cursor: "pointer" }}>
                             {ar.uvo.name}
                           </TableCell>
                           <TableCell align="center" onClick={() => handleQuestionModalOpen(ar.qnakey)} style={{ cursor: "pointer" }}>
                             {ar.uvo.nickname}
                           </TableCell>
-                          <TableCell
-                            onClick={() => handleQuestionModalOpen(ar.qnakey)} align="center"
-                            style={{ cursor: "pointer" }}
-                          >
+                          <TableCell align="center" onClick={() => handleQuestionModalOpen(ar.qnakey)} style={{ cursor: "pointer" }}>
                             {ar.title ? ar.title : "-"}
                           </TableCell>
-                          {/* <TableCell align="center">
-                            {
-                              new Date(ar.create_dtm)
-                                .toISOString()
-                                .split("T")[0]
-                            }
+                          <TableCell align="center">
+                            {new Date(ar.create_dtm).toLocaleString([], {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </TableCell>
                           <TableCell align="center">
                             {ar.answer_dtm
-                              ? new Date(ar.answer_dtm)
-                                  .toISOString()
-                                  .split("T")[0]
+                              ? new Date(ar.answer_dtm).toLocaleString([], {
+                                  year: "numeric",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
                               : "-"}
-                          </TableCell> */}
-<TableCell align="center">
-  {new Date(ar.create_dtm).toLocaleString([], {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  })}
-</TableCell>
-<TableCell align="center">
-  {ar.answer_dtm
-    ? new Date(ar.answer_dtm).toLocaleString([], {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "-"}
-</TableCell>
-
+                          </TableCell>
                           <TableCell align="center">
                             {ar.isanswered == 1 ? "O" : "X"}
                           </TableCell>
@@ -546,7 +511,6 @@ export default function Page() {
                             <Typography variant="h6" sx={{ mb: 1 }}>
                               검색된 문의사항 목록이 없습니다.
                             </Typography>
-
                             <Typography variant="body2">
                               검색 조건을 확인해주세요.
                             </Typography>
@@ -557,21 +521,9 @@ export default function Page() {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  mt: 3,
-                }}
-              >
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 3,}}>
                 <Typography sx={{ mr: 2 }}>Page: {page.nowPage}</Typography>
-                <Pagination
-                  count={page.totalPage}
-                  showFirstButton
-                  showLastButton
-                  onChange={(e, newPage) => search(newPage)}
-                />
+                <Pagination count={page.totalPage} showFirstButton showLastButton onChange={(e, newPage) => search(newPage)}/>
               </Box>
             </DashboardCard>
           </Grid>

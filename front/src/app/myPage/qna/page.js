@@ -13,7 +13,7 @@ import Cookies from "js-cookie";
 import MyPageSide from "@/component/user/layout/MyPageSide";
 import { Box, Button, TableHead } from "@mui/material";
 import { useRouter } from "next/navigation";
-//// import QnaModal from "@/component/user/customer/QnaModal";
+import QnaModal from "@/component/user/customer/QnaModal";
 
 export default function () {
     const [qnaOpen, setQnaOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function () {
     };
     
     const [q_ar, setQ_ar] = useState([]);
-    const listUrl = `/qna/userAll`;
+    const listUrl = `/api/qna/userAll`;
     const [nowPage, setNowPage] = useState(1);
     const [page, setPage] = useState({});
     const [title, setTitle] = useState("");  // title을 searchNotice 함수에서 사용
@@ -117,7 +117,7 @@ export default function () {
                                   <Button variant="contained" onClick={handleQnaOpen} sx={{ backgroundColor: '#FF8000',  color: 'white', '&:hover': { backgroundColor: '#e67300', }, }}>
                                     문의하기
                                   </Button>
-                                  {/* <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} /> */}
+                                  <QnaModal qnaOpen={qnaOpen} handleQnaClose={handleQnaClose} />
                                 </Box>
                                 {/* 테이블 */}
                                 <div className="tableDiv">

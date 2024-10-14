@@ -5,21 +5,27 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, Paper, Box, Butt
 import React, { useEffect, useState } from 'react'
 
 export default function DetailModal(props) {
+  // 모달을 열기 위한 open 상태와 모달 닫기 함수
   const open = props.detailModalOpen;
   const onClose = () => { props.handleDetailModalClose(); };
   const boardkey = props.boardkey;
 
+  // API 경로
   const API_URL = `/api/admin/board/getBbs?boardkey=${boardkey}`;
   const DEL_URL = `/api/admin/board/del?boardkey=${boardkey}`;
   const BC_URL = "/api/admin/board/getBc";
+
+  // 상태 변수 선언
   const [vo, setVo] = useState({});
   const [categoryname, setCategoryname] = useState('');
 
+  // 수정 버튼 클릭 시 실행되는 함수
   const goEdit = () => {
     onClose(); 
     props.handleEditModalOpen(boardkey);
   };
-  
+
+  // 데이터 로딩 함수
   function getData() {
     axios.get(API_URL).then((res) => {
       setVo(res.data.bvo);
@@ -27,27 +33,29 @@ export default function DetailModal(props) {
     });
   }
 
+  // 모달이 열릴 때 데이터 로드
   useEffect(() => {
     if (boardkey) {
       getData();
     }
   }, [boardkey]);
-  
 
+  // 삭제 기능 구현
   function del() {
     if (typeof window !== "undefined") {
-    const confirmation = confirm("선택된 게시글을 정말 삭제하시겠습니까?");
-    if (!confirmation) {
-      return;
+      const confirmation = confirm("선택된 게시글을 정말 삭제하시겠습니까?");
+      if (!confirmation) {
+        return;
+      }
+      axios.post(DEL_URL).then(res => {
+        alert("삭제 완료");
+        props.getBbsData(1); 
+        onClose();
+      });
     }
-    axios.post(DEL_URL).then(res => {
-      alert("삭제 완료");
-      props.getBbsData(1); 
-      onClose();
-    });
-  }
   }
 
+  // 카테고리명 가져오기
   function getCategoryname(boardkey) {
     axios.get(BC_URL, { params: { boardkey } }).then((res) => {
       setCategoryname(res.data.categoryname);
@@ -56,6 +64,7 @@ export default function DetailModal(props) {
 
   return (
     <React.Fragment>
+      {/* 모달의 열림 상태를 확인하여 열기 */}
       <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth
           PaperProps={{ sx: { width: '900px', height: '700px', maxWidth: '90%', borderRadius: '16px', boxShadow: 'none', } }}
           BackdropProps={{ style: { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
@@ -129,5 +138,5 @@ export default function DetailModal(props) {
         </DialogActions>
       </Dialog>
     </React.Fragment>
-  )
+  );
 }
