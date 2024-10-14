@@ -314,7 +314,7 @@ const ChatApp = () => {
       ws.current.connect(
         {},
         (frame) => {
-          setSubscription(ws.current.subscribe("/sub/chat/room/" + currentchatroomkey, (message) => {
+          setSubscription(ws.current.subscribe("/sub/api/chat/room/" + currentchatroomkey, (message) => {
             let recv = JSON.parse(message.body);
             recvMessage(recv);
           }));
@@ -677,7 +677,7 @@ const ChatApp = () => {
   const locationSelect = () => {
     let currentTime = dayjs();
     ws.current.send(
-      "/pub/chat/message",
+      "/pub/api/chat/message",
       {},
       JSON.stringify({
         chatroomkey: currentchatroomkey,
@@ -712,7 +712,7 @@ const ChatApp = () => {
     let chattingEmoticon = currentEmoticon.current;
     let currentTime = dayjs();
     ws.current.send(
-      "/pub/chat/message",
+      "/pub/api/chat/message",
       {},
       JSON.stringify({
         chatroomkey: currentchatroomkey,
