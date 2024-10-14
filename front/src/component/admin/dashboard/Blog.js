@@ -90,6 +90,7 @@ const Blog = () => {
         <Grid item xs={12} md={3} lg={3} key={index}>
           <BlankCard>
             <Typography component={Link} href="#" onClick={() => openPostDetail(post.postkey)}>
+              {post && post.pimg_list && post.pimg_list.length > 0 && (
               <Avatar
                 src={post.pimg_list[0].imgurl}
                 variant="square"
@@ -98,6 +99,7 @@ const Blog = () => {
                   width: "100%",
                 }}
               />
+              )}
             </Typography>
             <Tooltip title="상세보기">
               <Fab
